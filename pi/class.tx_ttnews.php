@@ -872,7 +872,8 @@ if ($this->piVars['arc']) {
 		while (list(, $val) = each($imgs)) {
 			if ($cc == $imageNum) break;
 			if ($val) {
-				$lConf['image.']['altText'] = $lConf['image.']['altText']; // reset altText to value from script
+			 	$lConf['image.']['altText'] = ''; // reset altText
+				$lConf['image.']['altText'] = $lConf['image.']['altText']; // set altText to value from TS
 				$lConf['image.']['file'] = 'uploads/pics/'.$val;
 				switch($lConf['imgAltTextField']) {
 					case 'image': 
