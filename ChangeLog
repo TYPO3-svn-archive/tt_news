@@ -19,6 +19,13 @@
 		- added some more comments to the amenu example
 		- changed the labels of the news type= 1 (new: Link internal page) and type=2 (new: Link external URL)
 
+	* cvsroot/typo3xdev/tx_ttnews/ChangeLog 1.7:
+	* cvsroot/typo3xdev/tx_ttnews/locallang.php 1.8:
+	* cvsroot/typo3xdev/tx_ttnews/locallang_tca.php 1.13:
+	* cvsroot/typo3xdev/tx_ttnews/pi/locallang.php 1.13:
+		- updated langfiles with new translations
+		- updated changelog
+
 2004-08-24	rupertgermann
 	* cvsroot/typo3xdev/tx_ttnews/ext_typoscript_constants.txt 1.11:
 	* cvsroot/typo3xdev/tx_ttnews/ext_typoscript_setup.txt 1.25:
