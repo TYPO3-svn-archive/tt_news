@@ -231,7 +231,7 @@ class tx_ttnews extends tslib_pibase {
 		$this->config['itemLinkTarget'] = $this->conf['itemLinkTarget'];
 
 		//For keeping the configured linkVars
-		$this->config['linkVars'] = t3lib_div::trimexplode(',', $GLOBALS['TSFE']->config['config']['linkVars']);
+		#$this->config['linkVars'] = t3lib_div::trimexplode(',', $GLOBALS['TSFE']->config['config']['linkVars']);
 
 		// id of the page where the search results should be displayed
 		$this->config['searchPid'] = $this->conf['searchPid'];

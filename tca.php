@@ -6,7 +6,7 @@
 $TCA['tt_news'] = Array (
 	'ctrl' => $TCA['tt_news']['ctrl'],
 	'interface' => Array (
-		'showRecordFieldList' => 'title,hidden,datetime,starttime,archivedate,category,author,author_email,short,image,imagecaption,links,related'
+		'showRecordFieldList' => 'title,hidden,datetime,starttime,archivedate,category,author,author_email,short,image,imagecaption,links,related,news_files'
 	),
 	'columns' => Array (	
 		'starttime' => Array (
@@ -275,6 +275,26 @@ $TCA['tt_news'] = Array (
 				'show_thumbs' => '1'
 			)
 		),
+		# filelinks
+		'news_files' => Array (
+			'label' => 'LLL:EXT:cms/locallang_ttc.php:media',
+			'config' => Array (
+				'type' => 'group',
+				'internal_type' => 'file',
+				'allowed' => '',	// Must be empty for disallowed to work.
+				'disallowed' => 'php,php3',
+				'max_size' => '10000',
+				'uploadfolder' => 'uploads/media',
+				'show_thumbs' => '1',
+				'size' => '3',
+				'autoSizeMax' => '10',
+				'maxitems' => '10',
+				'minitems' => '0'
+			)
+		),
+		
+		
+		
 	),
 	'types' => Array (	
 // non-rte '0' => Array('showitem' => 'hidden;;;;1-1-1,type,title;;;;2-2-2,datetime,starttime;;1,archivedate,category,author,author_email,keywords,--div--,short;;;;3-3-3,bodytext,image;;;;4-4-4,imagecaption,--div--,links;;;;5-5-5,related'),
@@ -282,7 +302,7 @@ $TCA['tt_news'] = Array (
 // full enabled rte		'0' => Array('showitem' => 'hidden;;;;1-1-1,type,sys_language_uid,title;;;;2-2-2,datetime,starttime;;1,archivedate,category,author,author_email,keywords,--div--,short;;;;3-3-3,bodytext;;9;richtext[*]:rte_transform[flag=rte_enabled|mode=ts];3-3-3,image;;;;4-4-4,imagecaption,--div--,links;;;;5-5-5,related'),
 
 // rte like tt_content
-		'0' => Array('showitem' => 'hidden;;;;1-1-1,type,sys_language_uid,title;;;;2-2-2,datetime,starttime;;1,archivedate,category,author,author_email,keywords,--div--,short;;;;3-3-3,bodytext;;9;richtext[paste|bold|italic|underline|formatblock|class|left|center|right|orderedlist|unorderedlist|outdent|indent|link|image]:rte_transform[flag=rte_enabled|mode=ts];4-4-4, rte_enabled, text_properties;5-5-5,image;;;;6-6-6,imagecaption,--div--,links;;;;7-7-7,related'),
+		'0' => Array('showitem' => 'hidden;;;;1-1-1,type,sys_language_uid,title;;;;2-2-2,datetime,starttime;;1,archivedate,category,author,author_email,keywords,--div--,short;;;;3-3-3,bodytext;;9;richtext[paste|bold|italic|underline|formatblock|class|left|center|right|orderedlist|unorderedlist|outdent|indent|link|image]:rte_transform[flag=rte_enabled|mode=ts];4-4-4, rte_enabled, text_properties;5-5-5,image;;;;6-6-6,imagecaption,--div--,links;;;;7-7-7,related,news_files'),
 		
 		
 		

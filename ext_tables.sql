@@ -21,7 +21,8 @@ CREATE TABLE tt_news (
   author tinytext NOT NULL,
   author_email tinytext NOT NULL,
   category int(11) DEFAULT '0' NOT NULL,
-#  category int(11) unsigned DEFAULT '0' NOT NULL
+#  filelinks
+  news_files tinyblob NOT NULL,
   links text NOT NULL,
   type tinyint(4) DEFAULT '0' NOT NULL,
   page int(11) DEFAULT '0' NOT NULL,
