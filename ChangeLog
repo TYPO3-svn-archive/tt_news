@@ -1,4 +1,59 @@
+2005-03-09	rupertgermann
+	* cvsroot/typo3xdev/tx_ttnews/ext_tables.php 1.14:
+	* cvsroot/typo3xdev/tx_ttnews/ext_tables.sql 1.11:
+	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews.php 1.73:
+	* cvsroot/typo3xdev/tx_ttnews/tca.php 1.22:
+		- added the fields 'endtime','starttime','hidden' and 'fe_group' to the tt_news_cat table
+		- new feature: the new 'enable fields' from the tt_news_cat table are now processed in the tx_ttnews class. That makes it possible to f.e show news from some categories (and their subcategories) only for users that are member of a certain fe_group or only for a timeperiod.
+		- enabled the field 'sorting' for the table tt_news_cat_mm. The order of the categories that are displayed on the website is now the same, as the order of the categories in the left selectorbox in the tt_news BE-form.
+		- in the table tt_news_cat, the sorting field is now enabled too. This fields defines the ordering of the categories in the right selectorbox in the tt_news BE-form. The order of the subcategories, if some of them are found in the same level, will also be defined by the sorting-field, if no other field is set by 'plugin.tt_news.catOrderBy'. (the default for catOrderBy was uid before)
+		- added a stdWrap to 'categorySelection'. Now something like this will work: 'plugin.tt_news.categorySelection.data = register:whatever'
+		- changed the condition that finds out if a record is normal newsarticle or a Link. This condition checks now if the type is 1 or 2. This has no influence on the functionality, but will make it easier to add new 'types' to tt_news when extending it.
+		- added a function that checks the visibility of the selected categories: function checkRecords().
+		- removed function initCategories().
+
+	* cvsroot/typo3xdev/tx_ttnews/res/tt_news_cat.gif 1.1:
+	* cvsroot/typo3xdev/tx_ttnews/res/tt_news_cat__d.gif 1.1:
+	* cvsroot/typo3xdev/tx_ttnews/res/tt_news_cat__f.gif.gif 1.1:
+	* cvsroot/typo3xdev/tx_ttnews/res/tt_news_cat__fu.gif 1.1:
+	* cvsroot/typo3xdev/tx_ttnews/res/tt_news_cat__h.gif 1.1:
+	* cvsroot/typo3xdev/tx_ttnews/res/tt_news_cat__hf.gif 1.1:
+	* cvsroot/typo3xdev/tx_ttnews/res/tt_news_cat__hfu.gif 1.1:
+	* cvsroot/typo3xdev/tx_ttnews/res/tt_news_cat__ht.gif 1.1:
+	* cvsroot/typo3xdev/tx_ttnews/res/tt_news_cat__htf.gif 1.1:
+	* cvsroot/typo3xdev/tx_ttnews/res/tt_news_cat__htfu.gif 1.1:
+	* cvsroot/typo3xdev/tx_ttnews/res/tt_news_cat__htu.gif 1.1:
+	* cvsroot/typo3xdev/tx_ttnews/res/tt_news_cat__hu.gif.gif 1.1:
+	* cvsroot/typo3xdev/tx_ttnews/res/tt_news_cat__t.gif 1.1:
+	* cvsroot/typo3xdev/tx_ttnews/res/tt_news_cat__tf.gif 1.1:
+	* cvsroot/typo3xdev/tx_ttnews/res/tt_news_cat__tfu.gif 1.1:
+	* cvsroot/typo3xdev/tx_ttnews/res/tt_news_cat__tu.gif 1.1:
+	* cvsroot/typo3xdev/tx_ttnews/res/tt_news_cat__u.gif 1.1:
+	* cvsroot/typo3xdev/tx_ttnews/res/tt_news_cat__x.gif 1.1:
+		added icon set for tt_news_cat. before this the icon was taken 
+		from typo3/gfx/i/
+
+2005-03-07	rupertgermann
+	* cvsroot/typo3xdev/tx_ttnews/ext_emconf.php 1.30:
+	* cvsroot/typo3xdev/tx_ttnews/ext_php_api.dat 1.9:
+	* cvsroot/typo3xdev/tx_ttnews/ext_tables.sql 1.10:
+	* cvsroot/typo3xdev/tx_ttnews/locallang_tca.php 1.27:
+	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews.php 1.72:
+	* cvsroot/typo3xdev/tx_ttnews/tca.php 1.21:
+		- new feature: Subcategories. added a new field in the tt_news_cat table where you can assign a 'parent category' to a tt_news category. To enable this feature you'll have to set the new TSvar 'useSubCategories' to 1
+		- new TSvar 'displaySubCategories': Set this to 1 if you want display the names and images of the subcategories
+		- added 2 stdWrap for subcategories: 'subCategoryImgItem_stdWrap' and  'subCategoryTitleItem_stdWrap'
+		- removed the function initCategories because its behaviour of reading all categories of all news to an array was not compatible with subcategories
+		- cleaned up the init() function -> made some new functions for processing parts of the init function (initLanguages (), initCategoryVars(), initTemplate() and initPidList () )
+		- version nr is now 2.1.2
+
+	* cvsroot/typo3xdev/tx_ttnews/class.ext_update.php 1.9:
+		- added correct var types to function headers
+
 2005-03-05	rupertgermann
+	* cvsroot/typo3xdev/tx_ttnews/ChangeLog 1.29:
+		updated Changelog
+
 	* cvsroot/typo3xdev/tx_ttnews/ext_emconf.php 1.29:
 		updated emconf to version 2.1.0
 
