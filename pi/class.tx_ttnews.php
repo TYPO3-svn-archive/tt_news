@@ -44,6 +44,7 @@ class tx_ttnews extends tslib_pibase {
 
 	var $tt_news_uid;
 	var $conf;
+	var $conf2;
 	var $config;
 	var $alternativeLayouts;
 	var $pid;
@@ -82,7 +83,6 @@ class tx_ttnews extends tslib_pibase {
 
 
 		$GLOBALS["TSFE"]->set_no_cache();
-
 	
 		// *************************************
 		// *** getting configuration values:
@@ -181,7 +181,6 @@ class tx_ttnews extends tslib_pibase {
 		$selectConf['selectFields'] = 'max(datetime) as maxval, min(datetime) as minval';
 		$res = $this->cObj->exec_getQuery("tt_news",$selectConf);
 		$row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
-
 		if ($row["minval"])	{
 			$dateArr = array();
 			$arcMode = $this->conf["archiveMode"] ? $this->conf["archiveMode"] : "month";
@@ -203,7 +202,7 @@ class tx_ttnews extends tslib_pibase {
 				if ($c>1000)	break;
 			} while ($theDate<$GLOBALS["SIM_EXEC_TIME"]);
 	//		array_pop($dateArr);
-	
+
 			reset($dateArr);
 			$periodAccum=array();
 			$selectConf2['where'] = $selectConf['where'];
@@ -249,6 +248,7 @@ class tx_ttnews extends tslib_pibase {
 				$markerArray["###ARCHIVE_COUNT###"]=$pArr["count"];
 	
 				$itemsOut.= $this->cObj->substituteMarkerArrayCached($t["item"][($cc%count($t["item"]))],$markerArray,array(),$wrappedSubpartArray);
+				$cc++;
 			}
 			
 						// Reset:
@@ -285,7 +285,8 @@ class tx_ttnews extends tslib_pibase {
 				$prefix_display="displayLatest"; 
 				$templateName = "TEMPLATE_LATEST";
 				$this->arcExclusive=-1;	// Only latest, non archive news
-				if (intval($this->conf["latestLimit"]))		$this->config["limit"] = intval($this->conf["latestLimit"]);
+				if (intval($this->conf["latestLimit"]))	$this->config["limit"] = intval($this->conf["latestLimit"]);
+#				DEBUG($this->config["limit"]);
 			break;
 			case "LIST": 
 			case "SEARCH": 	
@@ -297,7 +298,7 @@ class tx_ttnews extends tslib_pibase {
 				$templateName = "TEMPLATE_SINGLE";
 			break;
 		}
-		
+
 		if ($this->tt_news_uid)	{
 				// performing query:
 		 	$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_news', 'uid='.intval($this->tt_news_uid).' AND type=0'.$this->enableFields);	// type=0 -> only real news.
@@ -349,9 +350,10 @@ class tx_ttnews extends tslib_pibase {
 				$selectConf = $this->getSelectConf($where);
 
 					// performing query to count all news (we need to know it for browsing):
-				$selectConf['selectFields'] = 'count(*)';
+				$selectConf['selectFields'] = 'count(distinct(uid))'; //count(*)
 				$res = $this->cObj->exec_getQuery("tt_news",$selectConf);
 				$row = $GLOBALS['TYPO3_DB']->sql_fetch_row($res);
+
 				$newsCount = $row[0];
 
 					// range check to current newsCount
@@ -372,6 +374,7 @@ class tx_ttnews extends tslib_pibase {
 				$t["item"] = $this->getLayouts($t["total"],$this->alternativeLayouts,"NEWS");
 				$cc = 0;
 
+				$itemLinkTarget = $this->conf["itemLinkTarget"] ? 'target="'.$this->conf["itemLinkTarget"].'"' : "";
 				while($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))		{
 						// Print Item Title
 					$wrappedSubpartArray=array();
@@ -379,7 +382,7 @@ class tx_ttnews extends tslib_pibase {
 						$this->local_cObj->setCurrentVal($row["type"]==1 ? $row["page"] : $row["ext_url"]);
 						$wrappedSubpartArray["###LINK_ITEM###"]= $this->local_cObj->typolinkWrap($this->conf["pageTypoLink."]);
 					} else {
-						$wrappedSubpartArray["###LINK_ITEM###"]= array('<A href="'.$this->getLinkUrl($this->conf["PIDitemDisplay"]).'&tt_news='.$row["uid"].'">','</A>'); 
+						$wrappedSubpartArray["###LINK_ITEM###"]= array('<A href="'.$this->getLinkUrl($this->conf["PIDitemDisplay"]).'&tt_news='.$row["uid"].'" '.$itemLinkTarget.'>','</A>'); 
 					}
 					$markerArray = $this->getItemMarkerArray($row,$prefix_display);
 
@@ -433,7 +436,47 @@ class tx_ttnews extends tslib_pibase {
 		}
 		return $content;
 	}
+
+
+
+	/**
+	 * Returns a url for use in forms and links
+	 */
+	function getLinkUrl($id="",$excludeList="")	{
+		$queryString=array();
+		$queryString["id"] = "id=".($id ? $id : $GLOBALS["TSFE"]->id);
+		// Andreas Schwarzkopf		$queryString["type"]= $GLOBALS["TSFE"]->type ? 'type='.$GLOBALS["TSFE"]->type : "";
+		// der TypoScript-Setup-Wert itemLinkType wird ausgelesen, wenn nicht vorhanden, der aktuelle Type-Wert des Fensters
+		if ($this->conf["itemLinkType"]) {
+		         $itemLinkType = "type=".$this->conf["itemLinkType"];
+		} else {
+			if ($GLOBALS["TSFE"]->type) {
+				$itemLinkType = 'type='.$GLOBALS["TSFE"]->type;
+			} else {
+				$itemLinkType = '';
+			}
+		}
+		$queryString["type"]= $itemLinkType;
+		$queryString["backPID"]= 'backPID='.$GLOBALS["TSFE"]->id;
+		$queryString["begin_at"]= t3lib_div::GPvar("begin_at") ? 'begin_at='.t3lib_div::GPvar("begin_at") : "";
+		$queryString["swords"]= t3lib_div::GPvar("swords") ? "swords=".rawurlencode(t3lib_div::GPvar("swords")) : "";
+		$queryString["pS"]= t3lib_div::GPvar("pS") ? "pS=".intval(t3lib_div::GPvar("pS")) : "";	// period start
+		$queryString["pL"]= t3lib_div::GPvar("pL") ? "pL=".intval(t3lib_div::GPvar("pL")) : ""; // Period length
+		$queryString["arc"]= t3lib_div::GPvar("arc") ? "arc=".intval(t3lib_div::GPvar("arc")) : ""; // Archive flag: 0 = don't care, -1 = latest, 1 = archive
+		$queryString["cat"]= t3lib_div::GPvar("cat") ? "cat=".intval(t3lib_div::GPvar("cat")) : ""; // Category uid, 0 = any
+
+		reset($queryString);
+		while(list($key,$val)=each($queryString))	{
+			if (!$val || ($excludeList && t3lib_div::inList($excludeList,$key)))	{
+				unset($queryString[$key]);
+			}
+		}
+		return $GLOBALS["TSFE"]->absRefPrefix.'index.php?'.implode($queryString,"&");
+	}
 	
+	
+
+
 	function getSelectConf($where,$noPeriod=0)	{
 		$this->setPidlist($this->config["pid_list"]);
 		$this->initRecursive($this->config["recursive"]);
@@ -452,48 +495,47 @@ class tx_ttnews extends tslib_pibase {
 		if ($this->arcExclusive)	{
 			if ($this->conf["enableArchiveDate"])	{
 				if ($this->arcExclusive<0)	{	// latest
-					$selectConf["where"].=' AND (archivedate=0 OR archivedate>'.$GLOBALS["SIM_EXEC_TIME"].')';
+					$selectConf["where"].=' AND (tt_news.archivedate=0 OR tt_news.archivedate>'.$GLOBALS["SIM_EXEC_TIME"].')';
 				} elseif ($this->arcExclusive>0)	{
-					$selectConf["where"].=' AND archivedate<'.$GLOBALS["SIM_EXEC_TIME"];
+					$selectConf["where"].=' AND tt_news.archivedate<'.$GLOBALS["SIM_EXEC_TIME"];
 				}
 			}
 			if ($this->conf["datetimeDaysToArchive"])	{
 				$theTime = $GLOBALS["SIM_EXEC_TIME"]-intval($this->conf["datetimeDaysToArchive"])*3600*24;
 				if ($this->arcExclusive<0)	{	// latest
-					$selectConf["where"].=' AND (datetime=0 OR datetime>'.$theTime.')';
+					$selectConf["where"].=' AND (tt_news.datetime=0 OR tt_news.datetime>'.$theTime.')';
 				} elseif ($this->arcExclusive>0)	{
-					$selectConf["where"].=' AND datetime<'.$theTime;
+					$selectConf["where"].=' AND tt_news.datetime<'.$theTime;
 				}
 			}
 		}
 			// Category
+		$codes=t3lib_div::trimExplode(",", $this->config["code"]?$this->config["code"]:$this->conf["defaultCode"],1);
+		if (count($codes)) {
+			while(list(,$theCode)=each($codes))	{
+				list($theCode,$cat,$aFlag) = explode("/",$theCode);
+			}
+		}
 		if (intval(t3lib_div::_GP("cat")))	{
 			$this->catExclusive = intval(t3lib_div::_GP("cat"));
+			$cat = intval(t3lib_div::_GP("cat"));
 		}
-		if ($this->catExclusive)	{
-			$selectConf["where"].=" AND category=".$this->catExclusive;
+		if (!empty($cat))	{
+			$selectConf["join"] = "tt_news_cat_mm";
+			$selectConf["where"] .= " AND tt_news_cat_mm.uid_foreign ".(substr($cat, 0, 1)=="0"?"NOT ":"")."IN (".strtr($cat, ";", ",").")";
+			$selectConf["where"] .= " AND tt_news_cat_mm.uid_local=tt_news.uid";
+			$selectConf["groupBy"] = "uid";
 		}
 			// Period
 		if (!$noPeriod && intval(t3lib_div::_GP("pS")))	{
-			$selectConf["where"].=' AND datetime>'.intval(t3lib_div::_GP("pS"));
+			$selectConf["where"].=' AND tt_news.datetime>'.intval(t3lib_div::_GP("pS"));
 			if (intval(t3lib_div::_GP("pL")))	{
-				$selectConf["where"].=' AND datetime<'.(intval(t3lib_div::_GP("pS"))+intval(t3lib_div::_GP("pL")));
+				$selectConf["where"].=' AND tt_news.datetime<'.(intval(t3lib_div::_GP("pS"))+intval(t3lib_div::_GP("pL")));
 			}
 		}
 		return $selectConf;
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 
 
 	/**
@@ -522,11 +564,22 @@ class tx_ttnews extends tslib_pibase {
 	 */
 	function initCategories()	{
 			// Fetching catagories:
-	 	$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_news_cat', '1=1'.$this->cObj->enableFields('tt_news_cat'));
-		$this->categories = array();
+	 	$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_news_cat LEFT JOIN tt_news_cat_mm ON tt_news_cat_mm.uid_foreign = tt_news_cat.uid', '1=1'.$this->cObj->enableFields('tt_news_cat'));
+		echo mysql_error();
+		$this->categories=array();
+		$this->categorieImages=array();
 		while($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))	{
-			$this->categories[$row["uid"]] = $row["title"];
-		}	
+			if(isset($row["uid_local"])) {
+				$this->categories[$row["uid_local"]][] = array(
+				"title"=>$row["title"],
+				"image"=>$row["image"],
+				"shortcut"=>$row["shortcut"],
+				"catid"=>$row["uid_foreign"]
+				);
+			} else {
+				$this->categories["0"][$row["uid"]] = $row["title"];
+			}
+		}
 	}
 
 	/**
@@ -584,6 +637,7 @@ class tx_ttnews extends tslib_pibase {
 		$markerArray["###NEWS_SUBHEADER###"] = $this->formatStr($this->local_cObj->stdWrap($row["short"],$lConf["subheader_stdWrap."]));
 		$markerArray["###NEWS_CONTENT###"] = $this->formatStr($this->local_cObj->stdWrap($row["bodytext"],$lConf["content_stdWrap."]));
 		$markerArray["###NEWS_LINKS###"] = $this->formatStr($this->local_cObj->stdWrap($row["links"],$lConf["links_stdWrap."]));
+#?		$markerArray["###NEWS_LINKS###"] = $this->local_cObj->stdWrap($this->formatStr($row["links"]),$lConf["links_stdWrap."]);
 			// Category fields:
 		$markerArray["###NEWS_CATEGORY###"] = $this->local_cObj->stdWrap($this->categories[$row["category"]],$lConf["category_stdWrap."]);
 		
@@ -600,7 +654,42 @@ class tx_ttnews extends tslib_pibase {
 		if ($this->conf["itemMarkerArrayFunc"])	{
 			$markerArray = $this->userProcess("itemMarkerArrayFunc",$markerArray);
 		}
-//		debug(array_keys($markerArray));
+		$news_category=array();
+		$theCatImgCode="";
+		$theCatImgCodeArray=array();
+		if(isset($this->categories[$row["uid"]])&&($this->conf["showCatText"]==1 or $this->conf["showCatImage"]==1)) {
+			while (list ($key, $val) = each ($this->categories[$row["uid"]])) {
+				$news_category[] = $this->local_cObj->stdWrap($this->cObj->getTypoLink($this->categories[$row["uid"]][$key]["title"],($this->conf["catShortcuts"]?$this->categories[$row["uid"]][$key]["shortcut"]:$GLOBALS["TSFE"]->id),($this->conf["catShortcuts"]?"":array("cat"=>$this->categories[$row["uid"]][$key]["catid"]))),$lConf["category_stdWrap."]);
+				if(!empty($this->categories[$row["uid"]][$key]["image"])) {
+					$lConf["image."]["file"] = "uploads/pics/".$this->categories[$row["uid"]][$key]["image"];
+				    $lConf["image."]["file."]["maxW"] = intval($this->conf["catImageMaxWidth"]);
+				    $lConf["image."]["file."]["maxH"] = intval($this->conf["catImageMaxHeight"]);
+					$lConf["image."]["stdWrap."]["spaceAfter"] = 0;
+					$lConf["image."]["stdWrap."]["typolink."]["parameter"] = ($this->conf["catShortcuts"]?$this->categories[$row["uid"]][$key]["shortcut"]:$GLOBALS["TSFE"]->id);
+					$lConf["image."]["stdWrap."]["typolink."]["additionalParams"] = ($this->conf["catShortcuts"]?"":"&cat=".$this->categories[$row["uid"]][$key]["catid"]);
+					$lConf["image."]["altText"] = $this->categories[$row["uid"]][$key]["title"];
+					$theCatImgCodeArray[]=$this->local_cObj->IMAGE($lConf["image."]);
+				}
+			}
+			if ($this->conf["showCatText"]==1) {
+				$news_category = implode(", ",array_slice($news_category, 0, intval($this->conf["maxCatTexts"])));
+				$markerArray["###NEWS_CATEGORY###"] = (strlen($news_category) < intval($this->conf["catTextLength"])?$news_category:substr($news_category,0,intval($this->conf["catTextLength"]))."...");
+			} else {
+				$markerArray["###NEWS_CATEGORY###"]="";
+			}
+			if ($this->conf["showCatImage"]==1) {
+				$theCatImgCode = implode("",array_slice($theCatImgCodeArray, 0, intval($this->conf["maxCatImages"])));
+				$markerArray["###NEWS_CATEGORY_IMAGE###"] = $this->local_cObj->wrap(trim($theCatImgCode),$lConf["imageWrapIfAny"]);
+			} else {
+				$markerArray["###NEWS_CATEGORY_IMAGE###"]="";
+			}
+		} elseif($this->conf["showCatText"]==1) { //to show categories not defined by tt_news_cat_mm
+			$markerArray["###NEWS_CATEGORY###"] = $this->categories["0"][$row["category"]];
+			$markerArray["###NEWS_CATEGORY_IMAGE###"]="";
+		} else {
+			$markerArray["###NEWS_CATEGORY_IMAGE###"]="";
+			$markerArray["###NEWS_CATEGORY###"]="";
+		}
 		return $markerArray;
 	}
 
@@ -644,29 +733,6 @@ class tx_ttnews extends tslib_pibase {
 		return $altSPM ? $altSPM : $subpartMarker;
 	}
 
-	/**
-	 * Returns a url for use in forms and links
-	 */
-	function getLinkUrl($id="",$excludeList="")	{
-		$queryString=array();
-		$queryString["id"] = "id=".($id ? $id : $GLOBALS["TSFE"]->id);
-		$queryString["type"]= $GLOBALS["TSFE"]->type ? 'type='.$GLOBALS["TSFE"]->type : "";
-		$queryString["backPID"]= 'backPID='.$GLOBALS["TSFE"]->id;
-		$queryString["begin_at"]= t3lib_div::_GP("begin_at") ? 'begin_at='.t3lib_div::_GP("begin_at") : "";
-		$queryString["swords"]= t3lib_div::_GP("swords") ? "swords=".rawurlencode(t3lib_div::_GP("swords")) : "";
-		$queryString["pS"]= t3lib_div::_GP("pS") ? "pS=".intval(t3lib_div::_GP("pS")) : "";	// period start
-		$queryString["pL"]= t3lib_div::_GP("pL") ? "pL=".intval(t3lib_div::_GP("pL")) : ""; // Period length
-		$queryString["arc"]= t3lib_div::_GP("arc") ? "arc=".intval(t3lib_div::_GP("arc")) : ""; // Archive flag: 0 = don't care, -1 = latest, 1 = archive
-		$queryString["cat"]= t3lib_div::_GP("cat") ? "cat=".intval(t3lib_div::_GP("cat")) : ""; // Category uid, 0 = any
-
-		reset($queryString);
-		while(list($key,$val)=each($queryString))	{
-			if (!$val || ($excludeList && t3lib_div::inList($excludeList,$key)))	{
-				unset($queryString[$key]);
-			}
-		}
-		return $GLOBALS["TSFE"]->absRefPrefix.'index.php?'.implode($queryString,"&");
-	}
 
 	/**
 	 * Generates a search where clause.

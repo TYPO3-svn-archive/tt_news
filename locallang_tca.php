@@ -9,6 +9,7 @@ $LOCAL_LANG = Array (
 		'tt_news.archivedate' => 'Archive date:',
 		'tt_news.related' => 'Related news:',
 		'tt_news_cat' => 'News category',
+		'tt_news_cat.image' => 'Category image',
 	),
 	'dk' => Array (
 		'tt_news' => 'Nyheder',
@@ -18,6 +19,7 @@ $LOCAL_LANG = Array (
 		'tt_news.archivedate' => 'Arkiv dato:',
 		'tt_news.related' => 'Relaterede nyheder:',
 		'tt_news_cat' => 'Nyheder kategori',
+		'tt_news_cat.image' => 'Kategori Billede',
 	),
 	'de' => Array (
 		'tt_news' => 'News',
@@ -27,6 +29,7 @@ $LOCAL_LANG = Array (
 		'tt_news.archivedate' => 'Archivdatum:',
 		'tt_news.related' => 'In Verbindung stehende News:',
 		'tt_news_cat' => 'News Kategorie',
+		'tt_news_cat.image' => 'Kategorie Bild',
 	),
 	'no' => Array (
 		'tt_news' => 'Nyheter',

@@ -28,7 +28,7 @@ $TCA['tt_news'] = Array (
 				'type' => 'input',
 				'size' => '8',
 				'max' => '20',
-				'eval' => 'date',
+				'eval' => 'datetime',
 				'checkbox' => '0',
 				'default' => '0',
 				'range' => Array (
@@ -116,15 +116,15 @@ $TCA['tt_news'] = Array (
 			)
 		),
 		'datetime' => Array (
-			'exclude' => 1,	
-			'label' => 'LLL:EXT:tt_news/locallang_tca.php:tt_news.datetime',
-			'config' => Array (
-				'type' => 'input',
-				'size' => '10',
-				'max' => '20',
-				'eval' => 'datetime',
-				'default' => '0'
-			)
+			"exclude" => 1,	
+			"label" => "LLL:EXT:tt_news/locallang_tca.php:tt_news.datetime",
+			"config" => Array (
+				"type" => "input",
+				"size" => "10",
+				"max" => "20",
+				"eval" => "datetime",
+				"default" => mktime(date("h"),date("i"),0,date("m"),date("d"),date("Y"))
+				)
 		),
 		'archivedate' => Array (
 			'exclude' => 1,	
@@ -217,12 +217,14 @@ $TCA['tt_news'] = Array (
 			'exclude' => 1,	
 			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.category',
 			'config' => Array (
-				'type' => 'select',
-				'items' => Array (
-					Array('', 0)
-				),
-				'foreign_table' => 'tt_news_cat'
-			)
+				"type" => "select",
+				"foreign_table" => "tt_news_cat",
+				"foreign_table_where" => "ORDER BY tt_news_cat.uid",
+				"size" => 6,
+				"minitems" => 0,
+				"maxitems" => 100,
+				"MM" => "tt_news_cat_mm",
+				)
 		),
 		'page' => Array (
 			'exclude' => 1,	
@@ -239,7 +241,8 @@ $TCA['tt_news'] = Array (
 		)
 	),
 	'types' => Array (	
-		'0' => Array('showitem' => 'hidden;;;;1-1-1,type,title;;;;2-2-2,datetime,starttime;;1,archivedate,category,author,author_email,keywords,--div--,short;;;;3-3-3,bodytext,image;;;;4-4-4,imagecaption,--div--,links;;;;5-5-5,related'),
+#non-rte'0' => Array('showitem' => 'hidden;;;;1-1-1,type,title;;;;2-2-2,datetime,starttime;;1,archivedate,category,author,author_email,keywords,--div--,short;;;;3-3-3,bodytext,image;;;;4-4-4,imagecaption,--div--,links;;;;5-5-5,related'),
+		'0' => Array('showitem' => 'hidden;;;;1-1-1,type,title;;;;2-2-2,datetime,starttime;;1,archivedate,category,author,author_email,keywords,--div--,short;;;;3-3-3,bodytext;;9;richtext[*]:rte_transform[flag=rte_enabled|mode=ts];3-3-3,image;;;;4-4-4,imagecaption,--div--,links;;;;5-5-5,related'),
 		'1' => Array('showitem' => 'hidden;;;;1-1-1,type,page,title;;;;2-2-2,datetime,starttime;;1,archivedate,category,author,author_email,keywords,--div--,short;;;;3-3-3'),
 		'2' => Array('showitem' => 'hidden;;;;1-1-1,type,ext_url,title;;;;2-2-2,datetime,starttime;;1,archivedate,category,author,author_email,keywords,--div--,short;;;;3-3-3')
 	),
@@ -266,11 +269,44 @@ $TCA['tt_news_cat'] = Array (
 				'size' => '40',
 				'max' => '256'
 			)
+		),
+		'image' => Array (		
+			'exclude' => 1,		
+			'label' => 'LLL:EXT:tt_news/locallang_db.php:tt_news_cat.image',
+			'config' => Array (
+				'type' => 'group',
+				'internal_type' => 'file',
+				'allowed' => 'gif,png,jpeg,jpg',	
+				'max_size' => 100,	
+				'uploadfolder' => 'uploads/pics',
+				'show_thumbs' => 1,	
+				'size' => 1,	
+				'minitems' => 0,
+				'maxitems' => 1,
+			)
+		),
+		'shortcut' => Array (
+			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.shortcut_page',
+			'config' => Array (
+				'type' => 'group',
+				'internal_type' => 'db',
+					'allowed' => 'pages',
+				'size' => '3',
+				'maxitems' => '1',
+				'minitems' => '0',
+				'show_thumbs' => '1'
+			)
 		)
 	),
 	'types' => Array (	
-		'0' => Array('showitem' => 'title;;;;3-3-3')
+		'0' => Array('showitem' => 'title;;;;3-3-3,image,shortcut;;;;1-1-1')
 	)
 );
+
+
+
+
+
+
 
 ?>
