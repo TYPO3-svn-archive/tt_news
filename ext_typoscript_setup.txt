@@ -31,7 +31,7 @@ plugin.tt_news {
     stdWrap.wrap = |<br />
   }
   newsFilesHeader_stdWrap.wrap = <strong>|</strong>
-  
+  newsFiles_stdWrap.wrap = 
 
   
   # Global wraps
@@ -44,7 +44,7 @@ plugin.tt_news {
   color4.wrap = {$plugin.tt_news.color4}
 
   # Rendering of news items
-  # the RTE parseFunc configuration
+  # RTE parseFunc configuration for the fields bodytext, short, title 
   general_stdWrap { 
      parseFunc < tt_content.text.20.parseFunc 
   } 
@@ -77,12 +77,13 @@ plugin.tt_news {
   
   # Pagebrowser settings
   pageBrowser {
-    maxPages={$plugin.tt_news.pageBrowser.maxPages}
-    page_stdWrap.wrap = <span class="ttnews-PBpage"> | </span>
-    actPage_stdWrap.wrap = <span class="ttnews-PBactPage"> | </span>
+    maxPages = 10
+	# set this to '0' if you want the pagebrowser to display only numbers 
+	showPBrowserText = 1 
+	tableParams = cellpadding=2 
+	showResultCount = 1
   }
-  # set this to '0' if you want the pagebrowser to display only numbers 
-  showPBrowserText = 1  
+     
     
   # Category settings
   catImageMode = {$plugin.tt_news.catImageMode}
@@ -96,9 +97,11 @@ plugin.tt_news {
   # -1 = display deselected categories
   categoryMode = 0
   
-  catImageMaxWidth = 20
-  catImageMaxHeight = 20
+  catImageMaxWidth = 25
+  catImageMaxHeight = 25
   
+  # substitute pagetitle with newstitle in single view
+  substitutePagetitle = 1 
   
   # Archive settings
   datetimeDaysToArchive = {$plugin.tt_news.datetimeDaysToArchive}
@@ -144,8 +147,8 @@ plugin.tt_news {
       }   
       10.1=HTML
       10.1 {
-        value = set from script	 
-      }   
+        value = set from script
+	  }   
       10.2=HTML
       10.2 {
          value = set from script	 
@@ -184,14 +187,15 @@ plugin.tt_news {
 
     email_stdWrap.setContentToCurrent = 1
     email_stdWrap.typolink.parameter.current = 1
-    caption_stdWrap.wrap = {$plugin.tt_news.caption_stdWrap}
-    caption_stdWrap.trim=1
+    caption_stdWrap.wrap = |<br />
+    caption_stdWrap.spaceAfter = 5
+	caption_stdWrap.trim=1
     caption_stdWrap.required=1
   }
   displaySingle.image {
     file.maxW = {$plugin.tt_news.singleMaxW}
     file.maxH = {$plugin.tt_news.singleMaxH}
-    wrap = | <br />
+    wrap = 
     imageLinkWrap = 1
     imageLinkWrap {
       enable = 1
@@ -238,7 +242,8 @@ plugin.tt_news {
     textNewsAge_stdWrap.wrap =
     date_stdWrap.strftime= %A %d. of %B %Y
     time_stdWrap.strftime= %d-%m-%y %H:%M
-    caption_stdWrap.wrap = {$plugin.tt_news.caption_stdWrap}
+    caption_stdWrap.wrap = |<br />
+    caption_stdWrap.spaceAfter = 
     caption_stdWrap.trim=1
     caption_stdWrap.required=1
     title_stdWrap.wrap = <strong>|</strong>
@@ -255,14 +260,16 @@ plugin.tt_news {
     imageLinkWrap = 1
     stdWrap.spaceAfter=5
   }
-  # Example for overriding values from locallang.php with other values
+  # Example for overriding values from locallang.php with other ones
   _LOCAL_LANG.de {
     # latestHeader = Das Allerneuste vom Neuen!  
     # more = [weiterlesen...]
   }
   _CSS_DEFAULT_STYLE (
-.tx-ttnews-browsebox TD { font-size: 10px; }
-.tx-ttnews-browsebox-strong, .tx-ttnews-browsebox-SCell { font-weight: bold; }
+  /* example styles for the pagebrowser */
+	.tx-ttnews-browsebox TD { font-size: 10px; }
+	.tx-ttnews-browsebox-strong, .tx-ttnews-browsebox-SCell { font-weight: bold; }
+	.tx-ttnews-browsebox-SCell { background-color: #EEE; }
  )
  
 }
