@@ -1,3 +1,22 @@
+2004-10-17	rupertgermann
+	* class.tx_ttnews_itemsProcFunc.php 1.4:
+	* ext_emconf.php 1.17:
+	* ext_php_api.dat 1.4:
+	* locallang.php 1.12:
+	* pi/class.tx_ttnews.php 1.55:
+	* pi/class.tx_ttnews_wizicon.php 1.8:
+	* res/example_amenuUserFunc.php 1.4:
+	* res/example_imageMarkerFunc.php 1.3:
+	* res/example_itemMarkerArrayFunc.php 1.5:
+	* res/example_userPageBrowserFunc.php 1.2:
+	* res/tt_news_languageMenu.php 1.7:
+		- fixed some problems with the handling of translated news
+		- changed the getRelated function: now it works with realUrl & simulateStatic
+		- changed the language menu: now it is a functions and uses the USER object (has to be included with "includeLibs")
+		- changed the link building in the language menu: now it uses typolinks to build its links. -> there is still a problem with the language paramater and pEnc enabled
+		- changed the handling of xml news: now they can be configured like a news list content element
+		- some code beautyfying, updates apidocs
+
 2004-10-13	rupertgermann
 	* pi/class.tx_ttnews.php 1.54:
 	* res/tt_news_languageMenu.php 1.6:
