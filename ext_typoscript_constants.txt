@@ -2,19 +2,23 @@ plugin.tt_news {
     # cat=plugin.tt_news/file; type=file[html,htm,tmpl,txt]; label= Template File: HTML-template file for display of news. See EXT:tt_news/pi/news_template.tmpl for an example
   file.templateFile = EXT:tt_news/pi/news_template.tmpl
 
-    # cat=plugin.tt_news/typo/1; type=wrap; label= Wrap 1: This wrap is used in the template-file.
+    # cat=plugin.tt_news/typo/1; type=wrap; label= Wrap 1: This wrap is used in the template-file (news header in SINGLE view).
   wrap1 = <font face="verdana" size=2 color=black> | </font>
-    # cat=plugin.tt_news/typo/2; type=wrap; label= Wrap 2: This wrap is used in the template-file.
+    # cat=plugin.tt_news/typo/2; type=wrap; label= Wrap 2: This wrap is used in the template-file ([more] links, pagebrowser...). 
   wrap2 = <font face="verdana" size=1 color=black> | </font>
+    # cat=plugin.tt_news/typo/3; type=wrap; label= Wrap 3: This wrap is used in the template-file (ArchiveMenu header, latest header). 
+  wrap3 = <font face="verdana" size=1 color=white><b> | </b></font>
     # cat=plugin.tt_news/typo/3; type=wrap; label= Caption stdWrap: This wrap is used for image captions.
   caption_stdWrap = <font face="verdana" size=1 color=navi> | </font>
 
-    # cat=plugin.tt_news/color/1; type=color; label= Color 1: This bgcolor is used in the template-file.
+    # cat=plugin.tt_news/color/1; type=color; label= Color 1: First alternating bgcolor in the template.
   color1 = #C7D5FE
-    # cat=plugin.tt_news/color/2; type=color; label= Color 2: This bgcolor is used in the template-file.
+    # cat=plugin.tt_news/color/2; type=color; label= Color 2: Second alternating bgcolor in the template.
   color2 = #E3EAFE
-    # cat=plugin.tt_news/color/3; type=color; label= Color 3: This bgcolor is used in the template-file.
+    # cat=plugin.tt_news/color/3; type=color; label= Color 3: This is the bgcolor for the headers of the latest and amenu templates.
   color3 = #90ABFC
+    # cat=plugin.tt_news/color/4; type=color; label= Color 4: This is the bgcolor for items in the list view.
+  color4 = #F0F8FF
 
     # cat=plugin.tt_news/links/1; type=int+; label= SinglePid: The PID of the page on which single news items should be displayed
   PIDitemDisplay = 0

@@ -13,6 +13,7 @@ $LOCAL_LANG = Array (
 		'tt_news.pi_flexform.sheet_general' => 'General Settings',
 		'tt_news.pi_flexform.sheet_template' => 'Template',
 		'tt_news.pi_flexform.sheet_category' => 'Category Settings',
+		'tt_news.pi_flexform.sheet_misc' => 'Other Settings',
 		'tt_news.pi_flexform.what_to_display' => 'What to display:',		
 		'tt_news.pi_flexform.select_deselect_categories' => 'Category mode:',
 		'tt_news.pi_flexform.category_selection' => 'Category selection',
