@@ -45,31 +45,35 @@ plugin.tt_news {
 
   # Rendering of news items
   # the RTE parseFunc configuration
-  general_stdWrap {
-	  brTag =
-	  encapsLines.wrapNonWrappedLines = <p style="margin:0 0 0 0;">|</p>
-	  encapsLines.innerStdWrap_all.ifEmpty = &nbsp;
-	  parseFunc {
-	      makelinks = 1 
-	      makelinks.http.keep = path
-	      makelinks.http.extTarget = _blank 
-	      makelinks.http.wrap = 
-	      makelinks.mailto.keep = path 
-	      makelinks.mailto.wrap =  
-	      tags { 
-	        link = TEXT 
-	        link { 
-	          current = 1 
-	          typolink.parameter.data = parameters : allParams 
-	          typolink.extTarget = _blank 
-	          typolink.target = {$PAGE_TARGET}
-	          typolink.wrap = 
-	          parseFunc.constants = 1 
-	        }
-	      } 
-	    }
-
-  }
+  general_stdWrap { 
+     parseFunc < tt_content.text.20.parseFunc 
+  } 
+ 
+  
+//  general_stdWrap {
+//	  brTag =
+//	  encapsLines.wrapNonWrappedLines = <p style="margin:0 0 0 0;">|</p>
+//	  encapsLines.innerStdWrap_all.ifEmpty = &nbsp;
+//	  parseFunc {
+//	      makelinks = 1 
+//	      makelinks.http.keep = path
+//	      makelinks.http.extTarget = _blank 
+//	      makelinks.http.wrap = 
+//	      makelinks.mailto.keep = path 
+//	      makelinks.mailto.wrap =  
+//	      tags { 
+//	        link = TEXT 
+//	        link { 
+//	          current = 1 
+//	          typolink.parameter.data = parameters : allParams 
+//	          typolink.extTarget = _blank 
+//	          typolink.target = {$PAGE_TARGET}
+//	          typolink.wrap = 
+//	          parseFunc.constants = 1 
+//	       }
+//	    } 
+//     }
+//  }
   
   # Pagebrowser settings
   pageBrowser {
@@ -134,33 +138,24 @@ plugin.tt_news {
     getRelatedCObject {
       10=CASE
       10.key.field=type
-      10.default=TEXT
+	  10.default=HTML
       10.default {
-        field = title
-        typolink.parameter = {$plugin.tt_news.PIDitemDisplay}
-        typolink.additionalParams.field = uid 
-        typolink.additionalParams.wrap = &tt_news=|
-        typolink.useCacheHash = {$plugin.tt_news.allowCaching}
-        typolink.no_cache = {$plugin.tt_news.allowCaching}
-        typolink.no_cache.if.negate = 1	   	
+        value = set from script	   	
       }   
-      10.1=TEXT
+      10.1=HTML
       10.1 {
-        field=title
-        typolink.parameter=   	
-        typolink.parameter.field=page
+        value = set from script	 
       }   
-      10.2=TEXT
+      10.2=HTML
       10.2 {
-        field=title
-        typolink.parameter=   	
-        typolink.parameter.field=ext_url
+         value = set from script	 
       }
       20 = TEXT
       20.field = datetime
       20.strftime = %d-%m-%y %H:%M
       20.wrap = &nbsp;- | <br />
   }
+
   
 
 
@@ -266,8 +261,10 @@ plugin.tt_news {
     # more = [weiterlesen...]
   }
   _CSS_DEFAULT_STYLE (
-  
-  )  
+.tx-ttnews-browsebox TD { font-size: 10px; }
+.tx-ttnews-browsebox-strong, .tx-ttnews-browsebox-SCell { font-weight: bold; }
+ )
+ 
 }
 
 
