@@ -493,16 +493,23 @@ class tx_ttnews extends tslib_pibase {
 					
 					$url = $this->getLinkUrl("","begin_at");
 					
-					//BROWSEBOXRENDERING -
+								//BROWSEBOXRENDERING -
+		/**
+		* 	rg: added getLL for the pagebrowser. if the getLL values don't exist, 
+		* 	all works like before. 
+		*/ 
 						if ($newsCount > $begin_at+$this->config["limit"])	{
 							$next = ($begin_at+$this->config["limit"] > $newsCount) ? $newsCount-$this->config["limit"] : $begin_at+$this->config["limit"];
-							$wrappedSubpartArray["###LINK_NEXT###"]=array('<a href="'.$url.'&amp;begin_at='.$next.'">','</a>');
+
+		
+
+							$wrappedSubpartArray["###LINK_NEXT###"]=array('<a href="'.$url.'&amp;begin_at='.$next.'">'.$this->pi_getLL('pbrLinkNext'),'</a>');
 						} else {
 							$subpartArray["###LINK_NEXT###"]="";
 						}
 						if ($begin_at)	{
 							$prev = ($begin_at-$this->config["limit"] < 0) ? 0 : $begin_at-$this->config["limit"];
-							$wrappedSubpartArray["###LINK_PREV###"]=array('<a href="'.$url.'&amp;begin_at='.$prev.'">','</a>');
+							$wrappedSubpartArray["###LINK_PREV###"]=array('<a href="'.$url.'&amp;begin_at='.$prev.'">'.$this->pi_getLL('pbrLinkPrev'),'</a>');
 						} else {
 							$subpartArray["###LINK_PREV###"]="";
 						}
@@ -510,9 +517,9 @@ class tx_ttnews extends tslib_pibase {
 						if ($newsCount > $this->config["limit"] )	{ // there is more than one page, so let's browse
 							for ($i = 0 ; $i < ($newsCount/$this->config["limit"]); $i++) 	{
 								if (($begin_at >= $i*$this->config["limit"]) && ($begin_at < $i*$this->config["limit"]+$this->config["limit"])) 	{
-									$markerArray["###BROWSE_LINKS###"].= ' <b>'.(string)($i+1).'</b> ';							
+									$markerArray["###BROWSE_LINKS###"].= ' <b>'.$this->pi_getLL('pbrPage').(string)($i+1).'</b> ';							
 								} else {
-									$markerArray["###BROWSE_LINKS###"].= ' <a href="'.$url.'&amp;begin_at='.(string)($i * $this->config["limit"]).'">'.(string)($i+1).'</a> ';
+									$markerArray["###BROWSE_LINKS###"].= ' <a href="'.$url.'&amp;begin_at='.(string)($i * $this->config["limit"]).'">'.$this->pi_getLL('pbrPage').(string)($i+1).'</a> ';
 								}
 							}
 						}
