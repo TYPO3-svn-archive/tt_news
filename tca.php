@@ -409,7 +409,7 @@ $TCA['tt_news'] = Array (
 
 
 // divider to Tabs	
-		'0' => Array('showitem' => 'title;;1;;,datetime;;2;;1-1-1,author;;3;;,short,bodytext;;4;richtext[paste|bold|italic|underline|formatblock|class|left|center|right|orderedlist|unorderedlist|outdent|indent|link|table|image]:rte_transform[flag=rte_enabled|mode=ts];4-4-4,no_auto_pb,--div--;Relations,category,image;;;;1-1-1,imagecaption;;5;;,links;;;;2-2-2,related;;;;3-3-3,news_files;;;;4-4-4'),
+		'0' => Array('showitem' => 'title,type;;1;;,datetime;;2;;1-1-1,author;;3;;,short,bodytext;;4;richtext[paste|bold|italic|underline|formatblock|class|left|center|right|orderedlist|unorderedlist|outdent|indent|link|table|image]:rte_transform[flag=rte_enabled|mode=ts];4-4-4,no_auto_pb,--div--;Relations,category,image;;;;1-1-1,imagecaption;;5;;,links;;;;2-2-2,related;;;;3-3-3,news_files;;;;4-4-4'),
 
 		
 		
@@ -420,7 +420,7 @@ $TCA['tt_news'] = Array (
 		'title;;1;;,datetime;;2;;1-1-1,author;;3;;,short,ext_url;;4;;,--div--;Relations,category,image;;;;1-1-1,imagecaption')
 	),
 	'palettes' => Array (
-		'1' => Array('showitem' => 'hidden,type,starttime,endtime,fe_group'),
+		'1' => Array('showitem' => 'hidden,starttime,endtime,fe_group'),
 		'2' => Array('showitem' => 'archivedate,l18n_parent,sys_language_uid'),
 		'3' => Array('showitem' => 't3ver_label,author_email'),
 		'4' => Array('showitem' => 'keywords'),

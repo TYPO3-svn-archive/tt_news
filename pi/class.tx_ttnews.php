@@ -108,6 +108,7 @@ class tx_ttnews extends tslib_pibase {
 	var $arcExclusive;
 	var $searchFieldList = 'short,bodytext,author,keywords,links,imagecaption,title';
 	var $theCode = '';
+	var $rdfToc = '';
 
 	var $categories = array(); // Is initialized with the categories of the news system
 	var $pageArray = array(); // Is initialized with an array of the pages in the pid-list
@@ -557,17 +558,15 @@ class tx_ttnews extends tslib_pibase {
 				$this->templateCode = $this->cObj->fileResource($this->conf['displayXML.']['rss2_tmplFile']);
 				break;
 
+				case 'rdf':
+				$templateName = 'TEMPLATE_RDF';
+				$this->templateCode = $this->cObj->fileResource($this->conf['displayXML.']['rdf_tmplFile']);
+				break;
 
-				// this will be possible later:
-				// case 'rdf':
-				// $templateName = 'TEMPLATE_RDF';
-				// $this->templateCode = $this->cObj->fileResource($this->conf['displayXML.']['rdf_tmplFile']);
-				// break;
-
-				// case 'atom':
-				// $templateName = 'TEMPLATE_ATOM';
-				// $this->templateCode = $this->cObj->fileResource($this->conf['displayXML.']['atom_tmplFile']);
-				// break;
+				case 'atom03':
+				$templateName = 'TEMPLATE_ATOM03';
+				$this->templateCode = $this->cObj->fileResource($this->conf['displayXML.']['atom03_tmplFile']);
+				break;
 
 			}
 			break;
@@ -656,19 +655,26 @@ class tx_ttnews extends tslib_pibase {
 					$selectConf['begin'] = $this->config['listStartId'];
 				}
 
-
 				// Reset:
 				$subpartArray = array();
 				$wrappedSubpartArray = array();
 				$markerArray = array();
-
-				if ($theCode == 'XML') {
-					$markerArray = $this->getXmlHeader();
-
-					$subpartArray['###HEADER###'] = $this->cObj->substituteMarkerArray($this->getNewsSubpart($t['total'], '###HEADER###'), $markerArray);
-				}
+				
 				// get the list of news items and fill them in the CONTENT subpart
 				$subpartArray['###CONTENT###'] = $this->getListContent($t['item'], $selectConf, $prefix_display);
+				
+				if ($theCode == 'XML') {
+					$markerArray = $this->getXmlHeader();
+					$subpartArray['###HEADER###'] = $this->cObj->substituteMarkerArray($this->getNewsSubpart($t['total'], '###HEADER###'), $markerArray);
+					if($this->conf['displayXML.']['xmlFormat']) {
+						if(!empty($this->rdfToc)) {
+							$markerArray['###NEWS_RDF_TOC###'] = '<rdf:Seq>'."\n".$this->rdfToc."\t\t\t".'</rdf:Seq>';
+						} else {
+							$markerArray['###NEWS_RDF_TOC###'] = '';
+						}
+					}
+					$subpartArray['###HEADER###'] = $this->cObj->substituteMarkerArray($this->getNewsSubpart($t['total'], '###HEADER###'), $markerArray);
+				}
 
 				$markerArray['###GOTOARCHIVE###'] = $this->pi_getLL('goToArchive');
 				$markerArray['###LATEST_HEADER###'] = $this->pi_getLL('latestHeader');
@@ -795,6 +801,10 @@ class tx_ttnews extends tslib_pibase {
 				// replace square brackets [] in links with their URLcodes and replace the &-sign with its ASCII code
 				$rssUrl = preg_replace(array('/\[/', '/\]/', '/&/'), array('%5B', '%5D', '&#38;') , $rssUrl);
 				$markerArray['###NEWS_LINK###'] = $rssUrl;
+				
+				if($this->conf['displayXML.']['xmlFormat'] == 'rdf') {
+					$this->rdfToc .= "\t\t\t\t".'<rdf:li resource="'.$rssUrl.'" />'."\n";
+				}
 
 			}
 			$layoutNum = $cc % $itempartsCount;
@@ -977,10 +987,14 @@ class tx_ttnews extends tslib_pibase {
 		if ($this->config['croppingLenght']) {
 			$lConf['subheader_stdWrap.']['crop'] = $this->config['croppingLenght'];
 		}
+		$markerArray['###NEWS_SUBHEADER###'] = '';
 		if (!$this->piVars[$this->config['singleViewPointerName']] || $this->conf['subheaderOnAllSViewPages']) {
 			$markerArray['###NEWS_SUBHEADER###'] = $this->formatStr($this->local_cObj->stdWrap($row['short'], $lConf['subheader_stdWrap.']));
-		} else {
-			$markerArray['###NEWS_SUBHEADER###'] = '';
+		} 
+
+		$markerArray['###NEWS_KEYWORDS###'] = '';
+		if (!$this->piVars[$this->config['singleViewPointerName']]) {
+			$markerArray['###NEWS_KEYWORDS###'] = $this->formatStr($this->local_cObj->stdWrap($row['keywords'], $lConf['keywords_stdWrap.']));
 		}
 
 		if ($textRenderObj == 'displaySingle' && !$row['no_auto_pb'] && $this->config['maxWordsInSingleView']>1) {
@@ -1022,29 +1036,28 @@ class tx_ttnews extends tslib_pibase {
 		if ($textRenderObj == 'displaySingle') {
 			$relatedNews = $this->getRelated($row['uid']);
 		}
+		$markerArray['###TEXT_RELATED###'] = '';
+		$markerArray['###NEWS_RELATED###'] = '';
 		if ($relatedNews) {
-
 			$rel_stdWrap = t3lib_div::trimExplode('|', $this->conf['related_stdWrap.']['wrap']);
 			$markerArray['###TEXT_RELATED###'] = $rel_stdWrap[0].$this->local_cObj->stdWrap($this->pi_getLL('textRelated'), $this->conf['relatedHeader_stdWrap.']);
 
 			$markerArray['###NEWS_RELATED###'] = $relatedNews.$rel_stdWrap[1];
-		} else {
-			$markerArray['###TEXT_RELATED###'] = '';
-			$markerArray['###NEWS_RELATED###'] = '';
 		}
 
 		// Links
+		$markerArray['###TEXT_LINKS###'] = '';
+		$markerArray['###NEWS_LINKS###'] = '';
 		if ($row['links']) {
 			$links_stdWrap = t3lib_div::trimExplode('|', $lConf['links_stdWrap.']['wrap']);
 			$newsLinks = $this->local_cObj->stdWrap($this->formatStr($row['links']), $lConf['linksItem_stdWrap.']);
 			$markerArray['###TEXT_LINKS###'] = $links_stdWrap[0].$this->local_cObj->stdWrap($this->pi_getLL('textLinks'), $lConf['linksHeader_stdWrap.']);
 			$markerArray['###NEWS_LINKS###'] = $newsLinks.$links_stdWrap[1];
-		} else {
-			$markerArray['###TEXT_LINKS###'] = '';
-			$markerArray['###NEWS_LINKS###'] = '';
 		}
 
 		// filelinks
+		$markerArray['###TEXT_FILES###'] = '';
+		$markerArray['###FILE_LINK###'] = '';
 		if ($row['news_files']) {
 			$files_stdWrap = t3lib_div::trimExplode('|', $this->conf['newsFiles_stdWrap.']['wrap']);
 			$markerArray['###TEXT_FILES###'] = $files_stdWrap[0].$this->local_cObj->stdWrap($this->pi_getLL('textFiles'), $this->conf['newsFilesHeader_stdWrap.']);
@@ -1055,19 +1068,15 @@ class tx_ttnews extends tslib_pibase {
 				$filelinks .= $this->local_cObj->filelink($val, $this->conf['newsFiles.']) ;
 			}
 			$markerArray['###FILE_LINK###'] = $filelinks.$files_stdWrap[1];
-		} else {
-			// no files atached
-			$markerArray['###TEXT_FILES###'] = '';
-			$markerArray['###FILE_LINK###'] = '';
 		}
+		
 		// the both markers: ###ADDINFO_WRAP_B### and ###ADDINFO_WRAP_E### are only inserted, if there are any files, related news or links
+		$markerArray['###ADDINFO_WRAP_B###'] = '';
+		$markerArray['###ADDINFO_WRAP_E###'] = '';
 		if ($relatedNews || $row['links'] || $row['news_files']) {
 			$addInfo_stdWrap = t3lib_div::trimExplode('|', $lConf['addInfo_stdWrap.']['wrap']);
 			$markerArray['###ADDINFO_WRAP_B###'] = $addInfo_stdWrap[0];
 			$markerArray['###ADDINFO_WRAP_E###'] = $addInfo_stdWrap[1];
-		} else {
-			$markerArray['###ADDINFO_WRAP_B###'] = '';
-			$markerArray['###ADDINFO_WRAP_E###'] = '';
 		}
 
 		// Page fields:
@@ -1078,10 +1087,40 @@ class tx_ttnews extends tslib_pibase {
 		// XML
 		if ($this->theCode == 'XML') {
 			$markerArray['###NEWS_TITLE###'] = $this->cleanXML($this->local_cObj->stdWrap($row['title'], $lConf['title_stdWrap.']));
-			$markerArray['###NEWS_SUBHEADER###'] = $this->cleanXML($this->local_cObj->stdWrap($row['short'], $lConf['subheader_stdWrap.']));
-			$markerArray['###NEWS_AUTHOR###'] = $row['author_email']?'<author>'.$row['author_email'].'</author>':
-			'';
-			$markerArray['###NEWS_DATE###'] = date('r', $row['datetime']);
+			$markerArray['###NEWS_AUTHOR###'] = $row['author_email']?'<author>'.$row['author_email'].'</author>':'';
+			if($this->conf['displayXML.']['xmlFormat'] == 'atom03') {
+				$markerArray['###NEWS_AUTHOR###'] =	$row['author'];
+			}
+
+			if($this->conf['displayXML.']['xmlFormat'] == 'rss2' ||
+				$this->conf['displayXML.']['xmlFormat'] == 'rss091') {
+				$markerArray['###NEWS_SUBHEADER###'] = $this->cleanXML($this->local_cObj->stdWrap($row['short'], $lConf['subheader_stdWrap.']));
+			} elseif ($this->conf['displayXML.']['xmlFormat'] == 'atom03') {
+				//html doesn't need to be striped off in atom feeds
+				$lConf['subheader_stdWrap.']['stripHtml'] = 0;
+				$markerArray['###NEWS_SUBHEADER###'] = $this->local_cObj->stdWrap($row['short'], $lConf['subheader_stdWrap.']);
+				//just removing some whitespace to ease atom feed building
+				$markerArray['###NEWS_SUBHEADER###'] = str_replace('\n', '', $markerArray['###NEWS_SUBHEADER###']);
+				$markerArray['###NEWS_SUBHEADER###'] = str_replace('\r', '', $markerArray['###NEWS_SUBHEADER###']);
+			}
+
+			if($this->conf['displayXML.']['xmlFormat'] == 'rss2' ||
+				$this->conf['displayXML.']['xmlFormat'] == 'rss091') {
+				$markerArray['###NEWS_DATE###'] = date('r', $row['datetime']);
+			} elseif ($this->conf['displayXML.']['xmlFormat'] == 'atom03') {
+				$markerArray['###NEWS_DATE###'] = $this->getW3cDate($row['datetime']);
+			}
+			//dates for atom03
+			$markerArray['###NEWS_CREATED###'] = $this->getW3cDate($row['crdate']);
+			$markerArray['###NEWS_MODIFIED###'] = $this->getW3cDate($row['tstamp']);
+
+			if($this->conf['displayXML.']['xmlFormat'] == 'atom03' && !empty($this->conf['displayXML.']['xmlLang'])) {
+				$markerArray['###SITE_LANG###'] = ' xml:lang="'.$this->conf['displayXML.']['xmlLang'].'"';
+			}
+
+			$markerArray['###NEWS_ATOM_ENTRY_ID###'] = 'tag:'.substr($this->config['siteUrl'], 11, -1).','.date('Y', $row['crdate']).':article'.$row['uid'];
+			$markerArray['###SITE_LINK###'] = $this->config['siteUrl'];
+			
 		}
 		// get markers and links for categories
 		$markerArray = $this->getCatMarkerArray($markerArray, $row, $lConf);
@@ -1836,7 +1875,7 @@ class tx_ttnews extends tslib_pibase {
 
 
 	/**
-	 * build the XML header (array of markers to substitute)
+	 * builds the XML header (array of markers to substitute)
 	 *
 	 * @return	array		the filled XML header markers
 	 */
@@ -1846,7 +1885,20 @@ class tx_ttnews extends tslib_pibase {
 		$markerArray['###SITE_TITLE###'] = $this->conf['displayXML.']['xmlTitle'];
 		$markerArray['###SITE_LINK###'] = $this->config['siteUrl'];
 		$markerArray['###SITE_DESCRIPTION###'] = $this->conf['displayXML.']['xmlDesc'];
+		if(!empty($markerArray['###SITE_DESCRIPTION###']) && $this->conf['displayXML.']['xmlFormat'] == 'atom03') {
+			$markerArray['###SITE_DESCRIPTION###'] = '<tagline>'.$markerArray['###SITE_DESCRIPTION###'].'</tagline>';
+		}
+		
 		$markerArray['###SITE_LANG###'] = $this->conf['displayXML.']['xmlLang'];
+		if($this->conf['displayXML.']['xmlFormat'] == 'rss2') {
+			$markerArray['###SITE_LANG###'] = '<language>'.$markerArray['###SITE_LANG###'].'</language>';
+		} elseif($this->conf['displayXML.']['xmlFormat'] == 'atom03') {
+			$markerArray['###SITE_LANG###'] = ' xml:lang="'.$markerArray['###SITE_LANG###'].'"';
+		}
+		if(empty($this->conf['displayXML.']['xmlLang'])) {
+			$markerArray['###SITE_LANG###'] = '';
+		}
+		
 		$markerArray['###IMG###'] = t3lib_div::getIndpEnv('TYPO3_REQUEST_HOST') . '/' . $this->conf['displayXML.']['xmlIcon'];
 		$imgFile = t3lib_div::getIndpEnv('TYPO3_DOCUMENT_ROOT') . '/' . $this->conf['displayXML.']['xmlIcon'];
 		$imgSize = is_file($imgFile)?getimagesize($imgFile):
@@ -1871,6 +1923,10 @@ class tx_ttnews extends tslib_pibase {
 			$markerArray['###NEWS_LASTBUILD###'] = '';
 		}
 
+		if($this->conf['displayXML.']['xmlFormat'] == 'atom03') {
+			$markerArray['###NEWS_LASTBUILD###'] = $this->getW3cDate($row['maxval']);
+		}
+
 		if ($this->conf['displayXML.']['xmlWebMaster']) {
 			$markerArray['###NEWS_WEBMASTER###'] = '<webMaster>' . $this->conf['displayXML.']['xmlWebMaster'] . '</webMaster>';
 		} else {
@@ -1888,9 +1944,37 @@ class tx_ttnews extends tslib_pibase {
 		} else {
 			$markerArray['###NEWS_COPYRIGHT###'] = '';
 		}
+		//promoting TYPO3 in atom feeds
+		$markerArray['###TYPO3_VERSION###'] = $GLOBALS['TYPO_VERSION'];
 
 		return $markerArray;
 	}
+
+	/**
+	 * Generates the date format needed for Atom feeds
+	 * see: http://www.w3.org/TR/NOTE-datetime (same as ISO 8601)
+	 * in php5 it would be so easy: date('c', $row['datetime']);
+	 *
+	 * @param	datetime	the datetime value to be converted to w3c format
+	 * @return	string		datetime in w3c format
+	 */
+	function getW3cDate($datetime) {
+		$offset = date('Z', $datetime) / 3600;
+		if($offset < 0) {
+			$offset *= -1;
+			if($offset < 10) {
+				$offset = '0'.$offset;
+			}
+			$offset = '-'.$offset;
+		} elseif ($offset == 0) {
+			$offset = '+00';
+		} elseif ($offset < 10) {
+			$offset = '+0'.$offset;
+		} else {
+			$offset = '+'.$offset;
+		}
+		return strftime('%Y-%m-%dT%T', $datetime).$offset.':00';
+ 	}
 
 	/**
 	 * this the old [DEPRECIATED] function for XML news feed.
