@@ -120,7 +120,7 @@ class tx_ttnews extends tslib_pibase {
 		$this->pi_initPIflexForm();
 		$this->enableFields = $this->cObj->enableFields('tt_news');
 		
-		$this->initCategories();
+		
 				 
 		/**
 		*  "CODE" decides what is rendered:
@@ -234,7 +234,7 @@ class tx_ttnews extends tslib_pibase {
 		// message diplayed when single view is called without a tt_news uid		 
 		$this->config['noNewsIdMsg'] = $this->conf['noNewsIdMsg'];
 		 
-		 
+		$this->initCategories(); 
 		/**
 		*	read template an fill it with Global Markers
 		*/
@@ -981,15 +981,16 @@ $content = $this->cObj->substituteMarkerArrayCached($noItemsMsg, $markerArray);
 	* @return void
 	*/
 	function initCategories() {
-		
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_news_cat LEFT JOIN tt_news_cat_mm ON tt_news_cat_mm.uid_foreign = tt_news_cat.uid', '1=1'.$this->cObj->enableFields('tt_news_cat'));
+		$storagePid = $GLOBALS['TSFE']->page['storage_pid'] ? $GLOBALS['TSFE']->page['storage_pid'] : $GLOBALS['TSFE']->rootLine[0]['storage_pid'];
+		$storagePid = $storagePid?$storagePid:$this->config['pid_list'];
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_news_cat LEFT JOIN tt_news_cat_mm ON tt_news_cat_mm.uid_foreign = tt_news_cat.uid', '1=1 AND tt_news_cat.pid IN ('.$storagePid.') '.$this->cObj->enableFields('tt_news_cat'));
 		echo mysql_error();
 		$this->categories = array();
 		$this->categorieImages = array();
 		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 			if (isset($row['uid_local'])) {
 				$this->categories[$row['uid_local']][] = array(
-				'title' => $row['title'],
+					'title' => $row['title'],
 					'image' => $row['image'],
 					'shortcut' => $row['shortcut'],
 					'catid' => $row['uid_foreign'] );

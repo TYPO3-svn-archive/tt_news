@@ -107,38 +107,35 @@ plugin.tt_news {
   )     
   
   getRelatedCObject = COA
-   getRelatedCObject {
-   10=CASE
-   10.key.field=type
-   
-   10.default=TEXT
-   10.default {
-	   field = title
-	   typolink.parameter = {$plugin.tt_news.PIDitemDisplay}
-	   typolink.additionalParams.field = uid 
-	   typolink.additionalParams.wrap = &tt_news=|
-	   typolink.useCacheHash = {$plugin.tt_news.allowCaching}
-	   typolink.no_cache = {$plugin.tt_news.allowCaching}
-	   typolink.no_cache.if.negate = 1	   	
-   }   
-   10.1=TEXT
-   10.1 {
-   	field=title
-   	typolink.parameter=   	
-   	typolink.parameter.field=page
-   }   
-   10.2=TEXT
-   10.2 {
-   	field=title
-   	typolink.parameter=   	
-   	typolink.parameter.field=ext_url
-   }
-
-
-    20 = TEXT
-    20.field = datetime
-    20.strftime = %d-%m-%y %H:%M
-    20.wrap = <font size=1> - | </font><br />
+    getRelatedCObject {
+      10=CASE
+      10.key.field=type
+      10.default=TEXT
+      10.default {
+	    field = title
+	    typolink.parameter = {$plugin.tt_news.PIDitemDisplay}
+	    typolink.additionalParams.field = uid 
+	    typolink.additionalParams.wrap = &tt_news=|
+	    typolink.useCacheHash = {$plugin.tt_news.allowCaching}
+	    typolink.no_cache = {$plugin.tt_news.allowCaching}
+	    typolink.no_cache.if.negate = 1	   	
+      }   
+      10.1=TEXT
+      10.1 {
+   	    field=title
+   	    typolink.parameter=   	
+   	    typolink.parameter.field=page
+      }   
+      10.2=TEXT
+      10.2 {
+        field=title
+   	    typolink.parameter=   	
+   	    typolink.parameter.field=ext_url
+      }
+      20 = TEXT
+      20.field = datetime
+      20.strftime = %d-%m-%y %H:%M
+      20.wrap = <font size=1> -&nbsp; | </font><br />
   }
   
 
