@@ -1,3 +1,45 @@
+2004-10-23	rupertgermann
+	* class.tx_ttnews_itemsProcFunc.php 1.6:
+	* ext_emconf.php 1.19:
+	* ext_tables.php 1.8:
+	* ext_tables.sql 1.6:
+	* ext_typoscript_setup.txt 1.31:
+	* locallang.php 1.14:
+	* locallang_tca.php 1.18:
+	* pi/class.tx_ttnews.php 1.58:
+	* res/realUrl_example_setup.txt 1.1:
+	* res/tt_news_languageMenu.php 1.9:
+	* tca.php 1.15:
+		- added versioning for news records (TYPO3 >= 3.7.0 and MySQL 4 required)
+		- fix for the double "L" parameter in the language menu -> now the language menu works also with simulateStatic *and* pEnc enabled
+		- added a new field for translations of category titles.
+		- changed the id handling of translated news. now all links to newsrecords point to the uid of their original translation. this makes the fallback for not translated news work like the translations for normal content.
+		- version number is now 1.7.5
+		- added an example configuration for tt_news with realUrl. see file: res/realUrl_example_setup.txt
+
+2004-10-20	rupertgermann
+	* ext_emconf.php 1.18:
+	* pi/class.tx_ttnews.php 1.57:
+		removed some more unnecessary parameters from the amenu links
+		updated version number to 1.7.4
+
+2004-10-19	rupertgermann
+	* class.tx_ttnews_itemsProcFunc.php 1.5:
+	* ext_typoscript_setup.txt 1.30:
+	* locallang.php 1.13:
+	* pi/class.tx_ttnews.php 1.56:
+	* pi/class.tx_ttnews_wizicon.php 1.9:
+	* res/example_amenuUserFunc.php 1.5:
+	* res/ext_typoscript_setup.txt 1.6:
+	* res/tt_news_languageMenu.php 1.8:
+		some improvements for multilanguage news:
+		- the category titles can now be translated by adding the titles for other languages seperated by '|'  f.e.: title(en) | title(dk) | title(de)
+		- the pagetitle in the backToList link inthe single view now shows the title of the language overlay if one is found.
+		- removed some not needed parameters from the backlink (-> gives better looking realUrl Adresses)
+		- added a fix for the archive, that show no items when one item has an empty datetime field. thx heike for pointing me to this.
+		- added a possibility to process new user codes/templateparts as news-list. You can define new codes in the array ['TYPO3_CONF_VARS']['EXTCONF']['tt_news']['what_to_display']
+		and process them by a small userfunction that call the getNewsList function from within the tt_news class. example will follow.
+
 2004-10-17	rupertgermann
 	* class.tx_ttnews_itemsProcFunc.php 1.4:
 	* ext_emconf.php 1.17:
