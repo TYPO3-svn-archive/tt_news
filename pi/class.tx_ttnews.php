@@ -246,6 +246,20 @@ class tx_ttnews extends tslib_pibase {
 		 
 		// Substitute Global Marker Array
 		$this->templateCode = $this->cObj->substituteMarkerArray($this->templateCode, $globalMarkerArray);
+		
+		##### caching/indexing
+			$this->local_cObj->setCurrentVal($GLOBALS['TSFE']->id);
+			$this->typolink_conf = $this->conf['typolink.'];
+			$this->typolink_conf['parameter.']['current'] = 1;
+			$this->typolink_conf['additionalParams'] = $this->cObj->stdWrap($this->typolink_conf['additionalParams'], $this->typolink_conf['additionalParams.']);
+			unset($this->typolink_conf['additionalParams.']);
+	
+			// Configure caching
+			$this->allowCaching = $this->conf['allowCaching']?1:0;
+			if (!$this->allowCaching) {
+				$GLOBALS['TSFE']->set_no_cache();
+			}
+		##### caching/indexing end 
 	}
 	 
 	/**
@@ -259,7 +273,9 @@ class tx_ttnews extends tslib_pibase {
 		 
 		 
 		#$GLOBALS['TSFE']->set_no_cache();
-		 
+		
+		// Local cObj. 
+		$this->local_cObj = t3lib_div::makeInstance('tslib_cObj');
 		$this->init_news($conf);
 
 		if ($this->config['displayCurrentRecord']) {
@@ -274,21 +290,8 @@ class tx_ttnews extends tslib_pibase {
 		* doing the things...:
 		*/
 	
-		// Local cObj. 
-		$this->local_cObj = t3lib_div::makeInstance('tslib_cObj');
-	##### caching/indexing
-		$this->local_cObj->setCurrentVal($GLOBALS['TSFE']->id);
-		$this->typolink_conf = $this->conf['typolink.'];
-		$this->typolink_conf['parameter.']['current'] = 1;
-		$this->typolink_conf['additionalParams'] = $this->cObj->stdWrap($this->typolink_conf['additionalParams'], $this->typolink_conf['additionalParams.']);
-		unset($this->typolink_conf['additionalParams.']);
-
-		// Configure caching
-		$this->allowCaching = $this->conf['allowCaching']?1:0;
-		if (!$this->allowCaching) {
-			$GLOBALS['TSFE']->set_no_cache();
-		}
-	##### caching/indexing end 
+		
+	
 		
 		 
 		$codes = t3lib_div::trimExplode(',', $this->config['code']?$this->config['code']:$this->conf['defaultCode'], 1);
@@ -808,7 +811,7 @@ if (!$this->config['emptyArchListAtStart']) {
 	/* Function needs an Array with actual Databasevalues for an news item and it 
 	* Returns an Array with the Link for this Newsitem
 	* -Supports the 3 diffrent newstypes and Caching
-	* (- Used from Listviews and getrelated)
+	* (- Used from Listviews and getRelated)
 	*/	
 	function getLinkItemSubpartFromRow($row) {
 		if ($row['type'] == 1 || $row['type'] == 2) {
@@ -1202,15 +1205,27 @@ $news_category[] = $this->local_cObj->typolink($this->categories[$row['uid']][$k
 		$veryLocal_cObj = t3lib_div::makeInstance('tslib_cObj');
 		// Local cObj.
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid,title,short,datetime,archivedate,type,page,ext_url', 'tt_news,tt_news_related_mm AS M', 'tt_news.uid=M.uid_foreign AND M.uid_local='.intval($uid));
-		 
-		$lines = array();
-		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
-			$veryLocal_cObj->start($row, 'tt_news');
-			$lines[] = $veryLocal_cObj->cObjGetSingle($this->conf['getRelatedCObject'], $this->conf['getRelatedCObject.'], 'getRelated');
-		}
 		
+		$lines = array();
+		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {			
+			$veryLocal_cObj->start($row, 'tt_news');
+			//Because the getRelatedCObject did not support the correct linkgeneration for the tt_news items
+			//in some cases (eg. you could not acess FlexForm Values from TS) this hack is used for generating the links
+			if ($this->conf['getRelatedCObject.']['useInternLinkGeneration']==1) {				
+				//So use the tt_news function for linkgenaration (which of course use TYPO3 Linkfunctions too)
+				//And store them in the getRelatedCObject as TEXT Object:
+				
+				$number=$this->conf['getRelatedCObject.']['useInternLinkGeneration.']['cObjectNumber'];
+				$linkSupparts=$this->getLinkItemSubpartFromRow($row);
+				$this->conf['getRelatedCObject.'][$number]="TEXT";
+				$this->conf['getRelatedCObject.'][$number.'.']['value']=$veryLocal_cObj->stdWrap("",$this->conf['getRelatedCObject.']['useInternLinkGeneration.']['stdWrap.']);
+				$this->conf['getRelatedCObject.'][$number.'.']['wrap']=$linkSupparts[0].'|'.$linkSupparts[1];
+			}			
+			$lines[] = $veryLocal_cObj->cObjGetSingle($this->conf['getRelatedCObject'], $this->conf['getRelatedCObject.'], 'getRelated');
+		}	
 		return implode('', $lines);
 	}
+	
 	 
 	/**
 	* Calls user function
@@ -1269,7 +1284,8 @@ $news_category[] = $this->local_cObj->typolink($this->categories[$row['uid']][$k
 		}
 		return $str;
 	}
-	 
+	
+		 
 	/**
 	* Returns alternating layouts
 	*

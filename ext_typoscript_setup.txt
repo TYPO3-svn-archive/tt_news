@@ -108,14 +108,36 @@ plugin.tt_news {
   
   getRelatedCObject = COA
   getRelatedCObject {
-    10 = TEXT
-    10.field = title
-    10.typolink.parameter = {$plugin.tt_news.PIDitemDisplay}
-    10.typolink.additionalParams.field = uid 
-    10.typolink.additionalParams.wrap = &tt_news=|
-    10.typolink.useCacheHash = plugin.tt_news.allowCaching
-    10.typolink.no_cache = plugin.tt_news.allowCaching
-    10.typolink.no_cache.if.negate = 1
+   //useInternLinkGeneration=1
+   //useInternLinkGeneration.cObjectNumber=11
+   //useInternLinkGeneration.stdWrap.field=title   
+   
+   15=CASE
+   15.key.field=type
+   
+   15.default=TEXT
+   15.default {
+	   field = title
+	   typolink.parameter = {$plugin.tt_news.PIDitemDisplay}
+	   typolink.additionalParams.field = uid 
+	   typolink.additionalParams.wrap = &tt_news=|
+	   typolink.useCacheHash = {$plugin.tt_news.allowCaching}
+	   typolink.no_cache = {$plugin.tt_news.allowCaching}
+	   typolink.no_cache.if.negate = 1	   	
+   }   
+   15.1=TEXT
+   15.1 {
+   	field=title
+   	typolink.parameter=   	
+   	typolink.parameter.field=page
+   }   
+   15.2=TEXT
+   15.2 {
+   	field=title
+   	typolink.parameter=   	
+   	typolink.parameter.field=ext_url
+   }
+
 
     20 = TEXT
     20.field = datetime
