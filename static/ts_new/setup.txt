@@ -216,7 +216,7 @@ plugin.tt_news {
     linksHeader_stdWrap.wrap = <dt>|</dt>
     linksItem_stdWrap.wrap = <dd>|</dd>
 
-    noNewsIdMsg_stdWrap =
+    noNewsIdMsg_stdWrap.wrap =
     imageCount=4
     imgAltTextField = imagecaption
     imageWrapIfAny = <div class="news-single-img"> | </div>

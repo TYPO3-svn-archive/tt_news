@@ -21,7 +21,7 @@ $LOCAL_LANG = Array (
 	),
 	'no' => Array (
 		'pi_title' => 'Nyheter',
-		'pi_plus_wiz_description' => 'Legger til nyheter til siden.',
+		'pi_plus_wiz_description' => 'Tilføyer nyhetselementer på siden.',
 	),
 	'it' => Array (
 		'pi_title' => 'News',
