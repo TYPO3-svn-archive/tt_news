@@ -35,6 +35,9 @@
 	*
 	* @author Kasper Skårhøj <kasper@typo3.com>
 	*/
+	/**
+	* [CLASS/FUNCTION INDEX of SCRIPT]
+	*/
 	 
 	require_once(PATH_t3lib.'class.t3lib_xml.php');
 	require_once(PATH_tslib.'class.tslib_pibase.php');
@@ -370,7 +373,8 @@
 					$veryLocal_cObj->start($pArr, '');
 					$markerArray['###ARCHIVE_TITLE###'] = $veryLocal_cObj->cObjGetSingle($this->conf['archiveTitleCObject'], $this->conf['archiveTitleCObject.'], 'archiveTitle');
 					$markerArray['###ARCHIVE_COUNT###'] = $pArr['count'];
-					 
+					$markerArray['###ARCHIVE_ITEMS###'] = $this->pi_getLL('archiveItems');
+			
 					$itemsOut .= $this->cObj->substituteMarkerArrayCached($t['item'][($cc%count($t['item']))], $markerArray, array(), $wrappedSubpartArray);
 					$cc++;
 				}
@@ -379,11 +383,16 @@
 				$subpartArray = array();
 				$wrappedSubpartArray = array();
 				$markerArray = array();
+				$markerArray['###ARCHIVE_HEADER###'] = $this->pi_getLL('archiveHeader');
+				 
 				// Set content
 				$subpartArray['###CONTENT###'] = $itemsOut;
 				$content = $this->cObj->substituteMarkerArrayCached($t['total'], $markerArray, $subpartArray, $wrappedSubpartArray);
 			} else {
-				$content = $this->cObj->getSubpart($this->templateCode, $this->spMarker('###TEMPLATE_ARCHIVE_NOITEMS###'));
+				$markerArray['###ARCHIVE_HEADER###'] = $this->local_cObj->stdWrap($this->pi_getLL('archiveHeader'), $lConf['archiveHeader_stdWrap.']);
+				$markerArray['###ARCHIVE_EMPTY_MSG###'] = $this->local_cObj->stdWrap($this->pi_getLL('archiveEmptyMsg'), $lConf['archiveEmptyMsg_stdWrap.']);
+				$noItemsMsg = $this->cObj->getSubpart($this->templateCode, $this->spMarker('###TEMPLATE_ARCHIVE_NOITEMS###'));
+$content = $this->cObj->substituteMarkerArrayCached($noItemsMsg, $markerArray);
 			}
 			return $content;
 		}
@@ -427,8 +436,9 @@
 			} else {
 				// if singleview is shown with no tt_news uid given in the url, an error message is displayed.
 				// you can configure your own message by setting the TS var 'noNewsIdMsg'.
-				$content .= $this->config['noNewsIdMsg']?$this->config['noNewsIdMsg']:
-				'Wrong parameters, GET/POST var \'tt_news\' was missing.';
+				$noNewsIdMsg =  $this->local_cObj->stdWrap($this->pi_getLL('noNewsIdMsg'), $lConf['noNewsIdMsg_stdWrap.']);
+				$content .= $noNewsIdMsg?$noNewsIdMsg:'Wrong parameters, GET/POST var \'tt_news\' was missing.';
+				
 			}
 			return $content;
 		}
@@ -563,7 +573,9 @@
 					//The important think include the Newslist in the CONTENT subpart (perhaps use & for not wasting memory)
 					$subpartArray['###CONTENT###'] = $this->get_content_news_list($t['item'], $selectConf, $prefix_display);
 					 
-					$markerArray['###CATEGORY_TITLE###'] = ''; // Something here later...
+					#$markerArray['###CATEGORY_TITLE###'] = ''; // Something here later...
+					$markerArray['###GOTOARCHIVE###'] = $this->pi_getLL('goToArchive');
+					$markerArray['###LATEST_HEADER###'] = $this->pi_getLL('latestHeader');
 					$wrappedSubpartArray['###LINK_ARCHIVE###'] = $this->local_cObj->typolinkWrap($this->conf['archiveTypoLink.']);
 					 
 					$url = $this->getLinkUrl('', 'begin_at');
@@ -606,7 +618,9 @@
 					$content .= $this->cObj->substituteMarkerArrayCached($t['total'], $markerArray, $subpartArray, $wrappedSubpartArray);
 				} elseif ($where) {
 					//No results but a searchword was given:
-					$content .= $this->cObj->getSubpart($this->templateCode, $this->spMarker('###ITEM_SEARCH_EMPTY###'));
+					$markerArray['###SEARCH_EMPTY_MSG###'] = $this->local_cObj->stdWrap($this->pi_getLL('searchEmptyMsg'), $this->conf['searchEmptyMsg_stdWrap.']);	
+					$searchEmptyMsg = $this->cObj->getSubpart($this->templateCode, $this->spMarker('###ITEM_SEARCH_EMPTY###'));					
+					$content .= $this->cObj->substituteMarkerArrayCached($searchEmptyMsg, $markerArray);
 				}
 			}
 			return $content;
@@ -888,24 +902,32 @@
 				$markerArray['###NEWS_IMAGE###'] = $this->local_cObj->wrap(trim($theImgCode), $lConf['imageWrapIfAny']);
 			}
 			 
-			// Title
+			
 			$markerArray['###NEWS_UID###'] = $row['uid'];
 			$markerArray['###NEWS_TITLE###'] = $this->local_cObj->stdWrap($row['title'], $lConf['title_stdWrap.']);
-			$markerArray['###NEWS_AUTHOR###'] = $this->local_cObj->stdWrap($row['author'], $lConf['author_stdWrap.']);
+			$newsAuthor = $this->local_cObj->stdWrap($row['author'], $lConf['author_stdWrap.']);
+			$markerArray['###NEWS_AUTHOR###'] = $row['author']?$this->pi_getLL('preAuthor').' '.$newsAuthor:'';
 			$markerArray['###NEWS_EMAIL###'] = $this->local_cObj->stdWrap($row['author_email'], $lConf['email_stdWrap.']);
 			$markerArray['###NEWS_DATE###'] = $this->local_cObj->stdWrap($row['datetime'], $lConf['date_stdWrap.']);
 			$markerArray['###NEWS_TIME###'] = $this->local_cObj->stdWrap($row['datetime'], $lConf['time_stdWrap.']);
 			$markerArray['###NEWS_AGE###'] = $this->local_cObj->stdWrap($row['datetime'], $lConf['age_stdWrap.']);
 			$markerArray['###NEWS_SUBHEADER###'] = $this->formatStr($this->local_cObj->stdWrap($row['short'], $lConf['subheader_stdWrap.']));
 			$markerArray['###NEWS_CONTENT###'] = $this->formatStr($this->local_cObj->stdWrap($row['bodytext'], $lConf['content_stdWrap.']));
-			$markerArray['###NEWS_LINKS###'] = $this->formatStr($this->local_cObj->stdWrap($row['links'], $lConf['links_stdWrap.']));
+			// Links
+			$newsLinks = $this->formatStr($this->local_cObj->stdWrap($row['links'], $lConf['links_stdWrap.']));
+			$markerArray['###NEWS_LINKS###'] = $newsLinks;
+			$markerArray['###TEXT_LINKS###'] = $newsLinks?$this->local_cObj->stdWrap($this->pi_getLL('textLinks'), $lConf['newsLinksHeader_stdWrap.']):'';
 			#?  $markerArray['###NEWS_LINKS###'] = $this->local_cObj->stdWrap($this->formatStr($row['links']),$lConf['links_stdWrap.']);
-			// Category fields:
-			$markerArray['###NEWS_CATEGORY###'] = $this->local_cObj->stdWrap($this->categories[$row['category']], $lConf['category_stdWrap.']);
-			 
+			
+			
+			$markerArray['###MORE###'] = $this->pi_getLL('more');
+			$markerArray['###BACK_TO_LIST###'] = $this->pi_getLL('backToList');
+			
 			// related
-			$markerArray['###NEWS_RELATED###'] = $this->local_cObj->stdWrap($this->getRelated($row['uid']), $lConf['related_stdWrap.']);
-			 
+			$relatedNews = $this->local_cObj->stdWrap($this->getRelated($row['uid']), $lConf['related_stdWrap.']);
+			$markerArray['###NEWS_RELATED###'] = $relatedNews;
+			$markerArray['###TEXT_RELATED###'] = $relatedNews ? $this->local_cObj->stdWrap($this->pi_getLL('textRelated'), $lConf['relatedHeader_stdWrap.']):''; 
+
 			// Page fields:
 			$markerArray['###PAGE_UID###'] = $row['pid'];
 			$markerArray['###PAGE_TITLE###'] = $this->pageArray[$row['pid']]['title'];
@@ -924,6 +946,9 @@
 			if ($this->conf['itemMarkerArrayFunc']) {
 				$markerArray = $this->userProcess('itemMarkerArrayFunc', $markerArray);
 			}
+			$markerArray['###TEXT_CAT###'] = $this->pi_getLL('textCat');
+			$markerArray['###TEXT_CAT_LATEST###'] = $this->pi_getLL('textCatLatest');
+			
 			$news_category = array();
 			$theCatImgCode = '';
 			$theCatImgCodeArray = array();
@@ -961,13 +986,17 @@
 				if ($this->config['catImageMode'] != 0) {
 					$theCatImgCode = implode('', array_slice($theCatImgCodeArray, 0, intval($this->config['maxCatImages'])));
 					$markerArray['###NEWS_CATEGORY_IMAGE###'] = $this->local_cObj->wrap(trim($theCatImgCode), $lConf['imageWrapIfAny']);
-}
+				}
+								
 //				} elseif($this->conf['catTextMode']!=0) { //to show categories not defined by tt_news_cat_mm
 //				$markerArray['###NEWS_CATEGORY###'] = $this->categories['0'][$row['category']];
 //				$markerArray['###NEWS_CATEGORY_IMAGE###']='';*/
 			} else {
 				$markerArray['###NEWS_CATEGORY_IMAGE###'] = '';
 				$markerArray['###NEWS_CATEGORY###'] = '';
+				// clear the category text markers if the news item has no categories
+				$markerArray['###TEXT_CAT###'] = '';
+				$markerArray['###TEXT_CAT_LATEST###'] = '';
 			}
 			return $markerArray;
 		}
