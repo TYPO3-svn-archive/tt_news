@@ -44,6 +44,7 @@ CREATE TABLE tt_news_cat (
   title tinytext NOT NULL,
   image tinyblob NOT NULL,
   shortcut int(11) unsigned DEFAULT '0' NOT NULL
+  shortcut_target tinytext NOT NULL,
   deleted tinyint(3) unsigned DEFAULT '0' NOT NULL,
   PRIMARY KEY (uid),
   KEY parent (pid)

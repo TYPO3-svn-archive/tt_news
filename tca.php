@@ -328,7 +328,7 @@ $TCA['tt_news'] = Array (
 $TCA['tt_news_cat'] = Array (
 	'ctrl' => $TCA['tt_news_cat']['ctrl'],
 	'interface' => Array (
-		'showRecordFieldList' => 'title'
+		'showRecordFieldList' => 'title,image,shortcut,shortcut_target'
 	),
 	'columns' => Array (	
 		'title' => Array (
@@ -336,12 +336,13 @@ $TCA['tt_news_cat'] = Array (
 			'config' => Array (
 				'type' => 'input',
 				'size' => '40',
-				'max' => '256'
+				'max' => '256',
+				'eval' => 'required'
 			)
 		),
 		'image' => Array (		
 			'exclude' => 1,		
-			'label' => 'LLL:EXT:tt_news/locallang_db.php:tt_news_cat.image',
+			'label' => 'LLL:EXT:tt_news/locallang_tca.php:tt_news_cat.image',
 			'config' => Array (
 				'type' => 'group',
 				'internal_type' => 'file',
@@ -355,20 +356,37 @@ $TCA['tt_news_cat'] = Array (
 			)
 		),
 		'shortcut' => Array (
-			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.shortcut_page',
-			'config' => Array (
+			'exclude' => 1,	
+			'label' => 'LLL:EXT:tt_news/locallang_tca.php:tt_news_cat.shortcut',
+'config' => Array (
 				'type' => 'group',
 				'internal_type' => 'db',
-					'allowed' => 'pages',
+				'allowed' => 'pages',
 				'size' => '3',
 				'maxitems' => '1',
 				'minitems' => '0',
 				'show_thumbs' => '1'
 			)
-		)
+		),
+		'shortcut_target' => Array (
+			'exclude' => 1,	
+			'label' => 'LLL:EXT:tt_news/locallang_tca.php:tt_news_cat.shortcut_target',
+			'config' => Array (
+				'type' => 'input',
+				'size' => '10',
+				'checkbox' => '',
+				'eval' => 'trim',
+				'max' => '40'
+			)
+		),
 	),
+		
 	'types' => Array (	
-		'0' => Array('showitem' => 'title;;;;3-3-3,image,shortcut;;;;1-1-1')
+		'0' => Array('showitem' => 'title,image;;1;;1-1-1'),
+	
+	),
+	'palettes' => Array (
+		'1' => Array('showitem' => 'shortcut,shortcut_target'),
 	)
 );
 

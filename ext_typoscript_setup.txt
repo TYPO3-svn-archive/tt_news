@@ -15,27 +15,24 @@ plugin.tt_news {
   pid_list.field = pages
   recursive.field = recursive
   code.field = select_key
-  allowCaching = 1
+  allowCaching = {$plugin.tt_news.allowCaching}
   limit = {$plugin.tt_news.limit}
   latestLimit = {$plugin.tt_news.latestLimit}
   backPid = {$plugin.tt_news.backPid}
   PIDitemDisplay = {$plugin.tt_news.PIDitemDisplay}
 
   # search 
-  searchPid = 
   emptySearchAtStart = 1
 
   # mediafiles
   newsFiles {
     path = uploads/media/
     icon = 1
-    stdWrap.wrap =   | <br />
+    stdWrap.wrap = |<br />
   }
   newsFilesHeader_stdWrap.wrap = <strong>|</strong>
   
-  # add link type and target to links
-  itemLinkType = 
-  itemLinkTarget = 
+
   
   # Global wraps
   wrap1.wrap = {$plugin.tt_news.wrap1}
@@ -49,10 +46,10 @@ plugin.tt_news {
   # Rendering of news items
   # the RTE parseFunc configuration
   general_stdWrap {
-	brTag =
-	    encapsLines.wrapNonWrappedLines = <p style="margin:0 0 0 0;">|</p>
-	    encapsLines.innerStdWrap_all.ifEmpty = &nbsp;
-	    parseFunc {
+	  brTag =
+	  encapsLines.wrapNonWrappedLines = <p style="margin:0 0 0 0;">|</p>
+	  encapsLines.innerStdWrap_all.ifEmpty = &nbsp;
+	  parseFunc {
 	      makelinks = 1 
 	      makelinks.http.keep = path
 	      makelinks.http.extTarget = _blank 
@@ -166,9 +163,6 @@ plugin.tt_news {
   }
   
 
-  content_stdWrap {
-   	
-  }
 
   # SINGLE news
   displaySingle {
