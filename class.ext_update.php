@@ -142,16 +142,13 @@ class ext_update  {
 	 */
 	function access($what='all')	{
 		if($what='all'){
-		 $res = mysql(TYPO3_db,$query=$this->query('categoryrelations'));
-			if ($res) {
-			    if(mysql_num_rows($res)) {
+			$res = mysql(TYPO3_db,$query=$this->query('categoryrelations'));
+		    if($res && mysql_num_rows($res)) {
 				return 1;
 			} else {
 				$res = mysql(TYPO3_db,$query=$this->query('flexforms'));
-				return mysql_num_rows($res) ? 1 : 0;
+				return ($res && mysql_num_rows($res) ? 1 : 0);
 			}
-			}
-			
 		}
 	}
 	
