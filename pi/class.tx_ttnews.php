@@ -491,6 +491,7 @@ class tx_ttnews extends tslib_pibase {
 					$markerArray["###CATEGORY_TITLE###"]="";	// Something here later...
 					$wrappedSubpartArray["###LINK_ARCHIVE###"]=$this->local_cObj->typolinkWrap($this->conf["archiveTypoLink."]);
 					
+					$url = $this->getLinkUrl("","begin_at");
 					
 					//BROWSEBOXRENDERING -
 						if ($newsCount > $begin_at+$this->config["limit"])	{
