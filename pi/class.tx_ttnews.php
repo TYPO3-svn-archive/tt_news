@@ -145,15 +145,14 @@ class tx_ttnews extends tslib_pibase {
 		$this->config['maxCatTexts']=(is_numeric($maxCatTexts)?$maxCatTexts:$this->conf['maxCatTexts']);
 		
 		//Others which could be set in Flexform or TS:
-		$PIDitemDisplay=$this->pi_getFFvalue($this->cObj->data['pi_flexform'],'PIDitemDisplay','sDEF');
-		if (strcmp($PIDitemDisplay,"")) {
-			//If FlexForm Value is given then overwrite
-			$this->conf["PIDitemDisplay"]=$PIDitemDisplay;
-		}
+		$PIDitemDisplay = $this->pi_getFFvalue($this->cObj->data['pi_flexform'],'PIDitemDisplay','sDEF');
+		//If FlexForm Value is given then overwrite
+		$this->config["PIDitemDisplay"] = $PIDitemDisplay ? $PIDitemDisplay : $this->conf["PIDitemDisplay"];
 		
+		// reverse AMENU order
+		$this->config['reverseAMenu'] = $this->conf['reverseAMenu'];
 		
-		
-			// template is read.//
+			// template is read.
 		$templateflex_file=$this->pi_getFFvalue($this->cObj->data['pi_flexform'],'template_file','s_template');
 		$this->templateCode = $this->cObj->fileResource($templateflex_file?"uploads/tx_ttnews/".$templateflex_file:$this->conf["templateFile"]);
 			// globally substituted markers, fonts and colors.	
@@ -279,10 +278,10 @@ class tx_ttnews extends tslib_pibase {
 				$c++;
 				if ($c>1000)	break;
 			} while ($theDate<$GLOBALS["SIM_EXEC_TIME"]);
-	//		array_pop($dateArr);
-
+	
 			reset($dateArr);
 			$periodAccum=array();
+		
 			$selectConf2['where'] = $selectConf['where'];
 			while(list($k,$v)=each($dateArr))	{
 				if (!isset($dateArr[$k+1]))	{break;}
@@ -313,6 +312,11 @@ class tx_ttnews extends tslib_pibase {
 			$cc=0;
 	
 			$veryLocal_cObj =t3lib_div::makeInstance("tslib_cObj");		// Local cObj.
+			// reverse amenu oder if 'reverseAMenu' is given
+			if ($this->config['reverseAMenu']) {
+			    arsort($periodAccum);
+			}
+			
 			reset($periodAccum);
 			$itemsOut="";
 			while(list(,$pArr)=each($periodAccum))		{
@@ -581,7 +585,7 @@ class tx_ttnews extends tslib_pibase {
 				$this->local_cObj->setCurrentVal($row["type"]==1 ? $row["page"] : $row["ext_url"]);
 				$wrappedSubpartArray["###LINK_ITEM###"]= $this->local_cObj->typolinkWrap($this->conf["pageTypoLink."]);
 			} else {
-				$wrappedSubpartArray["###LINK_ITEM###"]= array('<a href="'.$this->getLinkUrl($this->conf["PIDitemDisplay"]).'&amp;tt_news='.$row["uid"].'" '.$itemLinkTarget.'>','</a>'); 
+				$wrappedSubpartArray["###LINK_ITEM###"]= array('<a href="'.$this->getLinkUrl($this->config["PIDitemDisplay"]).'&amp;tt_news='.$row["uid"].'" '.$itemLinkTarget.'>','</a>'); 
 			}
 			$markerArray = $this->getItemMarkerArray($row,$prefix_display);
 			
