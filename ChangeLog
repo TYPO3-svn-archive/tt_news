@@ -1,28 +1,57 @@
+2004-10-02	rupertgermann
+	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews.php 1.52:
+	* cvsroot/typo3xdev/tx_ttnews/res/example_userPageBrowserFunc.php 1.1:
+		- added a TYPO3 version control for the multilang features. Now they are disabled if the TYPO3 version is below 3.7.0
+		- new TS-var: “amenuShowAll” by setting this, the amenu always shows all news items, no matter if they are archived or not, or if there is a value for “datetimeDaysToArchive” given.
+		- added a userfunction to use another pagebrowser.
+		- Included an example script with two alternative pagebrowsers (see comments in file: example_userPageBrowserFunc.php for required settings)
+
+2004-09-30	rupertgermann
+	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews.php 1.51:
+	* cvsroot/typo3xdev/tx_ttnews/tca.php 1.14:
+		- added "l10n_mode"-lines to tca.php. this prefixes some fields in the language-copy of a record with [translate to..]
+		- fix for language switching in single view. now it works also, if you enter the single view not from the default language.
+		- added an error message that appears when a record is not translated -> toDo: display record in the default language if not translated
+
+2004-09-29	rupertgermann
+	* cvsroot/typo3xdev/tx_ttnews/ext_emconf.php 1.16:
+	* cvsroot/typo3xdev/tx_ttnews/ext_tables.php 1.7:
+	* cvsroot/typo3xdev/tx_ttnews/ext_tables.sql 1.5:
+	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews.php 1.50:
+	* cvsroot/typo3xdev/tx_ttnews/tca.php 1.13:
+		- new Feature: language relations between news-records. if you 
+		add a language overlay to your news sysfolder you'll get a '
+		translate' button in the (Localization)list view in BE. in FE 
+		you need to set the sys_language_uid by a TS condition like 
+		shown in the 'multilanguage sites with typo3 tutorial'.
+
 2004-09-19	rupertgermann
-	* ext_emconf.php 1.15:
+	* cvsroot/typo3xdev/tx_ttnews/ChangeLog 1.12:
+	* cvsroot/typo3xdev/tx_ttnews/ChangeLog 1.13:
+	* cvsroot/typo3xdev/tx_ttnews/ext_emconf.php 1.15:
 		updated changelog
 
-	* class.tx_ttnews_itemsProcFunc.php 1.3:
-	* doc/manual.sxw 1.9:
-	* ext_typoscript_constants.txt 1.13:
-	* ext_typoscript_setup.txt 1.29:
-	* locallang.php 1.11:
-	* locallang_csh_ttnews.php 1.5:
-	* locallang_csh_ttnewsc.php 1.4:
-	* locallang_tca.php 1.17:
-	* pi/class.tx_ttnews.php 1.49:
-	* pi/class.tx_ttnews_wizicon.php 1.7:
-	* pi/locallang.php 1.16:
-	* pi/news_conf1.png 1.2:
-	* pi/news_help.tmpl 1.5:
-	* res/example_amenuUserFunc.php 1.3:
-	* res/example_imageMarkerFunc.php 1.2:
-	* res/example_itemMarkerArrayFunc.php 1.4:
-	* res/ext_typoscript_constants.txt 1.3:
-	* res/ext_typoscript_setup.txt 1.5:
-	* res/tt_news_languageMenu.php 1.5:
-	* res/tt_news_medialinks.html 1.6:
-	* res/tt_news_styles.css 1.4:
+	* cvsroot/typo3xdev/tx_ttnews/class.tx_ttnews_itemsProcFunc.php 1.3:
+	* cvsroot/typo3xdev/tx_ttnews/doc/manual.sxw 1.9:
+	* cvsroot/typo3xdev/tx_ttnews/ext_typoscript_constants.txt 1.13:
+	* cvsroot/typo3xdev/tx_ttnews/ext_typoscript_setup.txt 1.29:
+	* cvsroot/typo3xdev/tx_ttnews/locallang.php 1.11:
+	* cvsroot/typo3xdev/tx_ttnews/locallang_csh_ttnews.php 1.5:
+	* cvsroot/typo3xdev/tx_ttnews/locallang_csh_ttnewsc.php 1.4:
+	* cvsroot/typo3xdev/tx_ttnews/locallang_tca.php 1.17:
+	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews.php 1.49:
+	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews_wizicon.php 1.7:
+	* cvsroot/typo3xdev/tx_ttnews/pi/locallang.php 1.16:
+	* cvsroot/typo3xdev/tx_ttnews/pi/news_conf1.png 1.2:
+	* cvsroot/typo3xdev/tx_ttnews/pi/news_help.tmpl 1.5:
+	* cvsroot/typo3xdev/tx_ttnews/res/example_amenuUserFunc.php 1.3:
+	* cvsroot/typo3xdev/tx_ttnews/res/example_imageMarkerFunc.php 1.2:
+	* cvsroot/typo3xdev/tx_ttnews/res/example_itemMarkerArrayFunc.php 1.4:
+	* cvsroot/typo3xdev/tx_ttnews/res/ext_typoscript_constants.txt 1.3:
+	* cvsroot/typo3xdev/tx_ttnews/res/ext_typoscript_setup.txt 1.5:
+	* cvsroot/typo3xdev/tx_ttnews/res/tt_news_languageMenu.php 1.5:
+	* cvsroot/typo3xdev/tx_ttnews/res/tt_news_medialinks.html 1.6:
+	* cvsroot/typo3xdev/tx_ttnews/res/tt_news_styles.css 1.4:
 		- changed the behaviour of categoryMode=-1 (do not show items with selected categories). Now news are not shown in this cases: a) if they have only the selected category(s) assigned or b) if they have the selcted and other categories assigned.
 		the old functionality was only case a)
 		- Added a new TS-var: “oldCatDeselectMode” by setting this, you can use the old behaviour for de-selecting categories.
@@ -33,18 +62,19 @@
 		- new translations
 
 2004-09-14	rupertgermann
-	* pi/class.tx_ttnews.php 1.48:
+	* cvsroot/typo3xdev/tx_ttnews/ChangeLog 1.11:
+	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews.php 1.48:
 		- fix: removed a forgotten debugger from class.tx_ttnews.php
 		- updated changelog
 
 2004-09-13	rupertgermann
-	* ext_emconf.php 1.14:
-	* ext_typoscript_setup.txt 1.28:
-	* flexform_ds_no_sPID.xml 1.3:
-	* pi/class.tx_ttnews.php 1.47:
-	* res/ext_typoscript_setup.txt 1.4:
-	* res/rss_0_91.tmpl 1.1:
-	* res/rss_2.tmpl 1.1:
+	* cvsroot/typo3xdev/tx_ttnews/ext_emconf.php 1.14:
+	* cvsroot/typo3xdev/tx_ttnews/ext_typoscript_setup.txt 1.28:
+	* cvsroot/typo3xdev/tx_ttnews/flexform_ds_no_sPID.xml 1.3:
+	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews.php 1.47:
+	* cvsroot/typo3xdev/tx_ttnews/res/ext_typoscript_setup.txt 1.4:
+	* cvsroot/typo3xdev/tx_ttnews/res/rss_0_91.tmpl 1.1:
+	* cvsroot/typo3xdev/tx_ttnews/res/rss_2.tmpl 1.1:
 		- new feature: rss feeds from tt_news (thank goes to Ingo Renner for implementing this)
 		- added the new selectfields to the 'no Storagepid' FF file (forgotten ;-)
 		- updated version number to 1.6.4
