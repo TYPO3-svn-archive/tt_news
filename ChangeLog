@@ -1,3 +1,24 @@
+2004-08-25	rupertgermann
+	* cvsroot/typo3xdev/tx_ttnews/ChangeLog 1.6:
+	* cvsroot/typo3xdev/tx_ttnews/doc/manual.sxw 1.7:
+	* cvsroot/typo3xdev/tx_ttnews/ext_typoscript_constants.txt 1.12:
+	* cvsroot/typo3xdev/tx_ttnews/ext_typoscript_setup.txt 1.26:
+	* cvsroot/typo3xdev/tx_ttnews/locallang_tca.php 1.12:
+	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews.php 1.42:
+	* cvsroot/typo3xdev/tx_ttnews/pi/locallang.php 1.12:
+	* cvsroot/typo3xdev/tx_ttnews/res/example_amenuUserFunc.php 1.2:
+	* cvsroot/typo3xdev/tx_ttnews/res/ext_typoscript_constants.txt 1.2:
+	* cvsroot/typo3xdev/tx_ttnews/res/ext_typoscript_setup.txt 1.2:
+	* cvsroot/typo3xdev/tx_ttnews/res/tt_news_languageMenu.php 1.4:
+	* cvsroot/typo3xdev/tx_ttnews/tca.php 1.11:
+		- *major*: changed the varname "PIDitemDisplay" to "singlePid" (the old name is still recognized but the new one will win, if both are set)
+		- insert news title as title of the indexed page (single view)
+		- "alt" and "title" properties of the image tag can now be filled with the content of a selectable field ('imgAltTextField') from the news db-record.
+		- the backLink in single view is now displaying the title of the page where it points to (changed also the translation in locallang.php)
+		- changed some settings in the default TS setup files for both templates - added the new TS-vars
+		- added some more comments to the amenu example
+		- changed the labels of the news type= 1 (new: Link internal page) and type=2 (new: Link external URL)
+
 2004-08-24	rupertgermann
 	* cvsroot/typo3xdev/tx_ttnews/ext_typoscript_constants.txt 1.11:
 	* cvsroot/typo3xdev/tx_ttnews/ext_typoscript_setup.txt 1.25:
