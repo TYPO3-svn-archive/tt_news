@@ -72,10 +72,15 @@ plugin.tt_news {
   catTextLength = 2000
   maxCatImages = 10
   maxCatTexts = 10
+  
+  # category modes:
   # 0 = don't care about category selections
   # 1 = display selected categories 
   # -1 = display deselected categories
   categoryMode = 0
+  
+  catImageMaxWidth = 40
+  catImageMaxHeight = 40
   
   # Archive settings
   datetimeDaysToArchive = {$plugin.tt_news.datetimeDaysToArchive}
