@@ -223,9 +223,12 @@ class tx_ttnews extends tslib_pibase {
 		$limit = t3lib_div::intInRange($this->conf['limit'], 0, 1000);
 		$limit = $limit?$limit:50;
 		$this->config['limit'] = $FFlimit?$FFlimit:$limit;
-
-		$this->config['latestLimit'] = intval($this->conf['latestLimit'])?intval($this->conf['latestLimit']):$this->config['limit'];
-
+		
+		$latestLimit = t3lib_div::intInRange($this->conf['latestLimit'], 0, 1000);
+		$latestLimit = $latestLimit?$latestLimit:10;
+		$this->config['latestLimit'] = $FFlimit?$FFlimit:$latestLimit;
+        
+		// orderBy and groupBy statements for the list Query
 		$orderBy = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'listOrderBy', 'sDEF');
 		$orderByTS = trim($this->conf['listOrderBy']);
 		$orderBy = $orderBy?$orderBy:$orderByTS;
