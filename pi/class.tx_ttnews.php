@@ -101,7 +101,6 @@ class tx_ttnews extends tslib_pibase {
 	 
 	/**
 	* Init Function: here all the needed configuration Values are stored in class variables..
-	* init is normaly called one time in main function!
 	*
 	* @param array $conf: configuration array from TS 
 	* @return void
@@ -210,6 +209,8 @@ class tx_ttnews extends tslib_pibase {
 		//For keeping the configured linkVars
 		$this->config['linkVars']=t3lib_div::trimexplode(",",$GLOBALS['TSFE']->config['config']['linkVars']);
 		
+		// id of the page where the search results should be displayed
+		$this->config['searchPid'] = $this->conf['searchPid'];
 				 
 		// pid of the page with the single view
 		$PIDitemDisplay = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'PIDitemDisplay', 's_misc');
@@ -289,8 +290,7 @@ class tx_ttnews extends tslib_pibase {
 		if ($this->config['displayCurrentRecord']) {
 			# added the possibility to change the template, used for 'display current record'.
 			# if the value is empty, the code is 'single'
-			$this->config['code'] = $this->conf['defaultCode']?trim($this->conf['defaultCode']):
-			"SINGLE";
+			$this->config['code'] = $this->conf['defaultCode']?trim($this->conf['defaultCode']):'SINGLE';
 			$this->tt_news_uid = $this->cObj->data['uid'];
 		}
 		 
@@ -430,6 +430,7 @@ class tx_ttnews extends tslib_pibase {
 				$temp_conf['additionalParams'] .= '&'.$this->getLinkUrl(0,'id,pS,pL,begin_at,type').'&pS='.$pArr['start'].'&pL='.($pArr['stop']-$pArr['start']).'&arc=1';
  				$temp_conf['useCacheHash'] = $this->allowCaching;
 				$temp_conf['no_cache'] = !$this->allowCaching;
+				$temp_conf['target'] = $this->config['itemLinkTarget'];
 				$wrappedSubpartArray['###LINK_ITEM###'] = explode('|', $this->local_cObj->typolink('|', $temp_conf));
 					 
 				$markerArray = array();
@@ -549,12 +550,24 @@ $content = $this->cObj->substituteMarkerArrayCached($noItemsMsg, $markerArray);
 			case 'SEARCH':
 			$prefix_display = 'displayList';
 			$templateName = 'TEMPLATE_LIST';
-			 
+			$GLOBALS['TSFE']->set_no_cache();
+		##### caching/indexing
+		if ($this->config['searchPid']) {
+		    $temp_conf = $this->typolink_conf;
+			$this->local_cObj->setCurrentVal($this->config['searchPid']);
+			
+			$temp_conf['target'] = $this->config['itemLinkTarget'];
+			
+			$formURL = $this->local_cObj->TypoLink_URL($temp_conf);
+		}		
+			
+	 	##### caching/indexing  end
 			// Get search subpart
 			$t['search'] = $this->cObj->getSubpart($this->templateCode, $this->spMarker('###TEMPLATE_SEARCH###'));
-			// Substitute a few markers
+			// Substitute the markers for teh searchform
 			$out = $t['search'];
-			$out = $this->cObj->substituteMarker($out, '###FORM_URL###', '?'.$this->getLinkUrl($this->conf['PIDsearch']));
+
+			$out = $this->cObj->substituteMarker($out, '###FORM_URL###', $formURL);
 			$out = $this->cObj->substituteMarker($out, '###SWORDS###', htmlspecialchars(t3lib_div::_GP('swords')));
 			$out = $this->cObj->substituteMarker($out, '###SEARCH_BUTTON###', $this->pi_getLL('searchButtonLabel'));
 			// Add to content
@@ -777,7 +790,7 @@ $content = $this->cObj->substituteMarkerArrayCached($noItemsMsg, $markerArray);
 		 
 		$cc = 0;
 		#debug($selectConf);
-		$itemLinkTarget = $this->config['itemLinkTarget'] ? 'target="'.$this->config['itemLinkTarget'].'"':'';
+		
 		 
 		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 			// Print Item Title
@@ -792,9 +805,10 @@ $content = $this->cObj->substituteMarkerArrayCached($noItemsMsg, $markerArray);
 		##### caching/indexing		
 				$temp_conf = $this->typolink_conf;
 				$this->local_cObj->setCurrentVal($this->config['PIDitemDisplay']);
-				$temp_conf['additionalParams'] .= '&'.$this->getLinkUrl(0,'id').'&tt_news='.$row['uid'].$itemLinkTarget;
+				$temp_conf['additionalParams'] .= '&'.$this->getLinkUrl(0,'id,type').'&tt_news='.$row['uid'];
 				$temp_conf['useCacheHash'] = $this->allowCaching;
 				$temp_conf['no_cache'] = !$this->allowCaching;
+				$temp_conf['target'] = $this->config['itemLinkTarget'];
 				$wrappedSubpartArray['###LINK_ITEM###'] = explode('|', $this->local_cObj->typolink('|', $temp_conf));
 	 	##### caching/indexing  end
 
