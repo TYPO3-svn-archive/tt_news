@@ -22,17 +22,24 @@ plugin.tt_news {
   backPid = 0
     # cat=plugin.tt_news/links/3; type=int+; label= Archive Link: The PID of the page on which the archive list is displayed. This link appears at the bottom of the 'Latest' template.
   archiveTypoLink.parameter = 0
-    # cat=plugin.tt_news//4; type=int+; label= Days to Archive: If this is set, then elements are automatically in the archive after the given number of days has passed 
+    
+	# cat=plugin.tt_news//4; type=int+; label= Days to Archive: If this is set, then elements are automatically in the archive after the given number of days has passed 
   datetimeDaysToArchive = 30
     # cat=plugin.tt_news//5; type=int+; label= List Limit: max items in LIST template.
   limit = 7
     # cat=plugin.tt_news//6; type=int+; label= Latest Limit: max news items in LATEST template.
   latestLimit = 3
-
-      # cat=plugin.tt_news/dims/1; type=int+; label= single-image max height: Max height for an image displayed in SINGLE template
-  singleMaxH = 250
-    # cat=plugin.tt_news/dims/2; type=int+; label= single-image max Width: Max width for an image displayed in SINGLE template
+    # cat=plugin.tt_news//7; type=int+; label= Category Text mode: posible values are: 0 = don't display, 1 = display but no link, 2 = link to categoy shortcut, 3 = act as category selector.
+  catTextMode = 1
+	# cat=plugin.tt_news//8; type=int+; label= Category Image mode: same values as catTextMode.
+  catImageMode = 1
+	
+	
+	# cat=plugin.tt_news/dims/1; type=int+; label= single-image max Width: Max width for an image displayed in SINGLE template
   singleMaxW = 300
+    # cat=plugin.tt_news/dims/2; type=int+; label= single-image max height: Max height for an image displayed in SINGLE template
+  singleMaxH = 250
+
     # cat=plugin.tt_news/dims/3; type=int+; label= latest-image max width: Max width for an image displayed in LATEST template
   latestMaxW = 80
     # cat=plugin.tt_news/dims/4; type=int+; label= latest-image max height: Max height for an image displayed in LATEST template
@@ -40,7 +47,7 @@ plugin.tt_news {
   
     # cat=plugin.tt_news/dims/5; type=int+; label= list-image max width: Max width for an image displayed in LIST template
   listMaxW = 140
-      # cat=plugin.tt_news/dims/6; type=int+; label= list-image max height: Max height for an image displayed in LIST template
+    # cat=plugin.tt_news/dims/6; type=int+; label= list-image max height: Max height for an image displayed in LIST template
   listMaxH = 90
 
 

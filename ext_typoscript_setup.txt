@@ -51,13 +51,9 @@ plugin.tt_news {
     
   # category settings
   
-  # 0 = don't display
-  # 1 = display but no link
-  # 2 = link to categoy shortcut
-  # 3 = act as category selector
-  catImageMode = 3
-  catTextMode = 3
-  catTextLength = 200
+  catImageMode = {$plugin.tt_news.catImageMode}
+  catTextMode = {$plugin.tt_news.catTextMode}
+  catTextLength = 2000
   maxCatImages = 10
   maxCatTexts = 10
   # 1 = select all

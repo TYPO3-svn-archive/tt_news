@@ -386,7 +386,7 @@ class tx_ttnews extends tslib_pibase {
 				$periodInfo['HRstop'] = date('d-m-Y', $periodInfo['stop']);
 				$periodInfo['quarter'] = floor(date('m', $dateArr[$k])/3)+1;
 				 
-				// FInding maximum and minimum values:
+				// execute a query to count the archive periods 
 				$selectConf['selectFields'] = 'count(distinct(uid))';
 				$selectConf['where'] = $selectConf2['where'].' AND datetime>='.$periodInfo['start'].' AND datetime<'.$periodInfo['stop'];
 				$res = $this->cObj->exec_getQuery('tt_news', $selectConf);
@@ -398,47 +398,36 @@ class tx_ttnews extends tslib_pibase {
 				}
 			}
 			 
-			 
-			 
-			 
+			// get template subpart	 
 			$t['total'] = $this->cObj->getSubpart($this->templateCode, $this->spMarker('###TEMPLATE_ARCHIVE###'));
 			$t['item'] = $this->getLayouts($t['total'], $this->alternativeLayouts, 'MENUITEM');
 			$cc = 0;
 			 
 			$veryLocal_cObj = t3lib_div::makeInstance('tslib_cObj');
-			// Local cObj.
+			
 			// reverse amenu oder if 'reverseAMenu' is given
 			if ($this->config['reverseAMenu']) {
 				arsort($periodAccum);
 			}
 			 
-			 
+			### ToDo include this in the typolink 
 			$target = $this->config['itemLinkTarget']; 
-			 
+			
+			
+			$archiveLink = $this->conf['archiveTypoLink.']['parameter'];
+			$this->local_cObj->setCurrentVal($archiveLink?$archiveLink:$GLOBALS["TSFE"]->id);
+			
 			reset($periodAccum);
 			$itemsOut = '';
 			while (list(, $pArr) = each($periodAccum)) {
 				// Print Item Title
 				$wrappedSubpartArray = array();
-				
-	##### caching/indexing			
-				$temp_conf = $this->typolink_conf;
-				$this->local_cObj->setCurrentVal($GLOBALS["TSFE"]->id);
-				#$temp_conf["additionalParams"] .= '&'.$this->getLinkUrl().'&pS='.$pArr["start"].'&pL='.($pArr["stop"]-$pArr["start"]).'&arc=1';
-
-				$tmplink = $this->getLinkUrl(($this->config['archListPid']?$this->config['archListPid']:0),'id,pS,pL,begin_at');
-
-				$temp_conf['additionalParams'] .= '&'.$tmplink.'&pS='.$pArr['start'].'&pL='.($pArr['stop']-$pArr['start']).'&arc=1';
+				$temp_conf = $this->typolink_conf; 
+				$temp_conf['additionalParams'] .= '&'.$this->getLinkUrl(0,'id,pS,pL,begin_at').'&pS='.$pArr['start'].'&pL='.($pArr['stop']-$pArr['start']).'&arc=1';
  				$temp_conf['useCacheHash'] = $this->allowCaching;
 				$temp_conf['no_cache'] = !$this->allowCaching;
 				$wrappedSubpartArray['###LINK_ITEM###'] = explode('|', $this->local_cObj->typolink('|', $temp_conf));
-				
-			
-	##### caching/indexing end
-				
-				
-				#$wrappedSubpartArray['###LINK_ITEM###'] = array('<a href="'.$this->getLinkUrl($this->config['archListPid']?$this->config['archListPid']:0).'&amp;pS='.$pArr['start'].'&amp;pL='.($pArr['stop']-$pArr['start']).'&amp;arc=1"'.($target?' target="'.$target.'"':'').'>', '</a>');
-				 
+					 
 				$markerArray = array();
 				$veryLocal_cObj->start($pArr, '');
 				$markerArray['###ARCHIVE_TITLE###'] = $veryLocal_cObj->cObjGetSingle($this->conf['archiveTitleCObject'], $this->conf['archiveTitleCObject.'], 'archiveTitle');
