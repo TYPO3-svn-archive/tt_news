@@ -64,7 +64,7 @@
  * 1348:     function formatStr($str)
  * 1363:     function getLayouts($templateCode, $alternatingLayouts, $marker)
  * 1381:     function getXmlHeader()
- * 1440:     function cleanXML($content)
+ * 1440:     function cleanXML($str)
  * 1466:     function getNewsSubpart($myTemplate, $myKey, $row = Array())
  *
  * TOTAL FUNCTIONS: 23
@@ -254,9 +254,11 @@ class tx_ttnews extends tslib_pibase {
 			$GLOBALS['TSFE']->set_no_cache();
 		}
 
-		// get siteUrl for links in rss feeds
-		
-		$this->config['siteUrl'] = t3lib_div::getIndpEnv('TYPO3_SITE_URL');
+		// get siteUrl for links in rss feeds. the 'dontInsert' option seems to be needed in some configurations depending on the baseUrl setting
+		if (!$this->conf['displayXML.']['dontInsertSiteUrl']){
+			$this->config['siteUrl'] = t3lib_div::getIndpEnv('TYPO3_SITE_URL');
+		}
+
 	}
 
 	/**
@@ -746,7 +748,8 @@ class tx_ttnews extends tslib_pibase {
 			$wrappedSubpartArray = array();
 
 			if ($GLOBALS['TSFE']->sys_language_content) {
-				$row = $GLOBALS['TSFE']->sys_page->getRecordOverlay('tt_news', $row, $GLOBALS['TSFE']->sys_language_content, $GLOBALS['TSFE']->sys_language_contentOL, 'hideNonTranslated');
+			$Olrow = $GLOBALS['TSFE']->sys_page->getRecordOverlay('tt_news', $row, $GLOBALS['TSFE']->sys_language_content, $GLOBALS['TSFE']->sys_language_contentOL, 'hideNonTranslated');
+				$row = $Olrow?$Olrow:false;
 			}
 
 			if ($row['type']) {
@@ -796,20 +799,20 @@ class tx_ttnews extends tslib_pibase {
 		// exclude latest from search
 		$selectConf['where'] = '1=1 ' . ($this->theCode == 'LATEST'?'':$where);
 
-		if ($GLOBALS['TSFE']->sys_language_content >= -1) {
+	#	if ($GLOBALS['TSFE']->sys_language_content >= -1) { 
 			if ($this->sys_language_mode == 'strict' && $GLOBALS['TSFE']->sys_language_content) {
 				// mode == 'strict': If a certain language is requested, select only news-records from the default language which have a translation. The translated articles will be overlayed later in the list or single function.
-				$tmpres = $this->cObj->exec_getQuery('tt_news', array('selectFields' => 'tt_news.l18n_parent', 'where' => 'tt_news.sys_language_uid=' . $GLOBALS['TSFE']->sys_language_content, 'pidInList' => $this->pid_list));
+				$tmpres = $this->cObj->exec_getQuery('tt_news', array('selectFields' => 'tt_news.l18n_parent', 'where' => 'tt_news.sys_language_uid = '.$GLOBALS['TSFE']->sys_language_content.$this->enableFields, 'pidInList' => $this->pid_list));
 				$strictUids = array();
 				while ($tmprow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($tmpres)) {
 					$strictUids[] = $tmprow['l18n_parent'];
 				}
-				$selectConf['where'] .= ' AND tt_news.uid IN (' . implode(',', $strictUids) . ')';
+				$selectConf['where'] .= ' AND (tt_news.uid IN (' . implode(',', $strictUids) . ') OR tt_news.sys_language_uid=-1)';
 			} else {
 				// mode != 'strict': If a certain language is requested, select only news-records in the default language. The translated articles (if they exist) will be overlayed later in the list or single function.
-				$selectConf['where'] .= ' AND tt_news.sys_language_uid=0';
+				$selectConf['where'] .= ' AND tt_news.sys_language_uid IN (0,-1)';
 			}
-		}
+	#	}
 
 		if ($this->arcExclusive > 0) {
 			if ($this->piVars['arc']) {
@@ -1425,7 +1428,7 @@ class tx_ttnews extends tslib_pibase {
 	}
 	/**
 	 * cleans the content for rss feeds. removes '&nbsp;' and '?;' (dont't know if the scond one matters in real-life).
-	 * The rest of the cleaning/character-conversion is done by the stdWrap functions htmlspecialchars and csconv.
+	 * The rest of the cleaning/character-conversion is done by the stdWrap functions htmlspecialchars,stripHtml and csconv.
 	 * For details see http://typo3.org/documentation/document-library/doc_core_tsref/stdWrap/
 	 * 
 	 * @param 	string 		$str

@@ -9,7 +9,7 @@
 # Includes the newsLib:
 includeLibs.ts_news = EXT:tt_news/pi/class.tx_ttnews.php
 
-plugin.tt_news >
+
 plugin.tt_news = USER
 plugin.tt_news {
   userFunc = tx_ttnews->main_news
@@ -39,6 +39,11 @@ plugin.tt_news {
 
   # parse the 'back to list' link through htmlspecialchars()
   hscBackLink = 1
+
+  # substitute pagetitle with title of news article
+  substitutePagetitle = 1
+  
+  noNewsToListMsg_stdWrap.wrap = <p>|</p>
    
   # Rendering of news items. re-use the RTE parseFunc configuration for normal content
   general_stdWrap {
@@ -54,6 +59,12 @@ plugin.tt_news {
 	showResultCount = 1
   }
 
+  # Display language labels and/or flags
+  showLangLabels = 0
+  showFlags = 0
+  flagImage {
+    file.maxW = 16
+  }
 
   # Category settings
   catImageMode = {$plugin.tt_news.catImageMode}
@@ -293,53 +304,7 @@ plugin.tt_news {
 }
 
 
-# - - - - - - - - - - - - - -  render XML news   - - - - - - - - - - - - -  #
- 
-# point your RSS reader to: http://your-server.org/index.php?type=100
 
-plugin.tt_news {
-  displayXML {
-    # rss091_tmplFile = EXT:tt_news/res/rss_0_91.tmpl
-    rss2_tmplFile = EXT:tt_news/res/rss_2.tmpl
-   
-    xmlFormat = rss2
-    # possibile values: rss091 / rss2 /
-    # (planning: rdf / atom)
-
-    xmlTitle = typo3.lehmano.de: Latest News
-    xmlLink = http://typo3.lehmano.de/
-    xmlDesc = Latest News tt_news v2.0
-    xmlLang = en
-    xmlIcon = fileadmin/tt_news_article.gif
-    subheader_stdWrap.crop = 100 | ... | 1 
-    subheader_stdWrap.ifEmpty.field = bodytext
-    xmlLastBuildDate = 1
-    xmlLimit = 10
-    xmlCaching = 1
-  }
-}
-
-
-## This enables the xml news feed
-xmlnews = PAGE
-xmlnews {
-  typeNum = 100
-
-  10 >
-  10 < plugin.tt_news
-  10.pid_list >
-  10.pid_list = {$plugin.tt_news.pid_list}
-  10.singlePid = {$plugin.tt_news.singlePid}
-  10.defaultCode = XML
-
-
-  config {
-    disableAllHeaderCode = 1
-    additionalHeaders = Content-type:text/xml
-#    no_cache = 1
-    xhtml_cleaning = 0
-  }
-}
 
 # - - - - - - - - - -  display Archive in yearly periods - - - - - - - - -  #
 
