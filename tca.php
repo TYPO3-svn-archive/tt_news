@@ -329,6 +329,14 @@ $TCA['tt_news'] = Array (
 			)
 		),
 		'l18n_diffsource' => Array('config'=>array('type'=>'passthrough')),
+		't3ver_label' => Array (
+			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.versionLabel',
+			'config' => Array (
+				'type' => 'input',
+				'size' => '30',
+				'max' => '30',
+			)
+		),
 		
 		
 	),
@@ -368,6 +376,15 @@ $TCA['tt_news_cat'] = Array (
 				'size' => '40',
 				'max' => '256',
 				'eval' => 'required'
+			)
+		),
+		'title_lang_ol' => Array (
+			'label' => 'LLL:EXT:tt_news/locallang_tca.php:tt_news_cat.title_lang_ol',
+			'config' => Array (
+				'type' => 'input',
+				'size' => '40',
+				'max' => '256',
+		
 			)
 		),
 		'image' => Array (		
@@ -412,7 +429,7 @@ $TCA['tt_news_cat'] = Array (
 	),
 		
 	'types' => Array (	
-		'0' => Array('showitem' => 'title,image;;1;;1-1-1'),
+		'0' => Array('showitem' => 'title,title_lang_ol,image;;1;;1-1-1'),
 	
 	),
 	'palettes' => Array (

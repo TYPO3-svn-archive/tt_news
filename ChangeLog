@@ -1,20 +1,3 @@
-2004-10-19	rupertgermann
-	* class.tx_ttnews_itemsProcFunc.php 1.5:
-	* ext_typoscript_setup.txt 1.30:
-	* locallang.php 1.13:
-	* pi/class.tx_ttnews.php 1.56:
-	* pi/class.tx_ttnews_wizicon.php 1.9:
-	* res/example_amenuUserFunc.php 1.5:
-	* res/ext_typoscript_setup.txt 1.6:
-	* res/tt_news_languageMenu.php 1.8:
-		some improvements for multilanguage news:
-		- the category titles can now be translated by adding the titles for other languages seperated by '|'  f.e.: title(en) | title(dk) | title(de)
-		- the pagetitle in the backToList link inthe single view now shows the title of the language overlay if one is found.
-		- removed some not needed parameters from the backlink (-> gives better looking realUrl Adresses)
-		- added a fix for the archive, that show no items when one item has an empty datetime field. thx heike for pointing me to this.
-		- added a possibility to process new user codes/templateparts as news-list. You can define new codes in the array ['TYPO3_CONF_VARS']['EXTCONF']['tt_news']['what_to_display']
-		and process them by a small userfunction that call the getNewsList function from within the tt_news class. example will follow.
-
 2004-10-17	rupertgermann
 	* class.tx_ttnews_itemsProcFunc.php 1.4:
 	* ext_emconf.php 1.17:

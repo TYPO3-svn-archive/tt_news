@@ -11,6 +11,7 @@ $LOCAL_LANG = Array (
 		'tt_news.related' => 'Related news:',
 		'tt_news_cat' => 'News category',
 		'tt_news_cat.image' => 'Category image',
+		'tt_news_cat.title_lang_ol' => 'title language overlays',
 		'tt_news_cat.shortcut' => 'News category shortcut',
 		'tt_news_cat.shortcut_target' => 'Target for news category shortcut',
 		'tt_news.pi_flexform.sheet_general' => 'General Settings',
