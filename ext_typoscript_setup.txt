@@ -47,6 +47,16 @@ plugin.tt_news {
       } 
     }
   }
+  
+  pageBrowser {
+  	maxPages=5
+  	item_stdWrap {
+  		wrap=<span class="ttnews-page">|</span>
+  	}
+  	activpage_stdWrap {
+  		wrap=<span class="ttnews-page-activ">|</span>
+  	}
+  }
 
     
   # category settings
@@ -64,7 +74,7 @@ plugin.tt_news {
   # the RTE parseFunc configuration
   # 
   content_stdWrap {
-   
+   	
   }
   
   limit = {$plugin.tt_news.limit}
