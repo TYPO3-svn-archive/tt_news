@@ -723,19 +723,19 @@ $content = $this->cObj->substituteMarkerArrayCached($noItemsMsg, $markerArray);
 		
 		$queryString['type'] = $this->config['itemLinkType'] ? 'type='.$this->config['itemLinkType'] : '';
 		$queryString['backPID'] = 'backPID='.($this->config['backPid']?$this->config['backPid']:$GLOBALS['TSFE']->id);
-		$queryString['begin_at'] = t3lib_div::GPvar('begin_at') ? 'begin_at='.t3lib_div::GPvar('begin_at') :
+		$queryString['begin_at'] = t3lib_div::_GP('begin_at') ? 'begin_at='.t3lib_div::_GP('begin_at') :
 		 "";
-		$queryString['swords'] = t3lib_div::GPvar('swords') ? "swords=".rawurlencode(t3lib_div::GPvar('swords')) :
+		$queryString['swords'] = t3lib_div::_GP('swords') ? "swords=".rawurlencode(t3lib_div::_GP('swords')) :
 		 "";
-		$queryString['pS'] = t3lib_div::GPvar('pS') ? "pS=".intval(t3lib_div::GPvar('pS')) :
+		$queryString['pS'] = t3lib_div::_GP('pS') ? "pS=".intval(t3lib_div::_GP('pS')) :
 		""; // period start
-		$queryString['pL'] = t3lib_div::GPvar('pL') ? "pL=".intval(t3lib_div::GPvar('pL')) :
+		$queryString['pL'] = t3lib_div::_GP('pL') ? "pL=".intval(t3lib_div::_GP('pL')) :
 		""; // Period length
-		$queryString['arc'] = t3lib_div::GPvar('arc') ? "arc=".intval(t3lib_div::GPvar('arc')) :
+		$queryString['arc'] = t3lib_div::_GP('arc') ? "arc=".intval(t3lib_div::_GP('arc')) :
 		""; // Archive flag: 0 = don't care, -1 = latest, 1 = archive
-		$queryString['cat'] = t3lib_div::GPvar('cat') ? "cat=".intval(t3lib_div::GPvar('cat')) :
+		$queryString['cat'] = t3lib_div::_GP('cat') ? "cat=".intval(t3lib_div::_GP('cat')) :
 		""; // Category uid, 0 = any
-		 
+		$queryString['L'] = t3lib_div::_GP("L") ? "L=".t3lib_div::_GP("L"): ""; 
 		reset($queryString);
 		while (list($key, $val) = each($queryString)) {
 			if (!$val || ($excludeList && t3lib_div::inList($excludeList, $key))) {
