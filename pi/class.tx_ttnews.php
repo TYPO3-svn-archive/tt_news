@@ -956,6 +956,8 @@ class tx_ttnews extends tslib_pibase {
 		$markerArray = array();
 		// get image markers
 		$markerArray = $this->getImageMarkers($markerArray, $row, $lConf, $textRenderObj);
+		// get markers and links for categories
+		$markerArray = $this->getCatMarkerArray($markerArray, $row, $lConf);
 
 		$markerArray['###NEWS_UID###'] = $row['uid'];
 		// show language label and/or flag
@@ -1130,8 +1132,7 @@ class tx_ttnews extends tslib_pibase {
 			$markerArray['###SITE_LINK###'] = $this->config['siteUrl'];
 			
 		}
-		// get markers and links for categories
-		$markerArray = $this->getCatMarkerArray($markerArray, $row, $lConf);
+
 		// Adds hook for processing of extra item markers
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tt_news']['extraItemMarkerHook'])) {
 			foreach($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tt_news']['extraItemMarkerHook'] as $_classRef) {
@@ -1445,9 +1446,7 @@ class tx_ttnews extends tslib_pibase {
 					$this->local_cObj->LOAD_REGISTER(array('newsCategoryUid' => $this->categories[$row['uid']][$key]['catid']), '');
 					$wroteRegister = true;
 				}
-
 			}
-
 			if ($this->config['catTextMode'] != 0) {
 				$news_category = implode(', ', array_slice($news_category, 0, intval($this->config['maxCatTexts'])));
 				if ($this->config['catTextLength']) {
@@ -1459,7 +1458,6 @@ class tx_ttnews extends tslib_pibase {
 			}
 			if ($this->config['catImageMode'] != 0) {
 				$theCatImgCode = implode('', array_slice($theCatImgCodeArray, 0, intval($this->config['maxCatImages']))); // downsize the image array to the 'maxCatImages' value
-
 				$markerArray['###NEWS_CATEGORY_IMAGE###'] = $this->local_cObj->stdWrap($theCatImgCode, $lConf['categoryImages_stdWrap.']);
 			}
 			// XML
