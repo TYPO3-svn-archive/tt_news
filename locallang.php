@@ -24,6 +24,8 @@ $LOCAL_LANG = Array (
 		'pi_plus_wiz_description' => 'Legger til nyheter til siden.',
 	),
 	'it' => Array (
+		'pi_title' => 'News',
+		'pi_plus_wiz_description' => 'Aggiungi news alla pagina',
 	),
 	'fr' => Array (
 	),
@@ -50,10 +52,14 @@ $LOCAL_LANG = Array (
 		'pi_plus_wiz_description' => 'Sayfaya haber ekle',
 	),
 	'se' => Array (
+		'pi_title' => 'Nyheter',
+		'pi_plus_wiz_description' => 'Lägger en nyhetsmodul till sidan.',
 	),
 	'pt' => Array (
 	),
 	'ru' => Array (
+		'pi_title' => 'Íîâîñòè',
+		'pi_plus_wiz_description' => 'Äîáàâëÿåò ñïèñîê íîâîñòåé íà ñòğàíèöó',
 	),
 	'ro' => Array (
 	),
@@ -70,6 +76,8 @@ $LOCAL_LANG = Array (
 		'pi_plus_wiz_description' => 'Dodaje novosti na stranicu',
 	),
 	'hu' => Array (
+		'pi_title' => 'Hírek',
+		'pi_plus_wiz_description' => 'Hírek megjelenítése az oldalon',
 	),
 	'gl' => Array (
 		'pi_title' => 'Nutaarsiassat',

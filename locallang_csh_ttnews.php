@@ -10,6 +10,8 @@ $LOCAL_LANG = Array (
 		'_.seeAlso' => 'tt_content:list_type,tt_news_cat',
 	),
 	'dk' => Array (
+		'.description' => 'Indbygget nyhedssystem',
+		'.details' => '\'Nyheds\' elementer er typisk dem som vises på forsiden af din hjemmeside og giver mulighed for at linke til en side med den komplette historie. De kan også repræsentere artikler(link til en komplet side) i systemet.',
 	),
 	'de' => Array (
 		'.description' => 'News System',
@@ -20,6 +22,8 @@ $LOCAL_LANG = Array (
 		'.details' => 'Nyheter er typisk saker som vises på forsiden og hvor det er en link til hele saken. Det kan også være artikler (linker til hele sider) i systemet.',
 	),
 	'it' => Array (
+		'.description' => 'News integrate al sito.',
+		'.details' => 'Le \'News\' solitamente sono pubblicate nelle homepages dei siti e ti collegano a delle pagine interne per leggere tutto l\'articolo. Possono anche puntare a delle pagine già esistenti all\'interno del sito.',
 	),
 	'fr' => Array (
 	),
@@ -46,10 +50,14 @@ $LOCAL_LANG = Array (
 		'.details' => '"Haberler" nesnesi websitenizin önsayfanıza ve tüm haberler bölümüne link sağlar.Sistemde ayrıca Başlıklar sunar(linkler tüm sayfaya yönlendirir)',
 	),
 	'se' => Array (
+		'.description' => 'Ett inbyggt nyhetssystem.',
+		'.details' => '\'Nyheter\' är ofta små notiser på websitens första sida som sedan länkar vidare till en sida med hela nyheten. De kan också presentera artiklar (sidor) som finns längre in i sidsystemet.',
 	),
 	'pt' => Array (
 	),
 	'ru' => Array (
+		'.description' => 'Âñòğîåííàÿ ñèñòåìà íîâîñòåé',
+		'.details' => '"Íîâîñòè" - ıòî çàïèñè, îáû÷íî ïîìåùàåìûå íà ãëàâíóş ñòğàíèöó âåá-ñàéòà è èìåşùèå ññûëêè íà ñòğàíèöó ñ ïîëíûì òåêñòîì. Îíè ìîãóò òàêæå ïğåäñòàâëÿòü ñòàòüè (ññûëêè íà öåëûå ñòğàíèöû) â ñèñòåìå.',
 	),
 	'ro' => Array (
 	),

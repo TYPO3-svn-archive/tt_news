@@ -9,6 +9,7 @@ $LOCAL_LANG = Array (
 		'_.seeAlso' => 'tt_news',
 	),
 	'dk' => Array (
+		'.description' => 'Indbygget nyhedssystem - kategorier.',
 	),
 	'de' => Array (
 		'.description' => 'Das News System erlaubt es dem Benutzer, Nachrichten zu kategorisieren. Dadurch wird eine bessere Übersichlichkeit der Meldungen gewährleistet.',
@@ -17,6 +18,7 @@ $LOCAL_LANG = Array (
 		'.description' => 'Kategorier for nyhetsystemet.',
 	),
 	'it' => Array (
+		'.description' => 'Categorie delle News integrate al sito',
 	),
 	'fr' => Array (
 	),
@@ -39,10 +41,12 @@ $LOCAL_LANG = Array (
 		'.description' => 'Haberler Sistem kategorilerinde yapılandırılıyor',
 	),
 	'se' => Array (
+		'.description' => 'Kategorier i det inbyggda nyhetssystemet.',
 	),
 	'pt' => Array (
 	),
 	'ru' => Array (
+		'.description' => 'Êàòåãîğèè âñòğîåííîé ñèñòåìû íîâîñòåé.',
 	),
 	'ro' => Array (
 	),
