@@ -140,10 +140,15 @@ class tx_ttnews extends tslib_pibase {
 
 		$this->conf = $conf; //store configuration
 		$this->tt_news_uid = intval($this->piVars['tt_news']); // Get the submitted uid of a news (if any)
-
+		
+		// use multilanguage news, only if TYPO3 version >= 3.7.0  
+		$t3_version = str_replace('.','',$GLOBALS['TYPO_VERSION']);
+		if ($t3_version >= 370) {
+			$this->config['use_l18nParent'] = $GLOBALS['TYPO_VERSION'];
+		}
+		
 		//Get number of alternative Layouts (loop layout in Archivelist and List view) default is 2:
 		$this->alternatingLayouts = intval($this->conf['alternatingLayouts'])>0?intval($this->conf['alternatingLayouts']):2;
-
 
 		$this->pi_loadLL(); // Loading language-labels
 		$this->pi_setPiVarDefaults(); // Set default piVars from TS
@@ -503,15 +508,18 @@ class tx_ttnews extends tslib_pibase {
 	function displaySingle() {
 		$sys_language_uid = $GLOBALS['TSFE']->config['config']['sys_language_uid'];
 
+		
 		// find out, if the item has a translation
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('tt_news.l18n_parent', 'tt_news', 'tt_news.uid='.intval($this->tt_news_uid).' AND tt_news.l18n_parent!=0'); 
-		$l18n_parent = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
-
-		if ($l18n_parent['l18n_parent']) {
-    		$this->tt_news_uid = $l18n_parent['l18n_parent'];
-		}
-
 		if ($sys_language_uid) {
+		   	$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('tt_news.l18n_parent', 'tt_news', 'tt_news.uid='.intval($this->tt_news_uid).' AND tt_news.l18n_parent!=0'); 
+			$l18n_parent = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
+			if ($l18n_parent['l18n_parent']) {
+    			$this->tt_news_uid = $l18n_parent['l18n_parent'];
+			}
+		}
+		
+		// select news only by the "tt_news.l18n_parent" if the column "l18n_parent" exists also in tt_content (TYPO3 version >= 3.7.0)
+		if ($sys_language_uid && $this->config['use_l18nParent'] )  {
 		    $singleWhere = 'tt_news.l18n_parent='.intval($this->tt_news_uid).' AND tt_news.sys_language_uid='.$sys_language_uid;
 		} else {
 		    $singleWhere = 'tt_news.uid='.intval($this->tt_news_uid);
@@ -546,7 +554,7 @@ class tx_ttnews extends tslib_pibase {
 			$markerArray = $this->getItemMarkerArray($row, 'displaySingle');
 			// Substitute
 			$content = $this->cObj->substituteMarkerArrayCached($item, $markerArray, array(), $wrappedSubpartArray);
-		} elseif ($sys_language_uid) {
+		} elseif ($sys_language_uid && $this->config['use_l18nParent']) {
 			$content .= 'Sorry, there is no translation for this news record. ';
 #$content .= $this->pi_linkTP_keepPIvars('Click here to view the default language.', array(),$this->allowCaching);
 		} else {
@@ -740,25 +748,26 @@ class tx_ttnews extends tslib_pibase {
 				$markerArray['###LATEST_HEADER###'] = $this->pi_getLL('latestHeader');
 				$wrappedSubpartArray['###LINK_ARCHIVE###'] = $this->local_cObj->typolinkWrap($this->conf['archiveTypoLink.']);
 
-				// unset previous and next link
+				// unset pagebrowser markers
 				$markerArray['###LINK_PREV###'] = '';
 				$markerArray['###LINK_NEXT###'] = '';
+				$markerArray['###BROWSE_LINKS###'] = '';
+				
 				// render a pagebrowser if needed
-
 				if ($newsCount>$this->config['limit']) {
-					// configure pagebrowser
-    				$this->internal['res_count'] = $newsCount;
-					$this->internal['results_at_a_time'] = $this->config['limit'];
-					$this->internal['maxPages'] = $this->config['pageBrowser.']['maxPages'];
-					if (!$this->config['pageBrowser.']['showPBrowserText']) {
-					    $this->LOCAL_LANG[$this->LLkey]['pi_list_browseresults_page'] = '';
+	   					 // configure pagebrowser vars
+	    				$this->internal['res_count'] = $newsCount;
+						$this->internal['results_at_a_time'] = $this->config['limit'];
+						$this->internal['maxPages'] = $this->config['pageBrowser.']['maxPages'];
+						if (!$this->config['pageBrowser.']['showPBrowserText']) {
+						    $this->LOCAL_LANG[$this->LLkey]['pi_list_browseresults_page'] = '';
+						}
+					if ($this->conf['userPageBrowserFunc']) {
+						$markerArray = $this->userProcess('userPageBrowserFunc', $markerArray);
+					} else {
+						$markerArray['###BROWSE_LINKS###'] = $this->pi_list_browseresults($this->config['pageBrowser.']['showResultCount'],$this->config['pageBrowser.']['tableParams']);
 					}
-
-					$markerArray['###BROWSE_LINKS###'] = $this->pi_list_browseresults($this->config['pageBrowser.']['showResultCount'],$this->config['pageBrowser.']['tableParams']);
-				} else {
-					$markerArray['###BROWSE_LINKS###'] = '';
-				}
-
+				} 
 				$content .= $this->cObj->substituteMarkerArrayCached($t['total'], $markerArray, $subpartArray, $wrappedSubpartArray);
 			} elseif (ereg('1=0', $where)) {
 				// first view of the search page with the parameter 'emptySearchAtStart' set
@@ -866,11 +875,12 @@ class tx_ttnews extends tslib_pibase {
 
 		// exclude latest from search
 		$selectConf['where'] = '1=1 '.($this->theCode == 'LATEST'?'':$where);
-
-		// select news by language
-		$sys_language_uid = $GLOBALS['TSFE']->config['config']['sys_language_uid'];
-		$selectConf['where'] .= ' AND tt_news.sys_language_uid='.($sys_language_uid?$sys_language_uid:0);
 		
+		// if the column "l18n_parent" exists in tt_content (TYPO3 version >= 3.7.0), select news by language
+		if ($this->config['use_l18nParent']) {
+		    $sys_language_uid = $GLOBALS['TSFE']->config['config']['sys_language_uid'];
+			$selectConf['where'] .= ' AND tt_news.sys_language_uid='.($sys_language_uid?$sys_language_uid:0);
+		}
 		
 		// allow overriding of the arcExclusive parameter from GET vars
 		if ($this->arcExclusive > 0) {
@@ -887,9 +897,9 @@ class tx_ttnews extends tslib_pibase {
 			}
 		}
 
-		if ($this->arcExclusive) {
+		if ($this->arcExclusive && !($this->theCode=='AMENU' && $this->conf['amenuShowAll'])) {
 			if ($this->conf['enableArchiveDate']) {
-				if ($this->arcExclusive < 0) {
+				if ($this->arcExclusive < 0) { // show archived
 					$selectConf['where'] .= ' AND (tt_news.archivedate=0 OR tt_news.archivedate>'.$GLOBALS['SIM_EXEC_TIME'].')';
 				} elseif ($this->arcExclusive > 0) {
 					$selectConf['where'] .= ' AND tt_news.archivedate<'.$GLOBALS['SIM_EXEC_TIME'];
@@ -899,6 +909,7 @@ class tx_ttnews extends tslib_pibase {
 				$theTime = $GLOBALS['SIM_EXEC_TIME']-intval($this->config['datetimeDaysToArchive']) * 3600 * 24;
 				if ($this->arcExclusive < 0) {
 					$selectConf['where'] .= ' AND (tt_news.datetime=0 OR tt_news.datetime>'.$theTime.')';
+					
 				} elseif ($this->arcExclusive > 0) {
 					$selectConf['where'] .= ' AND tt_news.datetime<'.$theTime;
 				}
