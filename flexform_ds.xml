@@ -127,7 +127,10 @@
 				</config>
 			</TCEforms>
 		  </archive>
-		  <recursive>
+		<!--  
+		is shown already by the tt_content element 
+		
+		<recursive>
 		  	<TCEforms>
 			<label>LLL:EXT:tt_news/locallang_tca.php:tt_news.pi_flexform.recursive</label>
 			<config>
@@ -137,7 +140,9 @@
 				<size>4</size>
 			</config>
 			</TCEforms>
-		  </recursive>
+		  </recursive>  
+		  !-->
+		  
 		  <PIDitemDisplay>
 		  	<TCEforms>
 			<exclude>1</exclude>
