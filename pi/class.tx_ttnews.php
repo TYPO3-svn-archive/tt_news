@@ -51,21 +51,21 @@
  *  484:     function displaySingle()
  *  539:     function displayList()
  *  786:     function getListContent($itemparts, $selectConf, $prefix_display)
- *  841:     function getSelectConf($where, $noPeriod = 0)
- *  945:     function initCategories()
- *  983:     function generatePageArray()
- *  999:     function getItemMarkerArray ($row, $textRenderObj = 'displaySingle')
- * 1145:     function getCatMarkerArray($markerArray, $row, $lConf)
- * 1247:     function getImageMarkers($markerArray, $row, $lConf, $textRenderObj)
- * 1305:     function getRelated($uid)
- * 1360:     function userProcess($mConfKey, $passVar)
- * 1375:     function spMarker($subpartMarker)
- * 1392:     function searchWhere($sw)
- * 1403:     function formatStr($str)
- * 1418:     function getLayouts($templateCode, $alternatingLayouts, $marker)
- * 1436:     function getXmlHeader()
- * 1496:     function cleanXML($str)
- * 1513:     function getNewsSubpart($myTemplate, $myKey, $row = Array())
+ *  848:     function getSelectConf($where, $noPeriod = 0)
+ *  952:     function initCategories()
+ *  990:     function generatePageArray()
+ * 1006:     function getItemMarkerArray ($row, $textRenderObj = 'displaySingle')
+ * 1152:     function getCatMarkerArray($markerArray, $row, $lConf)
+ * 1254:     function getImageMarkers($markerArray, $row, $lConf, $textRenderObj)
+ * 1309:     function getRelated($uid)
+ * 1364:     function userProcess($mConfKey, $passVar)
+ * 1379:     function spMarker($subpartMarker)
+ * 1396:     function searchWhere($sw)
+ * 1407:     function formatStr($str)
+ * 1422:     function getLayouts($templateCode, $alternatingLayouts, $marker)
+ * 1440:     function getXmlHeader()
+ * 1498:     function cleanXML($str)
+ * 1515:     function getNewsSubpart($myTemplate, $myKey, $row = Array())
  *
  * TOTAL FUNCTIONS: 23
  * (This index is automatically created/updated by the extension "extdeveval")
@@ -802,9 +802,15 @@ class tx_ttnews extends tslib_pibase {
 				// News type article or external url
 				$this->local_cObj->setCurrentVal($row['type'] == 1 ? $row['page']:$row['ext_url']);
 				$wrappedSubpartArray['###LINK_ITEM###'] = $this->local_cObj->typolinkWrap($this->conf['pageTypoLink.']);
+
+				// fill the link string in a register to access it from TS
+				$this->local_cObj->LOAD_REGISTER(array('newsMoreLink' => $this->local_cObj->typolink($this->pi_getLL('more'),$this->conf['pageTypoLink.'])), '');
 			} else {
 
 				$wrappedSubpartArray['###LINK_ITEM###'] = explode('|', $this->pi_linkTP_keepPIvars('|', array('tt_news' => $row['uid'], 'backPid' => $this->config['backPid']), $this->allowCaching, '', $this->config['singlePid']));
+// fill the link string in a register to access it from TS
+				$this->local_cObj->LOAD_REGISTER(array('newsMoreLink' => $this->pi_linkTP_keepPIvars($this->pi_getLL('more'), array('tt_news' => $row['uid'], 'backPid' => $this->config['backPid']), $this->allowCaching, '', $this->config['singlePid'])), '');
+
 			}
 			$markerArray = $this->getItemMarkerArray($row, $prefix_display);
 			// XML
@@ -813,6 +819,7 @@ class tx_ttnews extends tslib_pibase {
 			    	$rssUrl = ($row['type'] == 1 ? $this->config['siteUrl'] .$this->pi_getPageLink($row['page'],''):substr($row['ext_url'],0,strpos($row['ext_url'],' '))) ;
 				} else {
 			  		$rssUrl = $this->config['siteUrl'] . $this->pi_linkTP_keepPIvars_url(array('tt_news' => $row['uid'], 'backPid' => $this->config['backPid']), $this->allowCaching, '', $this->config['singlePid']);
+
  				}
 				// replace square brackets [] in links with their URLcodes and replace the &-sign with its ASCII code
 			  	$rssUrl = preg_replace(array('/\[/','/\]/','/&/'),array('%5B','%5D','&#38;') , $rssUrl);
@@ -1244,7 +1251,7 @@ $lConf['subheader_stdWrap.']['crop'] = $this->config['croppingLenght'];
 	 * @param	string		$textRenderObj : name of the template subpart
 	 * @return	array		$markerArray: filled markerarray
 	 */
-	function getImageMarkers($markerArray, $row, $lConf, $textRenderObj) {
+function getImageMarkers($markerArray, $row, $lConf, $textRenderObj) {
 		// overwrite image sizes from TS with the values from the content-element if they exist.
 		if ($this->config['FFimgH']||$this->config['FFimgW']) {
 			$lConf['image.']['file.']['maxW'] = $this->config['FFimgW'];
@@ -1259,6 +1266,10 @@ $lConf['subheader_stdWrap.']['crop'] = $this->config['croppingLenght'];
 			$theImgCode = '';
 			$imgs = t3lib_div::trimExplode(',', $row['image'], 1);
 			$imgsCaptions = explode(chr(10), $row['imagecaption']);
+			$imgsAltTexts = explode(chr(10), $row['imagealttext']);
+			$imgsTitleTexts = explode(chr(10), $row['imagetitletext']);
+
+
 			reset($imgs);
 			$cc = 0;
 			// unset the img in the image array in single view if the var firstImageIsPreview is set
@@ -1266,24 +1277,17 @@ $lConf['subheader_stdWrap.']['crop'] = $this->config['croppingLenght'];
 				$imageNum++;
 				unset($imgs[0]);
 				unset($imgsCaptions[0]);
+				unset($imgsAltTexts[0]);
+				unset($imgsTitleTexts[0]);
 				$cc = 1;
 			}
 			while (list(, $val) = each($imgs)) {
 				if ($cc == $imageNum) break;
 				if ($val) {
-					$lConf['image.']['altText'] = ''; // reset altText
-					$lConf['image.']['altText'] = $lConf['image.']['altText']; // set altText to value from TS
+
+					$lConf['image.']['altText'] = $imgsAltTexts[$cc];
+					$lConf['image.']['titleText'] = $imgsTitleTexts[$cc];
 					$lConf['image.']['file'] = 'uploads/pics/' . $val;
-					switch ($lConf['imgAltTextField']) {
-						case 'image':
-						$lConf['image.']['altText'] .= $val;
-						break;
-						case 'imagecaption':
-						$lConf['image.']['altText'] .= $imgsCaptions[$cc];
-						break;
-						default:
-						$lConf['image.']['altText'] .= $row[$lConf['imgAltTextField']];
-					}
 				}
 				$theImgCode .= $this->local_cObj->IMAGE($lConf['image.']) . $this->local_cObj->stdWrap($imgsCaptions[$cc], $lConf['caption_stdWrap.']);
 				$cc++;
@@ -1487,8 +1491,6 @@ $lConf['subheader_stdWrap.']['crop'] = $this->config['croppingLenght'];
 	 * cleans the content for rss feeds. removes '&nbsp;' and '?;' (dont't know if the scond one matters in real-life).
 	 * The rest of the cleaning/character-conversion is done by the stdWrap functions htmlspecialchars,stripHtml and csconv.
 	 * For details see http://typo3.org/documentation/document-library/doc_core_tsref/stdWrap/
-	 *
-	 * 
 	 *
 	 * @param	string		$str: inputstring to clean
 	 * @return	string		the cleaned string
