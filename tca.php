@@ -378,16 +378,24 @@ $TCA['tt_news'] = Array (
 		#'0' => Array('showitem' => 'hidden;;;;1-1-1,type,sys_language_uid,title;;;;2-2-2,datetime,starttime;;1,archivedate,category,author,author_email,keywords,--div--,short;;;;3-3-3,bodytext;;9;richtext[paste|bold|italic|underline|formatblock|class|left|center|right|orderedlist|unorderedlist|outdent|indent|link|table|image]:rte_transform[flag=rte_enabled|mode=ts];4-4-4, rte_enabled, text_properties;5-5-5,image;;;;6-6-6,imagecaption,--div--,links;;;;7-7-7,related,news_files'),
 	
 	// divider to Tabs	
-		'0' => Array('showitem' => 'hidden;;1;;,type,datetime,archivedate;;2;;,category,author,author_email,keywords;;3;;,--div--;the Text,title,short;;;;3-3-3,bodytext;;9;richtext[paste|bold|italic|underline|formatblock|class|left|center|right|orderedlist|unorderedlist|outdent|indent|link|table|image]:rte_transform[flag=rte_enabled|mode=ts];4-4-4, rte_enabled, text_properties,--div--;Related Media,image,imagecaption,links,related,news_files'),
+	#	'0' => Array('showitem' => 'hidden;;1;;,type,datetime,archivedate;;2;;,category,author,author_email,keywords;;3;;,--div--;the Text,title,short;;;;3-3-3,bodytext;;9;richtext[paste|bold|italic|underline|formatblock|class|left|center|right|orderedlist|unorderedlist|outdent|indent|link|table|image]:rte_transform[flag=rte_enabled|mode=ts];4-4-4, rte_enabled, text_properties,--div--;Related Media,image,imagecaption,links,related,news_files'),
+
+// divider to Tabs	
+		'0' => Array('showitem' => 'title;;1;;,datetime;;2;;1-1-1,author;;3;;,short,bodytext;;4;richtext[paste|bold|italic|underline|formatblock|class|left|center|right|orderedlist|unorderedlist|outdent|indent|link|table|image]:rte_transform[flag=rte_enabled|mode=ts];4-4-4,--div--;Relations,category,image;;;;1-1-1,imagecaption,links;;;;2-2-2,related;;;;3-3-3,news_files;;;;4-4-4'),
+
 		
 		
-		'1' => Array('showitem' => 'hidden;;1;;,type,datetime,archivedate;;2;;,category,author,author_email,keywords;;3;;,--div--;int. Page,title,page,short,--div--;Related Media,image,imagecaption'),
-		'2' => Array('showitem' => 'hidden;;1;;,type,datetime,archivedate;;2;;,category,author,author_email,keywords;;3;;,--div--;ext. Page,title,ext_url,short,--div--;Related Media,image,imagecaption')
+		'1' => Array('showitem' =>
+		'title;;1;;,datetime;;2;;1-1-1,author;;3;;,short,page;;4;;,--div--;Relations,category,image;;;;1-1-1,imagecaption'),
+
+		'2' => Array('showitem' =>
+		'title;;1;;,datetime;;2;;1-1-1,author;;3;;,short,ext_url;;4;;,--div--;Relations,category,image;;;;1-1-1,imagecaption')
 	),
 	'palettes' => Array (
-			'1' => Array('showitem' => 'starttime,endtime,fe_group'),
-		'2' => Array('showitem' => 'l18n_parent,sys_language_uid'),
-	'3' => Array('showitem' => 't3ver_label'),
+		'1' => Array('showitem' => 'hidden,type,starttime,endtime,fe_group'),
+		'2' => Array('showitem' => 'archivedate,l18n_parent,sys_language_uid'),
+		'3' => Array('showitem' => 't3ver_label,author_email'),
+		'4' => Array('showitem' => 'keywords'),
 	
 	)
 );

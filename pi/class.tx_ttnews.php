@@ -90,7 +90,6 @@ class tx_ttnews extends tslib_pibase {
 	var $extKey = 'tt_news'; // The extension key.
 	var $tt_news_uid;
 	var $conf;
-	var $conf2;
 	var $config;
 	var $langArr;
 	var $sys_language_mode;
@@ -138,57 +137,54 @@ class tx_ttnews extends tslib_pibase {
 	 */
 	function init($conf) {
 		$this->conf = $conf; //store configuration
+		$this->pi_loadLL(); // Loading language-labels
+		$this->pi_setPiVarDefaults(); // Set default piVars from TS
+		$this->pi_initPIflexForm(); // Init FlexForm configuration for plugin
+		$this->enableFields = $this->cObj->enableFields('tt_news');
 		$this->tt_news_uid = intval($this->piVars['tt_news']); // Get the submitted uid of a news (if any)
 		// Get number of alternative Layouts (loop layout in Archivelist and List view) default is 2:
 		$this->alternatingLayouts = intval($this->conf['alternatingLayouts']) > 0?intval($this->conf['alternatingLayouts']):2;
-
+		// load available syslanguages
 		$lres = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'sys_language', '1=1' . $this->cObj->enableFields('sys_language'));
 		$this->langArr = array();
 		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($lres)) {
 			$this->langArr[$row['uid']] = $row;
 		}
 		$this->sys_language_mode = $this->conf['sys_language_mode']?$this->conf['sys_language_mode']:$GLOBALS['TSFE']->sys_language_mode;
-		$this->pi_loadLL(); // Loading language-labels
-		$this->pi_setPiVarDefaults(); // Set default piVars from TS
-		$this->pi_initPIflexForm(); // Init FlexForm configuration for plugin
-		$this->enableFields = $this->cObj->enableFields('tt_news');
+
 		// "CODE" decides what is rendered: codes can be added by TS or FF with priority on FF
-		$this->config['code'] = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'what_to_display', 'sDEF');
-		// debug($GLOBALS['TSFE']);
-		$this->config['code'] = $this->config['code'] ? $this->config['code']:$this->cObj->stdWrap($this->conf['code'], $this->conf['code.']);
-		// News Categories:
-		$this->config['latestWithCatSelector'] = $this->conf['latestWithCatSelector']; // if set, news LATEST changes its contents with category selection
-		$this->config['amenuWithCatSelector'] = $this->conf['amenuWithCatSelector']; // the same for AMENU
-		$this->config['catSelectorTargetPid'] = $this->conf['catSelectorTargetPid'];
+		$code = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'what_to_display', 'sDEF');
+		$this->config['code'] = $code ? $code:$this->cObj->stdWrap($this->conf['code'], $this->conf['code.']);
+
+
+		// News Categories:	
 		// categoryModes are: 0=display all categories, 1=display selected categories, -1=display deselected categories
 		$categoryMode = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'categoryMode', 'sDEF');
 		$this->config['categoryMode'] = $categoryMode ? $categoryMode:$this->conf['categoryMode'];
-
 		if (is_numeric($this->piVars['cat'])) {
+		// catselection holds only the uids of the categories selected by GETvars
 			$this->config['catSelection'] = $this->piVars['cat'];
-			// $this->config['categoryMode'] = 1; // force 'select categories' mode if cat is given in GPvars
 		}
-		$catSelection = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'categorySelection', 'sDEF');
-		$catSelection = $catSelection?$catSelection:$this->conf['categorySelection'];
-		$this->catExclusive = $this->config['categoryMode']?$catSelection:0; // ignore cat selection if categoryMode isn't set
+		$catExclusive = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'categorySelection', 'sDEF');
+		$catExclusive = $catExclusive?$catExclusive:trim($this->conf['categorySelection']);
+		$this->catExclusive = $this->config['categoryMode']?$catExclusive:0; // ignore cat selection if categoryMode isn't set
+		// get more category fields from FF or TS
 		$fields = explode(',', 'catImageMode,catTextMode,catImageMaxWidth,catImageMaxHeight,maxCatImages,catTextLength,maxCatTexts');
-
 		foreach($fields as $key) {
 			$value = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], $key, 's_category');
 			$this->config[$key] = (is_numeric($value)?$value:$this->conf[$key]);
 		}
-
 		$this->initCategories(); // initialize category-array
+
 		// Archive:
-		$this->config['archiveMode'] = $this->conf['archiveMode']; // month, quarter or year listing in AMENU
-		$this->config['reverseAMenu'] = $this->conf['reverseAMenu']; // reverse AMENU order
-		$this->config['archiveMenuNoEmpty'] = $this->conf['archiveMenuNoEmpty'];
+		$this->config['archiveMode'] = trim($this->conf['archiveMode']) ; // month, quarter or year listing in AMENU
+
 		// arcExclusive : -1=only non-archived; 0=don't care; 1=only archived
-		$archive = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'archive', 'sDEF');
-		$this->arcExclusive = $archive?$archive:$this->conf['archive'];
-		// if next value is set, the archive list is empty at start. default is, to show all archived items when no time period is given.
-		$this->config['emptyArchListAtStart'] = $this->conf['emptyArchListAtStart'];
-		$this->config['datetimeDaysToArchive'] = $this->conf['datetimeDaysToArchive'];
+		$arcExclusive = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'archive', 'sDEF');
+		$this->arcExclusive = $arcExclusive?$arcExclusive:$this->conf['archive'];
+
+		$this->config['datetimeDaysToArchive'] = intval($this->conf['datetimeDaysToArchive']);
+		
 		// pid_list is the pid/list of pids from where to fetch the news items.
 		$pid_list = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'pages', 'sDEF');
 		$pid_list = $pid_list?$pid_list:trim($this->cObj->stdWrap($this->conf['pid_list'], $this->conf['pid_list.']));
@@ -198,13 +194,15 @@ class tx_ttnews extends tslib_pibase {
 		$recursive = is_numeric($recursive)?$recursive:$this->cObj->stdWrap($conf['recursive'], $conf['recursive.']);
 		// extend the pid_list by recursive levels
 		$this->pid_list = $this->pi_getPidList($pid_list, $recursive);
+		$this->pid_list = $this->pid_list?$this->pid_list:0;
 		// generate array of page titles
 		$this->generatePageArray();
-
-		$this->config['itemLinkTarget'] = $this->conf['itemLinkTarget'];
+		
+		// itemLinkTarget is only used for categoryLinkMode 3 (catselector) in framesets
+		$this->config['itemLinkTarget'] = trim($this->conf['itemLinkTarget']);
 		// id of the page where the search results should be displayed
-		$this->config['searchPid'] = $this->conf['searchPid'];
-		$this->config['emptySearchAtStart'] = $this->conf['emptySearchAtStart']; // display only the search form, when entering the news search-page
+		$this->config['searchPid'] = intval($this->conf['searchPid']);
+
 		// pid of the page with the single view. the old var PIDitemDisplay is still processed if no other value is found
 		$singlePid = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'PIDitemDisplay', 's_misc');
 		$singlePid = $singlePid?$singlePid:intval($this->conf['singlePid']);
@@ -219,10 +217,7 @@ class tx_ttnews extends tslib_pibase {
 		$limit = t3lib_div::intInRange($this->conf['limit'], 0, 1000);
 		$this->config['limit'] = $limit?$limit:50;
 		$this->config['latestLimit'] = intval($this->conf['latestLimit'])?intval($this->conf['latestLimit']):$this->config['limit'];
-
-		$this->config['showPBrowserText'] = $this->conf['showPBrowserText']; // display text like 'page' in pagebrowser
-		$this->config['pageBrowser.'] = $this->conf['pageBrowser.']; // get pageBrowser configuration
-		$this->config['noNewsIdMsg'] = $this->conf['noNewsIdMsg']; // message diplayed when single view is called without a tt_news uid
+		
 		$orderBy = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'listOrderBy', 'sDEF');
 		$orderByTS = trim($this->conf['listOrderBy']);
 		$orderBy = $orderBy?$orderBy:$orderByTS;
@@ -233,13 +228,12 @@ class tx_ttnews extends tslib_pibase {
 			$ascDesc = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'ascDesc', 'sDEF');
 			$this->config['ascDesc'] = $ascDesc;
 		}
-		$groupBy = trim($this->conf['listGroupBy']);
-		$this->config['groupBy'] = $groupBy;
+		$this->config['groupBy'] = trim($this->conf['listGroupBy']);
 
-		$this->config['substitutePagetitle'] = $this->conf['substitutePagetitle'];
-		// if this is set the first image is handled as preview image, which is only shown in list view
+		// if this is set, the first image is handled as preview image, which is only shown in list view
 		$fImgPreview = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'firstImageIsPreview', 's_misc');
 		$this->config['firstImageIsPreview'] = $fImgPreview?$fImgPreview:$this->conf['firstImageIsPreview'];
+		
 		// read template-file and fill and substitute the Global Markers
 		$templateflex_file = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'template_file', 's_template');
 		$this->templateCode = $this->cObj->fileResource($templateflex_file?"uploads/tx_ttnews/" . $templateflex_file:$this->conf['templateFile']);
@@ -253,18 +247,15 @@ class tx_ttnews extends tslib_pibase {
 		$globalMarkerArray['###GC3###'] = $this->cObj->stdWrap($this->conf['color3'], $this->conf['color3.']);
 		$globalMarkerArray['###GC4###'] = $this->cObj->stdWrap($this->conf['color4'], $this->conf['color4.']);
 		$this->templateCode = $this->cObj->substituteMarkerArray($this->templateCode, $globalMarkerArray);
-		// names of the alternative subparts, used instead of the default subpart-names
-		$this->config['altMainMarkers.'] = $this->conf['altMainMarkers.'];
-		// this is set to 1 if a newsrecord is displayed with the "insert records" content element
-		$this->config['displayCurrentRecord'] = $this->conf['displayCurrentRecord'];
+		
 		// Configure caching
 		$this->allowCaching = $this->conf['allowCaching']?1:0;
-		// $this->allowCaching = 0;
 		if (!$this->allowCaching) {
 			$GLOBALS['TSFE']->set_no_cache();
 		}
-		// debug($this->conf);
+
 		// get siteUrl for links in rss feeds
+		
 		$this->config['siteUrl'] = t3lib_div::getIndpEnv('TYPO3_SITE_URL');
 	}
 
@@ -280,7 +271,7 @@ class tx_ttnews extends tslib_pibase {
 		$this->local_cObj = t3lib_div::makeInstance('tslib_cObj'); // Local cObj.
 		$this->init($conf);
 
-		if ($this->config['displayCurrentRecord']) {
+		if ($this->conf['displayCurrentRecord']) {
 			// added the possibility to change the template, used for 'display current record'. if the value is empty, the code is 'single'
 			$this->config['code'] = $this->conf['defaultCode']?trim($this->conf['defaultCode']):'SINGLE';
 			$this->tt_news_uid = $this->cObj->data['uid'];
@@ -389,7 +380,7 @@ class tx_ttnews extends tslib_pibase {
 				$row = $GLOBALS['TYPO3_DB']->sql_fetch_row($res);
 				$periodInfo['count'] = $row[0];
 
-				if (!$this->config['archiveMenuNoEmpty'] || $periodInfo['count']) {
+				if (!$this->conf['archiveMenuNoEmpty'] || $periodInfo['count']) {
 					$periodAccum[] = $periodInfo;
 				}
 			}
@@ -400,12 +391,12 @@ class tx_ttnews extends tslib_pibase {
 
 			$veryLocal_cObj = t3lib_div::makeInstance('tslib_cObj');
 			// reverse amenu order if 'reverseAMenu' is given
-			if ($this->config['reverseAMenu']) {
+			if ($this->conf['reverseAMenu']) {
 				arsort($periodAccum);
 			}
 
 			$archiveLink = $this->conf['archiveTypoLink.']['parameter'];
-
+			$this->conf['parent.']['addParams']	= $this->conf['archiveTypoLink.']['addParams']; 
 			reset($periodAccum);
 			$itemsOutArr = array();
 			while (list(, $pArr) = each($periodAccum)) {
@@ -475,7 +466,7 @@ class tx_ttnews extends tslib_pibase {
 		if (is_array($row)) {
 			// Get the subpart code
 			$item = '';
-			if ($this->config['displayCurrentRecord']) {
+			if ($this->conf['displayCurrentRecord']) {
 				$item = trim($this->getNewsSubpart($this->templateCode, $this->spMarker('###TEMPLATE_SINGLE_RECORDINSERT###'), $row));
 			}
 
@@ -486,11 +477,12 @@ class tx_ttnews extends tslib_pibase {
 			$wrappedSubpartArray = array();
 			$wrappedSubpartArray['###LINK_ITEM###'] = explode('|', $this->pi_linkTP_keepPIvars('|', array('tt_news' => null, 'backPid' => null), $this->allowCaching, '', $this->piVars['backPid']));
 			// set the title of the single view page to the title of the news record
-			if ($this->config['substitutePagetitle']) {
+			if ($this->conf['substitutePagetitle']) {
 				$GLOBALS['TSFE']->page['title'] = $row['title'];
+				// set pagetitle for indexed search to news title
+				$GLOBALS['TSFE']->indexedDocTitle = $row['title'];
 			}
-			// set pagetitle for indexed search to news title
-			$GLOBALS['TSFE']->indexedDocTitle = $row['title'];
+			
 			$markerArray = $this->getItemMarkerArray($row, 'displaySingle');
 			// Substitute
 			$content = $this->cObj->substituteMarkerArrayCached($item, $markerArray, array(), $wrappedSubpartArray);
@@ -549,7 +541,7 @@ class tx_ttnews extends tslib_pibase {
 				$where = $this->searchWhere(trim($this->piVars['swords']));
 				$theCode = 'SEARCH';
 			} else {
-				$where = ($this->config['emptySearchAtStart']?'AND 1=0':''); // display an empty list, if 'emptySearchAtStart' is set.
+				$where = ($this->conf['emptySearchAtStart']?'AND 1=0':''); // display an empty list, if 'emptySearchAtStart' is set.
 			}
 			break;
 			// xml news export
@@ -570,18 +562,18 @@ class tx_ttnews extends tslib_pibase {
 				$this->templateCode = $this->cObj->fileResource($this->conf['displayXML.']['rss2_tmplFile']);
 				break;
 
-				/**
-				* this will be possible later:
-				* case 'rdf':
-				* $templateName = 'TEMPLATE_RDF';
-				* $this->templateCode = $this->cObj->fileResource($this->conf['displayXML.']['rdf_tmplFile']);
-				* break;
-				*
-				* case 'atom':
-				* $templateName = 'TEMPLATE_ATOM';
-				* $this->templateCode = $this->cObj->fileResource($this->conf['displayXML.']['atom_tmplFile']);
-				* break;
-				*/
+				
+				// this will be possible later:
+				// case 'rdf':
+				// $templateName = 'TEMPLATE_RDF';
+				// $this->templateCode = $this->cObj->fileResource($this->conf['displayXML.']['rdf_tmplFile']);
+				// break;
+				
+				// case 'atom':
+				// $templateName = 'TEMPLATE_ATOM';
+				// $this->templateCode = $this->cObj->fileResource($this->conf['displayXML.']['atom_tmplFile']);
+				// break;
+				
 			}
 			break;
 		}
@@ -598,7 +590,7 @@ class tx_ttnews extends tslib_pibase {
 		}
 		$noPeriod = 0;
 
-		if (!$this->config['emptyArchListAtStart']) {
+		if (!$this->conf['emptyArchListAtStart']) {
 			// if this is true, we're listing from the archive for the first time (no pS set), to prevent an empty list page we set the pS value to the archive start
 			if (($this->arcExclusive > 0 && !$this->piVars['pS'] && $theCode != 'SEARCH')) {
 				// set pS to time minus archive startdate
@@ -611,7 +603,7 @@ class tx_ttnews extends tslib_pibase {
 		}
 		// Allowed to show the listing? periodStart must be set, when listing from the archive.
 		if (!($this->arcExclusive > -1 && !$this->piVars['pS'] && $theCode != 'SEARCH')) {
-			if ($this->config['displayCurrentRecord'] && $this->tt_news_uid) {
+			if ($this->conf['displayCurrentRecord'] && $this->tt_news_uid) {
 				$this->pid_list = $this->cObj->data['pid'];
 				$where = 'AND tt_news.uid=' . $this->tt_news_uid;
 			}
@@ -655,9 +647,9 @@ class tx_ttnews extends tslib_pibase {
 				}
 				// exclude news-records shown in LATEST from the LIST template
 				if ($theCode == 'LIST' && $this->conf['excludeLatestFromList'] && !$this->piVars['pointer'] && !$this->piVars['cat']) {
-					if ($this->conf['latestLimit']) {
-						$selectConf['begin'] += $this->conf['latestLimit'];
-						$newsCount -= $this->conf['latestLimit'];
+					if ($this->config['latestLimit']) {
+						$selectConf['begin'] += $this->config['latestLimit'];
+						$newsCount -= $this->config['latestLimit'];
 					} else {
 						$selectConf['begin'] += $newsCount;
 						// this will clean the display of LIST view when 'latestLimit' is unset because all the news have been shown in LATEST already
@@ -688,14 +680,14 @@ class tx_ttnews extends tslib_pibase {
 					// configure pagebrowser vars
 					$this->internal['res_count'] = $newsCount;
 					$this->internal['results_at_a_time'] = $this->config['limit'];
-					$this->internal['maxPages'] = $this->config['pageBrowser.']['maxPages'];
-					if (!$this->config['pageBrowser.']['showPBrowserText']) {
+					$this->internal['maxPages'] = $this->conf['pageBrowser.']['maxPages'];
+					if (!$this->conf['pageBrowser.']['showPBrowserText']) {
 						$this->LOCAL_LANG[$this->LLkey]['pi_list_browseresults_page'] = '';
 					}
 					if ($this->conf['userPageBrowserFunc']) {
 						$markerArray = $this->userProcess('userPageBrowserFunc', $markerArray);
 					} else {
-						$markerArray['###BROWSE_LINKS###'] = $this->pi_list_browseresults($this->config['pageBrowser.']['showResultCount'], $this->config['pageBrowser.']['tableParams']);
+						$markerArray['###BROWSE_LINKS###'] = $this->pi_list_browseresults($this->conf['pageBrowser.']['showResultCount'], $this->conf['pageBrowser.']['tableParams']);
 					}
 				}
 				$content .= $this->cObj->substituteMarkerArrayCached($t['total'], $markerArray, $subpartArray, $wrappedSubpartArray);
@@ -857,7 +849,7 @@ class tx_ttnews extends tslib_pibase {
 			}
 		}
 		// exclude LATEST and AMENU from changing their contents with the cat selector. This can be overridden by setting the TSvars 'latestWithCatSelector' or 'amenuWithCatSelector'
-		if ($this->config['catSelection'] && (($this->theCode == 'LATEST' && $this->config['latestWithCatSelector']) || ($this->theCode == 'AMENU' && $this->config['amenuWithCatSelector']) || ($this->theCode == 'LIST' || $this->theCode == 'SEARCH'))) {
+		if ($this->config['catSelection'] && (($this->theCode == 'LATEST' && $this->conf['latestWithCatSelector']) || ($this->theCode == 'AMENU' && $this->conf['amenuWithCatSelector']) || ($this->theCode == 'LIST' || $this->theCode == 'SEARCH'))) {
 			$this->config['categoryMode'] = 1; // force 'select categories' mode if cat is given in GPvars
 			$this->catExclusive = $this->config['catSelection']; // override category selection from other news content-elements with the selection from the catselector
 		}
@@ -1067,8 +1059,8 @@ class tx_ttnews extends tslib_pibase {
 		$markerArray['###PAGE_AUTHOR_EMAIL###'] = $this->local_cObj->stdWrap($this->pageArray[$row['pid']]['author_email'], $lConf['email_stdWrap.']);
 		// XML
 		if ($this->theCode == 'XML') {
-		 	$markerArray['###NEWS_TITLE###'] = $this->cleanXML($row['title']) ;
-			$markerArray['###NEWS_SUBHEADER###'] = strip_tags($this->cleanXML($markerArray['###NEWS_SUBHEADER###']));
+		 	$markerArray['###NEWS_TITLE###'] = $this->cleanXML($this->local_cObj->stdWrap($row['title'], $lConf['title_stdWrap.']));
+			$markerArray['###NEWS_SUBHEADER###'] = $this->cleanXML($this->local_cObj->stdWrap($row['short'], $lConf['subheader_stdWrap.']));
 			$markerArray['###NEWS_AUTHOR###'] = $row['author_email']?'<author>'.$row['author_email'].'</author>':'';
 			$markerArray['###NEWS_DATE###'] = date('r', $row['datetime']);
 		}
@@ -1118,8 +1110,6 @@ class tx_ttnews extends tslib_pibase {
 			$theCatImgCodeArray = array();
 			while (list ($key, $val) = each ($this->categories[$row['uid']])) {
 				// find categories, wrap them with links and collect them in the array $news_category.
-				$catLinkTarget = $this->categories[$row['uid']][$key]['shortcut_target'];
-
 				$catTitle = $this->categories[$row['uid']][$key]['title'];
 				if ($this->config['catTextMode'] == 0) {
 					$markerArray['###NEWS_CATEGORY###'] = '';
@@ -1128,10 +1118,11 @@ class tx_ttnews extends tslib_pibase {
 					$news_category[] = $catTitle;
 				} elseif ($this->config['catTextMode'] == 2) {
 					// link to category shortcut
-					$news_category[] = $this->pi_linkToPage($catTitle, $this->categories[$row['uid']][$key]['shortcut'], ($catLinkTarget?$catLinkTarget:$this->config['itemLinkTarget']));
+					$news_category[] = $this->pi_linkToPage($catTitle, $this->categories[$row['uid']][$key]['shortcut'], $this->categories[$row['uid']][$key]['shortcut_target']);
 				} elseif ($this->config['catTextMode'] == 3) {
 					// act as category selector
-					$news_category[] = $this->pi_linkTP_keepPIvars($catTitle, array('cat' => $this->categories[$row['uid']][$key]['catid'], 'backPid' => null, 'pointer' => null), '', '', ($this->config['catSelectorTargetPid']?$this->config['catSelectorTargetPid']:$GLOBALS['TSFE']->id));
+					$catSelLinkParams = ($this->conf['catSelectorTargetPid']?($this->config['itemLinkTarget']?$this->conf['catSelectorTargetPid'].' '.$this->config['itemLinkTarget']:$this->conf['catSelectorTargetPid']):$GLOBALS['TSFE']->id);
+					$news_category[] = $this->pi_linkTP_keepPIvars($catTitle, array('cat' => $this->categories[$row['uid']][$key]['catid'], 'backPid' => null, 'pointer' => null), '', '', $catSelLinkParams);
 				}
 
 				if ($this->config['catImageMode'] == 0 or empty($this->categories[$row['uid']][$key]['image'])) {
@@ -1154,8 +1145,9 @@ class tx_ttnews extends tslib_pibase {
 						}
 						if ($this->config['catImageMode'] == 3) {
 							// act as category selector
+							$catSelLinkParams = ($this->conf['catSelectorTargetPid']?($this->config['itemLinkTarget']?$this->conf['catSelectorTargetPid'].' '.$this->config['itemLinkTarget']:$this->conf['catSelectorTargetPid']):$GLOBALS['TSFE']->id);
 							$catPicConf['image.']['altText'] = $this->pi_getLL('altTextCatSelector') . $catTitle;
-							$catPicConf['image.']['stdWrap.']['innerWrap'] = $this->pi_linkTP_keepPIvars('|', array('cat' => $this->categories[$row['uid']][$key]['catid'], 'backPid' => null, 'pointer' => null), '', '', ($this->config['catSelectorTargetPid']?$this->config['catSelectorTargetPid']:$GLOBALS['TSFE']->id));
+							$catPicConf['image.']['stdWrap.']['innerWrap'] = $this->pi_linkTP_keepPIvars('|', array('cat' => $this->categories[$row['uid']][$key]['catid'], 'backPid' => null, 'pointer' => null), '', '', $catSelLinkParams);
 						}
 					} else {
 						$catPicConf['image.']['altText'] = $this->categories[$row['uid']][$key]['title'];
@@ -1323,8 +1315,8 @@ class tx_ttnews extends tslib_pibase {
 	function spMarker($subpartMarker) {
 		$sPBody = substr($subpartMarker, 3, -3);
 		$altSPM = '';
-		if (isset($this->config['altMainMarkers.'])) {
-			$altSPM = trim($this->cObj->stdWrap($this->config['altMainMarkers.'][$sPBody], $this->conf['altMainMarkers.'][$sPBody . '.']));
+		if (isset($this->conf['altMainMarkers.'])) {
+			$altSPM = trim($this->cObj->stdWrap($this->conf['altMainMarkers.'][$sPBody], $this->conf['altMainMarkers.'][$sPBody . '.']));
 			$GLOBALS['TT']->setTSlogMessage('Using alternative subpart marker for \'' . $subpartMarker . '\': ' . $altSPM, 1);
 		}
 
@@ -1334,7 +1326,7 @@ class tx_ttnews extends tslib_pibase {
 	/**
 	 * Generates a search where clause.
 	 *
-	 * @param	string		$ searchword(s)
+	 * @param	string		$searchword(s)
 	 * @return	string		querypart
 	 */
 	function searchWhere($sw) {
@@ -1344,9 +1336,8 @@ class tx_ttnews extends tslib_pibase {
 
 	/**
 	 * Format string with general_stdWrap from configuration
-	 * this is not used in the current version, cause it collides with the proc functions of the rte
-	 *
-	 * @param	string		$ string to wrap
+	 * 
+	 * @param	string		$string to wrap
 	 * @return	string		wrapped string
 	 */
 	function formatStr($str) {
@@ -1359,9 +1350,9 @@ class tx_ttnews extends tslib_pibase {
 	/**
 	 * Returns alternating layouts
 	 *
-	 * @param	string		$ html code of the template subpart
-	 * @param	integer		$ number of alternatingLayouts
-	 * @param	string		$ name of the content-markers in this template-subpart
+	 * @param	string		$html code of the template subpart
+	 * @param	integer		$number of alternatingLayouts
+	 * @param	string		$name of the content-markers in this template-subpart
 	 * @return	array		html code for alternating content markers
 	 */
 	function getLayouts($templateCode, $alternatingLayouts, $marker) {
@@ -1412,40 +1403,39 @@ class tx_ttnews extends tslib_pibase {
 			$markerArray['###NEWS_LASTBUILD###'] = '';
 		}
 
-		if ($this->conf['displayXML.']['xmlWebMaster'] != '') {
+		if ($this->conf['displayXML.']['xmlWebMaster']) {
 			$markerArray['###NEWS_WEBMASTER###'] = '<webMaster>' . $this->conf['displayXML.']['xmlWebMaster'] . '</webMaster>';
 		} else {
 			$markerArray['###NEWS_WEBMASTER###'] = '';
 		}
 
-		if ($this->conf['displayXML.']['xmlManagingEditor'] != '') {
+		if ($this->conf['displayXML.']['xmlManagingEditor']) {
 			$markerArray['###NEWS_MANAGINGEDITOR###'] = '<managingEditor>' . $this->conf['displayXML.']['xmlManagingEditor'] . '</managingEditor>';
 		} else {
 			$markerArray['###NEWS_MANAGINGEDITOR###'] = '';
 		}
 
-		if ($this->conf['displayXML.']['xmlCopyright'] != '') {
+		if ($this->conf['displayXML.']['xmlCopyright']) {
 			$markerArray['###NEWS_COPYRIGHT###'] = '<copyright>' . $this->conf['displayXML.']['xmlCopyright'] . '</copyright>';
 		} else {
 			$markerArray['###NEWS_COPYRIGHT###'] = '';
 		}
 
-
-
 		return $markerArray;
 	}
 	/**
-	 * clean the content for rss feeds. removes '&nbsp;'. can be extended with a csconv function 
+	 * cleans the content for rss feeds. removes '&nbsp;' and '?;' (dont't know if the scond one matters in real-life).
+	 * The rest of the cleaning/character-conversion is done by the stdWrap functions htmlspecialchars and csconv.
+	 * For details see http://typo3.org/documentation/document-library/doc_core_tsref/stdWrap/
 	 * 
-	 * @param $content
-	 * @return 
+	 * @param 	string 		$str
+	 * @return 	string 		$cleanedStr
 	 **/
 	function cleanXML($str) {
 		$cleanedStr = preg_replace(
-			array('/&nbsp;/'),
-			array(' '), 
+			array('/&nbsp;/','/&;/'),
+			array(' '.'&amp;;'),
 			$str);
-	
 		return $cleanedStr;
 	}
 			
@@ -1453,9 +1443,9 @@ class tx_ttnews extends tslib_pibase {
 	 * Returns a subpart from the input content stream.
 	 * Enables pre-/post-processing of templates/templatefiles
 	 *
-	 * @param	string		$ Content stream, typically HTML template content.
-	 * @param	string		$ Marker string, typically on the form "###...###"
-	 * @param	array		$ Optional: the aktive row of data - if available
+	 * @param	string		$Content stream, typically HTML template content.
+	 * @param	string		$Marker string, typically on the form "###...###"
+	 * @param	array		$Optional: the active row of data - if available
 	 * @return	string		The subpart found, if found.
 	 */
 	function getNewsSubpart($myTemplate, $myKey, $row = Array()) {
