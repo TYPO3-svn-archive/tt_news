@@ -42,6 +42,11 @@ require_once(PATH_tslib."class.tslib_pibase.php");
 class tx_ttnews extends tslib_pibase {
 	var $cObj;		// The backReference to the mother cObj object set at call time
 
+		// Default plugin variables:
+	var $prefixId = 'tx_ttnews';		// Same as class name
+	var $scriptRelPath = 'pi/class.tx_ttnews.php';	// Path to this script relative to the extension dir.
+	var $extKey = 'tt_news';	// The extension key.
+
 	var $tt_news_uid;
 	var $conf;
 	var $conf2;
@@ -91,19 +96,45 @@ class tx_ttnews extends tslib_pibase {
 		$this->tt_news_uid = intval(t3lib_div::_GP("tt_news"));
 		$this->alternativeLayouts = intval($this->conf["alternatingLayouts"])>0 ? intval($this->conf["alternatingLayouts"]) : 2;
 			
+			// Loading language-labels
+		$this->pi_loadLL();
+			
+			// Init FlexForm configuration for plugin:
+		$this->pi_initPIflexForm();
+			
 			// pid_list is the pid/list of pids from where to fetch the news items.
 		$this->config["pid_list"] = trim($this->cObj->stdWrap($this->conf["pid_list"],$this->conf["pid_list."]));
 		$this->config["pid_list"] = $this->config["pid_list"] ? implode(t3lib_div::intExplode(",",$this->config["pid_list"]),",") : $GLOBALS["TSFE"]->id;
-		$this->config["recursive"] = $this->cObj->stdWrap($conf["recursive"],$conf["recursive."]);
+		$recursive=$this->pi_getFFvalue($this->cObj->data['pi_flexform'],'recursive','sDEF');
+		$this->config["recursive"] = is_numeric($recursive)?$recursive:$this->cObj->stdWrap($conf["recursive"],$conf["recursive."]);
 		list($pid) = explode(",",$this->config["pid_list"]);
 		$this->pid = $pid;
 
 			// "CODE" decides what is rendered:
-		$this->config["code"] = $this->cObj->stdWrap($this->conf["code"],$this->conf["code."]);
+		$this->config["code"] = $this->pi_getFFvalue($this->cObj->data['pi_flexform'],'what_to_display','sDEF');
+		$this->config["select_deselect_categories"] = $this->pi_getFFvalue($this->cObj->data['pi_flexform'],'select_deselect_categories','sDEF');
+		$this->config["category_selection"] = $this->pi_getFFvalue($this->cObj->data['pi_flexform'],'category_selection','sDEF');
+		$this->config["archive"] = $this->pi_getFFvalue($this->cObj->data['pi_flexform'],'archive','sDEF');
+
 		$this->config["limit"] = t3lib_div::intInRange($conf["limit"],0,1000);
 		$this->config["limit"] = $this->config["limit"] ? $this->config["limit"] : 50;
 		$this->allowCaching = $this->conf["allowCaching"]?1:0;
-		
+
+		$catImageMode=$this->pi_getFFvalue($this->cObj->data['pi_flexform'],'catImageMode','s_category');
+		$catTextMode=$this->pi_getFFvalue($this->cObj->data['pi_flexform'],'catTextMode','s_category');
+		$catImageMaxWidth=$this->pi_getFFvalue($this->cObj->data['pi_flexform'],'catImageMaxWidth','s_category');
+		$catImageMaxHeight=$this->pi_getFFvalue($this->cObj->data['pi_flexform'],'catImageMaxHeight','s_category');
+		$maxCatImages=$this->pi_getFFvalue($this->cObj->data['pi_flexform'],'maxCatImages','s_category');
+		$catTextLength=$this->pi_getFFvalue($this->cObj->data['pi_flexform'],'catTextLength','s_category');
+		$maxCatTexts=$this->pi_getFFvalue($this->cObj->data['pi_flexform'],'maxCatTexts','s_category');
+		$this->config['catImageMode']=(is_numeric($catImageMode)?$catImageMode:$this->conf['catImageMode']);
+		$this->config['catTextMode']=(is_numeric($catTextMode)?$catTextMode:$this->conf['catTextMode']);
+		$this->config['catImageMaxWidth']=($catImageMaxWidth?$catImageMaxWidth:$this->conf['catImageMaxWidth']);
+		$this->config['catImageMaxHeight']=($catImageMaxHeight?$catImageMaxHeight:$this->conf['catImageMaxHeight']);
+		$this->config['maxCatImages']=(is_numeric($maxCatImages)?$maxCatImages:$this->conf['maxCatImages']);
+		$this->config['catTextLength']=(is_numeric($catTextLength)?$catTextLength:$this->conf['catTextLength']);
+		$this->config['maxCatTexts']=(is_numeric($maxCatTexts)?$maxCatTexts:$this->conf['maxCatTexts']);
+
 			// If the current record should be displayed.
 		$this->config["displayCurrentRecord"] = $this->conf["displayCurrentRecord"];
 		if ($this->config["displayCurrentRecord"])	{
@@ -111,9 +142,9 @@ class tx_ttnews extends tslib_pibase {
 			$this->tt_news_uid=$this->cObj->data["uid"];
 		}
 
-			// template is read.
-		$this->templateCode = $this->cObj->fileResource($this->conf["templateFile"]);
-
+			// template is read.//
+		$templateflex_file=$this->pi_getFFvalue($this->cObj->data['pi_flexform'],'template_file','s_template');
+		$this->templateCode = $this->cObj->fileResource($templateflex_file?"uploads/tx_ttnews/".$templateflex_file:$this->conf["templateFile"]);
 			// globally substituted markers, fonts and colors.	
 		$splitMark = md5(microtime());
 		$globalMarkerArray=array();
@@ -137,9 +168,9 @@ class tx_ttnews extends tslib_pibase {
 		$codes=t3lib_div::trimExplode(",", $this->config["code"]?$this->config["code"]:$this->conf["defaultCode"],1);
 		if (!count($codes))	$codes=array("");
 		while(list(,$theCode)=each($codes))	{
-			list($theCode,$cat,$aFlag) = explode("/",$theCode);
-			$this->catExclusive = intval($cat);
-			$this->arcExclusive	= intval($aFlag);
+#			list($theCode,$cat,$aFlag) = explode("/",$theCode);
+			$this->catExclusive = $this->config['category_selection'];
+			$this->arcExclusive	= $this->config['archive'];
 			$theCode = (string)strtoupper(trim($theCode));
 			$this->theCode = $theCode;
 			switch($theCode)	{
@@ -163,6 +194,7 @@ class tx_ttnews extends tslib_pibase {
 
 						// Markers and substitution:
 					$markerArray["###CODE###"] = $this->theCode;
+					$markerArray["###EXTPATH###"] = $GLOBALS['TYPO3_LOADED_EXT']['tt_news']['siteRelPath'];
 					$content.=$this->cObj->substituteMarkerArray($helpTemplate,$markerArray);
 				break;
 			}
@@ -216,7 +248,7 @@ class tx_ttnews extends tslib_pibase {
 				$periodInfo["quarter"] = floor(date("m",$dateArr[$k])/3)+1;
 	
 					// FInding maximum and minimum values:
-				$selectConf['selectFields'] = 'count(*)';
+				$selectConf['selectFields'] = 'count(distinct(uid))';
 				$selectConf['where'] = $selectConf2['where']." AND datetime>=".$periodInfo["start"]." AND datetime<".$periodInfo["stop"];
 				$res = $this->cObj->exec_getQuery("tt_news",$selectConf);
 				$row = $GLOBALS['TYPO3_DB']->sql_fetch_row($res);
@@ -240,7 +272,7 @@ class tx_ttnews extends tslib_pibase {
 			while(list(,$pArr)=each($periodAccum))		{
 					// Print Item Title
 				$wrappedSubpartArray=array();
-				$wrappedSubpartArray["###LINK_ITEM###"]= array('<A href="'.$this->getLinkUrl(0).'&pS='.$pArr["start"].'&pL='.($pArr["stop"]-$pArr["start"]).'&arc=1">','</A>'); 
+				$wrappedSubpartArray["###LINK_ITEM###"]= array('<a href="'.$this->getLinkUrl(0).'&amp;pS='.$pArr["start"].'&amp;pL='.($pArr["stop"]-$pArr["start"]).'&amp;arc=1">','</a>'); 
 	
 				$markerArray = array();
 				$veryLocal_cObj->start($pArr,"");
@@ -286,7 +318,6 @@ class tx_ttnews extends tslib_pibase {
 				$templateName = "TEMPLATE_LATEST";
 				$this->arcExclusive=-1;	// Only latest, non archive news
 				if (intval($this->conf["latestLimit"]))	$this->config["limit"] = intval($this->conf["latestLimit"]);
-#				DEBUG($this->config["limit"]);
 			break;
 			case "LIST": 
 			case "SEARCH": 	
@@ -318,7 +349,11 @@ class tx_ttnews extends tslib_pibase {
 
 					// Fill marker arrays
 				$wrappedSubpartArray=array();
-				$wrappedSubpartArray["###LINK_ITEM###"]= array('<A href="'.$this->getLinkUrl($this->conf["backPid"]?$this->conf["backPid"]:t3lib_div::_GP("backPID")).'">','</A>');
+				if($backPid=$this->pi_getFFvalue($this->cObj->data['pi_flexform'],'backPid','sDEF')){
+				}elseif($backPid=$this->conf["backPid"]){
+				}elseif($backPid=t3lib_div::_GP("backPID")){
+				}
+				$wrappedSubpartArray["###LINK_ITEM###"]= array('<a href="'.$this->getLinkUrl($backPid).'">','</a>');
 				$markerArray = $this->getItemMarkerArray($row,"displaySingle");
 					// Substitute
 				$content= $this->cObj->substituteMarkerArrayCached($item,$markerArray,array(),$wrappedSubpartArray);
@@ -353,18 +388,17 @@ class tx_ttnews extends tslib_pibase {
 				$selectConf['selectFields'] = 'count(distinct(uid))'; //count(*)
 				$res = $this->cObj->exec_getQuery("tt_news",$selectConf);
 				$row = $GLOBALS['TYPO3_DB']->sql_fetch_row($res);
-
 				$newsCount = $row[0];
 
 					// range check to current newsCount
 				$begin_at = t3lib_div::intInRange(($begin_at >= $newsCount) ? ($newsCount-$this->config["limit"]) : $begin_at,0); 
 
 					// performing query for display:
+				$selectConf["groupBy"] = "uid";
 				$selectConf["orderBy"] = "datetime DESC"; 
 				$selectConf['selectFields'] = '*';
 				$selectConf['max'] = intval($this->config["limit"]+1);
 				$selectConf['begin'] = $begin_at;
-
 			 	$res = $this->cObj->exec_getQuery("tt_news",$selectConf);
 
 					// Getting elements
@@ -382,7 +416,8 @@ class tx_ttnews extends tslib_pibase {
 						$this->local_cObj->setCurrentVal($row["type"]==1 ? $row["page"] : $row["ext_url"]);
 						$wrappedSubpartArray["###LINK_ITEM###"]= $this->local_cObj->typolinkWrap($this->conf["pageTypoLink."]);
 					} else {
-						$wrappedSubpartArray["###LINK_ITEM###"]= array('<A href="'.$this->getLinkUrl($this->conf["PIDitemDisplay"]).'&tt_news='.$row["uid"].'" '.$itemLinkTarget.'>','</A>'); 
+					$PIDitemDisplay=$this->pi_getFFvalue($this->cObj->data['pi_flexform'],'PIDitemDisplay','sDEF');
+						$wrappedSubpartArray["###LINK_ITEM###"]= array('<a href="'.$this->getLinkUrl($PIDitemDisplay?$PIDitemDisplay:$this->conf["PIDitemDisplay"]).'&amp;tt_news='.$row["uid"].'" '.$itemLinkTarget.'>','</a>'); 
 					}
 					$markerArray = $this->getItemMarkerArray($row,$prefix_display);
 
@@ -402,13 +437,13 @@ class tx_ttnews extends tslib_pibase {
 					
 				if ($newsCount > $begin_at+$this->config["limit"])	{
 					$next = ($begin_at+$this->config["limit"] > $newsCount) ? $newsCount-$this->config["limit"] : $begin_at+$this->config["limit"];
-					$wrappedSubpartArray["###LINK_NEXT###"]=array('<A href="'.$url.'&begin_at='.$next.'">','</A>');
+					$wrappedSubpartArray["###LINK_NEXT###"]=array('<a href="'.$url.'&amp;begin_at='.$next.'">','</a>');
 				} else {
 					$subpartArray["###LINK_NEXT###"]="";
 				}
 				if ($begin_at)	{
 					$prev = ($begin_at-$this->config["limit"] < 0) ? 0 : $begin_at-$this->config["limit"];
-					$wrappedSubpartArray["###LINK_PREV###"]=array('<A href="'.$url.'&begin_at='.$prev.'">','</A>');
+					$wrappedSubpartArray["###LINK_PREV###"]=array('<a href="'.$url.'&amp;begin_at='.$prev.'">','</a>');
 				} else {
 					$subpartArray["###LINK_PREV###"]="";
 				}
@@ -418,9 +453,9 @@ class tx_ttnews extends tslib_pibase {
 						if (($begin_at >= $i*$this->config["limit"]) && ($begin_at < $i*$this->config["limit"]+$this->config["limit"])) 	{
 							$markerArray["###BROWSE_LINKS###"].= ' <b>'.(string)($i+1).'</b> ';
 							//	you may use this if you want to link to the current page also
-							//	$markerArray["###BROWSE_LINKS###"].= ' <A href="'.$url.'&begin_at='.(string)($i * $this->config["limit"]).'"><b>'.(string)($i+1).'</b></A> ';
+							//	$markerArray["###BROWSE_LINKS###"].= ' <a href="'.$url.'&amp;begin_at='.(string)($i * $this->config["limit"]).'"><b>'.(string)($i+1).'</b></a> ';
 						} else {
-							$markerArray["###BROWSE_LINKS###"].= ' <A href="'.$url.'&begin_at='.(string)($i * $this->config["limit"]).'">'.(string)($i+1).'</A> ';
+							$markerArray["###BROWSE_LINKS###"].= ' <a href="'.$url.'&amp;begin_at='.(string)($i * $this->config["limit"]).'">'.(string)($i+1).'</a> ';
 						}
 					}
 				}
@@ -471,7 +506,7 @@ class tx_ttnews extends tslib_pibase {
 				unset($queryString[$key]);
 			}
 		}
-		return $GLOBALS["TSFE"]->absRefPrefix.'index.php?'.implode($queryString,"&");
+		return $GLOBALS["TSFE"]->absRefPrefix.'index.php?'.implode($queryString,"&amp;");
 	}
 	
 	
@@ -510,21 +545,20 @@ class tx_ttnews extends tslib_pibase {
 			}
 		}
 			// Category
-		$codes=t3lib_div::trimExplode(",", $this->config["code"]?$this->config["code"]:$this->conf["defaultCode"],1);
+/*		$codes=t3lib_div::trimExplode(",", $this->config["code"]?$this->config["code"]:$this->conf["defaultCode"],1);
 		if (count($codes)) {
 			while(list(,$theCode)=each($codes))	{
 				list($theCode,$cat,$aFlag) = explode("/",$theCode);
 			}
-		}
+		}*/
 		if (intval(t3lib_div::_GP("cat")))	{
 			$this->catExclusive = intval(t3lib_div::_GP("cat"));
-			$cat = intval(t3lib_div::_GP("cat"));
+			$this->config['category_selection'] = intval(t3lib_div::_GP("cat"));
 		}
-		if (!empty($cat))	{
-			$selectConf["join"] = "tt_news_cat_mm";
-			$selectConf["where"] .= " AND tt_news_cat_mm.uid_foreign ".(substr($cat, 0, 1)=="0"?"NOT ":"")."IN (".strtr($cat, ";", ",").")";
-			$selectConf["where"] .= " AND tt_news_cat_mm.uid_local=tt_news.uid";
-			$selectConf["groupBy"] = "uid";
+		if ($this->config['category_selection']!='')	{
+			$selectConf["leftjoin"] = "tt_news_cat_mm ON tt_news.uid = tt_news_cat_mm.uid_local";
+			if($this->config['select_deselect_categories']!=1)$selectConf["where"] .= " AND (IFNULL(tt_news_cat_mm.uid_foreign,0) ".($this->config['select_deselect_categories']==3?"NOT ":"")."IN (".$this->config['category_selection']."))";
+#			$selectConf["groupBy"] .= "uid";
 		}
 			// Period
 		if (!$noPeriod && intval(t3lib_div::_GP("pS")))	{
@@ -657,35 +691,43 @@ class tx_ttnews extends tslib_pibase {
 		$news_category=array();
 		$theCatImgCode="";
 		$theCatImgCodeArray=array();
-		if(isset($this->categories[$row["uid"]])&&($this->conf["showCatText"]==1 or $this->conf["showCatImage"]==1)) {
+		if(isset($this->categories[$row["uid"]])&&($this->config["catImageMode"]!=0 or $this->config["catTextMode"]!=0)) {
 			while (list ($key, $val) = each ($this->categories[$row["uid"]])) {
-				$news_category[] = $this->local_cObj->stdWrap($this->cObj->getTypoLink($this->categories[$row["uid"]][$key]["title"],($this->conf["catShortcuts"]?$this->categories[$row["uid"]][$key]["shortcut"]:$GLOBALS["TSFE"]->id),($this->conf["catShortcuts"]?"":array("cat"=>$this->categories[$row["uid"]][$key]["catid"]))),$lConf["category_stdWrap."]);
-				if(!empty($this->categories[$row["uid"]][$key]["image"])) {
+				if($this->config["catTextMode"]==0){
+					$markerArray["###NEWS_CATEGORY###"]="";
+				}elseif($this->config["catTextMode"]==1){
+					$news_category[] = $this->local_cObj->stdWrap($this->categories[$row["uid"]][$key]["title"],$lConf["category_stdWrap."]);
+				}elseif($this->config["catTextMode"]==2) {
+					$news_category[] = $this->local_cObj->stdWrap($this->cObj->getTypoLink($this->categories[$row["uid"]][$key]["title"],$this->categories[$row["uid"]][$key]["shortcut"]),$lConf["category_stdWrap."]);
+				}elseif($this->config["catTextMode"]==3) {
+					$news_category[] = $this->local_cObj->stdWrap($this->cObj->getTypoLink($this->categories[$row["uid"]][$key]["title"],$GLOBALS["TSFE"]->id,array("cat"=>$this->categories[$row["uid"]][$key]["catid"])),$lConf["category_stdWrap."]);				
+				}
+				if($this->config["catImageMode"]==0 or empty($this->categories[$row["uid"]][$key]["image"])){
+					$markerArray["###NEWS_CATEGORY_IMAGE###"]="";
+				} else {
 					$lConf["image."]["file"] = "uploads/pics/".$this->categories[$row["uid"]][$key]["image"];
-				    $lConf["image."]["file."]["maxW"] = intval($this->conf["catImageMaxWidth"]);
-				    $lConf["image."]["file."]["maxH"] = intval($this->conf["catImageMaxHeight"]);
+				    $lConf["image."]["file."]["maxW"] = intval($this->config["catImageMaxWidth"]);
+				    $lConf["image."]["file."]["maxH"] = intval($this->config["catImageMaxHeight"]);
 					$lConf["image."]["stdWrap."]["spaceAfter"] = 0;
-					$lConf["image."]["stdWrap."]["typolink."]["parameter"] = ($this->conf["catShortcuts"]?$this->categories[$row["uid"]][$key]["shortcut"]:$GLOBALS["TSFE"]->id);
-					$lConf["image."]["stdWrap."]["typolink."]["additionalParams"] = ($this->conf["catShortcuts"]?"":"&cat=".$this->categories[$row["uid"]][$key]["catid"]);
+					if($this->config["catImageMode"]!=1){
+						$lConf["image."]["stdWrap."]["typolink."]["parameter"] = ($this->config["catImageMode"]==2?$this->categories[$row["uid"]][$key]["shortcut"]:$GLOBALS["TSFE"]->id);
+						$lConf["image."]["stdWrap."]["typolink."]["additionalParams"] = ($this->config["catImageMode"]==2?"":"&cat=".$this->categories[$row["uid"]][$key]["catid"]);
+					}//stdWrap.htmlSpecialChars = 1")??? for xml &amp;
 					$lConf["image."]["altText"] = $this->categories[$row["uid"]][$key]["title"];
 					$theCatImgCodeArray[]=$this->local_cObj->IMAGE($lConf["image."]);
 				}
 			}
-			if ($this->conf["showCatText"]==1) {
-				$news_category = implode(", ",array_slice($news_category, 0, intval($this->conf["maxCatTexts"])));
-				$markerArray["###NEWS_CATEGORY###"] = (strlen($news_category) < intval($this->conf["catTextLength"])?$news_category:substr($news_category,0,intval($this->conf["catTextLength"]))."...");
-			} else {
-				$markerArray["###NEWS_CATEGORY###"]="";
+			if ($this->config["catTextMode"]!=0) {
+				$news_category = implode(", ",array_slice($news_category, 0, intval($this->config["maxCatTexts"])));
+				$markerArray["###NEWS_CATEGORY###"] = (strlen($news_category) < intval($this->config["catTextLength"])?$news_category:substr($news_category,0,intval($this->config["catTextLength"]))."...");
 			}
-			if ($this->conf["showCatImage"]==1) {
-				$theCatImgCode = implode("",array_slice($theCatImgCodeArray, 0, intval($this->conf["maxCatImages"])));
+			if ($this->config["catImageMode"]!=0) {
+				$theCatImgCode = implode("",array_slice($theCatImgCodeArray, 0, intval($this->config["maxCatImages"])));
 				$markerArray["###NEWS_CATEGORY_IMAGE###"] = $this->local_cObj->wrap(trim($theCatImgCode),$lConf["imageWrapIfAny"]);
-			} else {
-				$markerArray["###NEWS_CATEGORY_IMAGE###"]="";
 			}
-		} elseif($this->conf["showCatText"]==1) { //to show categories not defined by tt_news_cat_mm
+/*		} elseif($this->conf["catTextMode"]!=0) { //to show categories not defined by tt_news_cat_mm
 			$markerArray["###NEWS_CATEGORY###"] = $this->categories["0"][$row["category"]];
-			$markerArray["###NEWS_CATEGORY_IMAGE###"]="";
+			$markerArray["###NEWS_CATEGORY_IMAGE###"]="";*/
 		} else {
 			$markerArray["###NEWS_CATEGORY_IMAGE###"]="";
 			$markerArray["###NEWS_CATEGORY###"]="";

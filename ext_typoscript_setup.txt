@@ -28,12 +28,11 @@ plugin.tt_news {
   }
   
   # category settings
-  catImageMaxWidth = 1000
+  catImageMaxWidth = 200
   catImageMaxHeight = 20
   catTextLength = 100
-  catShortcuts = 1
-  showCatText = 1
-  showCatImage = 1
+  catImageMode = 2 #0(don't display),1(none),2(shortcuts),3(categoryselect)
+  catTextMode = 1 #0(don't display),1(none),2(shortcuts),3(categoryselect)
   maxCatImages = 10
   maxCatTexts = 2
   
