@@ -1,4 +1,10 @@
 <?php
+// adds the possiblity to switch the use of the "StoragePid"(general record Storage Page) for tt_news categories
+$confArr = unserialize($GLOBALS["TYPO3_CONF_VARS"]["EXT"]["extConf"]["tt_news"]);
+if ($confArr['useStoragePid']) {
+    $fTableWhere = 'AND tt_news_cat.pid=###STORAGE_PID### ';
+}
+
 
 // ******************************************************************
 // This is the standard TypoScript news table, tt_news
@@ -231,7 +237,7 @@ $TCA['tt_news'] = Array (
 			'config' => Array (
 				'type' => 'select',
 				'foreign_table' => 'tt_news_cat',
-				'foreign_table_where' => 'AND tt_news_cat.pid=###STORAGE_PID### ORDER BY tt_news_cat.uid',
+				'foreign_table_where' => $fTableWhere.'ORDER BY tt_news_cat.uid',
 				'size' => 3,
 				'autoSizeMax' => 10,
 				'minitems' => 0,
@@ -365,7 +371,6 @@ $TCA['tt_news_cat'] = Array (
 		'0' => Array('showitem' => 'title;;;;3-3-3,image,shortcut;;;;1-1-1')
 	)
 );
-
 
 
 ?>

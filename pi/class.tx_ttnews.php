@@ -983,9 +983,15 @@ class tx_ttnews extends tslib_pibase {
 	 * @return	void
 	 */
 	function initCategories() {
+		// decide whether to look for categories only in the 'General record Storage page', or in the whole pagetree
+		$confArr = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['tt_news']);
+		if ($confArr['useStoragePid']) {
+		    $storagePid=$GLOBALS['TSFE']->getStorageSiterootPids();
+			$addquery = ' AND tt_news_cat.pid IN ('.$storagePid['_STORAGE_PID'].')';
+		}
 
-		$storagePid=$GLOBALS['TSFE']->getStorageSiterootPids();
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_news_cat LEFT JOIN tt_news_cat_mm ON tt_news_cat_mm.uid_foreign = tt_news_cat.uid', '1=1 AND tt_news_cat.pid IN ('.$storagePid['_STORAGE_PID'].') '.$this->cObj->enableFields('tt_news_cat'));
+		
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_news_cat LEFT JOIN tt_news_cat_mm ON tt_news_cat_mm.uid_foreign = tt_news_cat.uid', '1=1'.$addquery.$this->cObj->enableFields('tt_news_cat'));
 		echo mysql_error();
 		$this->categories = array();
 		$this->categorieImages = array();
