@@ -58,7 +58,7 @@ class tx_ttnews extends tslib_pibase {
 	var $searchFieldList="short,bodytext,author,keywords,links,imagecaption,title";
 	var $theCode="";
 	
-	var $categories=array();			// Is initialized with the categories of the shopping system
+	var $categories=array();			// Is initialized with the categories of the news system
 	var $pageArray=array();				// Is initialized with an array of the pages in the pid-list
 
 	/**
@@ -148,6 +148,8 @@ class tx_ttnews extends tslib_pibase {
 		$PIDitemDisplay = $this->pi_getFFvalue($this->cObj->data['pi_flexform'],'PIDitemDisplay','sDEF');
 		//If FlexForm Value is given then overwrite
 		$this->config["PIDitemDisplay"] = $PIDitemDisplay ? $PIDitemDisplay : $this->conf["PIDitemDisplay"];
+		
+		$this->config['noNewsIdMsg'] = $this->conf['noNewsIdMsg'];
 		
 		// reverse AMENU order
 		$this->config['reverseAMenu'] = $this->conf['reverseAMenu'];
@@ -377,7 +379,9 @@ class tx_ttnews extends tslib_pibase {
 			$content= $this->cObj->substituteMarkerArrayCached($item,$markerArray,array(),$wrappedSubpartArray);
 		}
 		else {
-			$content.="Wrong parameters, GET/POST var 'tt_news' was missing.";
+		// if singleview is shown with no tt_news uid given in the url, an error message is displayed. 
+		// you can configure your own message by setting the TS var 'noNewsIdMsg'.
+		 	$content .= $this->config['noNewsIdMsg']?$this->config['noNewsIdMsg']:'Wrong parameters, GET/POST var \'tt_news\' was missing.';
 		}
 		return $content;
 	}
