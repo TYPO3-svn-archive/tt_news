@@ -503,7 +503,7 @@ class tx_ttnews extends tslib_pibase {
 			}
 			// reset marker array
 			$wrappedSubpartArray = array();
-			$wrappedSubpartArray['###LINK_ITEM###'] = explode('|', $this->pi_linkTP_keepPIvars('|', array('tt_news' => null, 'backPid' => null), $this->allowCaching, '', $this->piVars['backPid']));
+			$wrappedSubpartArray['###LINK_ITEM###'] = explode('|', $this->pi_linkTP_keepPIvars('|', array('tt_news' => null, 'backPid' => null), $this->allowCaching, '', $this->config['backPid'] ));
 			// set the title of the single view page to the title of the news record
 			if ($this->conf['substitutePagetitle']) {
 				$GLOBALS['TSFE']->page['title'] = $row['title'];
@@ -807,9 +807,9 @@ class tx_ttnews extends tslib_pibase {
 				$this->local_cObj->LOAD_REGISTER(array('newsMoreLink' => $this->local_cObj->typolink($this->pi_getLL('more'),$this->conf['pageTypoLink.'])), '');
 			} else {
 
-				$wrappedSubpartArray['###LINK_ITEM###'] = explode('|', $this->pi_linkTP_keepPIvars('|', array('tt_news' => $row['uid'], 'backPid' => $this->config['backPid']), $this->allowCaching, '', $this->config['singlePid']));
+				$wrappedSubpartArray['###LINK_ITEM###'] = explode('|', $this->pi_linkTP_keepPIvars('|', array('tt_news' => $row['uid'], 'backPid' => ($this->conf['dontUseBackPid']?null:$this->config['backPid'])), $this->allowCaching, ($this->conf['dontUseBackPid']?1:0), $this->config['singlePid']));
 // fill the link string in a register to access it from TS
-				$this->local_cObj->LOAD_REGISTER(array('newsMoreLink' => $this->pi_linkTP_keepPIvars($this->pi_getLL('more'), array('tt_news' => $row['uid'], 'backPid' => $this->config['backPid']), $this->allowCaching, '', $this->config['singlePid'])), '');
+				$this->local_cObj->LOAD_REGISTER(array('newsMoreLink' => $this->pi_linkTP_keepPIvars($this->pi_getLL('more'), array('tt_news' => $row['uid'], 'backPid' => ($this->conf['dontUseBackPid']?null:$this->config['backPid'])), $this->allowCaching, ($this->conf['dontUseBackPid']?1:0), $this->config['singlePid'])), '');
 
 			}
 			$markerArray = $this->getItemMarkerArray($row, $prefix_display);
@@ -818,7 +818,7 @@ class tx_ttnews extends tslib_pibase {
 				if ($row['type']) {
 			    	$rssUrl = ($row['type'] == 1 ? $this->config['siteUrl'] .$this->pi_getPageLink($row['page'],''):substr($row['ext_url'],0,strpos($row['ext_url'],' '))) ;
 				} else {
-			  		$rssUrl = $this->config['siteUrl'] . $this->pi_linkTP_keepPIvars_url(array('tt_news' => $row['uid'], 'backPid' => $this->config['backPid']), $this->allowCaching, '', $this->config['singlePid']);
+			  		$rssUrl = $this->config['siteUrl'] . $this->pi_linkTP_keepPIvars_url(array('tt_news' => $row['uid'], 'backPid' => null), $this->allowCaching, '', $this->config['singlePid']);
 
  				}
 				// replace square brackets [] in links with their URLcodes and replace the &-sign with its ASCII code
@@ -937,7 +937,7 @@ class tx_ttnews extends tslib_pibase {
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tt_news']['selectConfHook'])) {
 			foreach($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tt_news']['selectConfHook'] as $_classRef) {
 				$_procObj = & t3lib_div::getUserObj($_classRef);
-				$selectConf = $_procObj->processSelectConfHook($this);
+				$selectConf = $_procObj->processSelectConfHook($this,$selectConf);
 			}
 		}
 		// debug(array('select_conf',$this->piVars,$selectConf,$this->arcExclusive));
@@ -1050,12 +1050,12 @@ $lConf['subheader_stdWrap.']['crop'] = $this->config['croppingLenght'];
 
 		$markerArray['###MORE###'] = $this->pi_getLL('more');
 		// get title (or its language overlay) of the page where the backLink points to (this is done only in single view)
-		if ($this->piVars['backPid'] && $textRenderObj == 'displaySingle') {
+		if ($this->config['backPid'] && $textRenderObj == 'displaySingle') {
 			if ($GLOBALS['TSFE']->sys_language_content) {
-				$p_res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'pages_language_overlay', '1=1 AND pid=' . $this->piVars['backPid'] . ' AND  sys_language_uid=' . $GLOBALS['TSFE']->sys_language_content);
+				$p_res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'pages_language_overlay', '1=1 AND pid=' . $this->config['backPid'] . ' AND  sys_language_uid=' . $GLOBALS['TSFE']->sys_language_content);
 				$backP = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($p_res);
 			} else {
-				$backP = $this->pi_getRecord('pages', $this->piVars['backPid']);
+				$backP = $this->pi_getRecord('pages', $this->config['backPid']);
 			}
 		}
 		// generate the string for the backLink. By setting the conf-parameter 'hscBackLink',
@@ -1340,7 +1340,11 @@ function getImageMarkers($markerArray, $row, $lConf, $textRenderObj) {
 						}
 						// $paramArray['id']='id='.$GLOBALS['TSFE']->id;
 						$paramArray['tx_ttnews[tt_news]'] = 'tx_ttnews[tt_news]=' . $row['uid'];
-						$paramArray['tx_ttnews[backPid]'] = 'tx_ttnews[backPid]=' . $this->config['backPid'];
+
+						if (!$this->conf['dontUseBackPid']) {
+							$paramArray['tx_ttnews[backPid]'] = 'tx_ttnews[backPid]=' . $this->config['backPid'];
+						}
+
 
 						$newsAddParams = '&' . implode($paramArray, '&');
 						// debug ($newsAddParams);
