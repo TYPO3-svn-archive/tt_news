@@ -1,11 +1,47 @@
+2004-09-19	rupertgermann
+	* class.tx_ttnews_itemsProcFunc.php 1.3:
+	* doc/manual.sxw 1.9:
+	* ext_typoscript_constants.txt 1.13:
+	* ext_typoscript_setup.txt 1.29:
+	* locallang.php 1.11:
+	* locallang_csh_ttnews.php 1.5:
+	* locallang_csh_ttnewsc.php 1.4:
+	* locallang_tca.php 1.17:
+	* pi/class.tx_ttnews.php 1.49:
+	* pi/class.tx_ttnews_wizicon.php 1.7:
+	* pi/locallang.php 1.16:
+	* pi/news_conf1.png 1.2:
+	* pi/news_help.tmpl 1.5:
+	* res/example_amenuUserFunc.php 1.3:
+	* res/example_imageMarkerFunc.php 1.2:
+	* res/example_itemMarkerArrayFunc.php 1.4:
+	* res/ext_typoscript_constants.txt 1.3:
+	* res/ext_typoscript_setup.txt 1.5:
+	* res/tt_news_languageMenu.php 1.5:
+	* res/tt_news_medialinks.html 1.6:
+	* res/tt_news_styles.css 1.4:
+		- changed the behaviour of categoryMode=-1 (do not show items with selected categories). Now news are not shown in this cases: a) if they have only the selected category(s) assigned or b) if they have the selcted and other categories assigned.
+		the old functionality was only case a)
+		- Added a new TS-var: “oldCatDeselectMode” by setting this, you can use the old behaviour for de-selecting categories.
+		- Small new feature: now a “register” named “newsCategoryUid” is filled from the script with the uid of the category. You can access this register by TS to generate different wraps for different categories.
+		- added some more comments to the example functions in res/ folder
+		- updated version numberr to 1.7.0
+		- added new vars and functions to manual
+		- new translations
+
+2004-09-14	rupertgermann
+	* pi/class.tx_ttnews.php 1.48:
+		- fix: removed a forgotten debugger from class.tx_ttnews.php
+		- updated changelog
+
 2004-09-13	rupertgermann
-	* cvsroot/typo3xdev/tx_ttnews/ext_emconf.php 1.14:
-	* cvsroot/typo3xdev/tx_ttnews/ext_typoscript_setup.txt 1.28:
-	* cvsroot/typo3xdev/tx_ttnews/flexform_ds_no_sPID.xml 1.3:
-	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews.php 1.47:
-	* cvsroot/typo3xdev/tx_ttnews/res/ext_typoscript_setup.txt 1.4:
-	* cvsroot/typo3xdev/tx_ttnews/res/rss_0_91.tmpl 1.1:
-	* cvsroot/typo3xdev/tx_ttnews/res/rss_2.tmpl 1.1:
+	* ext_emconf.php 1.14:
+	* ext_typoscript_setup.txt 1.28:
+	* flexform_ds_no_sPID.xml 1.3:
+	* pi/class.tx_ttnews.php 1.47:
+	* res/ext_typoscript_setup.txt 1.4:
+	* res/rss_0_91.tmpl 1.1:
+	* res/rss_2.tmpl 1.1:
 		- new feature: rss feeds from tt_news (thank goes to Ingo Renner for implementing this)
 		- added the new selectfields to the 'no Storagepid' FF file (forgotten ;-)
 		- updated version number to 1.6.4
