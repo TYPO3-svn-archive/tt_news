@@ -401,7 +401,7 @@ class tx_ttnews extends tslib_pibase {
 				if ($c > 1000) break;
 			}
 			while ($theDate < $GLOBALS['SIM_EXEC_TIME']);
-
+	
 			reset($dateArr);
 			$periodAccum = array();
 
@@ -882,14 +882,14 @@ class tx_ttnews extends tslib_pibase {
 			$selectConf['where'] .= ' AND tt_news.sys_language_uid='.($sys_language_uid?$sys_language_uid:0);
 		}
 		
-		// allow overriding of the arcExclusive parameter from GET vars
+		
 		if ($this->arcExclusive > 0) {
-			if ($this->piVars['arc']) {
+			if ($this->piVars['arc']) { // allow overriding of the arcExclusive parameter from GET vars
 				$this->arcExclusive = $this->piVars['arc'];
 			}
 
 			// Period
-			if (!$noPeriod && $this->piVars['pS']) {
+			if (!$noPeriod && $this->piVars['pS']) {  
 				$selectConf['where'] .= ' AND tt_news.datetime>='.$this->piVars['pS'];
 				if ($this->piVars['pL']) {
 					$selectConf['where'] .= ' AND tt_news.datetime<'.($this->piVars['pS']+$this->piVars['pL']);
@@ -897,7 +897,7 @@ class tx_ttnews extends tslib_pibase {
 			}
 		}
 
-		if ($this->arcExclusive && !($this->theCode=='AMENU' && $this->conf['amenuShowAll'])) {
+		if ($this->arcExclusive) { 
 			if ($this->conf['enableArchiveDate']) {
 				if ($this->arcExclusive < 0) { // show archived
 					$selectConf['where'] .= ' AND (tt_news.archivedate=0 OR tt_news.archivedate>'.$GLOBALS['SIM_EXEC_TIME'].')';
@@ -909,6 +909,8 @@ class tx_ttnews extends tslib_pibase {
 				$theTime = $GLOBALS['SIM_EXEC_TIME']-intval($this->config['datetimeDaysToArchive']) * 3600 * 24;
 				if ($this->arcExclusive < 0) {
 					$selectConf['where'] .= ' AND (tt_news.datetime=0 OR tt_news.datetime>'.$theTime.')';
+					
+					#$selectConf['where'] .= ' AND (tt_news.datetime=0 OR (tt_news.archivedate=0 AND tt_news.datetime>'.$theTime.') OR tt_news.archivedate>0)'; 
 					
 				} elseif ($this->arcExclusive > 0) {
 					$selectConf['where'] .= ' AND tt_news.datetime<'.$theTime;
