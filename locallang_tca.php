@@ -55,6 +55,8 @@ $LOCAL_LANG = Array (
 		'tt_news.pi_flexform.noPageBrowser' => 'Don\'t display Pagebrowser',
 		'tt_news.pi_flexform.imageMaxWidth' => 'Max width for images in news records',
 		'tt_news.pi_flexform.imageMaxHeight' => 'Max height for images in news records',
+		'tt_news.pi_flexform.alternatingLayouts' => 'Number of alternating template-layouts',
+		'tt_news.pi_flexform.croppingLenght' => 'stdWrap.crop for the subheader (short)',
 		
 	),
 	'dk' => Array (

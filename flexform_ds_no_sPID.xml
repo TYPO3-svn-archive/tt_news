@@ -294,7 +294,28 @@
 					<size>5</size>
 				</config>
 				</TCEforms>
-			</imageMaxHeight>	    
+			</imageMaxHeight>
+			<alternatingLayouts>
+				<TCEforms>
+				<label>LLL:EXT:tt_news/locallang_tca.php:tt_news.pi_flexform.alternatingLayouts</label>
+				<config>
+					<type>input</type>
+					<eval>num</eval>
+					<checkbox></checkbox>
+					<size>5</size>
+				</config>
+				</TCEforms>
+			</alternatingLayouts>
+			<croppingLenght>
+				<TCEforms>
+				<label>LLL:EXT:tt_news/locallang_tca.php:tt_news.pi_flexform.croppingLenght</label>
+				<config>
+					<type>input</type>
+					<checkbox></checkbox>
+					<size>10</size>
+				</config>
+				</TCEforms>
+			</croppingLenght>	    
 		</el>
 	  </ROOT>
     </s_template>

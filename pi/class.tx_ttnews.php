@@ -142,8 +142,7 @@ class tx_ttnews extends tslib_pibase {
 		$this->pi_initPIflexForm(); // Init FlexForm configuration for plugin
 		$this->enableFields = $this->cObj->enableFields('tt_news');
 		$this->tt_news_uid = intval($this->piVars['tt_news']); // Get the submitted uid of a news (if any)
-		// Get number of alternative Layouts (loop layout in Archivelist and List view) default is 2:
-		$this->alternatingLayouts = intval($this->conf['alternatingLayouts']) > 0?intval($this->conf['alternatingLayouts']):2;
+
 		// load available syslanguages
 		$lres = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'sys_language', '1=1' . $this->cObj->enableFields('sys_language'));
 		$this->langArr = array();
@@ -250,7 +249,15 @@ class tx_ttnews extends tslib_pibase {
 		// image sizes given from FlexForms
 		$this->config['FFimgH'] = intval($this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'imageMaxHeight', 's_template'));
 		$this->config['FFimgW'] = intval($this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'imageMaxWidth', 's_template'));
-		
+
+		// Get number of alternative Layouts (loop layout in LATEST and LIST view) default is 2:
+		$altLayouts = intval($this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'alternatingLayouts', 's_template'));
+		$altLayouts = $altLayouts?$altLayouts:intval($this->conf['alternatingLayouts']);
+		$this->alternatingLayouts = $altLayouts?$altLayouts:2;
+
+		// Get cropping lenght
+		$this->config['croppingLenght'] = trim($this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'croppingLenght', 's_template'));
+
 				
 		// read template-file and fill and substitute the Global Markers
 		$templateflex_file = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'template_file', 's_template');
@@ -684,8 +691,8 @@ class tx_ttnews extends tslib_pibase {
 				}
 			
 				// List start ID
-				if ($theCode == 'LIST' && $this->config['listStartId'] && !$this->piVars['pointer'] && !$this->piVars['cat']) {
-	$selectConf['begin'] += $this->config['listStartId'];
+				if (($theCode == 'LIST' || $theCode == 'LATEST') && $this->config['listStartId'] && !$this->piVars['pointer'] && !$this->piVars['cat']) {
+	$selectConf['begin'] = $this->config['listStartId'];
 				}
 
 				
@@ -1018,6 +1025,10 @@ class tx_ttnews extends tslib_pibase {
 		$markerArray['###NEWS_AGE###'] = $this->local_cObj->stdWrap($row['datetime'], $lConf['age_stdWrap.']);
 		$markerArray['###TEXT_NEWS_AGE###'] = $this->local_cObj->stdWrap($this->pi_getLL('textNewsAge'), $lConf['textNewsAge_stdWrap.']);
 
+if ($this->config['croppingLenght']){
+$lConf['subheader_stdWrap.']['crop'] = $this->config['croppingLenght'];
+}
+		
 		$markerArray['###NEWS_SUBHEADER###'] = $this->formatStr($this->local_cObj->stdWrap($row['short'], $lConf['subheader_stdWrap.']));
 
 		$markerArray['###NEWS_CONTENT###'] = $this->formatStr($this->local_cObj->stdWrap($row['bodytext'], $lConf['content_stdWrap.']));
