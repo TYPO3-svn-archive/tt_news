@@ -425,7 +425,7 @@
 						$amenuLinkCat = $this->catExclusive;
 					}
 
-					$wrappedSubpartArray['###LINK_ITEM###'] = explode('|', $this->pi_linkTP_keepPIvars('|', array('cat' => ($amenuLinkCat?$amenuLinkCat:null), 'pS' => $pArr['start'], 'pL' => ($pArr['stop'] - $pArr['start']), 'arc' => 1, 'pointer' => null), $this->allowCaching, '', ($archiveLink?$archiveLink:$GLOBALS['TSFE']->id)));
+					$wrappedSubpartArray['###LINK_ITEM###'] = explode('|', $this->pi_linkTP_keepPIvars('|', array('cat' => ($amenuLinkCat?$amenuLinkCat:null), 'pS' => $pArr['start'], 'pL' => ($pArr['stop'] - $pArr['start']), 'arc' => 1), $this->allowCaching, 1, ($archiveLink?$archiveLink:$GLOBALS['TSFE']->id)));
 
 					$markerArray = array();
 					$veryLocal_cObj->start($pArr, '');
