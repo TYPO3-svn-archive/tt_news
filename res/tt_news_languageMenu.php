@@ -55,7 +55,7 @@ function user_languageMenu($content) {
 			)
 		); 
 	// Pointer for the active language
-	$pointer = '<img src="t3lib/gfx/content_client.gif" width="7" height="10" align="middle" alt="" />'; 
+	$pointer = '<img src="t3lib/gfx/content_client.gif" width="7" height="10" alt="" />'; 
 	
 	// First, select all pages_language_overlay records on the current page. Each represents a possibility for a language.
 	$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'pages_language_overlay', 'pid=' . intval($GLOBALS['TSFE']->id) . $GLOBALS['TSFE']->sys_page->enableFields('pages_language_overlay'), 'sys_language_uid');
@@ -110,9 +110,8 @@ function user_languageMenu($content) {
 			} 
 		} 
 	} 
-	$content = '<table border="0" cellpadding="0" cellspacing="0">
-	<tr><td><img src="clear.gif" width="30" height="1" alt="" /></td>
-	<td nowrap="nowrap">' . implode('', $flags) . '</td></tr></table>'; 
+	$content = '<div class="langmenu"><p>'
+	 . implode('', $flags) . '</p></div>'; 
 	// restore link vars
 	$GLOBALS['TSFE']->linkVars = $linkVarsBak;
 	return $content;

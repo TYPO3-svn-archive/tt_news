@@ -20,7 +20,7 @@ plugin.tt_news {
 
   templateFile = {$plugin.tt_news.file.templateFile}
   # pid_list is the page, where your news db-records are stored 
-  pid_list.field = pages
+  pid_list = {$plugin.tt_news.pid_list}
   
   # you can also leave the "starting Point" field in the content element empty and
   # define the pid_list in this way:

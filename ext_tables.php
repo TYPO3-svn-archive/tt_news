@@ -54,6 +54,11 @@ $TCA['tt_content']['types']['list']['subtypes_excludelist'][9]='layout,select_ke
 $TCA['tt_content']['types']['list']['subtypes_addlist'][9]='pi_flexform';
 t3lib_extMgm::addPlugin(Array('LLL:EXT:tt_news/locallang_tca.php:tt_news', '9'));
 
+t3lib_extMgm::addStaticFile($_EXTKEY,"static/ts_new/","tt_news CSS based tmpl");	
+
+t3lib_extMgm::addStaticFile($_EXTKEY,"static/ts_old/","tt_news table-based tmpl");	
+t3lib_extMgm::addStaticFile($_EXTKEY,"static/css/","tt_news default CSS");	
+
 t3lib_extMgm::allowTableOnStandardPages('tt_news');
 t3lib_extMgm::addToInsertRecords('tt_news');
 
