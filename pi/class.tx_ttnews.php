@@ -481,7 +481,13 @@ class tx_ttnews extends tslib_pibase {
 					$selectConf["orderBy"] = "datetime DESC"; 
 					$selectConf['selectFields'] = '*';
 					$selectConf['max'] = intval($this->config["limit"]+1);
-					$selectConf['begin'] = $begin_at;
+					/**
+					* 	rg: added this to exclude the LATEST template from changing its content with the pagebrowser 
+					*  	this can be overridden by setting the conf var latestWithPagebrowser								
+					*/ 
+					if ($theCode!='LATEST' && !$this->conf['latestWithPagebrowser']) {
+					    $selectConf['begin'] = $begin_at;
+					}
 					
 				 	
 				 	//debug($this->cObj->getQuery("tt_news",$selectConf,true));
