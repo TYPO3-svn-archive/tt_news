@@ -184,6 +184,10 @@ plugin.tt_news {
     imageLinkWrap = 1
     stdWrap.spaceAfter=5
   }
+  multiLanguage {
+  	useDefaultValuesIfEmpty=1
+  	showDefaultValuesIfNotTranslated=0
+  }
 }
 
 

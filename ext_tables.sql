@@ -14,6 +14,7 @@ CREATE TABLE tt_news (
   title tinytext NOT NULL,
   datetime int(11) unsigned DEFAULT '0' NOT NULL,
   image tinyblob NOT NULL,
+  previewimage tinyblob NOT NULL,
   imagecaption text NOT NULL,
   related int(11) DEFAULT '0' NOT NULL,
   short text NOT NULL,
@@ -28,6 +29,7 @@ CREATE TABLE tt_news (
   keywords text NOT NULL,
   archivedate int(11) DEFAULT '0' NOT NULL,
   ext_url tinytext NOT NULL,
+  sys_language_uid int(11) DEFAULT '0' NOT NULL,
   PRIMARY KEY (uid),
   KEY parent (pid)
 );
@@ -66,6 +68,18 @@ CREATE TABLE tt_news_cat_mm (
   uid_local int(11) unsigned DEFAULT '0' NOT NULL,
   uid_foreign int(11) unsigned DEFAULT '0' NOT NULL,
   tablenames varchar(30) DEFAULT '' NOT NULL,
+  sorting int(11) unsigned DEFAULT '0' NOT NULL,
+  KEY uid_local (uid_local),
+  KEY uid_foreign (uid_foreign)
+);
+
+
+#
+# Table structure for table 'tt_news_cat_mm'
+#
+CREATE TABLE tt_news_languagerelated_mm (
+  uid_local int(11) unsigned DEFAULT '0' NOT NULL,
+  uid_foreign int(11) unsigned DEFAULT '0' NOT NULL,
   sorting int(11) unsigned DEFAULT '0' NOT NULL,
   KEY uid_local (uid_local),
   KEY uid_foreign (uid_foreign)

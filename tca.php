@@ -152,6 +152,21 @@ $TCA['tt_news'] = Array (
 				'minitems' => '0'
 			)
 		),
+		'previewimage' => Array (
+			'exclude' => 1,	
+			'label' => 'LLL:EXT:tt_news/locallang_tca.php:tt_news.previewimage',
+			'config' => Array (
+				'type' => 'group',
+				'internal_type' => 'file',
+				'allowed' => $GLOBALS['TYPO3_CONF_VARS']['GFX']['imagefile_ext'],
+				'max_size' => '1000',
+				'uploadfolder' => 'uploads/pics',
+				'show_thumbs' => '1',
+				'size' => '3',
+				'maxitems' => '10',
+				'minitems' => '0'
+			)
+		),
 		'imagecaption' => Array (
 			'exclude' => 1,	
 			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.caption',
@@ -261,16 +276,32 @@ $TCA['tt_news'] = Array (
 				'minitems' => '0',
 				'show_thumbs' => '1'
 			)
-		)
+		),
+		'sys_language_uid' => Array (
+			'exclude' => 1,	
+			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.language',
+			'config' => Array (
+				'type' => 'select',
+				'foreign_table' =>'sys_language',
+				'foreign_table_where'=>'ORDER BY sys_language.title',
+				
+				'suppress_icons'=>1,				
+				'items' => Array(
+					Array('LLL:EXT:lang/locallang_general.php:LGL.default_value','0')					
+					)
+			)
+		)			
 	),
 	'types' => Array (	
 #non-rte'0' => Array('showitem' => 'hidden;;;;1-1-1,type,title;;;;2-2-2,datetime,starttime;;1,archivedate,category,author,author_email,keywords,--div--,short;;;;3-3-3,bodytext,image;;;;4-4-4,imagecaption,--div--,links;;;;5-5-5,related'),
-		'0' => Array('showitem' => 'hidden;;;;1-1-1,type,title;;;;2-2-2,datetime,starttime;;1,archivedate,category,author,author_email,keywords,--div--,short;;;;3-3-3,bodytext;;9;richtext[*]:rte_transform[flag=rte_enabled|mode=ts];3-3-3,image;;;;4-4-4,imagecaption,--div--,links;;;;5-5-5,related'),
-		'1' => Array('showitem' => 'hidden;;;;1-1-1,type,page,title;;;;2-2-2,datetime,starttime;;1,archivedate,category,author,author_email,keywords,--div--,short;;;;3-3-3'),
+		'0' => Array('showitem' => 'hidden;;;;1-1-1,type;;2,title;;;;2-2-2,datetime,starttime;;1,archivedate,category,author,author_email,keywords,--div--,short;;;;3-3-3,bodytext;;9;richtext[*]:rte_transform[flag=rte_enabled|mode=ts];3-3-3,image;;;;4-4-4,imagecaption;;3,--div--,links;;;;5-5-5,related'),
+		'1' => Array('showitem' => 'hidden;;;;1-1-1,type;;2,page,title;;;;2-2-2,datetime,starttime;;1,archivedate,category,author,author_email,keywords,--div--,short;;;;3-3-3'),
 		'2' => Array('showitem' => 'hidden;;;;1-1-1,type,ext_url,title;;;;2-2-2,datetime,starttime;;1,archivedate,category,author,author_email,keywords,--div--,short;;;;3-3-3')
 	),
 	'palettes' => Array (
-		'1' => Array('showitem' => 'endtime,fe_group')
+		'1' => Array('showitem' => 'endtime'),
+		'2' => Array('showitem' => 'sys_language_uid,fe_group'),
+		'3' => Array('showitem' => 'previewimage')
 	)
 );
 

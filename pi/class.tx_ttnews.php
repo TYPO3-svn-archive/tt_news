@@ -181,6 +181,12 @@ class tx_ttnews extends tslib_pibase {
 		 
 		// reverse AMENU order
 		$this->config['reverseAMenu'] = $this->conf['reverseAMenu'];
+		
+		$this->config['linkVars']=t3lib_div::trimexplode(",",$GLOBALS['TSFE']->config['config']['linkVars']);
+		//Multilanguage Settings:
+		// Later it could be also set by FlexForm
+		$this->config['multiLanguage.']= $this->conf['multiLanguage.'];
+		$this->config['sys_language_uid']=$GLOBALS['TSFE']->config['config']['sys_language_uid'];
 		 
 		// template is read.
 		$templateflex_file = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'template_file', 's_template');
@@ -239,10 +245,11 @@ class tx_ttnews extends tslib_pibase {
 			while (list(, $theCode) = each($codes)) {
 			$theCode = (string)strtoupper(trim($theCode));
 			$this->theCode = $theCode;
-			 
-			 
+			
+			
 			#t3lib_div::debug(strtoupper($GLOBALS['TSFE']->config['config']['language']));
-			 
+			#t3lib_div::debug(strtoupper($GLOBALS['TSFE']->config['config']['sys_language_uid']));
+			
 			switch($theCode) {
 				 
 				case 'SINGLE':
@@ -713,13 +720,21 @@ $content = $this->cObj->substituteMarkerArrayCached($noItemsMsg, $markerArray);
 		""; // Archive flag: 0 = don't care, -1 = latest, 1 = archive
 		$queryString['cat'] = t3lib_div::GPvar('cat') ? "cat=".intval(t3lib_div::GPvar('cat')) :
 		""; // Category uid, 0 = any
-		 
+		
+		//danp Keep the linkVars:
+		if (is_array($this->config['linkVars'])) {
+			foreach ($this->config['linkVars'] as $v) {
+				$queryString[$v]=t3lib_div::GPvar($v) ? "$v=".(t3lib_div::GPvar($v)) : "";
+			}
+		}
+
 		reset($queryString);
 		while (list($key, $val) = each($queryString)) {
 			if (!$val || ($excludeList && t3lib_div::inList($excludeList, $key))) {
 				unset($queryString[$key]);
 			}
 		}
+		
 		return $GLOBALS['TSFE']->absRefPrefix.'index.php?'.implode($queryString, '&amp;');
 	}
 	 
@@ -730,8 +745,7 @@ $content = $this->cObj->substituteMarkerArrayCached($noItemsMsg, $markerArray);
 	* @param [type]  $noPeriod: ...
 	* @return [type]  ...
 	*/
-	function getSelectConf($where, $noPeriod = 0) {
-		 
+	function getSelectConf($where, $noPeriod = 0) {	 
 		 
 		 
 		$this->setPidlist($this->config['pid_list']);
@@ -794,7 +808,19 @@ $content = $this->cObj->substituteMarkerArrayCached($noItemsMsg, $markerArray);
 			if ($this->config['select_deselect_categories'] != 1)$selectConf['where'] .= ' AND (IFNULL(tt_news_cat_mm.uid_foreign,0) '.($this->config['select_deselect_categories'] == 3?"NOT ":"").'IN ('.$this->config['category_selection'].'))';
 			#   $selectConf['groupBy'] .= 'uid';
 		}
-		 
+		//danp Add multilanguage support:
+		if ($this->config['sys_language_uid'] >0) {
+			//if another language than default is given
+			//Here must 
+			$selectConf['where'] .=' AND sys_language_uid=\''.intval($this->config['sys_language_uid']).'\'';
+		}
+		else {
+			//only select default language
+			$selectConf['where'] .=' AND sys_language_uid=\'0\'';		
+		}
+		
+		
+		
 		return $selectConf;
 	}
 	 

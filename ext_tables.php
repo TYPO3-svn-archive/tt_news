@@ -11,6 +11,8 @@ $TCA['tt_news'] = Array (
 		'prependAtCopy' => 'LLL:EXT:lang/locallang_general.php:LGL.prependAtCopy',
 		'crdate' => 'crdate',
 		'type' => 'type',
+		'copyAfterDuplFields' => 'sys_language_uid',
+		'useColumnsForDefaultValues' => 'sys_language_uid',
 		'enablecolumns' => Array (
 			'disabled' => 'hidden',
 			'starttime' => 'starttime',
@@ -56,6 +58,11 @@ t3lib_extMgm::addLLrefForTCAdescr('tt_news_cat','EXT:tt_news/locallang_csh_ttnew
 if (TYPO3_MODE=='BE')	{
 	$TBE_MODULES_EXT['xMOD_db_new_content_el']['addElClasses']['tx_ttnews_wizicon'] = t3lib_extMgm::extPath($_EXTKEY).'pi/class.tx_ttnews_wizicon.php';
 #	require_once(t3lib_extMgm::extPath($_EXTKEY).'class.tx_newloginbox_feusers.php');
+
+	t3lib_extMgm::addModule("web","txttnewsM1","",t3lib_extMgm::extPath($_EXTKEY)."mod1/");
+
 }
+
+
 
 ?>

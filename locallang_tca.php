@@ -7,6 +7,7 @@ $LOCAL_LANG = Array (
 		'tt_news.type.I.1' => 'Article',
 		'tt_news.datetime' => 'Date/Time:',
 		'tt_news.archivedate' => 'Archive date:',
+		'tt_news.previewimage' => 'Preview Image:',
 		'tt_news.related' => 'Related news:',
 		'tt_news_cat' => 'News category',
 		'tt_news_cat.image' => 'Category image',
