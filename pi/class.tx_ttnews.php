@@ -217,18 +217,26 @@ class tx_ttnews extends tslib_pibase {
 					$content.= $this->news_archiveMenu();
 				break;
 				default:
-					$langKey = strtoupper($GLOBALS["TSFE"]->config["config"]["language"]);
-					$helpTemplate = $this->cObj->fileResource("EXT:tt_news/pi/news_help.tmpl");
-
-						// Get language version
-					$helpTemplate_lang="";
-					if ($langKey)	{$helpTemplate_lang = $this->cObj->getSubpart($helpTemplate,"###TEMPLATE_".$langKey."###");}
-					$helpTemplate = $helpTemplate_lang ? $helpTemplate_lang : $this->cObj->getSubpart($helpTemplate,"###TEMPLATE_DEFAULT###");
-
-						// Markers and substitution:
-					$markerArray["###CODE###"] = $this->theCode;
-					$markerArray["###EXTPATH###"] = $GLOBALS['TYPO3_LOADED_EXT']['tt_news']['siteRelPath'];
-					$content.=$this->cObj->substituteMarkerArray($helpTemplate,$markerArray);
+					//Adds hook for processing of extra codes
+					if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tt_news']['extraCodesHook']))    {
+						foreach($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tt_news']['extraCodesHook'] as $_classRef)    { 
+							$_procObj = &t3lib_div::getUserObj($_classRef);
+							$content .= $_procObj->extraCodesProcessor($this);
+						}
+					} else { 
+						$langKey = strtoupper($GLOBALS["TSFE"]->config["config"]["language"]);
+						$helpTemplate = $this->cObj->fileResource("EXT:tt_news/pi/news_help.tmpl");
+	
+							// Get language version
+						$helpTemplate_lang="";
+						if ($langKey)	{$helpTemplate_lang = $this->cObj->getSubpart($helpTemplate,"###TEMPLATE_".$langKey."###");}
+						$helpTemplate = $helpTemplate_lang ? $helpTemplate_lang : $this->cObj->getSubpart($helpTemplate,"###TEMPLATE_DEFAULT###");
+	
+							// Markers and substitution:
+						$markerArray["###CODE###"] = $this->theCode;
+						$markerArray["###EXTPATH###"] = $GLOBALS['TYPO3_LOADED_EXT']['tt_news']['siteRelPath'];
+						$content.=$this->cObj->substituteMarkerArray($helpTemplate,$markerArray);
+					}
 				break;
 			}
 		}
@@ -794,7 +802,15 @@ class tx_ttnews extends tslib_pibase {
 		$markerArray["###PAGE_TITLE###"] = $this->pageArray[$row["pid"]]["title"];
 		$markerArray["###PAGE_AUTHOR###"] = $this->local_cObj->stdWrap($this->pageArray[$row["pid"]]["author"],$lConf["author_stdWrap."]);
 		$markerArray["###PAGE_AUTHOR_EMAIL###"] = $this->local_cObj->stdWrap($this->pageArray[$row["pid"]]["author_email"],$lConf["email_stdWrap."]);
-		
+
+		//Adds hook for processing of extra item markers
+		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tt_news']['extraItemMarkerHook']))    {
+			foreach($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tt_news']['extraItemMarkerHook'] as $_classRef)    { 
+				$_procObj = &t3lib_div::getUserObj($_classRef);
+				$markerArray = $_procObj->extraItemMarkerProcessor($markerArray,$row,$lConf,$this);
+			}
+		}
+
 			// Pass to user defined function
 		if ($this->conf["itemMarkerArrayFunc"])	{
 			$markerArray = $this->userProcess("itemMarkerArrayFunc",$markerArray);

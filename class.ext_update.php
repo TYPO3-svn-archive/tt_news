@@ -62,7 +62,7 @@ class ext_update  {
 		if (!t3lib_div::GPvar('do_update'))	{
 			$onClick = "document.location='".t3lib_div::linkThisScript(array('do_update'=>1))."'; return false;";
 			if($count_cat){
-				$returnthis= '<b>There are found '.$count_cat.' newsitems with category relations which should be reassigned.</b><br><br>';
+				$returnthis= '<b>There are found '.$count_cat.' newsitem(s) with category relations which should be reassigned.</b><br><br>';
 			}
 			if($count_flex){
 					$returnthis.= ($returnthis?'<b>There are also found ':'<b>There are found ');
@@ -72,7 +72,7 @@ class ext_update  {
 			$returnthis.= '<br><br><br><b>Do you want to perform the action now?</b><br>(This action will not change your old data in the tt_news or tt_content table. So even if you perform this action, you will still be able to downgrade to an earlier version of tt_news retaining the old category relations and CODE field data.)
 			<br><br><form action=""><input type="submit" value="DO IT" onclick="'.htmlspecialchars($onClick).'"></form>';
 			return $returnthis;
-		} else {
+		} elseif($count_cat!=0 OR $count_flex!=0) {
 			if($count_cat){
 				while($row=mysql_fetch_assoc($res_cat))	{
 					$insertQ = t3lib_BEfunc::DBcompileInsert('tt_news_cat_mm',array('uid_local'=>$row['uid'],'uid_foreign'=>$row['category'],'sorting'=>1));

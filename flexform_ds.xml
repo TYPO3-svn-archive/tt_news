@@ -249,7 +249,7 @@
 			</catImageMaxWidth>
 			<catImageMaxHeight>
 				<TCEforms>
-				<label>LLL:EXT:tt_news/locallang_tca.php:tt_news.pi_flexform.catImageMaxWidth</label>
+				<label>LLL:EXT:tt_news/locallang_tca.php:tt_news.pi_flexform.catImageMaxHeight</label>
 				<config>
 					<type>input</type>
 					<eval>num</eval>
