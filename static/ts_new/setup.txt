@@ -55,7 +55,7 @@ plugin.tt_news {
     maxPages = 10
 	# set this to '0' if you want the pagebrowser to display only numbers
 	showPBrowserText = 0
-	tableParams = cellpadding=2 align=center
+	tableParams = cellpadding="2" align="center"
 	showResultCount = 1
   }
 
