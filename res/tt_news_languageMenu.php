@@ -68,8 +68,7 @@
 			}
 			$tmpParams = implode($paramArray, '&');
 			 
-			$newsAddParams = $tmpParams?'&' . $tmpParams:
-			'';
+			$newsAddParams = $tmpParams?'&' . $tmpParams:'';
 		}
 		 
 		#        $flags[2] = preg_replace('/&amp;L=[0-9]/', '&amp;L=2', $flags[2]);

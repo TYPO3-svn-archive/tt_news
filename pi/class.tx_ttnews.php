@@ -94,6 +94,7 @@
 		var $conf2;
 		var $config;
 		var $alternatingLayouts;
+		var $sysLangUid;
 		var $allowCaching;
 		var $catExclusive;
 		var $arcExclusive;
@@ -143,8 +144,10 @@
 			$t3_version = str_replace('.', '', $GLOBALS['TYPO_VERSION']);
 
 			if ($t3_version >= 370) {
-				$this->config['use_l18nParent'] = $GLOBALS['TYPO_VERSION'];
+				$this->config['use_l18nParent'] = true;
 			}
+			$this->sysLangUid = $GLOBALS['TSFE']->config['config']['sys_language_uid'];
+			
 			// Get number of alternative Layouts (loop layout in Archivelist and List view) default is 2:
 			$this->alternatingLayouts = intval($this->conf['alternatingLayouts']) > 0?intval($this->conf['alternatingLayouts']):2;
 
@@ -348,7 +351,8 @@
 			$selectConf['selectFields'] = 'max(datetime) as maxval, min(datetime) as minval';
 			$res = $this->cObj->exec_getQuery('tt_news', $selectConf);
 			$row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
-			if ($row['minval']) {
+        if ($row['minval']||$row['maxval']) {
+		#        if ($row['minval']) {
 				$dateArr = array();
 				$arcMode = $this->config['archiveMode']?$this->config['archiveMode']:	'month';
 				$c = 0;
@@ -466,16 +470,17 @@
  * @return	string		html-code for a single news item
  */
 		function displaySingle() {
-			$sys_language_uid = $GLOBALS['TSFE']->config['config']['sys_language_uid'];
-			// find out, if the item has a translation
-			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('tt_news.l18n_parent', 'tt_news', 'tt_news.uid=' . intval($this->tt_news_uid) . ' AND tt_news.l18n_parent!=0');
-			$l18n_parent = $res?$GLOBALS['TYPO3_DB']->sql_fetch_assoc($res):0;
-			if ($l18n_parent['l18n_parent']) {
-				$this->tt_news_uid = $l18n_parent['l18n_parent'];
+			if ($this->config['use_l18nParent']) {
+				// find out, if the item has a translation
+				$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('tt_news.l18n_parent', 'tt_news', 'tt_news.uid=' . intval($this->tt_news_uid) . ' AND tt_news.l18n_parent!=0');
+				$l18n_parent = $res?$GLOBALS['TYPO3_DB']->sql_fetch_assoc($res):0;
+				if ($l18n_parent['l18n_parent']) {
+					$this->tt_news_uid = $l18n_parent['l18n_parent'];
+				}
 			}
 			// select news only by the "tt_news.l18n_parent" if the column "l18n_parent" exists also in tt_content (TYPO3 version >= 3.7.0)
-			if ($this->config['use_l18nParent'] && $sys_language_uid) {
-				$singleWhere = 'tt_news.l18n_parent=' . intval($this->tt_news_uid) . ' AND tt_news.sys_language_uid=' . $sys_language_uid;
+			if ($this->config['use_l18nParent'] && $this->sysLangUid) {
+				$singleWhere = 'tt_news.l18n_parent=' . intval($this->tt_news_uid) . ' AND tt_news.sys_language_uid=' . $this->sysLangUid;
 			} else {
 				$singleWhere = 'tt_news.uid=' . intval($this->tt_news_uid);
 			}
@@ -497,7 +502,7 @@
 				}
 				// reset marker array
 				$wrappedSubpartArray = array();
-				$wrappedSubpartArray['###LINK_ITEM###'] = explode('|', $this->pi_linkTP_keepPIvars('|', array(), $this->allowCaching, '', $this->piVars['backPid']));
+				$wrappedSubpartArray['###LINK_ITEM###'] = explode('|', $this->pi_linkTP_keepPIvars('|', array('tt_news'=>null,'backPid'=>null), $this->allowCaching, '', $this->piVars['backPid']));
 				// set the title of the single view page to the title of the news record
 				if ($this->config['substitutePagetitle']) {
 					$GLOBALS['TSFE']->page['title'] = $row['title'];
@@ -507,9 +512,9 @@
 				$markerArray = $this->getItemMarkerArray($row, 'displaySingle');
 				// Substitute
 				$content = $this->cObj->substituteMarkerArrayCached($item, $markerArray, array(), $wrappedSubpartArray);
-			} elseif ($sys_language_uid && $this->config['use_l18nParent']) {
+			} elseif ($this->sysLangUid && $this->config['use_l18nParent']) {
 				$content .= 'Sorry, there is no translation for this news record. ';
-				// $content .= $this->pi_linkTP_keepPIvars('Click here to view the default language.', array(),$this->allowCaching);
+				#$content .= $this->pi_linkTP_keepPIvars('Click here to view the default language.', array(),$this->allowCaching);
 			} else {
 				// if singleview is shown with no tt_news_uid given from GPvars, an error message is displayed.
 				$noNewsIdMsg = $this->local_cObj->stdWrap($this->pi_getLL('noNewsIdMsg'), $this->conf['noNewsIdMsg_stdWrap.']);
@@ -600,7 +605,17 @@
 				}
 				break;
 			}
+			// process extra codes from $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']
+			$userCodes = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tt_news']['what_to_display'];
 
+			if ($userCodes&&!$prefix_display&&!$templateName) {
+				while (list(, $ucode) = each($userCodes)){
+					if ($theCode == $ucode[0] ) {
+    					$prefix_display = 'displayList';
+						$templateName = 'TEMPLATE_'.$ucode[0] ;
+					}
+				}
+			}
 			$noPeriod = 0;
 
 			if (!$this->config['emptyArchListAtStart']) {
@@ -796,8 +811,8 @@
 			$selectConf['where'] = '1=1 ' . ($this->theCode == 'LATEST'?'':$where);
 			// if the column "l18n_parent" exists in tt_content (TYPO3 version >= 3.7.0), select news by language
 			if ($this->config['use_l18nParent']) {
-				$sys_language_uid = $GLOBALS['TSFE']->config['config']['sys_language_uid'];
-				$selectConf['where'] .= ' AND tt_news.sys_language_uid=' . ($sys_language_uid?$sys_language_uid:'0');
+				
+				$selectConf['where'] .= ' AND tt_news.sys_language_uid=' . ($this->sysLangUid?$this->sysLangUid:'0');
 			}
 
 			if ($this->arcExclusive > 0) {
@@ -956,9 +971,16 @@
 			$markerArray['###TEXT_LINKS###'] = $newsLinks?$this->local_cObj->stdWrap($this->pi_getLL('textLinks'), $lConf['newsLinksHeader_stdWrap.']):'';
 
 			$markerArray['###MORE###'] = $this->pi_getLL('more');
-			// get title of the page where the backLink points to (this is done only in single view)
+			
+			// get title (or its language overlay) of the page where the backLink points to (this is done only in single view)
 			if ($this->piVars['backPid'] && $textRenderObj == 'displaySingle') {
-				$backP = $this->pi_getRecord('pages', $this->piVars['backPid']);
+				if ($this->sysLangUid) {
+				$p_res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'pages_language_overlay', '1=1 AND pid='.$this->piVars['backPid'].' AND  sys_language_uid='.$this->sysLangUid);
+				$backP = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($p_res);
+				} else {
+					$backP = $this->pi_getRecord('pages', $this->piVars['backPid']);
+				}
+				
 			}
 			// generate the string for the backLink. By setting the conf-parameter 'hscBackLink',
 			// you can switch whether the string is parsed through htmlspecialchars() or not.
@@ -1029,6 +1051,7 @@
 			$markerArray['###TEXT_CAT_LATEST###'] = '';
 
 			if (isset($this->categories[$row['uid']]) && ($this->config['catImageMode'] || $this->config['catTextMode'])) {
+	
 				$markerArray['###TEXT_CAT###'] = $this->pi_getLL('textCat');
 				$markerArray['###TEXT_CAT_LATEST###'] = $this->pi_getLL('textCatLatest');
 
@@ -1038,17 +1061,25 @@
 				while (list ($key, $val) = each ($this->categories[$row['uid']])) {
 					// find categories, wrap them with links and collect them in the array $news_category.
 					$catLinkTarget = $this->categories[$row['uid']][$key]['shortcut_target'];
+				
+					// find translations of category titles 
+					$catTitleArr = t3lib_div::trimExplode('|', $this->categories[$row['uid']][$key]['title']);
+				
+					$catTitle = $catTitleArr[($this->sysLangUid?$this->sysLangUid:0)];
+					if (!$this->sysLangUid||!$catTitle) {
+					    $catTitle = $catTitleArr[0];
+					}
 					if ($this->config['catTextMode'] == 0) {
 						$markerArray['###NEWS_CATEGORY###'] = '';
 					} elseif ($this->config['catTextMode'] == 1) {
 						// display but don't link
-						$news_category[] = $this->local_cObj->stdWrap($this->categories[$row['uid']][$key]['title'], $lConf['category_stdWrap.']);
+						$news_category[] = $this->local_cObj->stdWrap($catTitle, $lConf['category_stdWrap.']);
 					} elseif ($this->config['catTextMode'] == 2) {
 						// link to category shortcut
-						$news_category[] = $this->pi_linkToPage($this->categories[$row['uid']][$key]['title'], $this->categories[$row['uid']][$key]['shortcut'], ($catLinkTarget?$catLinkTarget:$this->config['itemLinkTarget']));
+						$news_category[] = $this->pi_linkToPage($catTitle, $this->categories[$row['uid']][$key]['shortcut'], ($catLinkTarget?$catLinkTarget:$this->config['itemLinkTarget']));
 					} elseif ($this->config['catTextMode'] == 3) {
 						// act as category selector
-						$news_category[] = $this->pi_linkTP_keepPIvars($this->categories[$row['uid']][$key]['title'], array('cat' => $this->categories[$row['uid']][$key]['catid'], 'backPid' => null, 'pointer' => null), '', '', ($this->config['catSelectorTargetPid']?$this->config['catSelectorTargetPid']:$GLOBALS['TSFE']->id));
+						$news_category[] = $this->pi_linkTP_keepPIvars($catTitle, array('cat' => $this->categories[$row['uid']][$key]['catid'], 'backPid' => null, 'pointer' => null), '', '', ($this->config['catSelectorTargetPid']?$this->config['catSelectorTargetPid']:$GLOBALS['TSFE']->id));
 					}
 
 					if ($this->config['catImageMode'] == 0 or empty($this->categories[$row['uid']][$key]['image'])) {
@@ -1071,7 +1102,7 @@
 							}
 							if ($this->config['catImageMode'] == 3) {
 								// act as category selector
-								$catPicConf['image.']['altText'] = $this->pi_getLL('altTextCatSelector') . $this->categories[$row['uid']][$key]['title'];
+								$catPicConf['image.']['altText'] = $this->pi_getLL('altTextCatSelector').$catTitle;
 								$catPicConf['image.']['stdWrap.']['innerWrap'] = $this->pi_linkTP_keepPIvars('|', array('cat' => $this->categories[$row['uid']][$key]['catid'], 'backPid' => null, 'pointer' => null), '', '', ($this->config['catSelectorTargetPid']?$this->config['catSelectorTargetPid']:$GLOBALS['TSFE']->id));
 							}
 						} else {

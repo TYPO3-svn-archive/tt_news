@@ -104,12 +104,24 @@ plugin.tt_news {
   reverseAMenu = 1
   archiveMenuNoEmpty = 1
   
-  archiveTitleCObject = COA
+ archiveTitleCObject = COA
   archiveTitleCObject {
     10 = TEXT
     10.field = start
     10.strftime = %B - %Y
-  }
+
+    # if there is no value for datetime, this text is inserted instead:
+    20 = TEXT
+    20.value = no date
+    20.if {
+    # don't insert 0 as value, because localized times can also set other 
+    # values for unixtime start. 
+      value = 20000
+      isGreaterThan.field=start
+      negate = 1
+    } 
+	
+	
   archiveEmptyMsg_stdWrap.wrap (
     <table border="0" cellpadding="0" cellspacing="0" width="100%">
     <tr><td><strong> | </strong></td></tr></table>
