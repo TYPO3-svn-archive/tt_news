@@ -1,4 +1,22 @@
+2005-03-11	rupertgermann
+	* cvsroot/typo3xdev/tx_ttnews/static/ts_new/setup.txt 1.6:
+	* cvsroot/typo3xdev/tx_ttnews/static/ts_old/setup.txt 1.5:
+		- added quotes to: plugin.tt_news.pageBrowser.tableParams = 
+		cellpadding="2" align="center"
+
+	* cvsroot/typo3xdev/tx_ttnews/ext_tables.sql 1.12:
+	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews.php 1.74:
+	* cvsroot/typo3xdev/tx_ttnews/tca.php 1.23:
+		- new feature: 'bidirectional Relations': if you set a relation between two news-records and you enable this feature (plugin.tt_news.useBidirectionalRelations = 1) you'll see the relation in both records on the website. The relation back from the target-record to the source is inserted automatically. In the BE you won't see the relation.
+		- new feature: 'related pages': if you enable this feature (plugin.tt_news.usePagesRelations = 1) you can now assign pages as related news. Those 'related pages'are handled as news with type set to 'link to internal page' so no changes to the TS of the getRelatedCObject are needed.
+		- fix: the title of related news are now displayed in the correct language. (thank goes to Christian Ullrich who sent the patch)
+		- the feature 'single pid by category' can now be disabled by setting: plugin.tt_news.useSPidFromCategory = 0
+		- the function geRelated() is now respicting the visibility of categories that are assigned to the related news-records. If one of the categories is not vicible for this user, its title and images will not appear, if all assigned categories are disabled the related news record will not appear. (works for subcategories too).
+
 2005-03-09	rupertgermann
+	* cvsroot/typo3xdev/tx_ttnews/ChangeLog 1.30:
+		updated changelog
+
 	* cvsroot/typo3xdev/tx_ttnews/ext_tables.php 1.14:
 	* cvsroot/typo3xdev/tx_ttnews/ext_tables.sql 1.11:
 	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews.php 1.73:
