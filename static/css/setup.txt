@@ -10,7 +10,7 @@ plugin.tt_news {
 .news-list-container HR.clearer, .news-single-item HR.clearer, .news-latest-container HR.clearer{
 clear:right;
 height:1px;
-border:0px solid #F9FFE5;
+border:1px solid #F9FFE5;
 
 }
 .news-latest-container HR.clearer {
