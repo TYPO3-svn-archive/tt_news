@@ -990,11 +990,19 @@ class tx_ttnews extends tslib_pibase {
 		$markerArray['###NEWS_SUBHEADER###'] = '';
 		if (!$this->piVars[$this->config['singleViewPointerName']] || $this->conf['subheaderOnAllSViewPages']) {
 			$markerArray['###NEWS_SUBHEADER###'] = $this->formatStr($this->local_cObj->stdWrap($row['short'], $lConf['subheader_stdWrap.']));
-		} 
+		}
 
 		$markerArray['###NEWS_KEYWORDS###'] = '';
 		if (!$this->piVars[$this->config['singleViewPointerName']]) {
 			$markerArray['###NEWS_KEYWORDS###'] = $this->formatStr($this->local_cObj->stdWrap($row['keywords'], $lConf['keywords_stdWrap.']));
+			if ($textRenderObj == 'displaySingle') {
+				// load the keywords the register 'newsKeywords' to access it from TS
+				$this->local_cObj->LOAD_REGISTER(array(
+					'newsKeywords' => $row['keywords'],
+					'newsSubheader' => $row['short']
+				), '');
+				
+			}
 		}
 
 		if ($textRenderObj == 'displaySingle' && !$row['no_auto_pb'] && $this->config['maxWordsInSingleView']>1) {
