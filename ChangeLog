@@ -1,3 +1,16 @@
+2005-03-05	rupertgermann
+	* cvsroot/typo3xdev/tx_ttnews/ext_emconf.php 1.29:
+		updated emconf to version 2.1.0
+
+2005-03-04	rupertgermann
+	* cvsroot/typo3xdev/tx_ttnews/doc/manual.sxw 1.19:
+	* cvsroot/typo3xdev/tx_ttnews/locallang.php 1.20:
+	* cvsroot/typo3xdev/tx_ttnews/locallang_csh_ttnews.php 1.7:
+	* cvsroot/typo3xdev/tx_ttnews/locallang_csh_ttnewsc.php 1.7:
+	* cvsroot/typo3xdev/tx_ttnews/locallang_tca.php 1.26:
+	* cvsroot/typo3xdev/tx_ttnews/pi/locallang.php 1.19:
+		new language files from TER
+
 2005-03-03	rupertgermann
 	* cvsroot/typo3xdev/tx_ttnews/ext_emconf.php 1.28:
 		version nr is now 2.0.7
@@ -13,16 +26,19 @@
 		existence and size of the table tt_news_cat_mm is now checked by 
 		the script before the "UPDATE" option appears.
 
-	* cvsroot/typo3xdev/tx_ttnews/flexform_ds.xml 1.17:
-	* cvsroot/typo3xdev/tx_ttnews/flexform_ds_no_sPID.xml 1.8:
-		added the possibility to add HTM files as templates
-
 	* cvsroot/typo3xdev/tx_ttnews/doc/manual.sxw 1.18:
 	* cvsroot/typo3xdev/tx_ttnews/locallang_tca.php 1.25:
 	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews.php 1.71:
 		- changed the handling of the list limit given from FF. This 
 		value for limit will now override a value for latestLimit that 
 		is configured in TS. (fixes bug 657)
+
+	* cvsroot/typo3xdev/tx_ttnews/ChangeLog 1.28:
+		updated changelog
+
+	* cvsroot/typo3xdev/tx_ttnews/flexform_ds.xml 1.17:
+	* cvsroot/typo3xdev/tx_ttnews/flexform_ds_no_sPID.xml 1.8:
+		added the possibility to add HTM files as templates
 
 2005-02-28	rupertgermann
 	* cvsroot/typo3xdev/tx_ttnews/ChangeLog 1.27:
