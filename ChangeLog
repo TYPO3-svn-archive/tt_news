@@ -1,3 +1,17 @@
+2005-02-28	rupertgermann
+	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews.php 1.70:
+		- added an "is_array" check before inploding the $tmpItemsArr in 
+		the function newsArchiveMenu(). in some special configurations 
+		this var is not an array. thx Daniel Gercke for the hint.
+
+	* cvsroot/typo3xdev/tx_ttnews/res/example_imageMarkerFunc.php 1.6:
+	* cvsroot/typo3xdev/tx_ttnews/res/example_userPageBrowserFunc.php 1.5:
+		- fix for the example files userPagebrowserFunc.php and imageMarkerFunc: redeclaring the $this-object is not allowed in php5
+		- fix userPagebrowserFunc: the resultcount is now displayed in function user_substPageBrowser().
+
+	* cvsroot/typo3xdev/tx_ttnews/doc/manual.sxw 1.16:
+		added some TS examples to the manual
+
 2005-02-20	rupertgermann
 	* cvsroot/typo3xdev/tx_ttnews/ext_php_api.dat 1.7:
 	* cvsroot/typo3xdev/tx_ttnews/ext_tables.sql 1.9:
