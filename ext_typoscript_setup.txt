@@ -102,7 +102,7 @@ plugin.tt_news {
     author_stdWrap.typolink.parameter.field = author_email
 
     imageCount=2
-    imageWrapIfAny = <table border=0 cellpadding=0 cellspacing=0 align=right width=1><tr><td><img src=clear.gif width=15 height=1></td><td>|</td></tr></table>
+    imageWrapIfAny = <table border=0 cellpadding=0 cellspacing=0 align=right width=1><tr><td><img src=clear.gif width=15 height=1 border=0></td><td>|</td></tr></table>
 
     email_stdWrap.setContentToCurrent = 1
     email_stdWrap.typolink.parameter.current = 1
@@ -137,7 +137,7 @@ plugin.tt_news {
     subheader_stdWrap.crop = 100 | ...
     subheader_stdWrap.ifEmpty.field = bodytext
     imageCount=1
-    imageWrapIfAny = <table border=0 cellpadding=0 cellspacing=0 align=left><tr><td>|</td><td><img src=clear.gif width=5 height=1></td></tr></table>
+    imageWrapIfAny = <table border=0 cellpadding=0 cellspacing=0 align=left><tr><td>|</td><td><img src=clear.gif width=5 height=1 border=0></td></tr></table>
   }
   displayLatest.image < displaySingle.image
   displayLatest.image {
