@@ -42,7 +42,7 @@ CREATE TABLE tt_news (
 
   
   PRIMARY KEY (uid),
-  KEY parent (pid)
+  KEY parent (pid),
   KEY t3ver_oid (t3ver_oid)
 );
 
@@ -59,7 +59,7 @@ CREATE TABLE tt_news_cat (
   title tinytext NOT NULL,
   title_lang_ol tinytext NOT NULL,
   image tinyblob NOT NULL,
-  shortcut int(11) unsigned DEFAULT '0' NOT NULL
+  shortcut int(11) unsigned DEFAULT '0' NOT NULL,
   shortcut_target tinytext NOT NULL,
   deleted tinyint(3) unsigned DEFAULT '0' NOT NULL,
   PRIMARY KEY (uid),
