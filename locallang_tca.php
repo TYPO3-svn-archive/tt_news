@@ -16,6 +16,7 @@ $LOCAL_LANG = Array (
 		'tt_news_cat.title_lang_ol' => 'title language overlays',
 		'tt_news_cat.shortcut' => 'News category shortcut',
 		'tt_news_cat.shortcut_target' => 'Target for news category shortcut',
+		'tt_news_cat.single_pid' => 'Single-view page for news from this category',
 		'tt_news.pi_flexform.sheet_general' => 'General Settings',
 		'tt_news.pi_flexform.sheet_template' => 'Template',
 		'tt_news.pi_flexform.sheet_category' => 'Category Settings',

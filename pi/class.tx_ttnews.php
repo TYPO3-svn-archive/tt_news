@@ -173,6 +173,10 @@ class tx_ttnews extends tslib_pibase {
 			$value = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], $key, 's_category');
 			$this->config[$key] = (is_numeric($value)?$value:$this->conf[$key]);
 		}
+		
+		$catOrderBy = trim($this->conf['catOrderBy']);
+		$this->config['catOrderBy'] = $catOrderBy?$catOrderBy:'uid';
+		
 		$this->initCategories(); // initialize category-array
 
 		// Archive:
@@ -545,7 +549,9 @@ class tx_ttnews extends tslib_pibase {
 			case 'LATEST':
 			$prefix_display = 'displayLatest';
 			$templateName = 'TEMPLATE_LATEST';
-			$this->arcExclusive = -1; // Only latest, non archive news
+			if (!$this->conf['displayArchivedInLatest']) { // if this is set, latest will do the same as list
+				$this->arcExclusive = -1; // Only latest, non archive news
+			}
 			$this->config['limit'] = $this->config['latestLimit'];
 			break;
 
@@ -806,10 +812,15 @@ class tx_ttnews extends tslib_pibase {
 				// fill the link string in a register to access it from TS
 				$this->local_cObj->LOAD_REGISTER(array('newsMoreLink' => $this->local_cObj->typolink($this->pi_getLL('more'),$this->conf['pageTypoLink.'])), '');
 			} else {
+				
+				//  Overwrite the singlePid from config array with a singlePid given from category
+				#debug($this->categories[$row['uid']]);
+				$singlePid = $this->categories[$row['uid']]['0']['single_pid']?$this->categories[$row['uid']]['0']['single_pid']:$this->config['singlePid'];
 
-				$wrappedSubpartArray['###LINK_ITEM###'] = explode('|', $this->pi_linkTP_keepPIvars('|', array('tt_news' => $row['uid'], 'backPid' => ($this->conf['dontUseBackPid']?null:$this->config['backPid'])), $this->allowCaching, ($this->conf['dontUseBackPid']?1:0), $this->config['singlePid']));
-// fill the link string in a register to access it from TS
-				$this->local_cObj->LOAD_REGISTER(array('newsMoreLink' => $this->pi_linkTP_keepPIvars($this->pi_getLL('more'), array('tt_news' => $row['uid'], 'backPid' => ($this->conf['dontUseBackPid']?null:$this->config['backPid'])), $this->allowCaching, ($this->conf['dontUseBackPid']?1:0), $this->config['singlePid'])), '');
+				$wrappedSubpartArray['###LINK_ITEM###'] = explode('|', $this->pi_linkTP_keepPIvars('|', array('tt_news' => $row['uid'], 'backPid' => ($this->conf['dontUseBackPid']?null:$this->config['backPid'])), $this->allowCaching, ($this->conf['dontUseBackPid']?1:0), $singlePid));
+
+				// fill the link string in a register to access it from TS
+				$this->local_cObj->LOAD_REGISTER(array('newsMoreLink' => $this->pi_linkTP_keepPIvars($this->pi_getLL('more'), array('tt_news' => $row['uid'], 'backPid' => ($this->conf['dontUseBackPid']?null:$this->config['backPid'])), $this->allowCaching, ($this->conf['dontUseBackPid']?1:0), $singlePid)), '');
 
 			}
 			$markerArray = $this->getItemMarkerArray($row, $prefix_display);
@@ -818,7 +829,7 @@ class tx_ttnews extends tslib_pibase {
 				if ($row['type']) {
 			    	$rssUrl = ($row['type'] == 1 ? $this->config['siteUrl'] .$this->pi_getPageLink($row['page'],''):substr($row['ext_url'],0,strpos($row['ext_url'],' '))) ;
 				} else {
-			  		$rssUrl = $this->config['siteUrl'] . $this->pi_linkTP_keepPIvars_url(array('tt_news' => $row['uid'], 'backPid' => null), $this->allowCaching, '', $this->config['singlePid']);
+			  		$rssUrl = $this->config['siteUrl'] . $this->pi_linkTP_keepPIvars_url(array('tt_news' => $row['uid'], 'backPid' => null), $this->allowCaching, '', $singlePid);
 
  				}
 				// replace square brackets [] in links with their URLcodes and replace the &-sign with its ASCII code
@@ -957,7 +968,7 @@ class tx_ttnews extends tslib_pibase {
 			$addWhere = ' AND tt_news_cat.pid IN (' . $storagePid['_STORAGE_PID'] . ')';
 		}
 
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_news_cat LEFT JOIN tt_news_cat_mm ON tt_news_cat_mm.uid_foreign = tt_news_cat.uid', '1=1' . $addWhere . $this->cObj->enableFields('tt_news_cat'));
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_news_cat LEFT JOIN tt_news_cat_mm ON tt_news_cat_mm.uid_foreign = tt_news_cat.uid', '1=1' . $addWhere . $this->cObj->enableFields('tt_news_cat'),'','tt_news_cat.'.$this->config['catOrderBy']);
 
 		$this->categories = array();
 		$this->categorieImages = array();
@@ -975,6 +986,7 @@ class tx_ttnews extends tslib_pibase {
 					'image' => $row['image'],
 					'shortcut' => $row['shortcut'],
 					'shortcut_target' => $row['shortcut_target'],
+					'single_pid' => $row['single_pid'],
 					'catid' => $row['uid_foreign']);
 			} else {
 				$this->categories['0'][$row['uid']] = $catTitle;

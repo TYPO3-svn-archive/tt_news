@@ -477,7 +477,7 @@ $TCA['tt_news_cat'] = Array (
 		'shortcut' => Array (
 			'exclude' => 1,	
 			'label' => 'LLL:EXT:tt_news/locallang_tca.php:tt_news_cat.shortcut',
-'config' => Array (
+			'config' => Array (
 				'type' => 'group',
 				'internal_type' => 'db',
 				'allowed' => 'pages',
@@ -498,10 +498,23 @@ $TCA['tt_news_cat'] = Array (
 				'max' => '40'
 			)
 		),
+		'single_pid' => Array (
+			'exclude' => 1,	
+			'label' => 'LLL:EXT:tt_news/locallang_tca.php:tt_news_cat.single_pid',
+			'config' => Array (
+				'type' => 'group',
+				'internal_type' => 'db',
+				'allowed' => 'pages',
+				'size' => '3',
+				'maxitems' => '1',
+				'minitems' => '0',
+				'show_thumbs' => '1'
+			)
+		),
 	),
 		
 	'types' => Array (	
-		'0' => Array('showitem' => 'title,title_lang_ol,image;;1;;1-1-1'),
+		'0' => Array('showitem' => 'title,title_lang_ol,image;;1;;1-1-1,single_pid'),
 	
 	),
 	'palettes' => Array (
