@@ -55,6 +55,13 @@ class ext_update  {
 		$res_cat = mysql(TYPO3_db,$query_cat);
 		$res_flex = mysql(TYPO3_db,$query_flex);
 		echo mysql_error();
+		
+//		while($tmprow=mysql_fetch_assoc($res_cat))	{
+//		t3lib_div::debug($tmprow);
+//		}
+		#die();
+		
+		
 		if ($res_cat) {
 		    $count_cat = mysql_num_rows($res_cat);
 		}
@@ -76,10 +83,11 @@ class ext_update  {
 			$returnthis.= '<br><br><br><b>Do you want to perform the action now?</b><br>(This action will not change your old data in the tt_news or tt_content table. So even if you perform this action, you will still be able to downgrade to an earlier version of tt_news retaining the old category relations and CODE field data.)
 			<br><br><form action=""><input type="submit" value="DO IT" onclick="'.htmlspecialchars($onClick).'"></form>';
 			return $returnthis;
-		} elseif($count_cat!=0 OR $count_flex!=0) {
+		} elseif($count_cat OR $count_flex) {
 			if($count_cat){
 				while($row=mysql_fetch_assoc($res_cat))	{
-					$insertQ = t3lib_BEfunc::DBcompileInsert('tt_news_cat_mm',array('uid_local'=>$row['uid'],'uid_foreign'=>$row['category'],'sorting'=>1));
+					$insertQ = t3lib_BEfunc::DBcompileInsert('tt_news_cat_mm',array('uid_local'=>$row['uid'],'uid_foreign'=>$row['category'],'sorting'=>1)); 
+					#t3lib_div::debug($insertQ);
 					$res2 = mysql(TYPO3_db,$insertQ);
 				}
 				$returndoupdate= $count_cat.' ROW(s) inserted.<br><br>';
@@ -176,7 +184,7 @@ class ext_update  {
 		if($updatewhat=='categoryrelations'){
 			$query = 'SELECT tt_news.uid,category,tt_news_cat_mm.uid_foreign, max(category = uid_foreign) as testit
 					FROM tt_news LEFT JOIN tt_news_cat_mm ON tt_news.uid = tt_news_cat_mm.uid_local
-					GROUP By uid having (testit !=1 OR ISNULL(testit)) AND category!=0';
+					GROUP BY uid HAVING (testit !=1 OR ISNULL(testit)) AND category AND NOT tt_news_cat_mm.uid_foreign'; 
 			return $query;
 		} elseif($updatewhat=='flexforms') {
 			$query = 'SELECT * FROM tt_content WHERE

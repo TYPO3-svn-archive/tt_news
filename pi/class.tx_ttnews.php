@@ -142,8 +142,8 @@ class tx_ttnews extends tslib_pibase {
 		}
 		$catSelection = $catSelection?$catSelection:$this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'categorySelection', 'sDEF');
 		$catSelection = $catSelection?$catSelection:$this->conf['categorySelection'];
-		
-		$this->catExclusive = $catSelection;
+		// ignore cat selection if categoryMode isn't set
+		$this->catExclusive = $this->config['categoryMode']?$catSelection:0;
 
 
 		$catImageMode = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'catImageMode', 's_category');
@@ -909,10 +909,10 @@ $content = $this->cObj->substituteMarkerArrayCached($noItemsMsg, $markerArray);
 		}
 		
 
-		if ($this->catExclusive) {
+		if ($this->catExclusive || $this->config['categoryMode']) {
 			$selectConf['leftjoin'] = 'tt_news_cat_mm ON tt_news.uid = tt_news_cat_mm.uid_local';
 			if ($this->config['categoryMode']) {
-				$selectConf['where'] .= ' AND (IFNULL(tt_news_cat_mm.uid_foreign,0) '.($this->config['categoryMode'] < 0?'NOT ':'').'IN ('.$this->catExclusive.'))';
+				$selectConf['where'] .= ' AND (IFNULL(tt_news_cat_mm.uid_foreign,0) '.($this->config['categoryMode'] < 0?'NOT ':'').'IN ('.($this->catExclusive?$this->catExclusive:0).'))';
 			}
 		}
 		# t3lib_div::debug($selectConf);

@@ -109,16 +109,16 @@
 					<type>select</type>
 					<items type="array">
 						<numIndex index="0" type="array">
-							<numIndex index="0">LLL:EXT:tt_news/locallang_tca.php:tt_news.pi_flexform.archive_nonarc</numIndex>
-							<numIndex index="1">-1</numIndex>
+							<numIndex index="0">LLL:EXT:tt_news/locallang_tca.php:tt_news.pi_flexform.archive_dontcare</numIndex>
+							<numIndex index="1">0</numIndex>
 						</numIndex>
 						<numIndex index="1" type="array">
 							<numIndex index="0">LLL:EXT:tt_news/locallang_tca.php:tt_news.pi_flexform.archive_arc</numIndex>
 							<numIndex index="1">1</numIndex>
 						</numIndex>
 						<numIndex index="2" type="array">
-							<numIndex index="0">LLL:EXT:tt_news/locallang_tca.php:tt_news.pi_flexform.archive_dontcare</numIndex>
-							<numIndex index="1">0</numIndex>
+							<numIndex index="0">LLL:EXT:tt_news/locallang_tca.php:tt_news.pi_flexform.archive_nonarc</numIndex>
+							<numIndex index="1">-1</numIndex>
 						</numIndex>
 					</items>
 					<default>LLL:EXT:tt_news/locallang_tca.php:tt_news.pi_flexform.archive_nonarc</default>
