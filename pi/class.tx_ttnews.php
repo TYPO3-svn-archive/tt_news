@@ -206,6 +206,7 @@ class tx_ttnews extends tslib_pibase {
 	
 			reset($dateArr);
 			$periodAccum=array();
+			$selectConf2['where'] = $selectConf['where'];
 			while(list($k,$v)=each($dateArr))	{
 				if (!isset($dateArr[$k+1]))	{break;}
 				$periodInfo=array();
@@ -217,7 +218,7 @@ class tx_ttnews extends tslib_pibase {
 	
 					// FInding maximum and minimum values:
 				$selectConf['selectFields'] = 'count(*)';
-				$selectConf['where'].= " AND datetime>=".$periodInfo["start"]." AND datetime<".$periodInfo["stop"];
+				$selectConf['where'] = $selectConf2['where']." AND datetime>=".$periodInfo["start"]." AND datetime<".$periodInfo["stop"];
 				$res = $this->cObj->exec_getQuery("tt_news",$selectConf);
 				$row = $GLOBALS['TYPO3_DB']->sql_fetch_row($res);
 				$periodInfo["count"]=$row[0];
