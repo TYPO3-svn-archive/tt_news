@@ -36,6 +36,7 @@ plugin.tt_news {
   color4.wrap = {$plugin.tt_news.color4}
 
   # Rendering of news items
+  # the RTE parseFunc configuration
   general_stdWrap {
 	brTag =
 	    encapsLines.wrapNonWrappedLines = <p style="margin:0 0 0 0;">|</p>
@@ -91,8 +92,8 @@ plugin.tt_news {
   datetimeDaysToArchive = {$plugin.tt_news.datetimeDaysToArchive}
   enableArchiveDate = 1
   pageTypoLink.parameter.current = 1
+  
   archiveTypoLink.parameter = {$plugin.tt_news.archiveTypoLink.parameter}
-
 
   reverseAMenu = 1
   archiveMenuNoEmpty = 1
@@ -111,6 +112,13 @@ plugin.tt_news {
     <table border="0" cellpadding="0" cellspacing="0" width="100%">
     <tr><td><strong> | </strong></td></tr></table>
   )     
+  
+  # Settings for links in 'list' & 'latest' to internal or external pages
+  # comment this out, if you use frames, to avoid opening links in the current frameset which will result in an error   
+  
+  # pageTypoLink.target >
+  # pageTypoLink.target = _top
+  
   
   # Related News
   relatedHeader_stdWrap.wrap = <strong>|</strong>
@@ -143,11 +151,10 @@ plugin.tt_news {
       20 = TEXT
       20.field = datetime
       20.strftime = %d-%m-%y %H:%M
-      20.wrap = <font size="1"> -&nbsp; | </font><br />
+      20.wrap = &nbsp;- | <br />
   }
   
-  # the RTE parseFunc configuration
-  # 
+
   content_stdWrap {
    	
   }

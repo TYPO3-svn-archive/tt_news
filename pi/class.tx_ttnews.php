@@ -38,43 +38,50 @@
 * @author Rupert Germann <rupi@gmx.li>
 */
 /**
-* [CLASS/FUNCTION INDEX of SCRIPT]
-*
-*
-*
-*   77: class tx_ttnews extends tslib_pibase
-*  112:     function main_xmlnewsfeed($content, $conf)
-*  127:     function getStoriesResult()
-*  139:     function init_news($conf)
-*  333:     function main_news($content, $conf)
-*  405:     function news_archiveMenu()
-*  525:     function single_view()
-*  584:     function news_list()
-*  756:     function get_page_browser($newsCount, $begin_at)
-*  841:     function get_content_news_list($itemparts, $selectConf, $prefix_display)
-*  893:     function getLinkUrl($id = '', $excludeList = '')
-*  942:     function getSelectConf($where, $noPeriod = 0)
-* 1008:     function setPidlist($pid_list)
-* 1018:     function initRecursive($recursive)
-* 1034:     function initCategories()
-* 1061:     function generatePageArray()
-* 1077:     function getItemMarkerArray ($row, $textRenderObj = 'displaySingle')
-* 1174:     function getCatMarkerArray($markerArray, $row, $lConf)
-* 1276:     function getRelated($uid)
-* 1304:     function userProcess($mConfKey, $passVar)
-* 1319:     function spMarker($subpartMarker)
-* 1337:     function searchWhere($sw)
-* 1348:     function formatStr($str)
-* 1364:     function getLayouts($templateCode, $alternatingLayouts, $marker)
-*
-* TOTAL FUNCTIONS: 23
-* (This index is automatically created/updated by the extension "extdeveval")
-*
-*/
+ * [CLASS/FUNCTION INDEX of SCRIPT]
+ *
+ *
+ *
+ *   85: class tx_ttnews extends tslib_pibase
+ *  116:     function main_xmlnewsfeed($content, $conf)
+ *  131:     function getStoriesResult()
+ *  143:     function init_news($conf)
+ *  318:     function main_news($content, $conf)
+ *  385:     function news_archiveMenu()
+ *  506:     function single_view()
+ *  558:     function news_list()
+ *  728:     function get_page_browser($newsCount, $begin_at)
+ *  811:     function get_content_news_list($itemparts, $selectConf, $prefix_display)
+ *  858:     function getLinkUrl($id = '', $excludeList = '')
+ *  892:     function getSelectConf($where, $noPeriod = 0)
+ *  959:     function setPidlist($pid_list)
+ *  969:     function initRecursive($recursive)
+ *  985:     function initCategories()
+ * 1010:     function generatePageArray()
+ * 1026:     function getItemMarkerArray ($row, $textRenderObj = 'displaySingle')
+ * 1133:     function getCatMarkerArray($markerArray, $row, $lConf)
+ * 1242:     function getRelated($uid)
+ * 1270:     function userProcess($mConfKey, $passVar)
+ * 1285:     function spMarker($subpartMarker)
+ * 1303:     function searchWhere($sw)
+ * 1315:     function formatStr($str)
+ * 1331:     function getLayouts($templateCode, $alternatingLayouts, $marker)
+ *
+ * TOTAL FUNCTIONS: 23
+ * (This index is automatically created/updated by the extension "extdeveval")
+ *
+ */
 
 require_once(PATH_t3lib.'class.t3lib_xml.php');
 require_once(PATH_tslib.'class.tslib_pibase.php');
 
+/**
+ * Plugin 'news' for the 'tt_news' extension.
+ *
+ * @author	author Rupert Germann <rupi@gmx.li>
+ * @package TYPO3
+ * @subpackage tt_news
+ */
 class tx_ttnews extends tslib_pibase {
 	var $cObj;	// The backReference to the mother cObj object set at call time
 
@@ -100,12 +107,12 @@ class tx_ttnews extends tslib_pibase {
 	var $pageArray = array();	// Is initialized with an array of the pages in the pid-list
 
 	/**
-	* Main news function for XML news feed
-	*
-	* @param	string		$content: ...
-	* @param	array		$conf: configuration array from TS
-	* @return	[type]		...
-	*/
+	 * Main news function for XML news feed
+	 *
+	 * @param	string		$content: ...
+	 * @param	array		$conf: configuration array from TS
+	 * @return	string		news content as xml string
+	 */
 	function main_xmlnewsfeed($content, $conf) {
 		$className = t3lib_div::makeInstanceClassName('t3lib_xml');
 		$xmlObj = new $className('typo3_xmlnewsfeed');
@@ -117,10 +124,10 @@ class tx_ttnews extends tslib_pibase {
 	}
 
 	/**
-	* returns the db-result for the news-item displayed by the xmlnewsfeed function
-	*
-	* @return	pointer		MySQL select result pointer / DBAL object
-	*/
+	 * returns the db-result for the news-item displayed by the xmlnewsfeed function
+	 *
+	 * @return	pointer		MySQL select result pointer / DBAL object
+	 */
 	function getStoriesResult() {
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_news', 'pid='.intval($GLOBALS['TSFE']->id).$this->cObj->enableFields('tt_news'), '', 'datetime DESC');
 		return $res;
@@ -128,11 +135,11 @@ class tx_ttnews extends tslib_pibase {
 
 
 	/**
-	* Init Function: here all the needed configuration Values are stored in class variables..
-	*
-	* @param	array		$conf: configuration array from TS
-	* @return	void
-	*/
+	 * Init Function: here all the needed configuration Values are stored in class variables..
+	 *
+	 * @param	array		$conf: configuration array from TS
+	 * @return	void
+	 */
 	function init_news($conf) {
 
 		$this->conf = $conf; //store configuration
@@ -142,7 +149,7 @@ class tx_ttnews extends tslib_pibase {
 		$this->alternatingLayouts = intval($this->conf['alternatingLayouts']) > 0 ? intval($this->conf['alternatingLayouts']) : 2;
 
 		$this->pi_loadLL(); // Loading language-labels
-	
+
 		$this->pi_initPIflexForm(); // Init FlexForm configuration for plugin
 		$this->enableFields = $this->cObj->enableFields('tt_news');
 
@@ -194,9 +201,9 @@ class tx_ttnews extends tslib_pibase {
 		// if next value is set, the archive list is empty at start. default is, to show all
 		// archived items when no time period is given.
 		$this->config['emptyArchListAtStart'] = $this->conf['emptyArchListAtStart'];
-		
+
 		$this->config['archiveMode'] = $this->conf['archiveMode']; // month, quarter or year listing in AMENU
-		
+
 		$this->config['reverseAMenu'] = $this->conf['reverseAMenu']; // reverse AMENU order
 		$this->config['archiveMenuNoEmpty'] = $this->conf['archiveMenuNoEmpty'];
 		$this->config['displayCurrentRecord'] = $this->conf['displayCurrentRecord'];
@@ -249,16 +256,16 @@ class tx_ttnews extends tslib_pibase {
 		$this->config['limit'] = t3lib_div::intInRange($this->conf['limit'], 0, 1000);
 		$this->config['limit'] = $this->config['limit'] ? $this->config['limit']:50;
 		$this->config['latestLimit'] = intval($this->conf['latestLimit'])?intval($this->conf['latestLimit']): $this->config['limit'];
-		
+
 		$this->config['showPBrowserText'] = $this->conf['showPBrowserText']; // display text like 'page' in pagebrowser
 		$this->config['pageBrowser.'] = $this->conf['pageBrowser.']; // get pageBrowser configuration
 
-		$this->config['emptySearchAtStart'] = $this->conf['emptySearchAtStart']; // display only the search form, when entering the news search-page 
-		
+		$this->config['emptySearchAtStart'] = $this->conf['emptySearchAtStart']; // display only the search form, when entering the news search-page
+
 		$this->config['noNewsIdMsg'] = $this->conf['noNewsIdMsg']; // message diplayed when single view is called without a tt_news uid
 
 		$this->initCategories(); // initialize category-array
-		
+
 
 		// if this is set the first image is handled as preview image, which is only shown in list view
 		$fImgPreview = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'firstImageIsPreview', 's_misc');
@@ -281,7 +288,7 @@ class tx_ttnews extends tslib_pibase {
 
 		// Substitute Global Marker Array
 		$this->templateCode = $this->cObj->substituteMarkerArray($this->templateCode, $globalMarkerArray);
-		
+
 		// names of the alternative subparts, used instead of the default subpart-names
 		$this->config['altMainMarkers.'] = $this->conf['altMainMarkers.'];
 
@@ -301,12 +308,13 @@ class tx_ttnews extends tslib_pibase {
 	}
 
 	/**
-	* Main news function.
-	*
-	* @param	[string]		$content: function output is added to this
-	* @param	[array]			$conf: configuration array
-	* @return	[string]		$content: complete content generated by the tt_news plugin
-	*/
+	 * Main news function: calls the init_news() function and decides by the given CODEs which of the
+	 * functions to display news should by called.
+	 *
+	 * @param	string		$content: function output is added to this
+	 * @param	array		$conf: configuration array
+	 * @return	string		$content: complete content generated by the tt_news plugin
+	 */
 	function main_news($content, $conf) {
 
 		#$GLOBALS['TSFE']->set_no_cache();
@@ -370,10 +378,10 @@ class tx_ttnews extends tslib_pibase {
 	}
 
 	/**
-	* generates the News archive menu
-	*
-	* @return	[string]		html code of the archive menu
-	*/
+	 * generates the News archive menu
+	 *
+	 * @return	string		html code of the archive menu
+	 */
 	function news_archiveMenu() {
 		$this->arcExclusive = 1;
 		$selectConf = $this->getSelectConf('', 1);
@@ -463,7 +471,7 @@ class tx_ttnews extends tslib_pibase {
 				$markerArray['###ARCHIVE_TITLE###'] = $veryLocal_cObj->cObjGetSingle($this->conf['archiveTitleCObject'], $this->conf['archiveTitleCObject.'], 'archiveTitle');
 				$markerArray['###ARCHIVE_COUNT###'] = $pArr['count'];
 				$markerArray['###ARCHIVE_ITEMS###'] = $this->pi_getLL('archiveItems');
-				
+
 				$itemsOut .= $this->cObj->substituteMarkerArrayCached($t['item'][($cc%count($t['item']))], $markerArray, array(), $wrappedSubpartArray);
 				$cc++;
 			}
@@ -476,8 +484,8 @@ class tx_ttnews extends tslib_pibase {
 
 			// Set content
 			$subpartArray['###CONTENT###'] = $itemsOut;
-				
-			
+
+
 			$content = $this->cObj->substituteMarkerArrayCached($t['total'], $markerArray, $subpartArray, $wrappedSubpartArray);
 		} else {
 			// if nothing is found in the archive display the TEMPLATE_ARCHIVE_NOITEMS message
@@ -490,11 +498,11 @@ class tx_ttnews extends tslib_pibase {
 	}
 
 	/**
-	* generates the single view of a news article. Is also used when displaying single records
-	* with the 'insert records' content element
-	*
-	* @return	string		html-code for a single news item
-	*/
+	 * generates the single view of a news article. Is also used when displaying single records
+	 * with the 'insert records' content element
+	 *
+	 * @return	string		html-code for a single news item
+	 */
 	function single_view() {
 
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_news', 'uid='.intval($this->tt_news_uid).' AND type=0'.$this->enableFields); // type=0 -> only real news.
@@ -540,13 +548,13 @@ class tx_ttnews extends tslib_pibase {
 
 
 	/**
-	* Display LIST,LATEST or SEARCH
-	* Things happen: determine the template-part to use, get the query parameters (add where if search was performed),
-	* exec count query to get the number of results, check if a browsebox should be displayed,
-	* get the general Markers for each item and fill the content array, check if a browsebox should be displayed
-	*
-	* @return	string		html-code for the plugin content
-	*/
+	 * Display LIST,LATEST or SEARCH
+	 * Things happen: determine the template-part to use, get the query parameters (add where if search was performed),
+	 * exec count query to get the number of results, check if a browsebox should be displayed,
+	 * get the general Markers for each item and fill the content array, check if a browsebox should be displayed
+	 *
+	 * @return	string		html-code for the plugin content
+	 */
 	function news_list() {
 		$theCode = $this->theCode;
 
@@ -616,9 +624,9 @@ class tx_ttnews extends tslib_pibase {
                 // set pS to time-archive startdate
                 t3lib_div::_GETset(array('pS' => (time()-($this->config['datetimeDaysToArchive']*86400)))) ;
                 // override the period lenght checking in getSelectConf
-               
+
             }
-        } 
+        }
 
 		if (t3lib_div::_GP('pS') && !t3lib_div::_GP('pL')) {
 			$noPeriod = 1;
@@ -710,13 +718,13 @@ class tx_ttnews extends tslib_pibase {
 
 
 	/**
-	* generates a pagebrowser and fills it in the 3 markers ###LINK_NEXT###, ###LINK_PREV###
-	* and ###BROWSE_LINKS###
-	*
-	* @param	int		$newsCount: number of news items
-	* @param	int		$begin_at: item to start with
-	* @return	array	$markerArray: array with filled in pagebrowser marks
-	*/
+	 * generates a pagebrowser and fills it in the 3 markers ###LINK_NEXT###, ###LINK_PREV###
+	 * and ###BROWSE_LINKS###
+	 *
+	 * @param	integer		$newsCount: number of news items
+	 * @param	integer		$begin_at: item to start with
+	 * @return	array		$markerArray: array with filled in pagebrowser marks
+	 */
 	function get_page_browser($newsCount, $begin_at) {
 		$temp_conf = $this->typolink_conf;
 		$this->local_cObj->setCurrentVal($GLOBALS['TSFE']->id);
@@ -793,15 +801,15 @@ class tx_ttnews extends tslib_pibase {
 
 
 	/**
-	* get the content for a news item NOT displayed as single item (List & Latest)
-	*
-	* @param	array		$itemparts: parts of the html template
-	* @param	array		$selectConf: quety parameters in an array
-	* @param	string		$prefix_display: the part of the TS-setup
-	* @return	string		$itemsOut: itemlist as htmlcode
-	*/
+	 * get the content for a news item NOT displayed as single item (List & Latest)
+	 *
+	 * @param	array		$itemparts: parts of the html template
+	 * @param	array		$selectConf: quety parameters in an array
+	 * @param	string		$prefix_display: the part of the TS-setup
+	 * @return	string		$itemsOut: itemlist as htmlcode
+	 */
 	function get_content_news_list($itemparts, $selectConf, $prefix_display) {
-		
+
 		$res = $this->cObj->exec_getQuery('tt_news', $selectConf); //get query for list contents
 		$itemsOut = '';
 
@@ -841,12 +849,12 @@ class tx_ttnews extends tslib_pibase {
 
 
 	/**
-	* Returns a url for use in forms and links
-	*
-	* @param	integer		$id: id to link to
-	* @param	string		$excludeList: parameters listed here, are removed from the link (used in the pagebrowser)
-	* @return	string		the link url
-	*/
+	 * Returns a url for use in forms and links
+	 *
+	 * @param	integer		$id: id to link to
+	 * @param	string		$excludeList: parameters listed here, are removed from the link (used in the pagebrowser)
+	 * @return	string		the link url
+	 */
 	function getLinkUrl($id = '', $excludeList = '') {
 		$queryString = array();
 		$queryString['id'] = 'id='.($id ? $id : $GLOBALS['TSFE']->id);
@@ -875,12 +883,12 @@ class tx_ttnews extends tslib_pibase {
 
 
 	/**
-	* build the selectconf (query) needed to get the news items from the db
-	*
-	* @param	string		$where: where-part of the query 
-	* @param	integer		$noPeriod: if this value exists the listing starts with the given 'period start' (pS). If not the value period start needs also a value for 'period lenght' (pL) to display something.
-	* @return	array		the selectconf for the display of a news item 
-	*/
+	 * build the selectconf (query) needed to get the news items from the db
+	 *
+	 * @param	string		$where: where-part of the query
+	 * @param	integer		$noPeriod: if this value exists the listing starts with the given 'period start' (pS). If not the value period start needs also a value for 'period lenght' (pL) to display something.
+	 * @return	array		the selectconf for the display of a news item
+	 */
 	function getSelectConf($where, $noPeriod = 0) {
 
 		$this->setPidlist($this->config['pid_list']);
@@ -942,21 +950,22 @@ class tx_ttnews extends tslib_pibase {
 
 
 	/**
-	* Sets the pid_list internal var
-	*
-	* @param	[type]		$pid_list: ...
-	* @return	void
-	*/
+	 * Sets the pid_list internal var. This var is used in the query to find news records from
+	 * pages given in the 'starting point' field of the content element.
+	 *
+	 * @param	string		$pid_list: pid or commaseparated list of pids
+	 * @return	void
+	 */
 	function setPidlist($pid_list) {
 		$this->pid_list = $pid_list;
 	}
 
 	/**
-	* Extends the internal pid_list by the levels given by $recursive
-	*
-	* @param	integer		$recursive: levels
-	* @return	void
-	*/
+	 * Extends the internal pid_list by the levels given by $recursive
+	 *
+	 * @param	integer		$recursive: number of level to extend the pid_list
+	 * @return	void
+	 */
 	function initRecursive($recursive) {
 		if ($recursive) {
 			$pid_list_arr = explode(',', $this->pid_list);
@@ -969,14 +978,14 @@ class tx_ttnews extends tslib_pibase {
 	}
 
 	/**
-	* Getting all tt_news_cat categories into internal array
-	*
-	* @return	void
-	*/
+	 * Getting all tt_news_cat categories into internal array
+	 *
+	 * @return	void
+	 */
 	function initCategories() {
-		$storagePid = $GLOBALS['TSFE']->page['storage_pid']?$GLOBALS['TSFE']->page['storage_pid']:$GLOBALS['TSFE']->rootLine[0]['storage_pid'];
-		$storagePid = $storagePid?$storagePid:$this->config['pid_list'];
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_news_cat LEFT JOIN tt_news_cat_mm ON tt_news_cat_mm.uid_foreign = tt_news_cat.uid', '1=1 AND tt_news_cat.pid IN ('.$storagePid.') '.$this->cObj->enableFields('tt_news_cat'));
+
+		$storagePid=$GLOBALS['TSFE']->getStorageSiterootPids();
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_news_cat LEFT JOIN tt_news_cat_mm ON tt_news_cat_mm.uid_foreign = tt_news_cat.uid', '1=1 AND tt_news_cat.pid IN ('.$storagePid['_STORAGE_PID'].') '.$this->cObj->enableFields('tt_news_cat'));
 		echo mysql_error();
 		$this->categories = array();
 		$this->categorieImages = array();
@@ -994,10 +1003,10 @@ class tx_ttnews extends tslib_pibase {
 	}
 
 	/**
-	* Generates an array,->pageArray of the pagerecords from->pid_list
-	*
-	* @return	void
-	*/
+	 * Generates an array,->pageArray of the pagerecords from->pid_list
+	 *
+	 * @return	void
+	 */
 	function generatePageArray() {
 		// Get pages (for category titles)
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('title,uid,author,author_email', 'pages', 'uid IN ('.$this->pid_list.')');
@@ -1008,12 +1017,12 @@ class tx_ttnews extends tslib_pibase {
 	}
 
 	/**
-	* Fills in the markerArray with data for a news item
-	*
-	* @param	array		$row: result row for a news item
-	* @param	array		$textRenderObj: conf vars for the current template
-	* @return	array		$markerArray: filled marker array
-	*/
+	 * Fills in the markerArray with data for a news item
+	 *
+	 * @param	array		$row: result row for a news item
+	 * @param	array		$textRenderObj: conf vars for the current template
+	 * @return	array		$markerArray: filled marker array
+	 */
 	function getItemMarkerArray ($row, $textRenderObj = 'displaySingle') {
 
 		// config to use:
@@ -1077,6 +1086,19 @@ class tx_ttnews extends tslib_pibase {
 		$markerArray['###NEWS_RELATED###'] = $relatedNews;
 		$markerArray['###TEXT_RELATED###'] = $relatedNews ? $this->local_cObj->stdWrap($this->pi_getLL('textRelated'), $this->conf['relatedHeader_stdWrap.']):'';
 
+		// filelinks
+		$markerArray['###TEXT_FILES###'] = $this->local_cObj->stdWrap($this->pi_getLL('textFiles'), $this->conf['newsFilesHeader_stdWrap.']);
+	if ($row['news_files']) {
+		$fileArr = explode(',',$row['news_files']);
+	 	while(list(,$val)=each($fileArr)) {
+		// fills the marker ###FILE_LINK### with the links to the atached files
+			$markerArray['###FILE_LINK###'] .= $this->local_cObj->filelink($val,$this->conf['newsFiles.']) ;
+		}
+	} else { // no file atached
+	    $markerArray['###FILE_LINK###']='';
+		$markerArray['###TEXT_FILES###']='';
+	}
+
 		// Page fields:
 		$markerArray['###PAGE_UID###'] = $row['pid'];
 		$markerArray['###PAGE_TITLE###'] = $this->pageArray[$row['pid']]['title'];
@@ -1097,18 +1119,19 @@ class tx_ttnews extends tslib_pibase {
 		if ($this->conf['itemMarkerArrayFunc']) {
 			$markerArray = $this->userProcess('itemMarkerArrayFunc', $markerArray);
 		}
-		
+
 		return $markerArray;
 	}
 	/**
-	* Fills in the Category markerArray with data
-	*
-	* @param	array		$markerArray: partly filled marker array
-	* @param	array		$row: result row for a news item
-	* @param	array		$lConf: configuration for the current templatepart
-	* @return	array		$markerArray: filled markerarray
-	*/
+	 * Fills in the Category markerArray with data
+	 *
+	 * @param	array		$markerArray: partly filled marker array
+	 * @param	array		$row: result row for a news item
+	 * @param	array		$lConf: configuration for the current templatepart
+	 * @return	array		$markerArray: filled markerarray
+	 */
 	function getCatMarkerArray($markerArray, $row, $lConf) {
+
 		$markerArray['###TEXT_CAT###'] = $this->pi_getLL('textCat');
 		$markerArray['###TEXT_CAT_LATEST###'] = $this->pi_getLL('textCatLatest');
 
@@ -1193,7 +1216,7 @@ class tx_ttnews extends tslib_pibase {
 				} else {
 					$markerArray['###NEWS_CATEGORY###'] = $news_category;
 				}
-				
+
 			}
 			if ($this->config['catImageMode'] != 0) {
 				$theCatImgCode = implode('', array_slice($theCatImgCodeArray, 0, intval($this->config['maxCatImages'])));
@@ -1206,15 +1229,16 @@ class tx_ttnews extends tslib_pibase {
 			$markerArray['###TEXT_CAT###'] = '';
 			$markerArray['###TEXT_CAT_LATEST###'] = '';
 		}
+
 		return $markerArray;
 	}
 
 	/**
-	* Gets related news.
-	*
-	* @param	integer		$uid: it of the current news item
-	* @return	string		html code for the related news list
-	*/
+	 * Find related news records and add links to them.
+	 *
+	 * @param	integer		$uid: it of the current news item
+	 * @return	string		html code for the related news list
+	 */
 	function getRelated($uid) {
 		$veryLocal_cObj = t3lib_div::makeInstance('tslib_cObj'); // Local cObj.
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid,title,short,datetime,archivedate,type,page,ext_url', 'tt_news,tt_news_related_mm AS M', 'tt_news.uid=M.uid_foreign AND M.uid_local='.intval($uid));
@@ -1237,12 +1261,12 @@ class tx_ttnews extends tslib_pibase {
 
 
 	/**
-	* Calls user function
-	*
-	* @param	[type]		$mConfKey: ...
-	* @param	[type]		$passVar: ...
-	* @return	[type]		...
-	*/
+	 * Calls user function defined in TypoScript
+	 *
+	 * @param	integer		$mConfKey: if this value is empty the var $mConfKey is not processed
+	 * @param	mixed		$passVar: this var is processed in the user function
+	 * @return	mixed		the processed $passVar
+	 */
 	function userProcess($mConfKey, $passVar) {
 		if ($this->conf[$mConfKey]) {
 			$funcConf = $this->conf[$mConfKey.'.'];
@@ -1253,11 +1277,11 @@ class tx_ttnews extends tslib_pibase {
 	}
 
 	/**
-	* returns the subpart name. if 'altMainMarkers.' are given this name is used instead of the default marker-name.	
-	*
-	* @param	string		$subpartMarker: ...
-	* @return	string		Name of the template subpart 
-	*/
+	 * returns the subpart name. if 'altMainMarkers.' are given this name is used instead of the default marker-name.
+	 *
+	 * @param	string		$subpartMarker: name of the subpart to be substituted
+	 * @return	string		new name of the template subpart
+	 */
 	function spMarker($subpartMarker) {
 		$sPBody = substr($subpartMarker, 3, -3);
 		$altSPM = '';
@@ -1265,29 +1289,29 @@ class tx_ttnews extends tslib_pibase {
 			$altSPM = trim($this->cObj->stdWrap($this->config['altMainMarkers.'][$sPBody], $this->conf['altMainMarkers.'][$sPBody.'.']));
 			$GLOBALS['TT']->setTSlogMessage('Using alternative subpart marker for \''.$subpartMarker.'\': '.$altSPM, 1);
 		}
-		
+
 		return $altSPM?$altSPM:$subpartMarker;
 	}
 
 
 	/**
-	* Generates a search where clause.
-	*
-	* @param	string		searchword(s)
-	* @return	string		querypart
-	*/
+	 * Generates a search where clause.
+	 *
+	 * @param	string		searchword(s)
+	 * @return	string		querypart
+	 */
 	function searchWhere($sw) {
 		$where = $this->cObj->searchWhere($sw, $this->searchFieldList, 'tt_news');
 		return $where;
 	}
 
 	/**
-	* Format string with general_stdWrap from configuration
-	* this is not used in the current version, cause it collides with the proc functions of the rte 	
-	*
-	* @param	string		string to wrap
-	* @return	string		wrapped string
-	*/
+	 * Format string with general_stdWrap from configuration
+	 * this is not used in the current version, cause it collides with the proc functions of the rte
+	 *
+	 * @param	string		string to wrap
+	 * @return	string		wrapped string
+	 */
 	function formatStr($str) {
 		if (is_array($this->conf['general_stdWrap.'])) {
 			$str = $this->local_cObj->stdWrap($str, $this->conf['general_stdWrap.']);
@@ -1297,13 +1321,13 @@ class tx_ttnews extends tslib_pibase {
 
 
 	/**
-	* Returns alternating layouts
-	*
-	* @param	string		html code of the template subpart
-	* @param	integer		number of alternatingLayouts
-	* @param	string		name of the content-markers in this template-subpart
-	* @return	array		html code for alternating content markers
-	*/
+	 * Returns alternating layouts
+	 *
+	 * @param	string		html code of the template subpart
+	 * @param	integer		number of alternatingLayouts
+	 * @param	string		name of the content-markers in this template-subpart
+	 * @return	array		html code for alternating content markers
+	 */
 	function getLayouts($templateCode, $alternatingLayouts, $marker) {
 		$out = array();
 		for($a = 0; $a < $alternatingLayouts; $a++) {

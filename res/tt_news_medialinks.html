@@ -138,8 +138,9 @@ LINK_ITEM - link to the news item single display
 		-->
 			<div class="news-list-item">				
 			  <div class="news-list-title"><span class="news-list-date">###NEWS_DATE###</span> <!--###LINK_ITEM###-->###NEWS_TITLE###<!--###LINK_ITEM###--></div>			  
-			  <!--###LINK_ITEM###-->###NEWS_IMAGE###<!--###LINK_ITEM###-->
-			  ###NEWS_SUBHEADER###
+			  <div class="news-list-item-img-container"><!--###LINK_ITEM###-->###NEWS_IMAGE###<!--###LINK_ITEM###--></div>
+			###NEWS_SUBHEADER### 
+			<div class="news-list-category">###TEXT_CAT### ###NEWS_CATEGORY### ###NEWS_CATEGORY_IMAGE###</div>
 			  <!--###LINK_ITEM###-->###MORE###<!--###LINK_ITEM###-->
 			  <div class="news-list-clearer"> </div>
 			</div>			
@@ -173,34 +174,32 @@ LINK_ITEM - link to the news item single display
 	This subpart is used to display single news items
 -->
 <div class="news-single-item">
-			###NEWS_DATE### ###NEWS_TIME###
-			<h1>###NEWS_TITLE###</h1>			
+			<div class="news-single-timedata">###NEWS_DATE### ###NEWS_TIME### ###TEXT_NEWS_AGE### ###NEWS_AGE###</div>
+			<div class="news-single-header">###NEWS_TITLE###</div>
+			<div class="news-single-author">###NEWS_AUTHOR###</div>		
 			
+			<div class="news-single-category">###TEXT_CAT### ###NEWS_CATEGORY### ###NEWS_CATEGORY_IMAGE###</div>
 			
-			<div class="news-single-subheader">###NEWS_SUBHEADER###</div>
+			<div class="news-single-subheader ">###NEWS_SUBHEADER###</div>
 			
 			###NEWS_IMAGE### 
 			###NEWS_CONTENT###
-			
-			<div class="news-single-additional-info">			  
-			    <div class="news-single-related">
-				  <strong>###TEXT_RELATED###</strong>
-				  <br /><br />
-				  ###NEWS_RELATED###<br /><br />
-				  ###FILE_LINK###
 
-				</div>
-				<div class="news-single-links">
-				  <strong>###TEXT_LINKS###</strong>
-				  <br /><br />
-				  ###NEWS_LINKS###
-				</div>
-			  <div class="news-single-author">###NEWS_AUTHOR###</div>
+			<div class="news-single-additional-info">			  
+			    <dl class="news-single-related">
+				  	<dt class="news-single-related-header">###TEXT_RELATED###</dt>
+				 	<dd class="news-single-related-items">###NEWS_RELATED###</dd>
+			   </dl>
+				 <dl class="news-single-files">
+				  	<dt class="news-single-files-header">###TEXT_FILES###</dt>
+				 	<dd class="news-single-files-items">###FILE_LINK###</dd>				  
+				</dl>
+				<dl class="news-single-links">
+  		 			<dt class="news-single-links-header">###TEXT_LINKS###</dt>
+				 	<dd class="news-single-links-items">###NEWS_LINKS###</dd>					
+				</dl>
 			</div>			
 </div>
-<br />
-<br />
-
 <div class="news-single-backlink">	
 <!--###LINK_ITEM###-->###BACK_TO_LIST###<!--###LINK_ITEM###-->
 </div>					

@@ -64,7 +64,8 @@
 function user_displayFileLinks($markerArray, $conf){
 	$row = $conf['parentObj']->local_cObj->data; // get the data array of the current news record 
    # t3lib_div::debug($markerArray);
-	$markerArray['###FILE_LINK###']=''; 
+	$markerArray['###FILE_LINK###'] = ''; 
+	$markerArray['###TEXT_FILES###'] = $conf['parentObj']->local_cObj->stdWrap($conf['parentObj']->pi_getLL('textFiles'), $conf['parentObj']->conf['newsFilesHeader_stdWrap.']); 
 	if ($row['news_files']) {
 		$fileArr = explode(',',$row['news_files']);
 	 	while(list(,$val)=each($fileArr)) { 
@@ -73,6 +74,7 @@ function user_displayFileLinks($markerArray, $conf){
 		}
 	} else { // no file atached
 	    $markerArray['###FILE_LINK###']='';
+		$markerArray['###TEXT_FILES###']=''; 
 	}
 		
 	return $markerArray;
