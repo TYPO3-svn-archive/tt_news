@@ -42,40 +42,41 @@
  *
  *
  *
- *   93: class tx_ttnews extends tslib_pibase
- *  122:     function main_news($content, $conf)
- *  186:     function init($conf)
- *  307:     function newsArchiveMenu()
- *  439:     function displaySingle()
- *  491:     function displayList()
- *  742:     function getListContent($itemparts, $selectConf, $prefix_display)
- *  813:     function getSelectConf($where, $noPeriod = 0)
- *  919:     function generatePageArray()
- *  935:     function getItemMarkerArray ($row, $textRenderObj = 'displaySingle')
- * 1091:     function makeMultiPageSView($bodytext,$lConf)
- * 1121:     function makePageBrowser($showResultCount=1,$tableParams='',$pointerName='pointer')
- * 1193:     function getCategories($uid)
- * 1245:     function getSubCategories($catlist, $cc = 0)
- * 1274:     function getCatMarkerArray($markerArray, $row, $lConf)
- * 1388:     function getImageMarkers($markerArray, $row, $lConf, $textRenderObj)
- * 1451:     function getRelated($uid)
- * 1560:     function userProcess($mConfKey, $passVar)
- * 1575:     function spMarker($subpartMarker)
- * 1593:     function searchWhere($sw)
- * 1604:     function formatStr($str)
- * 1619:     function getLayouts($templateCode, $alternatingLayouts, $marker)
- * 1637:     function initLanguages ()
- * 1651:     function initCategoryVars()
- * 1713:     function checkRecords($recordlist)
- * 1743:     function initTemplate()
- * 1768:     function initPidList ()
- * 1795:     function getXmlHeader()
- * 1854:     function main_xmlnewsfeed($content, $conf)
- * 1869:     function getStoriesResult()
- * 1883:     function cleanXML($str)
- * 1900:     function getNewsSubpart($myTemplate, $myKey, $row = Array())
+ *   94: class tx_ttnews extends tslib_pibase
+ *  123:     function main_news($content, $conf)
+ *  187:     function init($conf)
+ *  313:     function newsArchiveMenu()
+ *  445:     function displaySingle()
+ *  497:     function displayList()
+ *  748:     function getListContent($itemparts, $selectConf, $prefix_display)
+ *  819:     function getSelectConf($where, $noPeriod = 0)
+ *  925:     function generatePageArray()
+ *  941:     function getItemMarkerArray ($row, $textRenderObj = 'displaySingle')
+ * 1108:     function insertPagebreaks($text)
+ * 1139:     function makeMultiPageSView($bodytext,$lConf)
+ * 1169:     function makePageBrowser($showResultCount=1,$tableParams='',$pointerName='pointer')
+ * 1241:     function getCategories($uid)
+ * 1293:     function getSubCategories($catlist, $cc = 0)
+ * 1322:     function getCatMarkerArray($markerArray, $row, $lConf)
+ * 1436:     function getImageMarkers($markerArray, $row, $lConf, $textRenderObj)
+ * 1499:     function getRelated($uid)
+ * 1608:     function userProcess($mConfKey, $passVar)
+ * 1623:     function spMarker($subpartMarker)
+ * 1641:     function searchWhere($sw)
+ * 1652:     function formatStr($str)
+ * 1667:     function getLayouts($templateCode, $alternatingLayouts, $marker)
+ * 1685:     function initLanguages ()
+ * 1699:     function initCategoryVars()
+ * 1761:     function checkRecords($recordlist)
+ * 1791:     function initTemplate()
+ * 1816:     function initPidList ()
+ * 1843:     function getXmlHeader()
+ * 1902:     function main_xmlnewsfeed($content, $conf)
+ * 1917:     function getStoriesResult()
+ * 1931:     function cleanXML($str)
+ * 1948:     function getNewsSubpart($myTemplate, $myKey, $row = Array())
  *
- * TOTAL FUNCTIONS: 31
+ * TOTAL FUNCTIONS: 32
  * (This index is automatically created/updated by the extension "extdeveval")
  *
  */
@@ -225,7 +226,7 @@ class tx_ttnews extends tslib_pibase {
 
 		$this->config['singleViewPointerName'] = trim($this->conf['singleViewPointerName'])?trim($this->conf['singleViewPointerName']):'sViewPointer';
 
-		
+
 		$maxWordsInSingleView = intval($this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'maxWordsInSingleView', 's_misc'));
 		$maxWordsInSingleView = $maxWordsInSingleView?$maxWordsInSingleView:intval($this->conf['maxWordsInSingleView']);
 		$this->config['maxWordsInSingleView'] = $maxWordsInSingleView?$maxWordsInSingleView:1;
@@ -1099,9 +1100,9 @@ class tx_ttnews extends tslib_pibase {
 		return $markerArray;
 	}
 	/**
-	 * inserts pagebreaks after a certain amount of words 
+	 * inserts pagebreaks after a certain amount of words
 	 *
-	 * @param	string		text with manully inserted 'pageBreakTokens' 
+	 * @param	string		text with manully inserted 'pageBreakTokens'
 	 * @return	string		the processed text
 	 */
 	function insertPagebreaks($text) {
@@ -1121,7 +1122,7 @@ class tx_ttnews extends tslib_pibase {
 		}
 
 		#debug(array($words,$wtmp));
-		
+
 		$processedText = implode($wtmp,' ');
 		return $processedText;
 
