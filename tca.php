@@ -116,6 +116,13 @@ $TCA['tt_news'] = Array (
 				)
 			)
 		),
+		'no_auto_pb' => Array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:tt_news/locallang_tca.php:tt_news.no_auto_pb',
+			'config' => Array (
+				'type' => 'check'
+			)
+		),
 		'short' => Array (
 			'exclude' => 1,	
 			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.subheader',	
@@ -402,7 +409,7 @@ $TCA['tt_news'] = Array (
 
 
 // divider to Tabs	
-		'0' => Array('showitem' => 'title;;1;;,datetime;;2;;1-1-1,author;;3;;,short,bodytext;;4;richtext[paste|bold|italic|underline|formatblock|class|left|center|right|orderedlist|unorderedlist|outdent|indent|link|table|image]:rte_transform[flag=rte_enabled|mode=ts];4-4-4,--div--;Relations,category,image;;;;1-1-1,imagecaption;;5;;,links;;;;2-2-2,related;;;;3-3-3,news_files;;;;4-4-4'),
+		'0' => Array('showitem' => 'title;;1;;,datetime;;2;;1-1-1,author;;3;;,short,bodytext;;4;richtext[paste|bold|italic|underline|formatblock|class|left|center|right|orderedlist|unorderedlist|outdent|indent|link|table|image]:rte_transform[flag=rte_enabled|mode=ts];4-4-4,no_auto_pb,--div--;Relations,category,image;;;;1-1-1,imagecaption;;5;;,links;;;;2-2-2,related;;;;3-3-3,news_files;;;;4-4-4'),
 
 		
 		

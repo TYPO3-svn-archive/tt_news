@@ -42,38 +42,40 @@
  *
  *
  *
- *   91: class tx_ttnews extends tslib_pibase
- *  120:     function main_news($content, $conf)
- *  184:     function init($conf)
- *  300:     function newsArchiveMenu()
- *  432:     function displaySingle()
- *  484:     function displayList()
- *  731:     function getListContent($itemparts, $selectConf, $prefix_display)
- *  800:     function getSelectConf($where, $noPeriod = 0)
- *  906:     function generatePageArray()
- *  922:     function getItemMarkerArray ($row, $textRenderObj = 'displaySingle')
- * 1068:     function getCategories($uid)
- * 1120:     function getSubCategories($catlist, $cc = 0)
- * 1149:     function getCatMarkerArray($markerArray, $row, $lConf)
- * 1259:     function getImageMarkers($markerArray, $row, $lConf, $textRenderObj)
- * 1314:     function getRelated($uid)
- * 1372:     function userProcess($mConfKey, $passVar)
- * 1387:     function spMarker($subpartMarker)
- * 1405:     function searchWhere($sw)
- * 1416:     function formatStr($str)
- * 1431:     function getLayouts($templateCode, $alternatingLayouts, $marker)
- * 1449:     function initLanguages ()
- * 1463:     function initCategoryVars()
- * 1523:     function checkRecords($recordlist)
- * 1553:     function initTemplate()
- * 1578:     function initPidList ()
- * 1605:     function getXmlHeader()
- * 1664:     function main_xmlnewsfeed($content, $conf)
- * 1679:     function getStoriesResult()
- * 1693:     function cleanXML($str)
- * 1710:     function getNewsSubpart($myTemplate, $myKey, $row = Array())
+ *   93: class tx_ttnews extends tslib_pibase
+ *  122:     function main_news($content, $conf)
+ *  186:     function init($conf)
+ *  307:     function newsArchiveMenu()
+ *  439:     function displaySingle()
+ *  491:     function displayList()
+ *  742:     function getListContent($itemparts, $selectConf, $prefix_display)
+ *  813:     function getSelectConf($where, $noPeriod = 0)
+ *  919:     function generatePageArray()
+ *  935:     function getItemMarkerArray ($row, $textRenderObj = 'displaySingle')
+ * 1091:     function makeMultiPageSView($bodytext,$lConf)
+ * 1121:     function makePageBrowser($showResultCount=1,$tableParams='',$pointerName='pointer')
+ * 1193:     function getCategories($uid)
+ * 1245:     function getSubCategories($catlist, $cc = 0)
+ * 1274:     function getCatMarkerArray($markerArray, $row, $lConf)
+ * 1388:     function getImageMarkers($markerArray, $row, $lConf, $textRenderObj)
+ * 1451:     function getRelated($uid)
+ * 1560:     function userProcess($mConfKey, $passVar)
+ * 1575:     function spMarker($subpartMarker)
+ * 1593:     function searchWhere($sw)
+ * 1604:     function formatStr($str)
+ * 1619:     function getLayouts($templateCode, $alternatingLayouts, $marker)
+ * 1637:     function initLanguages ()
+ * 1651:     function initCategoryVars()
+ * 1713:     function checkRecords($recordlist)
+ * 1743:     function initTemplate()
+ * 1768:     function initPidList ()
+ * 1795:     function getXmlHeader()
+ * 1854:     function main_xmlnewsfeed($content, $conf)
+ * 1869:     function getStoriesResult()
+ * 1883:     function cleanXML($str)
+ * 1900:     function getNewsSubpart($myTemplate, $myKey, $row = Array())
  *
- * TOTAL FUNCTIONS: 29
+ * TOTAL FUNCTIONS: 31
  * (This index is automatically created/updated by the extension "extdeveval")
  *
  */
@@ -222,6 +224,11 @@ class tx_ttnews extends tslib_pibase {
 		$this->config['pageBreakToken'] = trim($this->conf['pageBreakToken'])?trim($this->conf['pageBreakToken']):'<---newpage--->';
 
 		$this->config['singleViewPointerName'] = trim($this->conf['singleViewPointerName'])?trim($this->conf['singleViewPointerName']):'sViewPointer';
+
+		
+		$maxWordsInSingleView = intval($this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'maxWordsInSingleView', 's_misc'));
+		$maxWordsInSingleView = $maxWordsInSingleView?$maxWordsInSingleView:intval($this->conf['maxWordsInSingleView']);
+		$this->config['maxWordsInSingleView'] = $maxWordsInSingleView?$maxWordsInSingleView:1;
 
 		// pid of the page with the single view. the old var PIDitemDisplay is still processed if no other value is found
 		$singlePid = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'PIDitemDisplay', 's_misc');
@@ -910,7 +917,7 @@ class tx_ttnews extends tslib_pibase {
 
 
 	/**
-	 * Generates an array,->pageArray of the pagerecords from->pid_list
+	 * Generates an array, $this->pageArray of the pagerecords from $this->pid_list
 	 *
 	 * @return	void
 	 */
@@ -969,22 +976,32 @@ class tx_ttnews extends tslib_pibase {
 		if ($this->config['croppingLenght']) {
 			$lConf['subheader_stdWrap.']['crop'] = $this->config['croppingLenght'];
 		}
+		if (!$this->piVars[$this->config['singleViewPointerName']] || $this->conf['subheaderOnAllSViewPages']) {
+			$markerArray['###NEWS_SUBHEADER###'] = $this->formatStr($this->local_cObj->stdWrap($row['short'], $lConf['subheader_stdWrap.']));
+		} else {
+			$markerArray['###NEWS_SUBHEADER###'] = '';
+		}
 
-		$markerArray['###NEWS_SUBHEADER###'] = $this->formatStr($this->local_cObj->stdWrap($row['short'], $lConf['subheader_stdWrap.']));
-
+		if ($textRenderObj == 'displaySingle' && !$row['no_auto_pb'] && $this->config['maxWordsInSingleView']>1) {
+			$row['bodytext'] = $this->insertPagebreaks($row['bodytext']);
+		}
 		if (strpos($row['bodytext'],$this->config['pageBreakToken'])) {
 			if ($this->conf['useMultiPageSingleView'] && $textRenderObj == 'displaySingle') {
-				$newscontent = $this->makeMultiPageSView($row['bodytext'],$lConf);
+				$tmp = $this->makeMultiPageSView($row['bodytext'],$lConf);
+				$newscontent = $tmp[0];
+				$sViewPagebrowser = $tmp[1];
 			} else {
 				$newscontent = $this->formatStr($this->local_cObj->stdWrap(preg_replace('/'.$this->config['pageBreakToken'].'/','',$row['bodytext']), $lConf['content_stdWrap.']));
 			}
 		} else {
 			$newscontent = $this->formatStr($this->local_cObj->stdWrap($row['bodytext'], $lConf['content_stdWrap.']));
 		}
-
-
-		
+		if ($this->conf['appendSViewPBtoContent']) {
+			$newscontent = $newscontent.$sViewPagebrowser;
+			$sViewPagebrowser = '';
+		}
 		$markerArray['###NEWS_CONTENT###'] = $newscontent;
+		$markerArray['###NEWS_SINGLE_PAGEBROWSER###'] = $sViewPagebrowser;
 
 
 		$markerArray['###MORE###'] = $this->pi_getLL('more');
@@ -1081,14 +1098,48 @@ class tx_ttnews extends tslib_pibase {
 
 		return $markerArray;
 	}
+	/**
+	 * inserts pagebreaks after a certain amount of words 
+	 *
+	 * @param	string		text with manully inserted 'pageBreakTokens' 
+	 * @return	string		the processed text
+	 */
+	function insertPagebreaks($text) {
+		$words = explode(' ', $text);
+		$wtmp = array();
+		$cc = 0;
+		while (list(,$val) = each ($words)) {
+			$wtmp[] = $val;
+			if (strpos($val,$this->config['pageBreakToken'])) {
+				$cc = 0;
+			}
+			if ($cc>=$this->config['maxWordsInSingleView'] && strpos($val,'.')) {
+				$wtmp[] = $this->config['pageBreakToken'];
+				$cc = 0;
+			}
+			$cc++;
+		}
 
+		#debug(array($words,$wtmp));
+		
+		$processedText = implode($wtmp,' ');
+		return $processedText;
+
+	}
+
+	/**
+	 * divides the bodytext field of a news single view to pages and returns the part of the bodytext
+	 * that is choosen by piVars[$pointerName]
+	 *
+	 * @param	string		the text with 'pageBreakTokens' in it
+	 * @param	array		config array for the single view
+	 * @return	string		the current bodytext part wrapped with stdWrap
+	 */
 	function makeMultiPageSView($bodytext,$lConf) {
-
 		$pointerName=$this->config['singleViewPointerName'];
 		$pagenum = $this->piVars[$pointerName]?$this->piVars[$pointerName]:0;
 		$textArr = t3lib_div::trimExplode($this->config['pageBreakToken'],$bodytext,1);
 		$pagecount = count($textArr);
-		#debug($pagecount);
 		// render a pagebrowser for the single view
 				if ($pagecount > 1) {
 					// configure pagebrowser vars
@@ -1099,12 +1150,21 @@ class tx_ttnews extends tslib_pibase {
 						$this->LOCAL_LANG[$this->LLkey]['pi_list_browseresults_page'] = '';
 					}
 					$pagebrowser = $this->makePageBrowser(0, $this->conf['pageBrowser.']['tableParams'],$pointerName);
-					
 				}
-
-		return $this->formatStr($this->local_cObj->stdWrap($textArr[$pagenum], $lConf['content_stdWrap.'])).$pagebrowser;
+		return array($this->formatStr($this->local_cObj->stdWrap($textArr[$pagenum], $lConf['content_stdWrap.'])),$pagebrowser);
 	}
 
+	/**
+	 * this is a copy of the function pi_list_browseresults from class.tslib_piBase.php
+	 * Returns a results browser. This means a bar of page numbers plus a "previous" and "next" link. For each entry in the bar the piVars "$pointerName" will be pointing to the "result page" to show.
+	 * Using $this->piVars['$pointerName'] as pointer to the page to display
+	 * Using $this->internal['res_count'], $this->internal['results_at_a_time'] and $this->internal['maxPages'] for count number, how many results to show and the max number of pages to include in the browse bar.
+	 *
+	 * @param	boolean		If set (default) the text "Displaying results..." will be show, otherwise not.
+	 * @param	string		Attributes for the table tag which is wrapped around the table cells containing the browse links
+	 * @param	string		varname for the pointer
+	 * @return	string		Output HTML, wrapped in <div>-tags with a class attribute
+	 */
 	function makePageBrowser($showResultCount=1,$tableParams='',$pointerName='pointer') {
 
 			// Initializing variables:
@@ -1217,7 +1277,7 @@ class tx_ttnews extends tslib_pibase {
 					'mmsorting' => $val['mmsorting'],
 				);
 			}
-			
+
 		}
 		return $categories;
 	}
@@ -1409,7 +1469,7 @@ class tx_ttnews extends tslib_pibase {
 				$imgsAltTexts = array_slice($imgsAltTexts,$astart,$imageNum);
 				$imgsTitleTexts = array_slice($imgsTitleTexts,$astart,$imageNum);
 			}
-			
+
 			while (list(, $val) = each($imgs)) {
 				if ($cc == $imageNum) break;
 				if ($val) {
@@ -1455,12 +1515,12 @@ class tx_ttnews extends tslib_pibase {
 		if ($lConf['orderBy']) {
 			$orderBy = trim($lConf['orderBy']);
 		}
-		
+
 		if ($this->conf['usePagesRelations']) {
 			$relPagesWhere = ' OR (tt_news.uid=M.uid_foreign AND M.uid_local=' . $uid .' AND M.tablenames="pages")';
 		}
 		$where = 'tt_news.uid=M.uid_foreign AND M.uid_local=' . $uid;
-		
+
 		if ($this->conf['useBidirectionalRelations']) {
 			$where = '(('.$where.') OR (tt_news.uid=M.uid_local AND M.uid_foreign=' . $uid .'))';
 		}
@@ -1511,7 +1571,7 @@ class tx_ttnews extends tslib_pibase {
 							$paramArray[$tmp[0]] = $val;
 						}
 
-						$excludeList = 'id,tx_ttnews[tt_news],tx_ttnews[backPid],L';
+						$excludeList = 'id,tx_ttnews[tt_news],tx_ttnews[backPid],L,tx_ttnews['.$this->config['singleViewPointerName'].']';
 						while (list($key, $val) = each($paramArray)) {
 							if (!$val || ($excludeList && t3lib_div::inList($excludeList, $key))) {
 								unset($paramArray[$key]);
@@ -1644,7 +1704,7 @@ class tx_ttnews extends tslib_pibase {
 		}
 
 		$this->enableCatFields = $this->cObj->enableFields('tt_news_cat');
-		
+
 		$catOrderBy = trim($this->conf['catOrderBy']);
 		$this->config['catOrderBy'] = $catOrderBy?$catOrderBy:'sorting';
 
@@ -1671,7 +1731,7 @@ class tx_ttnews extends tslib_pibase {
 		$this->catExclusive = $this->config['categoryMode']?$catExclusive:0; // ignore cat selection if categoryMode isn't set
 
 		$this->catExclusive = $this->checkRecords($this->catExclusive);
-		
+
 
 		// get subcategories
 		if ($this->conf['useSubCategories'] && $this->catExclusive) {
