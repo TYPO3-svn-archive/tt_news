@@ -290,6 +290,8 @@ plugin.tt_news {
 }
 
 
+
+
 ## This enables the tt_content.record item to display news items:
 tt_news >
 tt_news = < plugin.tt_news

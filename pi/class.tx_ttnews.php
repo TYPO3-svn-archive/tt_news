@@ -40,29 +40,32 @@
 /**
  * [CLASS/FUNCTION INDEX of SCRIPT]
  *
- *   82: class tx_ttnews extends tslib_pibase
- *  111:     function main_xmlnewsfeed($content, $conf)
- *  126:     function getStoriesResult()
- *  138:     function init($conf)
- *  284:     function main_news($content, $conf)
- *  350:     function newsArchiveMenu()
- *  483:     function displaySingle()
- *  529:     function displayList()
- *  698:     function getListContent($itemparts, $selectConf, $prefix_display)
- *  745:     function getSelectConf($where, $noPeriod = 0)
- *  815:     function initCategories()
- *  846:     function generatePageArray()
- *  862:     function getItemMarkerArray ($row, $textRenderObj = 'displaySingle')
- *  957:     function getCatMarkerArray($markerArray, $row, $lConf)
- * 1036:     function getImageMarkers($markerArray, $row, $lConf)
- * 1090:     function getRelated($uid)
- * 1135:     function userProcess($mConfKey, $passVar)
- * 1150:     function spMarker($subpartMarker)
- * 1168:     function searchWhere($sw)
- * 1180:     function formatStr($str)
- * 1196:     function getLayouts($templateCode, $alternatingLayouts, $marker)
  *
- * TOTAL FUNCTIONS: 20
+ *
+ *   83: class tx_ttnews extends tslib_pibase
+ *  112:     function main_xmlnewsfeed($content, $conf)
+ *  127:     function getStoriesResult()
+ *  139:     function init($conf)
+ *  304:     function main_news($content, $conf)
+ *  371:     function newsArchiveMenu()
+ *  504:     function displaySingle()
+ *  550:     function displayList()
+ *  797:     function getListContent($itemparts, $selectConf, $prefix_display)
+ *  847:     function getSelectConf($where, $noPeriod = 0)
+ *  917:     function initCategories()
+ *  948:     function generatePageArray()
+ *  964:     function getItemMarkerArray ($row, $textRenderObj = 'displaySingle')
+ * 1069:     function getCatMarkerArray($markerArray, $row, $lConf)
+ * 1148:     function getImageMarkers($markerArray, $row, $lConf)
+ * 1202:     function getRelated($uid)
+ * 1247:     function userProcess($mConfKey, $passVar)
+ * 1262:     function spMarker($subpartMarker)
+ * 1280:     function searchWhere($sw)
+ * 1292:     function formatStr($str)
+ * 1308:     function getLayouts($templateCode, $alternatingLayouts, $marker)
+ * 1327:     function getXmlHeader()
+ *
+ * TOTAL FUNCTIONS: 21
  * (This index is automatically created/updated by the extension "extdeveval")
  *
  */
@@ -100,7 +103,7 @@ class tx_ttnews extends tslib_pibase {
 	var $pageArray = array();	// Is initialized with an array of the pages in the pid-list
 
 	/**
-	 * Main news function for XML news feed
+	 * this the old [DEPRECIATED] function for XML news feed. 
 	 *
 	 * @param	string		$content: ...
 	 * @param	array		$conf: configuration array from TS
@@ -242,14 +245,14 @@ class tx_ttnews extends tslib_pibase {
 		$orderByTS = trim($this->conf['listOrderBy']);
 		$orderBy = $orderBy?$orderBy:$orderByTS;
 		$this->config['orderBy'] = $orderBy;
-	
+
 		if ($orderBy && !$orderByTS) { // orderBy is set from FF
 		    $ascDesc = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'ascDesc', 'sDEF');
 			$this->config['ascDesc'] = $ascDesc;
 		}
 		$groupBy = trim($this->conf['listGroupBy']);
 		$this->config['groupBy'] = $groupBy;
-		
+
 		$this->config['substitutePagetitle'] = $this->conf['substitutePagetitle'];
 
 		// if this is set the first image is handled as preview image, which is only shown in list view
@@ -283,6 +286,10 @@ class tx_ttnews extends tslib_pibase {
 		if (!$this->allowCaching) {
 			$GLOBALS['TSFE']->set_no_cache();
 		}
+
+		//debug($this->conf);
+		//get siteUrl for links in rss feeds
+		$this->config['siteUrl'] = t3lib_div::getIndpEnv('TYPO3_SITE_URL');
 	}
 
 	/**
@@ -319,6 +326,7 @@ class tx_ttnews extends tslib_pibase {
 				case 'LATEST':
 				case 'LIST':
 				case 'SEARCH':
+				case 'XML':
 				$content .= $this->displayList();
 				break;
 				case 'AMENU':
@@ -584,6 +592,39 @@ class tx_ttnews extends tslib_pibase {
 				$where = ($this->config['emptySearchAtStart']?'AND 1=0':''); // display an empty list, if 'emptySearchAtStart' is set.
 			}
 			break;
+
+			//xml news export
+			case 'XML':
+			$prefix_display = 'displayXML';
+			$this->arcExclusive = -1; // Only latest, non archive news
+       	
+			$this->allowCaching = $this->conf['displayXML.']['xmlCaching'];
+			$this->config['limit'] = $this->conf['displayXML.']['xmlLimit']?$this->conf['displayXML.']['xmlLimit']:$this->config['limit'];
+
+			switch($this->conf['displayXML.']['xmlFormat']) {
+			 	case 'rss091':
+			 	$templateName = 'TEMPLATE_RSS091';
+			 	$this->templateCode = $this->cObj->fileResource($this->conf['displayXML.']['rss091_tmplFile']); 
+			 	break;
+
+			 	case 'rss2':
+			 	$templateName = 'TEMPLATE_RSS2';
+			 	$this->templateCode = $this->cObj->fileResource($this->conf['displayXML.']['rss2_tmplFile']);
+			 	break;
+
+				/* this will be possible later:
+			 	case 'rdf':
+			 	$templateName = 'TEMPLATE_RDF';
+			 	$this->templateCode = $this->cObj->fileResource($this->conf['displayXML.']['rdf_tmplFile']);
+			 	break;
+
+			 	case 'atom':
+			 	$templateName = 'TEMPLATE_ATOM';
+			 	$this->templateCode = $this->cObj->fileResource($this->conf['displayXML.']['atom_tmplFile']);
+			 	break;
+			 	*/
+			}
+			break;
 		}
 
 		$noPeriod = 0;
@@ -626,7 +667,7 @@ class tx_ttnews extends tslib_pibase {
 				$t['item'] = $this->getLayouts($t['total'], $this->alternatingLayouts, 'NEWS');
 
 				// build query for display:
-				
+
 				$selectConf['selectFields'] = '*';
 				if ($this->config['groupBy']) {
 				    $selectConf['groupBy'] = $this->config['groupBy'];
@@ -636,18 +677,18 @@ class tx_ttnews extends tslib_pibase {
 
 				if ($this->config['orderBy']) {
 				    $selectConf['orderBy'] = $this->config['orderBy'].($this->config['ascDesc']?' '.$this->config['ascDesc']:'');
-				} else {	
+				} else {
 					$selectConf['orderBy'] = 'datetime DESC';
 				}
-				// overwrite the groupBy value for categories 
+				// overwrite the groupBy value for categories
 				if (!$this->catExclusive && $selectConf['groupBy']=='category') {
 				    $selectConf['leftjoin'] = 'tt_news_cat_mm ON tt_news.uid = tt_news_cat_mm.uid_local';
 					$selectConf['groupBy'] = 'tt_news_cat_mm.uid_foreign';
 					$selectConf['selectFields'] = 'DISTINCT tt_news.uid,tt_news.*';
 				}
-		
-				#$selectConf['max'] = intval($this->config['limit']+1);
 
+				#$selectConf['max'] = intval($this->config['limit']+1);
+debug ($selectConf);
 				// exclude the LATEST template from changing its content with the pagebrowser. This can be overridden by setting the conf var latestWithPagebrowser
 				if ($theCode != 'LATEST' && !$this->conf['latestWithPagebrowser']) {
 					$selectConf['begin'] = $this->piVars['pointer']*$this->config['limit'];
@@ -667,6 +708,12 @@ class tx_ttnews extends tslib_pibase {
 				$subpartArray = array();
 				$wrappedSubpartArray = array();
 				$markerArray = array();
+
+				if($theCode == 'XML') {
+					$markerArray = $this->getXmlHeader();
+
+                    $subpartArray['###HEADER###']  = $this->cObj->substituteMarkerArray($this->cObj->getSubpart($t['total'], '###HEADER###'), $markerArray);
+				}
 
 				// get the list of news items and fill them in the CONTENT subpart
 				$subpartArray['###CONTENT###'] = $this->getListContent($t['item'], $selectConf, $prefix_display);
@@ -706,6 +753,28 @@ class tx_ttnews extends tslib_pibase {
 				$markerArray['###SEARCH_EMPTY_MSG###'] = $this->local_cObj->stdWrap($this->pi_getLL('noResultsMsg'), $this->conf['searchEmptyMsg_stdWrap.']);
 				$searchEmptyMsg = $this->cObj->getSubpart($this->templateCode, $this->spMarker('###TEMPLATE_SEARCH_EMPTY###'));
 				$content .= $this->cObj->substituteMarkerArrayCached($searchEmptyMsg, $markerArray);
+			} elseif($theCode == 'XML') {
+				// fill at least the template header
+				// Init Templateparts: $t['total'] is complete template subpart (TEMPLATE_LATEST f.e.)
+				$t = array();
+				$t['total'] = $this->cObj->getSubpart($this->templateCode, $this->spMarker('###'.$templateName.'###'));
+
+				// Reset:
+				$subpartArray = array();
+				$wrappedSubpartArray = array();
+				$markerArray = array();
+
+				// header data
+				$markerArray = $this->getXmlHeader();
+
+				// get the list of news items and fill them in the CONTENT subpart
+				$subpartArray['###HEADER###']  = $this->cObj->substituteMarkerArray($this->cObj->getSubpart($t['total'], '###HEADER###'), $markerArray);
+
+
+				$t['total'] = $this->cObj->substituteSubpart($t['total'], '###HEADER###', $subpartArray['###HEADER###'], 0);
+                $t['total'] = $this->cObj->substituteSubpart($t['total'], '###CONTENT###', '', 0);
+
+				$content .= $t['total'];
 			} else {
 				$content .= $this->local_cObj->stdWrap($this->pi_getLL('noNewsToListMsg'), $this->conf['noNewsToListMsg_stdWrap.']);
 			}
@@ -734,23 +803,22 @@ class tx_ttnews extends tslib_pibase {
 		// Getting elements
 		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 			$wrappedSubpartArray = array();
-	
+
 			if ($row['type']) { // News type article or external url
 				$this->local_cObj->setCurrentVal($row['type'] == 1 ? $row['page'] : $row['ext_url']);
 				$wrappedSubpartArray['###LINK_ITEM###'] = $this->local_cObj->typolinkWrap($this->conf['pageTypoLink.']);
 			} else {
-
-
 
 				$wrappedSubpartArray['###LINK_ITEM###'] = explode('|', $this->pi_linkTP_keepPIvars('|', array('tt_news'=>$row['uid'],'backPid'=>$this->config['backPid']),$this->allowCaching,'',$this->config['singlePid']));
 
 			}
 			$markerArray = $this->getItemMarkerArray($row, $prefix_display);
 
+			// XML
+			$markerArray['###NEWS_LINK###'] = $this->config['siteUrl'].substr($wrappedSubpartArray['###LINK_ITEM###'][0], 9, -2);
 
-			    $layoutNum = $cc%$itempartsCount;
 
-
+			$layoutNum = $cc%$itempartsCount;
 			// Store the result of template parsing in the Var $itemsOut, use the alternating layouts
 			$itemsOut .= $this->cObj->substituteMarkerArrayCached($itemparts[$layoutNum], $markerArray, array(), $wrappedSubpartArray);
 			$cc++;
@@ -781,7 +849,7 @@ class tx_ttnews extends tslib_pibase {
 		// exclude latest from search
 		$selectConf['where'] = '1=1 '.($this->theCode == 'LATEST'?'':$where);
 
-		// allow overriding of the arcExclusive parameter from GET vars 
+		// allow overriding of the arcExclusive parameter from GET vars
 		if ($this->arcExclusive > 0) {
 			if ($this->piVars['arc']) {
 				$this->arcExclusive = $this->piVars['arc'];
@@ -920,16 +988,16 @@ class tx_ttnews extends tslib_pibase {
 		$markerArray['###TEXT_LINKS###'] = $newsLinks?$this->local_cObj->stdWrap($this->pi_getLL('textLinks'), $lConf['newsLinksHeader_stdWrap.']):'';
 
 		$markerArray['###MORE###'] = $this->pi_getLL('more');
-		
+
 		// get title of the page where the backLink points to (this is done only in single view)
 		if ($this->piVars['backPid'] && $textRenderObj == 'displaySingle') {
 		    $backP = $this->pi_getRecord('pages',$this->piVars['backPid']);
 		}
-		
-		// generate the string for the backLink. By setting the conf-parameter 'hscBackLink', 
+
+		// generate the string for the backLink. By setting the conf-parameter 'hscBackLink',
 		// you can switch whether the string is parsed through htmlspecialchars() or not.
 		$markerArray['###BACK_TO_LIST###'] = sprintf($this->pi_getLL('backToList','',$this->conf['hscBackLink']),$backP['title']);
-				
+
 		// get related news
 		if ($textRenderObj == 'displaySingle') {
 		    $tmpRelated = $this->getRelated($row['uid']);
@@ -960,6 +1028,13 @@ class tx_ttnews extends tslib_pibase {
 		$markerArray['###PAGE_TITLE###'] = $this->pageArray[$row['pid']]['title'];
 		$markerArray['###PAGE_AUTHOR###'] = $this->local_cObj->stdWrap($this->pageArray[$row['pid']]['author'], $lConf['author_stdWrap.']);
 		$markerArray['###PAGE_AUTHOR_EMAIL###'] = $this->local_cObj->stdWrap($this->pageArray[$row['pid']]['author_email'], $lConf['email_stdWrap.']);
+
+		// XML
+		if($this->theCode == 'XML') {
+		 	$markerArray['###NEWS_SUBHEADER###']      = strip_tags($markerArray['###NEWS_SUBHEADER###']);
+		 	$markerArray['###NEWS_AUTHOR###']         = trim(strip_tags($markerArray['###NEWS_AUTHOR###']));
+			$markerArray['###NEWS_DATE###']			  = date('r', $row['datetime']);
+		}
 
 		// get markers and links for categories
 		$markerArray = $this->getCatMarkerArray($markerArray, $row, $lConf);
@@ -1012,7 +1087,7 @@ class tx_ttnews extends tslib_pibase {
 				} elseif($this->config['catTextMode'] == 3) { // act as category selector
 					$news_category[] = $this->pi_linkTP_keepPIvars($this->categories[$row['uid']][$key]['title'],array('cat'=>$this->categories[$row['uid']][$key]['catid'],'backPid'=>NULL,'pointer'=>NULL),'','',($this->config['catSelectorTargetPid']?$this->config['catSelectorTargetPid']:$GLOBALS['TSFE']->id));
 				}
-				
+
 				if ($this->config['catImageMode'] == 0 or empty($this->categories[$row['uid']][$key]['image'])) {
 					$markerArray['###NEWS_CATEGORY_IMAGE###'] = '';
 				} else {
@@ -1053,7 +1128,7 @@ class tx_ttnews extends tslib_pibase {
 				$theCatImgCode = implode('', array_slice($theCatImgCodeArray, 0, intval($this->config['maxCatImages']))); // downsize the image array to the 'maxCatImages' value
 				$markerArray['###NEWS_CATEGORY_IMAGE###'] = $this->local_cObj->wrap(trim($theCatImgCode), $lConf['imageWrapIfAny']);
 			}
-		} 
+		}
 
 		return $markerArray;
 	}
@@ -1237,6 +1312,66 @@ class tx_ttnews extends tslib_pibase {
 			}
 		}
 		return $out;
+	}
+
+
+	/**
+	 * build the XML header (array of markers to substitute)
+	 *
+	 * @return	array		the filled XML header markers
+	 */
+	function getXmlHeader() {
+		$markerArray = array();
+
+        $markerArray['###SITE_TITLE###']		  = $this->conf['displayXML.']['xmlTitle'];
+		$markerArray['###SITE_LINK###']			  = $this->config['siteUrl'];
+		$markerArray['###SITE_DESCRIPTION###']	  = $this->conf['displayXML.']['xmlDesc'];
+		$markerArray['###SITE_LANG###']			  = $this->conf['displayXML.']['xmlLang'];
+		$markerArray['###IMG###']				  = t3lib_div::getIndpEnv('TYPO3_REQUEST_HOST').'/'.$this->conf['displayXML.']['xmlIcon'];
+		$imgFile = t3lib_div::getIndpEnv('TYPO3_DOCUMENT_ROOT').'/'.$this->conf['displayXML.']['xmlIcon'];
+		$imgSize = is_file($imgFile)?getimagesize($imgFile):'';
+		$markerArray['###IMG_W###']				  = $imgSize[0];
+		$markerArray['###IMG_H###']				  = $imgSize[1];
+
+    	$markerArray['###NEWS_WEBMASTER###']	  = $this->conf['displayXML.']['xmlWebMaster'];
+		$markerArray['###NEWS_MANAGINGEDITOR###'] = $this->conf['displayXML.']['xmlManagingEditor'];
+
+        $selectConf = Array();
+		$selectConf['pidInList'] = $this->pid_list;
+        $selectConf['selectFields'] = 'max(datetime) as maxval';
+		$res = $this->cObj->exec_getQuery('tt_news', $selectConf);
+		$row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
+
+		// optional tags
+		if($this->conf['displayXML.']['xmlLastBuildDate']) {
+			$markerArray['###NEWS_LASTBUILD###'] = '<lastBuildDate>'.date('r', $row['maxval']).'</lastBuildDate>';
+		}
+		else {
+			$markerArray['###NEWS_LASTBUILD###'] = '';
+		}
+
+		if($this->conf['displayXML.']['xmlWebMaster'] != '') {
+			$markerArray['###NEWS_WEBMASTER###'] = '<webMaster>'.$this->conf['displayXML.']['xmlWebMaster'].'</webMaster>';
+		}
+		else {
+			$markerArray['###NEWS_WEBMASTER###'] = '';
+		}
+
+		if($this->conf['displayXML.']['xmlManagingEditor'] != '') {
+			$markerArray['###NEWS_MANAGINGEDITOR###'] = '<managingEditor>'.$this->conf['displayXML.']['xmlManagingEditor'].'</managingEditor>';
+		}
+		else {
+			$markerArray['###NEWS_MANAGINGEDITOR###'] = '';
+		}
+
+		if($this->conf['displayXML.']['xmlCopyright'] != '') {
+			$markerArray['###NEWS_COPYRIGHT###'] = '<copyright>'.$this->conf['displayXML.']['xmlCopyright'].'</copyright>';
+		}
+		else {
+			$markerArray['###NEWS_COPYRIGHT###'] = '';
+		}
+
+		return $markerArray;
 	}
 }
 

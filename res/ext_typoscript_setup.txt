@@ -258,6 +258,56 @@ plugin.tt_news {
     # more = [weiterlesen...]
   }
 
+  
 }
+
+
+## render XML news 
+plugin.tt_news {
+  displayXML {
+    rss091_tmplFile = EXT:tt_news/res/rss_0_91.tmpl
+    rss2_tmplFile = EXT:tt_news/res/rss_2.tmpl
+   
+    xmlFormat = rss2
+    #possibile values: rss091 / rss2 / 
+    # (planning: rdf / atom)
+
+    xmlTitle = example.com: Latest News
+    xmlLink = http://localhost/testsite-3.6.1/index.php?id=94&type=100
+    xmlDesc = Latest News
+    xmlLang = en
+    xmlIcon = testsite-3.6.1/fileadmin/tt_news_article.gif
+    subheader_stdWrap.crop = 100 | ... | 1
+    subheader_stdWrap.ifEmpty.field = bodytext
+    xmlLastBuildDate = 1
+    xmlLimit = 10
+  }
+}
+
+
+## This enables the xml news feed
+xmlnews = PAGE
+xmlnews {
+  typeNum = 100
+
+  10 >
+  10 < plugin.tt_news
+  10.pid_list >
+  10.pid_list = 124
+  10.singlePid = {$plugin.tt_news.singlePid}
+  10.defaultCode = XML
+
+  config {
+    disableAllHeaderCode = 1
+    additionalHeaders = Content-type:text/xml
+    no_cache = 1
+    xhtml_cleaning = 0
+  }
+}
+
+## This enables the tt_content.record item to display news items:
+tt_news >
+tt_news = < plugin.tt_news
+tt_news.displayCurrentRecord = 1
 
 
