@@ -34,6 +34,8 @@
 /**
  * [CLASS/FUNCTION INDEX of SCRIPT]
  *
+ *
+ *
  *   54: class tx_ttnews_itemsProcFunc
  *   61:     function user_insertExtraCodes($config)
  *
