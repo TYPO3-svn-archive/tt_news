@@ -502,13 +502,23 @@ class tx_ttnews extends tslib_pibase {
 	 */
 	function displaySingle() {
 		$sys_language_uid = $GLOBALS['TSFE']->config['config']['sys_language_uid'];
-		
+
+		// find out, if the item has a translation
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('tt_news.l18n_parent', 'tt_news', 'tt_news.uid='.intval($this->tt_news_uid).' AND tt_news.l18n_parent!=0'); 
+		$l18n_parent = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
+
+		if ($l18n_parent['l18n_parent']) {
+    		$this->tt_news_uid = $l18n_parent['l18n_parent'];
+		}
+
 		if ($sys_language_uid) {
 		    $singleWhere = 'tt_news.l18n_parent='.intval($this->tt_news_uid).' AND tt_news.sys_language_uid='.$sys_language_uid;
 		} else {
 		    $singleWhere = 'tt_news.uid='.intval($this->tt_news_uid);
 		}
+		
 		$singleWhere .= ' AND type=0'.$this->enableFields; // type=0 -> only real news.
+
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_news', $singleWhere); 
 		$row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
 
@@ -536,7 +546,10 @@ class tx_ttnews extends tslib_pibase {
 			$markerArray = $this->getItemMarkerArray($row, 'displaySingle');
 			// Substitute
 			$content = $this->cObj->substituteMarkerArrayCached($item, $markerArray, array(), $wrappedSubpartArray);
-		}  else {
+		} elseif ($sys_language_uid) {
+			$content .= 'Sorry, there is no translation for this news record. ';
+#$content .= $this->pi_linkTP_keepPIvars('Click here to view the default language.', array(),$this->allowCaching);
+		} else {
 			// if singleview is shown with no tt_news_uid given from GPvars, an error message is displayed.
 			$noNewsIdMsg = $this->local_cObj->stdWrap($this->pi_getLL('noNewsIdMsg'), $this->conf['noNewsIdMsg_stdWrap.']);
 			$content .= $noNewsIdMsg?$noNewsIdMsg:'Wrong parameters, GET/POST var "tx_ttnews[tt_news]" was missing.';
