@@ -449,6 +449,7 @@ class tx_ttnews extends tslib_pibase {
 				$markerArray['###ARCHIVE_COUNT###'] = $pArr['count'];
 				$markerArray['###ARCHIVE_ITEMS###'] = $this->pi_getLL('archiveItems');
 
+				// fill the generated data to an array to pass it to a userfuction as a single variable
 				$itemsOutArr[] = array('html' => $this->cObj->substituteMarkerArrayCached($t['item'][($cc % count($t['item']))], $markerArray, array(), $wrappedSubpartArray), 'data' => $pArr);
 				$cc++;
 			}
@@ -456,11 +457,15 @@ class tx_ttnews extends tslib_pibase {
 			if ($this->conf['newsAmenuUserFunc']) {
 				$itemsOutArr = $this->userProcess('newsAmenuUserFunc', $itemsOutArr);
 			}
+			
 			foreach ($itemsOutArr as $itemHtml) {
 				$tmpItemsArr[] = $itemHtml['html'];
 			}
 
-			$itemsOut = implode('', $tmpItemsArr);
+			if (is_array($tmpItemsArr)) {
+				$itemsOut = implode('', $tmpItemsArr);
+			}
+			
 			// Reset:
 			$subpartArray = array();
 			$wrappedSubpartArray = array();
@@ -563,8 +568,7 @@ class tx_ttnews extends tslib_pibase {
 			case 'SEARCH':
 			$prefix_display = 'displayList';
 			$templateName = 'TEMPLATE_LIST';
-			// $GLOBALS['TSFE']->set_no_cache();
-			// $this->allowCaching = 0;
+		
 			$formURL = $this->pi_linkTP_keepPIvars_url(array('pointer' => null, 'cat' => null), 0, '', $this->config['searchPid']) ;
 			// Get search subpart
 			$t['search'] = $this->getNewsSubpart($this->templateCode, $this->spMarker('###TEMPLATE_SEARCH###'));
@@ -884,7 +888,7 @@ class tx_ttnews extends tslib_pibase {
 				// allow overriding of the arcExclusive parameter from GET vars
 				$this->arcExclusive = $this->piVars['arc'];
 			}
-			// Period
+			// select news from a certain period
 			if (!$noPeriod && $this->piVars['pS']) {
 				$selectConf['where'] .= ' AND tt_news.datetime>=' . $this->piVars['pS'];
 				if ($this->piVars['pL']) {
@@ -906,11 +910,7 @@ class tx_ttnews extends tslib_pibase {
 				$theTime = $GLOBALS['SIM_EXEC_TIME'] - intval($this->config['datetimeDaysToArchive']) * 3600 * 24;
 				if ($this->arcExclusive < 0) {
 					$selectConf['where'] .= ' AND (tt_news.datetime=0 OR tt_news.datetime>' . $theTime . ')';
-					// if ($this->conf['enableArchiveDate']) {
-					// $selectConf['where'] .= ' AND (tt_news.datetime=0 OR tt_news.datetime>'.$theTime.' OR tt_news.archivedate>0)';
-					// } else {
-					// $selectConf['where'] .= ' AND (tt_news.datetime=0 OR tt_news.datetime>'.$theTime.')';
-					// }
+		
 				} elseif ($this->arcExclusive > 0) {
 					$selectConf['where'] .= ' AND tt_news.datetime<' . $theTime;
 				}
