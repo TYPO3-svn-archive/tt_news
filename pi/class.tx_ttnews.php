@@ -109,8 +109,13 @@ class tx_ttnews extends tslib_pibase {
 		list($pid) = explode(",",$this->config["pid_list"]);
 		$this->pid = $pid;
 		
-			// "CODE" decides what is rendered:
+		/** 
+		* 	"CODE" decides what is rendered:
+		* 	codes can be added by TS or FF with priority on FF
+		*/
 		$this->config["code"] = $this->pi_getFFvalue($this->cObj->data['pi_flexform'],'what_to_display','sDEF');
+		$this->config["code"] = $this->config["code"]?$this->config["code"]:$this->cObj->stdWrap($this->conf["code"], $this->conf["code."]);
+		
 		$this->config["select_deselect_categories"] = $this->pi_getFFvalue($this->cObj->data['pi_flexform'],'select_deselect_categories','sDEF');
 		$this->config["category_selection"] = $this->pi_getFFvalue($this->cObj->data['pi_flexform'],'category_selection','sDEF');
 		$this->config["archive"] = $this->pi_getFFvalue($this->cObj->data['pi_flexform'],'archive','sDEF');
