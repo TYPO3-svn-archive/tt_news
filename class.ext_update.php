@@ -160,7 +160,7 @@ class ext_update {
 	* Checks how many rows are found and returns true if there are any
 	* (this function is called from the extension manager)
 	*
-	* @param [type]  $what: ...
+	* @param string  $what: what should be updated
 	* @return boolean
 	*/
 	function access($what = 'all') {
@@ -188,7 +188,7 @@ class ext_update {
 	/**
 	* Creates query finding all tt_news elements which has a category relation in tt_news table not replicated in tt_news_cat_mm
 	*
-	* @param [type]  $updatewhat: ...
+	* @param string $updatewhat: determines which query should be returned
 	* @return string  Full query
 	*/
 	function query($updatewhat) {
