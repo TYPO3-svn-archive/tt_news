@@ -257,9 +257,9 @@ plugin.tt_news {
     subheader_stdWrap.ifEmpty.field = bodytext
     imageCount=1
     imgAltTextField = imagecaption
-    imageWrapIfAny = 
+    imageWrapIfAny =
     category_stdWrap.wrap = <div class="news-latest-category"> | </div>
-    categoryItem_stdWrap.wrap = 
+    categoryItem_stdWrap.wrap =
   }
   displayLatest.image < displaySingle.image
   displayLatest.image {
@@ -313,6 +313,11 @@ includeLibs.newsAmenuUserFunc = EXT:tt_news/res/news_amenuUserFunc2.php
 # call user function
 plugin.tt_news.newsAmenuUserFunc = user_processAmenu
 
+
+# - - -  This enables the tt_content.record item to display news items - -  #
+tt_news >
+tt_news = < plugin.tt_news
+tt_news.displayCurrentRecord = 1
 
 
 
