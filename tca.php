@@ -128,7 +128,7 @@ $TCA['tt_news'] = Array (
 		),
 		'type' => Array (
 			'exclude' => 1,	
-		#	'l10n_mode' => 'mergeIfNotBlank',	
+			'l10n_mode' => 'exclude',
 			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.type',
 			'config' => Array (
 				'type' => 'select',
@@ -377,8 +377,7 @@ $TCA['tt_news'] = Array (
 // rte like tt_content
 		#'0' => Array('showitem' => 'hidden;;;;1-1-1,type,sys_language_uid,title;;;;2-2-2,datetime,starttime;;1,archivedate,category,author,author_email,keywords,--div--,short;;;;3-3-3,bodytext;;9;richtext[paste|bold|italic|underline|formatblock|class|left|center|right|orderedlist|unorderedlist|outdent|indent|link|table|image]:rte_transform[flag=rte_enabled|mode=ts];4-4-4, rte_enabled, text_properties;5-5-5,image;;;;6-6-6,imagecaption,--div--,links;;;;7-7-7,related,news_files'),
 	
-	// divider to Tabs	
-	#	'0' => Array('showitem' => 'hidden;;1;;,type,datetime,archivedate;;2;;,category,author,author_email,keywords;;3;;,--div--;the Text,title,short;;;;3-3-3,bodytext;;9;richtext[paste|bold|italic|underline|formatblock|class|left|center|right|orderedlist|unorderedlist|outdent|indent|link|table|image]:rte_transform[flag=rte_enabled|mode=ts];4-4-4, rte_enabled, text_properties,--div--;Related Media,image,imagecaption,links,related,news_files'),
+
 
 // divider to Tabs	
 		'0' => Array('showitem' => 'title;;1;;,datetime;;2;;1-1-1,author;;3;;,short,bodytext;;4;richtext[paste|bold|italic|underline|formatblock|class|left|center|right|orderedlist|unorderedlist|outdent|indent|link|table|image]:rte_transform[flag=rte_enabled|mode=ts];4-4-4,--div--;Relations,category,image;;;;1-1-1,imagecaption,links;;;;2-2-2,related;;;;3-3-3,news_files;;;;4-4-4'),

@@ -213,9 +213,14 @@ class tx_ttnews extends tslib_pibase {
 		$backPid = $backPid?$backPid:intval($this->piVars['backPid']);
 		$backPid = $backPid?$backPid:$GLOBALS['TSFE']->id ;
 		$this->config['backPid'] = $backPid;
+		
 		// max items per page
+		$FFlimit = t3lib_div::intInRange($this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'listLimit', 's_misc'), 0, 1000);
+
 		$limit = t3lib_div::intInRange($this->conf['limit'], 0, 1000);
-		$this->config['limit'] = $limit?$limit:50;
+		$limit = $limit?$limit:50;
+		$this->config['limit'] = $FFlimit?$FFlimit:$limit;
+
 		$this->config['latestLimit'] = intval($this->conf['latestLimit'])?intval($this->conf['latestLimit']):$this->config['limit'];
 		
 		$orderBy = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'listOrderBy', 'sDEF');
@@ -233,7 +238,20 @@ class tx_ttnews extends tslib_pibase {
 		// if this is set, the first image is handled as preview image, which is only shown in list view
 		$fImgPreview = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'firstImageIsPreview', 's_misc');
 		$this->config['firstImageIsPreview'] = $fImgPreview?$fImgPreview:$this->conf['firstImageIsPreview'];
+
+		// List start id
+		$listStartId = intval($this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'listStartId', 's_misc'));
+		$this->config['listStartId'] = $listStartId?$listStartId:intval($this->conf['listStartId']);
+		// supress pagebrowser
+		$noPageBrowser = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'noPageBrowser', 's_misc');
+		$this->config['noPageBrowser'] = $noPageBrowser?$noPageBrowser:$this->conf['noPageBrowser'];
+
+
+		// image sizes given from FlexForms
+		$this->config['FFimgH'] = intval($this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'imageMaxHeight', 's_template'));
+		$this->config['FFimgW'] = intval($this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'imageMaxWidth', 's_template'));
 		
+				
 		// read template-file and fill and substitute the Global Markers
 		$templateflex_file = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'template_file', 's_template');
 		$this->templateCode = $this->cObj->fileResource($templateflex_file?"uploads/tx_ttnews/" . $templateflex_file:$this->conf['templateFile']);
@@ -463,7 +481,8 @@ class tx_ttnews extends tslib_pibase {
 		$row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
 		// get the translated record if the content language is not the default language
 		if ($GLOBALS['TSFE']->sys_language_content) {
-			$row = $GLOBALS['TSFE']->sys_page->getRecordOverlay('tt_news', $row, $GLOBALS['TSFE']->sys_language_content, $OLmode = '');
+		$OLmode = ($this->sys_language_mode == 'strict'?'hideNonTranslated':'');
+			$row = $GLOBALS['TSFE']->sys_page->getRecordOverlay('tt_news', $row, $GLOBALS['TSFE']->sys_language_content, $OLmode);
 		}
 		if (is_array($row)) {
 			// Get the subpart code
@@ -488,10 +507,16 @@ class tx_ttnews extends tslib_pibase {
 			$markerArray = $this->getItemMarkerArray($row, 'displaySingle');
 			// Substitute
 			$content = $this->cObj->substituteMarkerArrayCached($item, $markerArray, array(), $wrappedSubpartArray);
-		} else {
+		}
+		/*elseif ($this->sys_language_mode == 'strict') {
+			$noTranslMsg = $this->local_cObj->stdWrap($this->pi_getLL('noTranslMsg','Sorry, there is no translation for this news-article'), $this->conf['noNewsIdMsg_stdWrap.']);
+			$content .= $noTranslMsg;
+		}*/
+
+		else {
 			// if singleview is shown with no tt_news_uid given from GPvars, an error message is displayed.
 			$noNewsIdMsg = $this->local_cObj->stdWrap($this->pi_getLL('noNewsIdMsg'), $this->conf['noNewsIdMsg_stdWrap.']);
-			$content .= $noNewsIdMsg?$noNewsIdMsg:'Wrong parameters, GET/POST var "tx_ttnews[tt_news]" was missing.';
+			$content .= $noNewsIdMsg;
 		}
 		return $content;
 	}
@@ -657,6 +682,13 @@ class tx_ttnews extends tslib_pibase {
 						// this will clean the display of LIST view when 'latestLimit' is unset because all the news have been shown in LATEST already
 					}
 				}
+			
+				// List start ID
+				if ($theCode == 'LIST' && $this->config['listStartId'] && !$this->piVars['pointer'] && !$this->piVars['cat']) {
+	$selectConf['begin'] += $this->config['listStartId'];
+				}
+
+				
 				// Reset:
 				$subpartArray = array();
 				$wrappedSubpartArray = array();
@@ -678,7 +710,7 @@ class tx_ttnews extends tslib_pibase {
 				$markerArray['###LINK_NEXT###'] = '';
 				$markerArray['###BROWSE_LINKS###'] = '';
 				// render a pagebrowser if needed
-				if ($newsCount > $this->config['limit']) {
+				if ($newsCount > $this->config['limit'] && !$this->config['noPageBrowser']) {
 					// configure pagebrowser vars
 					$this->internal['res_count'] = $newsCount;
 					$this->internal['results_at_a_time'] = $this->config['limit'];
@@ -748,8 +780,8 @@ class tx_ttnews extends tslib_pibase {
 			$wrappedSubpartArray = array();
 
 			if ($GLOBALS['TSFE']->sys_language_content) {
-			$Olrow = $GLOBALS['TSFE']->sys_page->getRecordOverlay('tt_news', $row, $GLOBALS['TSFE']->sys_language_content, $GLOBALS['TSFE']->sys_language_contentOL, 'hideNonTranslated');
-				$row = $Olrow?$Olrow:false;
+				$row = $GLOBALS['TSFE']->sys_page->getRecordOverlay('tt_news', $row, $GLOBALS['TSFE']->sys_language_content, $GLOBALS['TSFE']->sys_language_contentOL, '');
+
 			}
 
 			if ($row['type']) {
@@ -807,7 +839,8 @@ class tx_ttnews extends tslib_pibase {
 				while ($tmprow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($tmpres)) {
 					$strictUids[] = $tmprow['l18n_parent'];
 				}
-				$selectConf['where'] .= ' AND (tt_news.uid IN (' . implode(',', $strictUids) . ') OR tt_news.sys_language_uid=-1)';
+				$strStrictUids = implode(',', $strictUids);
+				$selectConf['where'] .= ' AND (tt_news.uid IN (' . ($strStrictUids?$strStrictUids:0) . ') OR tt_news.sys_language_uid=-1)';
 			} else {
 				// mode != 'strict': If a certain language is requested, select only news-records in the default language. The translated articles (if they exist) will be overlayed later in the list or single function.
 				$selectConf['where'] .= ' AND tt_news.sys_language_uid IN (0,-1)';
@@ -1194,6 +1227,12 @@ class tx_ttnews extends tslib_pibase {
 	 * @return	array		$markerArray: filled markerarray
 	 */
 	function getImageMarkers($markerArray, $row, $lConf, $textRenderObj) {
+		// overwrite image sizes from TS with the values from the content-element if they exist.
+		if ($this->config['FFimgH']||$this->config['FFimgW']) {
+			$lConf['image.']['file.']['maxW'] = $this->config['FFimgW'];
+			$lConf['image.']['file.']['maxH'] = $this->config['FFimgH'];
+		}
+
 		if ($this->conf['imageMarkerFunc']) {
 			$markerArray = $this->userProcess('imageMarkerFunc', array($markerArray, $lConf));
 		} else {

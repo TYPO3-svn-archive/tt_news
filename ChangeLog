@@ -1,3 +1,37 @@
+2004-11-11	rupertgermann
+	* pi/class.tx_ttnews.php 1.62:
+	* static/ts_new/setup.txt 1.2:
+	* static/ts_old/setup.txt 1.2:
+		- sys_language_mode "strict" does now work
+		- the "language=all" property is now correctly interpreted
+		- added a default wrap for "noNwesToList" message to the default setup files
+		- new TSvar "dontInsertSiteUrl" for links in rss feeds.
+
+	* doc/manual.sxw 1.12:
+		small changes in the manual
+
+2004-11-08	rupertgermann
+	* doc/manual.sxw 1.11:
+	* ext_conf_template.txt 1.2:
+	* ext_emconf.php 1.22:
+	* ext_tables.php 1.11:
+	* pi/class.tx_ttnews.php 1.61:
+	* tca.php 1.17:
+		- changed the "dividers2tabs" behaviour: now all types of news db-record are only divided in 2 tabs one for title,text,author... the other one for the "relations" (images, files, related news ...)
+		- now you can disable the dividers2tabs feature in the installation in EM
+		- fixed the character filtering for the rss feed. added stdWraps to the rss-title and subheader.
+		- updated manual (not yet complete)
+
+	* doc/manual_01.sxw 1.2:
+		removed file manual01.sxw
+
+2004-11-06	rupertgermann
+	* doc/manual.sxw 1.10:
+		changed manual - added new section about localization
+
+	* static/css/setup.txt 1.2:
+		removed main-page styles
+
 2004-10-31	rupertgermann
 	* class.tx_ttnews_itemsProcFunc.php 1.8:
 	* ext_emconf.php 1.21:

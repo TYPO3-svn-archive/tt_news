@@ -50,6 +50,12 @@ $LOCAL_LANG = Array (
 		'tt_news.pi_flexform.catLinkMode_catshortcut' => 'Acts as link to category shortcuts',
 		'tt_news.pi_flexform.catLinkMode_catsel' => 'Acts as a category selector',
 		'tt_news.pi_flexform.firstImageIsPreview' => 'Don\'t display first image in single view (firstImageIsPreview)',
+		'tt_news.pi_flexform.limit' => 'Limit: max items in LIST (and LATEST, if no \'latestLimit\' is set)',
+		'tt_news.pi_flexform.listStartId' => 'List StartId: Force LIST or LATEST to start from this item',
+		'tt_news.pi_flexform.noPageBrowser' => 'Don\'t display Pagebrowser',
+		'tt_news.pi_flexform.imageMaxWidth' => 'Max width for images in news records',
+		'tt_news.pi_flexform.imageMaxHeight' => 'Max height for images in news records',
+		
 	),
 	'dk' => Array (
 		'tt_news' => 'Nyheder',
