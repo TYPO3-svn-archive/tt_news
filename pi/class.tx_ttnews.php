@@ -688,7 +688,7 @@ class tx_ttnews extends tslib_pibase {
 				}
 
 				#$selectConf['max'] = intval($this->config['limit']+1);
-debug ($selectConf);
+#debug ($selectConf);
 				// exclude the LATEST template from changing its content with the pagebrowser. This can be overridden by setting the conf var latestWithPagebrowser
 				if ($theCode != 'LATEST' && !$this->conf['latestWithPagebrowser']) {
 					$selectConf['begin'] = $this->piVars['pointer']*$this->config['limit'];
