@@ -697,11 +697,12 @@ if (!$this->config['emptyArchListAtStart']) {
 		$this->local_cObj->setCurrentVal($GLOBALS['TSFE']->id);
 		$temp_conf['useCacheHash'] = $this->allowCaching;
 		$temp_conf['no_cache'] = !$this->allowCaching;
+		$temp_conf_additionalParams=$temp_conf['additionalParams'];
 		
 		// Make Next link
 		if ($newsCount > $begin_at+$this->config['limit']) {
 			$next = ($begin_at+$this->config['limit'] > $newsCount) ? $newsCount-$this->config['limit'] : $begin_at+$this->config['limit'];						
-			$temp_conf['additionalParams'] .= '&'.$this->getLinkUrl('','begin_at,id').'&begin_at='.$next;					
+			$temp_conf['additionalParams'] = $temp_conf_additionalParams.'&'.$this->getLinkUrl('','begin_at,id').'&begin_at='.$next;					
 			$markerArray['###LINK_NEXT###'] = $this->local_cObj->typolink( $this->local_cObj->stdWrap($this->pi_getLL('pbrLinkNext'),$this->config['pageBrowser.']['item_stdWrap.'])  , $temp_conf);						
 		} else {
 			$markerArray['###LINK_NEXT###'] = '';
@@ -710,7 +711,7 @@ if (!$this->config['emptyArchListAtStart']) {
 		// Make Previous link
 		if ($begin_at) {
 			$prev = ($begin_at-$this->config['limit'] < 0) ? 0 : $begin_at-$this->config['limit'];
-			$temp_conf['additionalParams'] .= '&'.$this->getLinkUrl('','begin_at,id').'&begin_at='.$prev;			
+			$temp_conf['additionalParams'] = $temp_conf_additionalParams.'&'.$this->getLinkUrl('','begin_at,id').'&begin_at='.$prev;			
 			$markerArray['###LINK_PREV###'] = $this->local_cObj->typolink(  $this->local_cObj->stdWrap($this->pi_getLL('pbrLinkPrev'),$this->config['pageBrowser.']['item_stdWrap.'])  , $temp_conf);			
 		} else {
 			$markerArray['###LINK_PREV###'] = '';
@@ -750,14 +751,14 @@ if (!$this->config['emptyArchListAtStart']) {
 			}
 			
 			//Now we know lastpage and firstpage							
-		
+			
 			for ($i = $firstpage ; $i < $lastpage; $i++) {
 				if (($begin_at >= $i * $this->config['limit']) && ($begin_at < $i * $this->config['limit']+$this->config['limit'])) {
 				
 					$item=($this->config['showPBrowserText']?$this->pi_getLL('pbrPage'):'').(string)($i+1);
 					$markerArray['###BROWSE_LINKS###'] .= ' '.$this->local_cObj->stdWrap($item,$this->config['pageBrowser.']['activpage_stdWrap.']).' ';
 				} else {
-					$temp_conf['additionalParams'] .= '&'.$this->getLinkUrl('','begin_at,id').'&begin_at='.(string)($i * $this->config['limit']);
+					$temp_conf['additionalParams'] = $temp_conf_additionalParams.'&'.$this->getLinkUrl('','begin_at,id').'&begin_at='.(string)($i * $this->config['limit']);
 					$item=($this->config['showPBrowserText']?$this->pi_getLL('pbrPage'):'').(string)($i+1);											
 					$markerArray['###BROWSE_LINKS###'] .= ' '.$this->local_cObj->typolink($this->local_cObj->stdWrap($item,$this->config['pageBrowser.']['item_stdWrap.']), $temp_conf).' ';										
 				}
@@ -790,8 +791,7 @@ if (!$this->config['emptyArchListAtStart']) {
 		 
 		$cc = 0;
 		#debug($selectConf);
-		$itemLinkTarget = $this->config['itemLinkTarget'] ? 'target="'.$this->config['itemLinkTarget'].'"' :
-		 "";
+		
 		 
 		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 			// Print Item Title
@@ -814,6 +814,9 @@ if (!$this->config['emptyArchListAtStart']) {
 	* (- Used from Listviews and getRelated)
 	*/	
 	function getLinkItemSubpartFromRow($row) {
+		
+		$itemLinkTarget = $this->config['itemLinkTarget'] ? 'target="'.$this->config['itemLinkTarget'].'"' :
+		 "";
 		if ($row['type'] == 1 || $row['type'] == 2) {
 			//News type article or external url
 			$this->local_cObj->setCurrentVal($row['type'] == 1 ? $row['page'] : $row['ext_url']);
