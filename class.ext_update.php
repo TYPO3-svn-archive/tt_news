@@ -40,7 +40,7 @@
  * 
  * @author	 Stig Nørgaard Jepsen <stig@8602.dk>
  * @package TYPO3
- * @subpackage tx_newloginbox
+ * @subpackage tt_news
  */
 class ext_update  {
 
@@ -55,8 +55,12 @@ class ext_update  {
 		$res_cat = mysql(TYPO3_db,$query_cat);
 		$res_flex = mysql(TYPO3_db,$query_flex);
 		echo mysql_error();
-		
-		$count_cat = mysql_num_rows($res_cat);
+		if ($res_cat) {
+		    $count_cat = mysql_num_rows($res_cat);
+		}
+		if ($count_flex) {
+		    $count_flex = mysql_num_rows($res_flex);
+		}
 		$count_flex = mysql_num_rows($res_flex);
 		
 		if (!t3lib_div::GPvar('do_update'))	{
@@ -87,20 +91,25 @@ class ext_update  {
 					if (!count($codes))	$codes=array("");
 					while(list(,$theCode)=each($codes))	{
 						list($theCode,$cat,$archive) = explode("/",$theCode);
-						$what_to_display[]=$theCode;
+						$what_to_display[]=(string)strtoupper(trim($theCode));
 						if(substr($cat, 0, 2)=='0;'){
-							$selection_mode=3;
+							$selection_mode=-1;
 							$cat = substr($cat,2);
 						}
 						$categories_to_display.=($categories_to_display?';'.$cat:$cat);
 					}
-					if(!$selection_mode)$selection_mode=(!$categories_to_display?1:2);
+					if(!$selection_mode)$selection_mode=(!$categories_to_display?0:1);
 					if($categories_to_display){
 						$categories_to_display=t3lib_div::trimExplode(";", $categories_to_display,1);
 						$categories_to_display=array_unique($categories_to_display);
 						$categories_to_display=(implode(',',$categories_to_display));
 					}
 					$archive=($archive?$archive:-1);
+					
+					// get pages (startingpoint) and recursive fields
+					$pages = $row['pages'];
+					$recursive = $row['recursive'];
+					
 					$xml= trim('<?xml version="1.0" encoding="iso-8859-1" standalone="yes" ?>
 						<T3FlexForms>
 						    <meta type="array">
@@ -112,15 +121,21 @@ class ext_update  {
 						                <what_to_display type="array">
 						                    <vDEF>'.implode($what_to_display,', ').'</vDEF>
 						                </what_to_display>
-						                <select_deselect_categories type="array">
+						                <categoryMode type="array">
 						                    <vDEF>'.$selection_mode.'</vDEF>
-						                </select_deselect_categories>
-						                <category_selection type="array">
+						                </categoryMode>
+						                <categorySelection type="array">
 						                    <vDEF>'.$categories_to_display.'</vDEF>
-						                </category_selection>
+						                </categorySelection>
 						                <archive type="array">
 						                    <vDEF>'.$archive.'</vDEF>
 						                </archive>
+										  <pages type="array">
+						                    <vDEF>'.$pages.'</vDEF>
+						                </pages>
+										  <recursive type="array">
+						                    <vDEF>'.$recursive.'</vDEF>
+						                </recursive>
 						            </lDEF>
 						        </sDEF>
 						    </data>
