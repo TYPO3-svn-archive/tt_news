@@ -268,6 +268,7 @@ $TCA['tt_news'] = Array (
 				'rows' => '3'
 			)
 		),
+		
 		'category' => Array (
 			'exclude' => 1,	
 			'l10n_mode' => 'exclude',	
@@ -306,6 +307,7 @@ $TCA['tt_news'] = Array (
 				),
 			)
 		),
+
 		'page' => Array (
 			'exclude' => 1,
 		#	'l10n_mode' => 'mergeIfNotBlank',
@@ -450,15 +452,58 @@ $TCA['tt_news_cat'] = Array (
 		
 			)
 		),
-/*		'hidden' => Array (
-		#'l10n_mode' => 'mergeIfNotBlank',
+		'hidden' => Array (
 			'exclude' => 1,
 			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.hidden',
 			'config' => Array (
 				'type' => 'check',
 			)
 		),
-		*/
+		'fe_group' => Array (
+			'exclude' => 1,	
+			'l10n_mode' => 'mergeIfNotBlank',
+			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.fe_group',
+			'config' => Array (
+				'type' => 'select',	
+				'items' => Array (
+					Array('', 0),
+					Array('LLL:EXT:lang/locallang_general.php:LGL.hide_at_login', -1),
+					Array('LLL:EXT:lang/locallang_general.php:LGL.any_login', -2),					
+					Array('LLL:EXT:lang/locallang_general.php:LGL.usergroups', '--div--')
+				),
+				'foreign_table' => 'fe_groups'
+			)
+		),
+		'starttime' => Array (
+			'exclude' => 1,	
+			'l10n_mode' => 'mergeIfNotBlank',
+			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.starttime',
+			'config' => Array (
+				'type' => 'input',
+				'size' => '10',
+				'max' => '20',
+				'eval' => 'datetime',
+				'checkbox' => '0',
+				'default' => '0'
+			)
+		),
+		'endtime' => Array (
+			'exclude' => 1,
+			'l10n_mode' => 'mergeIfNotBlank',	
+			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.endtime',
+			'config' => Array (
+				'type' => 'input',
+				'size' => '8',
+				'max' => '20',
+				'eval' => 'datetime',
+				'checkbox' => '0',
+				'default' => '0',
+				'range' => Array (
+					'upper' => mktime(0,0,0,12,31,2020),
+					'lower' => mktime(0,0,0,date('m')-1,date('d'),date('Y'))
+				)
+			)
+		),
 		'parent_category' => Array (
 			'exclude' => 1,	
 			
@@ -527,10 +572,11 @@ $TCA['tt_news_cat'] = Array (
 	),
 		
 	'types' => Array (	
-		'0' => Array('showitem' => 'title,title_lang_ol,parent_category,image;;1;;1-1-1,single_pid'),
+		'0' => Array('showitem' => 'title,title_lang_ol,parent_category;;2;;,image;;1;;1-1-1,single_pid'),
 	
 	),
 	'palettes' => Array (
+		'2' => Array('showitem' => 'hidden,starttime,endtime,fe_group'),
 		'1' => Array('showitem' => 'shortcut,shortcut_target'),
 	)
 );

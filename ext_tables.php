@@ -3,6 +3,8 @@ if (!defined ('TYPO3_MODE')) 	die ('Access denied.');
 t3lib_div::loadTCA('tt_content');
 $confArr = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['tt_news']);
 
+
+
 $TCA['tt_news'] = Array (
 	'ctrl' => Array (
 		'title' => 'LLL:EXT:tt_news/locallang_tca.php:tt_news',
@@ -49,12 +51,13 @@ $TCA['tt_news_cat'] = Array (
 		'sortby' => 'sorting',
 		'enablecolumns' => Array (
 			'disabled' => 'hidden',
-	#		'starttime' => 'starttime',
-	#		'endtime' => 'endtime',
-#			'fe_group' => 'fe_group',
+			'starttime' => 'starttime',
+			'endtime' => 'endtime',
+			'fe_group' => 'fe_group',
 		),
 		'prependAtCopy' => 'LLL:EXT:lang/locallang_general.php:LGL.prependAtCopy',
 		'crdate' => 'crdate',
+		'iconfile' => t3lib_extMgm::extRelPath($_EXTKEY).'res/tt_news_cat.gif',
 		'dynamicConfigFile' => t3lib_extMgm::extPath($_EXTKEY).'tca.php'
 	)
 );
