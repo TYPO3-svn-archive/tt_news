@@ -1,4 +1,7 @@
 2004-09-19	rupertgermann
+	* ext_emconf.php 1.15:
+		updated changelog
+
 	* class.tx_ttnews_itemsProcFunc.php 1.3:
 	* doc/manual.sxw 1.9:
 	* ext_typoscript_constants.txt 1.13:
