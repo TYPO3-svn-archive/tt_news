@@ -29,9 +29,11 @@ plugin.tt_news {
   limit = 7
     # cat=plugin.tt_news//6; type=int+; label= Latest Limit: max news items in LATEST template.
   latestLimit = 3
-    # cat=plugin.tt_news//7; type=int+; label= Category Text mode: posible values are: 0 = don't display, 1 = display but no link, 2 = link to categoy shortcut, 3 = act as category selector.
+    # cat=plugin.tt_news//7; type=int+; label= Pagebrowser Limit: max number of pages to show in the pagebrowser in the 'list' template. The actual page is always shown in the middle if more pages are available.
+  pageBrowser.maxPages = 7
+    # cat=plugin.tt_news//8; type=int+; label= Category Text mode: posible values are: 0 = don't display, 1 = display but no link, 2 = link to categoy shortcut, 3 = act as category selector.
   catTextMode = 1
-	# cat=plugin.tt_news//8; type=int+; label= Category Image mode: same values as catTextMode.
+	# cat=plugin.tt_news//9; type=int+; label= Category Image mode: same values as catTextMode.
   catImageMode = 1
 	
 	

@@ -213,7 +213,8 @@ LINK_ITEM - link to the news item single display
 			###GW2B### ###NEWS_DATE### ###NEWS_TIME### ###GW2E###<br>
 			###GW1B###<B>###NEWS_TITLE###</B>###GW1E###<BR>
 			<img src=clear.gif width=1 height=5><BR>
-			###GW2B### ###NEWS_AUTHOR### ###GW2E###<br><br>
+			###GW2B### ###NEWS_AUTHOR### <br><br>
+			###TEXT_CAT### ###NEWS_CATEGORY### ###NEWS_CATEGORY_IMAGE######GW2E###<br><br>
 			
 			
 			###GW1B### <em>###NEWS_SUBHEADER###</em> <br> <br>
@@ -242,9 +243,40 @@ LINK_ITEM - link to the news item single display
 <!-- ###TEMPLATE_SINGLE### end -->
 
 
+TEMPLATE_SINGLE_RECORDINSERT
 
-
-
+<!-- ###TEMPLATE_SINGLE_RECORDINSERT### begin
+	This subpart is used to display single news items with the content element 'insert records'
+-->
+<TABLE border="0" cellspacing="0" cellpadding="1" width=98%>
+	<TR>
+		<TD valign="top">
+			###GW2B### ###NEWS_DATE### ###NEWS_TIME### ###GW2E###<br>
+			###GW1B###<B>###NEWS_TITLE###</B>###GW1E###<BR>
+			<img src=clear.gif width=1 height=5><BR>
+			###GW2B### ###NEWS_AUTHOR### <br><br>
+			###TEXT_CAT### ###NEWS_CATEGORY### ###NEWS_CATEGORY_IMAGE######GW2E###<br><br>
+			
+			
+			###GW1B### <em>###NEWS_SUBHEADER###</em> <br> <br>
+			
+			###NEWS_IMAGE### 
+			###NEWS_CONTENT### <br>
+			<br>
+			###TEXT_LINKS###<br>
+			###NEWS_LINKS###<br>
+			<br>
+			###TEXT_RELATED###<br>
+			###NEWS_RELATED###
+			
+			###GW1E###<BR>
+		</TD>
+	</TR>
+</TABLE>
+<br>
+<br>
+					
+<!-- ###TEMPLATE_SINGLE_RECORDINSERT### end -->
 
 
 

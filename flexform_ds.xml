@@ -42,7 +42,7 @@
 				</config>
 			  </TCEforms>
 		  </what_to_display>		 
-	      <select_deselect_categories>
+	      <categoryMode>
 			<TCEforms>
 				<label>LLL:EXT:tt_news/locallang_tca.php:tt_news.pi_flexform.select_deselect_categories</label>
 				<config>
@@ -50,23 +50,23 @@
 					<items type="array">
 						<numIndex index="0" type="array">
 							<numIndex index="0">SELECT ALL CATEGORIES</numIndex>
-							<numIndex index="1">1</numIndex>
+							<numIndex index="1">0</numIndex>
 						</numIndex>
 						<numIndex index="1" type="array">
 							<numIndex index="0">SELECT CATEGORIES</numIndex>
-							<numIndex index="1">2</numIndex>
+							<numIndex index="1">1</numIndex>
 						</numIndex>
 						<numIndex index="2" type="array">
 							<numIndex index="0">DESELECT CATEGORIES</numIndex>
-							<numIndex index="1">3</numIndex>
+							<numIndex index="1">-1</numIndex>
 						</numIndex>
 					</items>
 					<maxitems>1</maxitems>
 					<size>1</size>
 				</config>
 			</TCEforms>
-	      </select_deselect_categories>
-		  <category_selection>
+	      </categoryMode>
+		  <categorySelection>
 			<TCEforms>
 				<label>LLL:EXT:tt_news/locallang_tca.php:tt_news.pi_flexform.category_selection</label>
 				<config>
@@ -86,22 +86,22 @@
 					<itemListStyle>width:150px</itemListStyle>
 					<allowNonIdValues>1</allowNonIdValues>
 				</config>
-<wizards type="array">
-	<_PADDING>1</_PADDING>
-	<add type="array">
-		<type>script</type>
-		<title>Add Category</title>
-		<script>wizard_add.php</script>
-		<icon>add.gif</icon>
-		<params type="array">
-			<table>tt_news_cat</table>
-			<pid>###STORAGE_PID###</pid>
-			<setValue>set</setValue>
-		</params>
-	</add>
-</wizards>
+				<wizards type="array">
+					<_PADDING>1</_PADDING>
+					<add type="array">
+						<type>script</type>
+						<title>Add Category</title>
+						<script>wizard_add.php</script>
+						<icon>add.gif</icon>
+						<params type="array">
+							<table>tt_news_cat</table>
+							<pid>###STORAGE_PID###</pid>
+							<setValue>set</setValue>
+						</params>
+					</add>
+				</wizards>
 			</TCEforms>
-		  </category_selection>
+		  </categorySelection>
 		  <archive>
 			<TCEforms>
 				<label>LLL:EXT:tt_news/locallang_tca.php:tt_news.pi_flexform.archive</label>

@@ -49,12 +49,12 @@ plugin.tt_news {
   }
   
   pageBrowser {
-  	maxPages=5
+  	maxPages={$plugin.tt_news.pageBrowser.maxPages}
   	item_stdWrap {
   		wrap=<span class="ttnews-page">|</span>
   	}
   	activpage_stdWrap {
-  		wrap=<span class="ttnews-page-activ">|</span>
+  		wrap=<span class="ttnews-page-activ"><b>|</b></span>
   	}
   }
 
@@ -66,10 +66,10 @@ plugin.tt_news {
   catTextLength = 2000
   maxCatImages = 10
   maxCatTexts = 10
-  # 1 = select all
-  # 2 = select
-  # 3 = deselect
-#  selectDeselectCategories = 1
+  # 0 = don't care about categories
+  # 1 = display selected categories 
+  # -1 = display deselected categories
+  categoryMode = 0
   
   # the RTE parseFunc configuration
   # 
@@ -80,7 +80,7 @@ plugin.tt_news {
   limit = {$plugin.tt_news.limit}
   latestLimit = {$plugin.tt_news.latestLimit}
   backPid = {$plugin.tt_news.backPid}
-  PIDsearch = 
+  searchPid = 
   PIDitemDisplay = {$plugin.tt_news.PIDitemDisplay}
   datetimeDaysToArchive = {$plugin.tt_news.datetimeDaysToArchive}
   enableArchiveDate = 1
@@ -107,16 +107,12 @@ plugin.tt_news {
   )     
   
   getRelatedCObject = COA
-  getRelatedCObject {
-   //useInternLinkGeneration=1
-   //useInternLinkGeneration.cObjectNumber=11
-   //useInternLinkGeneration.stdWrap.field=title   
+   getRelatedCObject {
+   10=CASE
+   10.key.field=type
    
-   15=CASE
-   15.key.field=type
-   
-   15.default=TEXT
-   15.default {
+   10.default=TEXT
+   10.default {
 	   field = title
 	   typolink.parameter = {$plugin.tt_news.PIDitemDisplay}
 	   typolink.additionalParams.field = uid 
@@ -125,14 +121,14 @@ plugin.tt_news {
 	   typolink.no_cache = {$plugin.tt_news.allowCaching}
 	   typolink.no_cache.if.negate = 1	   	
    }   
-   15.1=TEXT
-   15.1 {
+   10.1=TEXT
+   10.1 {
    	field=title
    	typolink.parameter=   	
    	typolink.parameter.field=page
    }   
-   15.2=TEXT
-   15.2 {
+   10.2=TEXT
+   10.2 {
    	field=title
    	typolink.parameter=   	
    	typolink.parameter.field=ext_url
