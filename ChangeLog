@@ -1,3 +1,26 @@
+2005-02-20	rupertgermann
+	* cvsroot/typo3xdev/tx_ttnews/ext_php_api.dat 1.7:
+	* cvsroot/typo3xdev/tx_ttnews/ext_tables.sql 1.9:
+	* cvsroot/typo3xdev/tx_ttnews/locallang_tca.php 1.24:
+	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews.php 1.69:
+	* cvsroot/typo3xdev/tx_ttnews/tca.php 1.20:
+		- new Feature: ?SinglePid by Category? you can now define a singlePid in the category record.
+		- new TSvar ?catOrderBy?: gives you the possibility to order the categories (in FE) f.e. by title
+		- It's now possible to use the ?Latest?-template to display archived news. (new TSvar: ?displayArchivedInLatest?)
+
+	* cvsroot/typo3xdev/tx_ttnews/doc/manual.sxw 1.15:
+		- added a new section to the manual: "Registers"
+		- new TS-example in the manual: Display latest news-record in single-view, but only if this page is viewed without a news-uid (tx_ttnews[tt_news]) in the GETvars.
+
+	* cvsroot/typo3xdev/tx_ttnews/static/ts_new/setup.txt 1.5:
+	* cvsroot/typo3xdev/tx_ttnews/static/ts_old/setup.txt 1.4:
+		- fix: moved "noNewsIdMsg_stdWrap" in the static setup files out 
+		of the "displaySingle" section.
+
+2005-02-15	rupertgermann
+	* cvsroot/typo3xdev/tx_ttnews/ChangeLog 1.25:
+		updatet changelog
+
 2005-02-06	rupertgermann
 	* cvsroot/typo3xdev/tx_ttnews/ext_tables.sql 1.8:
 		fix: added 2 missing commas to create statements
