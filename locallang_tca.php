@@ -14,6 +14,7 @@ $LOCAL_LANG = Array (
 		'tt_news_cat' => 'News category',
 		'tt_news_cat.image' => 'Category image',
 		'tt_news_cat.title_lang_ol' => 'title language overlays',
+		'tt_news_cat.parent_category' => 'Parent category',
 		'tt_news_cat.shortcut' => 'News category shortcut',
 		'tt_news_cat.shortcut_target' => 'Target for news category shortcut',
 		'tt_news_cat.single_pid' => 'Single-view page for news from this category',
