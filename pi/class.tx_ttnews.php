@@ -501,8 +501,15 @@ class tx_ttnews extends tslib_pibase {
 	 * @return	string		html-code for a single news item
 	 */
 	function displaySingle() {
-
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_news', 'uid='.intval($this->tt_news_uid).' AND type=0'.$this->enableFields); // type=0 -> only real news.
+		$sys_language_uid = $GLOBALS['TSFE']->config['config']['sys_language_uid'];
+		
+		if ($sys_language_uid) {
+		    $singleWhere = 'tt_news.l18n_parent='.intval($this->tt_news_uid).' AND tt_news.sys_language_uid='.$sys_language_uid;
+		} else {
+		    $singleWhere = 'tt_news.uid='.intval($this->tt_news_uid);
+		}
+		$singleWhere .= ' AND type=0'.$this->enableFields; // type=0 -> only real news.
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_news', $singleWhere); 
 		$row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
 
 		if (is_array($row)) {
@@ -847,6 +854,11 @@ class tx_ttnews extends tslib_pibase {
 		// exclude latest from search
 		$selectConf['where'] = '1=1 '.($this->theCode == 'LATEST'?'':$where);
 
+		// select news by language
+		$sys_language_uid = $GLOBALS['TSFE']->config['config']['sys_language_uid'];
+		$selectConf['where'] .= ' AND tt_news.sys_language_uid='.($sys_language_uid?$sys_language_uid:0);
+		
+		
 		// allow overriding of the arcExclusive parameter from GET vars
 		if ($this->arcExclusive > 0) {
 			if ($this->piVars['arc']) {
@@ -919,7 +931,7 @@ if ($this->conf['oldCatDeselectMode'] && $this->config['categoryMode']==-1) {
 						$selectConf = $_procObj->processSelectConfHook($this);
 					}
 				}
-		#debug(array('select_conf',$this->piVars,$selectConf,$this->catExclusive));
+		#debug(array('select_conf',$this->piVars,$selectConf,$this->arcExclusive));
 		return $selectConf;
 	}
 

@@ -9,6 +9,13 @@ $TCA['tt_news'] = Array (
 		'tstamp' => 'tstamp',
 		'delete' => 'deleted',
 		'prependAtCopy' => 'LLL:EXT:lang/locallang_general.php:LGL.prependAtCopy',
+		
+		'copyAfterDuplFields' => 'sys_language_uid',
+		'useColumnsForDefaultValues' => 'sys_language_uid',
+		'transOrigPointerField' => 'l18n_parent',
+		'transOrigDiffSourceField' => 'l18n_diffsource',
+		'languageField' => 'sys_language_uid',
+		
 		'crdate' => 'crdate',
 		'type' => 'type',
 		'enablecolumns' => Array (

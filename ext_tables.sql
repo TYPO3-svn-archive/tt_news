@@ -29,6 +29,12 @@ CREATE TABLE tt_news (
   keywords text NOT NULL,
   archivedate int(11) DEFAULT '0' NOT NULL,
   ext_url tinytext NOT NULL,
+  
+  sys_language_uid int(11) DEFAULT '0' NOT NULL,
+  l18n_parent int(11) DEFAULT '0' NOT NULL,
+  l18n_diffsource mediumblob NOT NULL,
+  
+  
   PRIMARY KEY (uid),
   KEY parent (pid)
 );
