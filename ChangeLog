@@ -1,3 +1,17 @@
+2005-03-15	rupertgermann
+	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews.php 1.75:
+	* cvsroot/typo3xdev/tx_ttnews/static/css/setup.txt 1.5:
+	* cvsroot/typo3xdev/tx_ttnews/static/ts_new/setup.txt 1.7:
+	* cvsroot/typo3xdev/tx_ttnews/static/ts_old/setup.txt 1.6:
+		- new feature: single view with multiple pages. It's now possible to divide the single view in multiple pages by adding a configurable 'pageBreakToken' to the bodytext field. The default 'pageBreakToken' is <---newpage--->. the complete feature is enabled by default, but can be disabled by setting 'useMultiPageSingleView = 0'.
+		The images for the additional pages in the single view are assigned by there position in the imagelist in the BE form. example: if you have 6 images assigned and set imageCount for the single view to 2, then the first 2 images will appear on the first page the second 2 images will appear on hte second page and so on.
+		- to get a pagebrowser for the news single view it was necessary to add a new pagebrowser function to the tt_news class (function makePageBrowser). This pagebrowser is a copy of the piBase pagebroser where I added a possibility to configure the name of the pointer (singleViewPointerName) and chaching is now enabled.
+		- the list view uses now the new internal pagebrowser too. the piBase pagebrowser can be re-enabled by setting 'usePiBasePagebrowser=1'.
+
+2005-03-12	rupertgermann
+	* cvsroot/typo3xdev/tx_ttnews/ChangeLog 1.31:
+		updated Changelog
+
 2005-03-11	rupertgermann
 	* cvsroot/typo3xdev/tx_ttnews/static/ts_new/setup.txt 1.6:
 	* cvsroot/typo3xdev/tx_ttnews/static/ts_old/setup.txt 1.5:
