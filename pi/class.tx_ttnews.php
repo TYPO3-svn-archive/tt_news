@@ -198,6 +198,10 @@ class tx_ttnews extends tslib_pibase {
 			}
 		}
 		$this->config['itemLinkTarget'] = $this->conf['itemLinkTarget']; 
+		
+		//For keeping the configured linkVars
+		$this->config['linkVars']=t3lib_div::trimexplode(",",$GLOBALS['TSFE']->config['config']['linkVars']);
+		
 				 
 		// pid of the page with the single view
 		$PIDitemDisplay = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'PIDitemDisplay', 'sDEF');
@@ -212,8 +216,11 @@ class tx_ttnews extends tslib_pibase {
 		// max items per page
 		$this->config['limit'] = t3lib_div::intInRange($this->conf['limit'], 0, 1000);
 		$this->config['limit'] = $this->config['limit'] ? $this->config['limit'] : 50;
+		
 		// display text like 'page' in pagebrowser ?
 		$this->config['showPBrowserText'] = $this->conf['showPBrowserText'];
+		$this->config['pageBrowser.']=$this->conf['pageBrowser.'];
+		
 		
 		
 		// message diplayed when single view is called without a tt_news uid		 
@@ -659,58 +666,11 @@ if (!$this->config['emptyArchListAtStart']) {
 				
 				/**
 				*  render a pagebrowser if needed
-				*/
-				if ($newsCount > $begin_at+$this->config['limit']) {
-					$next = ($begin_at+$this->config['limit'] > $newsCount) ? $newsCount-$this->config['limit'] : $begin_at+$this->config['limit'];
-					
-					
-					$temp_conf = $this->typolink_conf;
-					$this->local_cObj->setCurrentVal($GLOBALS['TSFE']->id);
-					$temp_conf['additionalParams'] .= '&'.$this->getLinkUrl('','begin_at,id').'&begin_at='.$next;
-					$temp_conf['useCacheHash'] = $this->allowCaching;
-					$temp_conf['no_cache'] = !$this->allowCaching;
-					$wrappedSubpartArray['###LINK_NEXT###'] = explode('|', $this->local_cObj->typolink($this->pi_getLL('pbrLinkNext').'|', $temp_conf));
-					
-					#$wrappedSubpartArray['###LINK_NEXT###'] = array('<a href="'.$url.'&amp;begin_at='.$next.'">'.$this->pi_getLL('pbrLinkNext'), '</a>');
-				} else {
-					$subpartArray['###LINK_NEXT###'] = '';
-				}
-				if ($begin_at) {
-					$prev = ($begin_at-$this->config['limit'] < 0) ? 0 : 					 $begin_at-$this->config['limit'];
-
-					$temp_conf = $this->typolink_conf;
-					$this->local_cObj->setCurrentVal($GLOBALS['TSFE']->id);
-					$temp_conf['additionalParams'] .= '&'.$this->getLinkUrl('','begin_at,id').'&begin_at='.$prev;
-					$temp_conf['useCacheHash'] = $this->allowCaching;
-					$temp_conf['no_cache'] = !$this->allowCaching;
-					$wrappedSubpartArray['###LINK_PREV###'] = explode('|', $this->local_cObj->typolink($this->pi_getLL('pbrLinkPrev').'|', $temp_conf));
-
-
-					#$wrappedSubpartArray['###LINK_PREV###'] = array('<a href="'.$url.'&amp;begin_at='.$prev.'">'.$this->pi_getLL('pbrLinkPrev'), '</a>');
-				} else {
-					$subpartArray['###LINK_PREV###'] = '';
-				}
-				$markerArray['###BROWSE_LINKS###'] = '';
-				if ($newsCount > $this->config['limit'] ) {
-					// there is more than one page, so let's browse
-					for ($i = 0 ; $i < ($newsCount/$this->config['limit']); $i++) {
-						if (($begin_at >= $i * $this->config['limit']) && ($begin_at < $i * $this->config['limit']+$this->config['limit'])) {
-							$markerArray['###BROWSE_LINKS###'] .= ' <b>'.($this->config['showPBrowserText']?$this->pi_getLL('pbrPage'):'').(string)($i+1).'</b> ';
-						} else {
-						
-					$temp_conf = $this->typolink_conf;
-					$this->local_cObj->setCurrentVal($GLOBALS['TSFE']->id);
-					$temp_conf['additionalParams'] .= '&'.$this->getLinkUrl('','begin_at,id').'&begin_at='.(string)($i * $this->config['limit']);
-					$temp_conf['useCacheHash'] = $this->allowCaching;
-					$temp_conf['no_cache'] = !$this->allowCaching;
-					$markerArray['###BROWSE_LINKS###'] .= ' '.$this->local_cObj->typolink(($this->config['showPBrowserText']?$this->pi_getLL('pbrPage'):'').(string)($i+1), $temp_conf).' ';
-					
-						
-							#$markerArray['###BROWSE_LINKS###'] .= ' <a href="'.$url.'&amp;begin_at='.(string)($i * $this->config['limit']).'">'.$this->pi_getLL('pbrPage').(string)($i+1).'</a> ';
-						}
-					}
-				}
-				 
+				*/						 
+				$markerTemp=$this->get_page_browser($newsCount,$begin_at);
+				$markerArray['###LINK_PREV###']=$markerTemp['###LINK_PREV###'];
+				$markerArray['###BROWSE_LINKS###']=$markerTemp['###BROWSE_LINKS###'];
+				$markerArray['###LINK_NEXT###']=$markerTemp['###LINK_NEXT###'];
 				 
 				$content .= $this->cObj->substituteMarkerArrayCached($t['total'], $markerArray, $subpartArray, $wrappedSubpartArray);
 			} elseif ($where) {
@@ -724,7 +684,86 @@ if (!$this->config['emptyArchListAtStart']) {
 	}
 	 
 	 
-	 
+	/* Function returns a array with the 3 markers ###LINK_NEXT###, ###LINK_PREV### and ###BROWSE_LINKS### (all for use in a markerArray)
+	* @param Number of items (count)
+	* @param $begin_at (Number of the actual begin at item in the Listview)
+	* Also use the configuration $this->config['pageBrowser.']
+	*/
+	function get_page_browser($newsCount,$begin_at) {		
+		$temp_conf = $this->typolink_conf;
+		$this->local_cObj->setCurrentVal($GLOBALS['TSFE']->id);
+		$temp_conf['useCacheHash'] = $this->allowCaching;
+		$temp_conf['no_cache'] = !$this->allowCaching;
+		
+		// Make Next link
+		if ($newsCount > $begin_at+$this->config['limit']) {
+			$next = ($begin_at+$this->config['limit'] > $newsCount) ? $newsCount-$this->config['limit'] : $begin_at+$this->config['limit'];						
+			$temp_conf['additionalParams'] .= '&'.$this->getLinkUrl('','begin_at,id').'&begin_at='.$next;					
+			$markerArray['###LINK_NEXT###'] = $this->local_cObj->typolink( $this->local_cObj->stdWrap($this->pi_getLL('pbrLinkNext'),$this->config['pageBrowser.']['item_stdWrap.'])  , $temp_conf);						
+		} else {
+			$markerArray['###LINK_NEXT###'] = '';
+		}
+		
+		// Make Previous link
+		if ($begin_at) {
+			$prev = ($begin_at-$this->config['limit'] < 0) ? 0 : $begin_at-$this->config['limit'];
+			$temp_conf['additionalParams'] .= '&'.$this->getLinkUrl('','begin_at,id').'&begin_at='.$prev;			
+			$markerArray['###LINK_PREV###'] = $this->local_cObj->typolink(  $this->local_cObj->stdWrap($this->pi_getLL('pbrLinkPrev'),$this->config['pageBrowser.']['item_stdWrap.'])  , $temp_conf);			
+		} else {
+			$markerArray['###LINK_PREV###'] = '';
+		}
+		
+		//Make Browsepages
+		// Use the configuration for maxpages 
+		// (means not more than this pages to show, the actual page should be in the middle)
+		
+				
+		$markerArray['###BROWSE_LINKS###'] = '';	//Clear
+		
+		if ($newsCount > $this->config['limit'] ) {
+			// there is more than one page, so let's browse
+			$firstpage=0;
+			 $lastpage=$pages=ceil($newsCount/$this->config['limit']);
+			 $actualpage=floor($begin_at/$this->config['limit']);
+			
+			if ($lastpage>$this->config['pageBrowser.']['maxPages']) {
+				//There had to be more pages than allowed in $this->config['pageBrowser.']['maxPages']
+				//So calculate the first and the lastpage to show (actualpage shoul be the middle)
+				 $bevorepagecount=floor($this->config['pageBrowser.']['maxPages']/2);
+				 $afterpagecount=$this->config['pageBrowser.']['maxPages']-$bevorepagecount;
+				//Now set firstpage and lastpage
+				$firstpage=$actualpage-$bevorepagecount;
+				if ($firstpage <0) {					
+					$firstpage=0;
+					 $lastpage=$this->config['pageBrowser.']['maxPages'];
+				}
+				else {
+					$lastpage=$actualpage+$afterpagecount;
+					if ($lastpage > $pages) {
+						$lastpage=$pages;
+						$firstpage=$pages-$this->config['pageBrowser.']['maxPages'];
+					}
+				}
+			}
+			
+			//Now we know lastpage and firstpage							
+		
+			for ($i = $firstpage ; $i < $lastpage; $i++) {
+				if (($begin_at >= $i * $this->config['limit']) && ($begin_at < $i * $this->config['limit']+$this->config['limit'])) {
+				
+					$item=($this->config['showPBrowserText']?$this->pi_getLL('pbrPage'):'').(string)($i+1);
+					$markerArray['###BROWSE_LINKS###'] .= ' '.$this->local_cObj->stdWrap($item,$this->config['pageBrowser.']['activpage_stdWrap.']).' ';
+				} else {
+					$temp_conf['additionalParams'] .= '&'.$this->getLinkUrl('','begin_at,id').'&begin_at='.(string)($i * $this->config['limit']);
+					$item=($this->config['showPBrowserText']?$this->pi_getLL('pbrPage'):'').(string)($i+1);											
+					$markerArray['###BROWSE_LINKS###'] .= ' '.$this->local_cObj->typolink($this->local_cObj->stdWrap($item,$this->config['pageBrowser.']['item_stdWrap.']), $temp_conf).' ';										
+				}
+			}
+		}
+		
+		return $markerArray;
+		
+    	}
 	 
 	 
 	 
@@ -753,28 +792,9 @@ if (!$this->config['emptyArchListAtStart']) {
 		 
 		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 			// Print Item Title
-			$wrappedSubpartArray = array();
-			if ($row['type'] == 1 || $row['type'] == 2) {
-				//News type article or external url
-				$this->local_cObj->setCurrentVal($row['type'] == 1 ? $row['page'] : $row['ext_url']);
-				$wrappedSubpartArray['###LINK_ITEM###'] = $this->local_cObj->typolinkWrap($this->conf['pageTypoLink.']);
-			} else {
-		
-		
-		##### caching/indexing		
-				$temp_conf = $this->typolink_conf;
-				$this->local_cObj->setCurrentVal($this->conf['PIDitemDisplay']);
-				$temp_conf['additionalParams'] .= '&'.$this->getLinkUrl($this->config['PIDitemDisplay'],'id').'&tt_news='.$row['uid'].$itemLinkTarget;
-				$temp_conf['useCacheHash'] = $this->allowCaching;
-				$temp_conf['no_cache'] = !$this->allowCaching;
-				$wrappedSubpartArray['###LINK_ITEM###'] = explode('|', $this->local_cObj->typolink('|', $temp_conf));
-	 	##### caching/indexing  end
-			
-				
-				#$wrappedSubpartArray['###LINK_ITEM###'] = array('<a href="'.$this->getLinkUrl($this->config['PIDitemDisplay']).'&amp;tt_news='.$row['uid'].'" '.$itemLinkTarget.'>', '</a>');
-			}
-			$markerArray = $this->getItemMarkerArray($row, $prefix_display);
-			 
+			$wrappedSubpartArray = array();			
+			$wrappedSubpartArray['###LINK_ITEM###']=$this->getLinkItemSubpartFromRow($row);			
+			$markerArray = $this->getItemMarkerArray($row, $prefix_display);			 
 			//Store the result of template parsing in the Var $itemsOut, use the alternating layouts
 			$itemsOut .= $this->cObj->substituteMarkerArrayCached($itemparts[($cc%count($itemparts))], $markerArray, array(), $wrappedSubpartArray);
 			$cc++;
@@ -784,7 +804,30 @@ if (!$this->config['emptyArchListAtStart']) {
 		}
 		return $itemsOut;
 	}
-	 
+	
+	/* Function needs an Array with actual Databasevalues for an news item and it 
+	* Returns an Array with the Link for this Newsitem
+	* -Supports the 3 diffrent newstypes and Caching
+	* (- Used from Listviews and getrelated)
+	*/	
+	function getLinkItemSubpartFromRow($row) {
+		if ($row['type'] == 1 || $row['type'] == 2) {
+			//News type article or external url
+			$this->local_cObj->setCurrentVal($row['type'] == 1 ? $row['page'] : $row['ext_url']);
+			$LinkSubparts = $this->local_cObj->typolinkWrap($this->conf['pageTypoLink.']);
+		} else {		
+	
+		##### caching/indexing		
+			$temp_conf = $this->typolink_conf;
+			$this->local_cObj->setCurrentVal($this->config['PIDitemDisplay']);
+			$temp_conf['additionalParams'] .= '&'.$this->getLinkUrl($this->config['PIDitemDisplay'],'id').'&tt_news='.$row['uid'].$itemLinkTarget;
+			$temp_conf['useCacheHash'] = $this->allowCaching;
+			$temp_conf['no_cache'] = !$this->allowCaching;
+			$LinkSubparts = explode('|', $this->local_cObj->typolink('|', $temp_conf));				
+ 		##### caching/indexing  end			
+		}
+		return $LinkSubparts;
+	}
 	 
 	/**
 	* Returns a url for use in forms and links
@@ -805,7 +848,14 @@ if (!$this->config['emptyArchListAtStart']) {
 		$queryString['pL'] = t3lib_div::_GP('pL') ? 'pL='.intval(t3lib_div::_GP('pL')) : ''; // Period length
 		$queryString['arc'] = t3lib_div::_GP('arc') ? 'arc='.intval(t3lib_div::_GP('arc')) : ''; // Archive flag: 0 = don't care, -1 = latest, 1 = archive
 		$queryString['cat'] = t3lib_div::_GP('cat') ? 'cat='.intval(t3lib_div::_GP('cat')) : ''; // Category uid, 0 = any
-		$queryString['L'] = t3lib_div::_GP('L') ? 'L='.t3lib_div::_GP('L'): ''; 
+		
+		//danp Keep the linkVars:
+		if (is_array($this->config['linkVars'])) {
+			foreach ($this->config['linkVars'] as $v) {
+				$queryString[$v]=t3lib_div::GPvar($v) ? "$v=".(t3lib_div::GPvar($v)) : "";
+			}
+		}
+		
 		reset($queryString);
 		while (list($key, $val) = each($queryString)) {
 			if (!$val || ($excludeList && t3lib_div::inList($excludeList, $key))) {
@@ -1151,13 +1201,14 @@ $news_category[] = $this->local_cObj->typolink($this->categories[$row['uid']][$k
 	function getRelated($uid) {
 		$veryLocal_cObj = t3lib_div::makeInstance('tslib_cObj');
 		// Local cObj.
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid,title,short,datetime,archivedate', 'tt_news,tt_news_related_mm AS M', 'tt_news.uid=M.uid_foreign AND M.uid_local='.intval($uid));
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid,title,short,datetime,archivedate,type,page,ext_url', 'tt_news,tt_news_related_mm AS M', 'tt_news.uid=M.uid_foreign AND M.uid_local='.intval($uid));
 		 
 		$lines = array();
 		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 			$veryLocal_cObj->start($row, 'tt_news');
 			$lines[] = $veryLocal_cObj->cObjGetSingle($this->conf['getRelatedCObject'], $this->conf['getRelatedCObject.'], 'getRelated');
 		}
+		
 		return implode('', $lines);
 	}
 	 
