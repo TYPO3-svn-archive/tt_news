@@ -26,7 +26,7 @@ plugin.tt_news {
 
   
   
-  # this is for downwards compatibility (varname changed to "singlePid" in tt_news v 1.6.0) 
+  # [depreciated] this is for downwards compatibility (varname changed to "singlePid" in tt_news v 1.6.0) 
   PIDitemDisplay = {$plugin.tt_news.PIDitemDisplay}
   
   
@@ -102,28 +102,68 @@ plugin.tt_news {
   archiveEmptyMsg_stdWrap.wrap =
   searchEmptyMsg_stdWrap.wrap =
   
-  # Related News
-  relatedHeader_stdWrap.wrap = 
+  ### Settings for Related News:
+  relatedHeader_stdWrap.wrap = <strong>|</strong>
+  
+  # icon for related news
+  tmp.5 = IMAGE
+  tmp.5 {
+    file = EXT:tt_news/ext_icon.gif 
+    file.width = 11
+    file.height = 12
+    wrap = | &nbsp;
+  }
+
+  # end-wrap for the getRelated objects
+  tmp.20 = TEXT 
+  tmp.20 {
+    field = datetime
+    strftime = %d-%m-%y %H:%M
+    wrap = &nbsp;-&nbsp; | <br /> 
+  }
+
+  # Build the list of related news:
   getRelatedCObject = COA
-    getRelatedCObject {
-      10=CASE
-      10.key.field=type
-	  10.default=HTML
+  getRelatedCObject {
+ 
+    # groupBy = 
+    orderBy = datetime desc
+  
+    10=CASE
+    10.key.field=type
+    # settings for 'normal' related news
+    10.default=COA
       10.default {
-        value = set from script	   	
+        5 < plugin.tt_news.tmp.5
+        10 = TEXT
+        10.field = title
+        10.typolink.parameter = {$plugin.tt_news.singlePid}
+        10.typolink.additionalParams.data=register:newsAddParams 
+        10.wrap = |
+        20 < plugin.tt_news.tmp.20
       }   
-      10.1=HTML
-      10.1 {
-        value = set from script
-	  }   
-      10.2=HTML
-      10.2 {
-         value = set from script	 
-      }
-      20 = TEXT
-      20.field = datetime
-      20.strftime = %d/%m/%y %H:%M
-      20.wrap = &nbsp;-&nbsp; | <br />
+	# settings for related news, that point to internal pages  
+    10.1=COA
+    10.1 {
+      5 < plugin.tt_news.tmp.5
+      5.file=EXT:tt_news/res/tt_news_article.gif
+      10 = TEXT
+      10.field = title
+      10.typolink.parameter.field = page
+      10.wrap = |
+      20 < plugin.tt_news.tmp.20
+    }
+    # settings for related news, that point to external URLs     
+    10.2=COA
+    10.2 {
+      5 < plugin.tt_news.tmp.5
+      5.file=EXT:tt_news/res/tt_news_exturl.gif 
+      10 = TEXT
+      10.field = title
+      10.typolink.parameter.field = ext_url 
+      10.wrap = |
+      20 < plugin.tt_news.tmp.20
+    }
   }
   
 

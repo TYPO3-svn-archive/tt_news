@@ -499,7 +499,10 @@ class tx_ttnews extends tslib_pibase {
 			$wrappedSubpartArray['###LINK_ITEM###'] = explode('|', $this->pi_linkTP_keepPIvars('|', array(),$this->allowCaching,'',$this->piVars['backPid']));
 
 			// set the title of the single view page to the title of the news record
-			$GLOBALS['TSFE']->page['title'] = $this->config['substitutePagetitle']?$row['title']:$GLOBALS['TSFE']->page['title'];
+			if ($this->config['substitutePagetitle']) {
+			    $GLOBALS['TSFE']->page['title'] = $row['title'];
+			}
+			
 			// set pagetitle for indexed search to news title
 			$GLOBALS['TSFE']->indexedDocTitle = $row['title'];
 			$markerArray = $this->getItemMarkerArray($row, 'displaySingle');
@@ -544,9 +547,10 @@ class tx_ttnews extends tslib_pibase {
 			case 'SEARCH':
 			$prefix_display = 'displayList';
 			$templateName = 'TEMPLATE_LIST';
-			$GLOBALS['TSFE']->set_no_cache();
-
-			$formURL = $this->pi_linkTP_keepPIvars_url(array(),$this->allowCaching,'',$this->config['searchPid']) ;
+			#$GLOBALS['TSFE']->set_no_cache();
+			#$this->allowCaching = 0;
+			
+			$formURL = $this->pi_linkTP_keepPIvars_url(array('pointer'=>NULL,'cat'=>NULL),0,'',$this->config['searchPid']) ;
 
 			// Get search subpart
 			$t['search'] = $this->cObj->getSubpart($this->templateCode, $this->spMarker('###TEMPLATE_SEARCH###'));
@@ -704,6 +708,8 @@ class tx_ttnews extends tslib_pibase {
 				$wrappedSubpartArray['###LINK_ITEM###'] = $this->local_cObj->typolinkWrap($this->conf['pageTypoLink.']);
 			} else {
 
+#debug($GLOBALS['TSFE']->ATagParams);
+
 				$wrappedSubpartArray['###LINK_ITEM###'] = explode('|', $this->pi_linkTP_keepPIvars('|', array('tt_news'=>$row['uid'],'backPid'=>$this->config['backPid']),$this->allowCaching,'',$this->config['singlePid']));
 
 			}
@@ -844,11 +850,12 @@ if ($this->piVars['arc']) {
 		// config to use:
 		$lConf = $this->conf[$textRenderObj.'.'];
 		$this->local_cObj->start($row, 'tt_news');
-		$imageNum = isset($lConf['imageCount']) ? $lConf['imageCount']:1;
-		$imageNum = t3lib_div::intInRange($imageNum, 0, 100);
+		
 		$markerArray = array();
 
 		// Get and set image:
+		$imageNum = isset($lConf['imageCount']) ? $lConf['imageCount']:1;
+		$imageNum = t3lib_div::intInRange($imageNum, 0, 100);
 		$theImgCode = '';
 		$imgs = t3lib_div::trimExplode(',', $row['image'], 1);
 		$imgsCaptions = explode(chr(10), $row['imagecaption']);
@@ -907,37 +914,47 @@ if ($this->piVars['arc']) {
 
 		$markerArray['###MORE###'] = $this->pi_getLL('more');
 		
-		if ($this->piVars['backPid']) {
+		if ($this->piVars['backPid'] && $textRenderObj == 'displaySingle') {
 		    $backP = $this->pi_getRecord('pages',$this->piVars['backPid']);
 		}
-		$markerArray['###BACK_TO_LIST###'] =  $this->pi_getLL('backToList').$backP['title'];
+		$markerArray['###BACK_TO_LIST###'] =  $this->pi_getLL('backToList','',TRUE).$backP['title'];
 		
 		// related
-		$relatedNews = $this->local_cObj->stdWrap($this->getRelated($row['uid']), $lConf['related_stdWrap.']);
+		if ($textRenderObj == 'displaySingle') {
+		    $tmpRelated = $this->getRelated($row['uid']);
+		}
+		
+
+ 		$relatedNews = $tmpRelated?$this->local_cObj->stdWrap($tmpRelated, $lConf['related_stdWrap.']):'';
+
 		$markerArray['###NEWS_RELATED###'] = $relatedNews;
 		$markerArray['###TEXT_RELATED###'] = $relatedNews ? $this->local_cObj->stdWrap($this->pi_getLL('textRelated'), $this->conf['relatedHeader_stdWrap.']):'';
 
 		// filelinks
-		$markerArray['###TEXT_FILES###'] = $this->local_cObj->stdWrap($this->pi_getLL('textFiles'), $this->conf['newsFilesHeader_stdWrap.']);
+		
 	if ($row['news_files']) {
+		$markerArray['###TEXT_FILES###'] = $this->local_cObj->stdWrap($this->pi_getLL('textFiles'), $this->conf['newsFilesHeader_stdWrap.']);
 		$fileArr = explode(',',$row['news_files']);
 		$files = '';
 	 	while(list(,$val)=each($fileArr)) {
 		// fills the marker ###FILE_LINK### with the links to the atached files
 			$filelinks .= $this->local_cObj->filelink($val,$this->conf['newsFiles.']) ;
-		}
+		} 
 		$markerArray['###FILE_LINK###'] = $this->local_cObj->stdWrap($filelinks, $this->conf['newsFiles_stdWrap.']);
-	} else { // no file atached
-	    $markerArray['###FILE_LINK###']='';
-		$markerArray['###TEXT_FILES###']='';
-	}
+	} else { // no files atached
+		$markerArray['###TEXT_FILES###'] = '';
+		$markerArray['###FILE_LINK###'] = '';
+		}
 
 		// Page fields:
 		$markerArray['###PAGE_UID###'] = $row['pid'];
 		$markerArray['###PAGE_TITLE###'] = $this->pageArray[$row['pid']]['title'];
 		$markerArray['###PAGE_AUTHOR###'] = $this->local_cObj->stdWrap($this->pageArray[$row['pid']]['author'], $lConf['author_stdWrap.']);
 		$markerArray['###PAGE_AUTHOR_EMAIL###'] = $this->local_cObj->stdWrap($this->pageArray[$row['pid']]['author_email'], $lConf['email_stdWrap.']);
-
+				
+		// get markers and links for categories
+		$markerArray = $this->getCatMarkerArray($markerArray, $row, $lConf);
+		
 		//Adds hook for processing of extra item markers
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tt_news']['extraItemMarkerHook'])) {
 			foreach($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tt_news']['extraItemMarkerHook'] as $_classRef) {
@@ -945,9 +962,7 @@ if ($this->piVars['arc']) {
 				$markerArray = $_procObj->extraItemMarkerProcessor($markerArray, $row, $lConf, $this);
 			}
 		}
-		// get markers and links for categories
-		$markerArray = $this->getCatMarkerArray($markerArray, $row, $lConf);
-
+		
 		// Pass to user defined function
 		if ($this->conf['itemMarkerArrayFunc']) {
 			$markerArray = $this->userProcess('itemMarkerArrayFunc', $markerArray);
@@ -965,15 +980,13 @@ if ($this->piVars['arc']) {
 	 */
 	function getCatMarkerArray($markerArray, $row, $lConf) {
 
-		$markerArray['###TEXT_CAT###'] = $this->pi_getLL('textCat');
-		$markerArray['###TEXT_CAT_LATEST###'] = $this->pi_getLL('textCatLatest');
-
-		$news_category = array();
-		$theCatImgCode = '';
-		$theCatImgCodeArray = array();
-
 		if (isset($this->categories[$row['uid']]) && ($this->config['catImageMode'] || $this->config['catTextMode'])) {
+			$markerArray['###TEXT_CAT###'] = $this->pi_getLL('textCat');
+			$markerArray['###TEXT_CAT_LATEST###'] = $this->pi_getLL('textCatLatest');
 
+			$news_category = array();
+			$theCatImgCode = '';
+			$theCatImgCodeArray = array();
 			while (list ($key, $val) = each ($this->categories[$row['uid']])) { // find categories, wrap them with links and collect them in the array $news_category.
 				$catLinkTarget = $this->categories[$row['uid']][$key]['shortcut_target'];
 				if ($this->config['catTextMode'] == 0) {
@@ -1037,30 +1050,48 @@ if ($this->piVars['arc']) {
 	}
 
 	/**
-	 * Find related news records and add links to them.
+	 * Find related news records, add links to them and wrap them with stdWraps from TS.
 	 *
 	 * @param	integer		$uid: it of the current news item
 	 * @return	string		html code for the related news list
 	 */
-	function getRelated($uid) {
-		$veryLocal_cObj = t3lib_div::makeInstance('tslib_cObj'); // Local cObj.
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid,title,short,datetime,archivedate,type,page,ext_url', 'tt_news,tt_news_related_mm AS M', 'tt_news.uid=M.uid_foreign AND M.uid_local='.intval($uid));
-
-		$lines = array();
-		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
-			if ($row['title']) {
-				$veryLocal_cObj->start($row, 'tt_news');
-				$tmpConf = $this->conf['getRelatedCObject.'];
-				if ($row['type']) { // News type article or external url
-					$tmpConf['10.'][$row['type'].'.']['value'] = $this->pi_linkToPage($row['title'], ($row['type'] == 1 ? $row['page'] : $row['ext_url']),'',array());
-				} else { // normal news
-			    	$tmpConf['10.']['default.']['value'] = $this->pi_linkTP_keepPIvars($row['title'], array('tt_news'=>$row['uid']),$this->allowCaching,'',$this->config['singlePid']);
-				}
-				$lines[] = $veryLocal_cObj->cObjGetSingle($this->conf['getRelatedCObject'], $tmpConf, 'getRelated');
-			}
+ 	function getRelated($uid) {
+		$select_fields = 'uid,title,short,datetime,archivedate,type,page,ext_url';
+		$lConf = $this->conf['getRelatedCObject.'];
+		if ($lConf['groupBy']) {
+		    $groupBy = trim($lConf['groupBy']);
 		}
+		if ($lConf['orderBy']) {
+		    $orderBy = trim($lConf['orderBy']);
+		}
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery($select_fields, 'tt_news,tt_news_related_mm AS M', 'tt_news.uid=M.uid_foreign AND M.uid_local='.intval($uid),$groupBy,$orderBy);
+		if ($res) {
+		    $veryLocal_cObj = t3lib_div::makeInstance('tslib_cObj'); // Local cObj.
+			$lines = array();
+			while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
+				$veryLocal_cObj->start($row, 'tt_news');
+				if (!$row['type']) { // normal news
+					if ($GLOBALS['TSFE']->config['config']['simulateStaticDocuments']) { 
+						// to get a non-encoded parameter string, simulateStaticDocuments will be temporarily disabled if it is used. 
+					    $GLOBALS['TSFE']->config['config']['simulateStaticDocuments']=0;
+						// build the AddParams for the related-news link; stristr removes the part with index.php?id=xx from the beginning of the URL string. 
+						$newsAddParams =  stristr($this->pi_linkTP_keepPIvars_url(array('tt_news'=>$row['uid'],'backPid'=>$this->config['backPid']),$this->allowCaching), '&');
+						$GLOBALS['TSFE']->config['config']['simulateStaticDocuments']=1; 
+					} else {
+					    $newsAddParams =  stristr($this->pi_linkTP_keepPIvars_url(array('tt_news'=>$row['uid'],'backPid'=>$this->config['backPid']),$this->allowCaching), '&');
+					}
+
+					// load the parameter string into the register 'newsAddParams' to access it from TS
+					$veryLocal_cObj->LOAD_REGISTER(array('newsAddParams' => $newsAddParams),'');
+				}	
+			$lines[] = $veryLocal_cObj->cObjGetSingle($this->conf['getRelatedCObject'], $this->conf['getRelatedCObject.'], 'getRelated');
+			}
 		return implode('', $lines);
+		}
+		
 	}
+	
+	
 
 	/**
 	 * Calls user function defined in TypoScript
