@@ -1,8 +1,12 @@
+###
+# This are the default TS-constants for the table-based standard template: EXT:tt_news/pi/news_template.tmpl
+##
+
 plugin.tt_news {
     # cat=plugin.tt_news/file; type=file[html,htm,tmpl,txt]; label= Template File: HTML-template file for display of news. See EXT:tt_news/pi/news_template.tmpl for an example
   file.templateFile = EXT:tt_news/pi/news_template.tmpl
 
-    # cat=plugin.tt_news/typo/1; type=wrap; label= Wrap 1: This wrap is used in the template-file (news header in SINGLE view).
+    # cat=plugin.tt_news/typo/1; type=wrap; label= Wrap 1: This wrap is used in the template-file (bodytext, links, related-news in SINGLE view).
   wrap1 = <font face="verdana" size="2" color="black"> | </font>
     # cat=plugin.tt_news/typo/2; type=wrap; label= Wrap 2: This wrap is used in the template-file ([more] links, pagebrowser...). 
   wrap2 = <font face="verdana" size="1" color="black"> | </font>

@@ -1,3 +1,7 @@
+###
+# This is the default TS-setup for the table-based standard template: EXT:tt_news/pi/news_template.tmpl
+##
+
 ## Includes the newsLib:
 includeLibs.ts_news = EXT:tt_news/pi/class.tx_ttnews.php
 
@@ -27,6 +31,7 @@ plugin.tt_news {
     icon = 1
     stdWrap.wrap =   | <br />
   }
+  newsFilesHeader_stdWrap.wrap = <strong>|</strong>
   
   # add link type and target to links
   itemLinkType = 
@@ -171,11 +176,11 @@ plugin.tt_news {
     textNewsAge_stdWrap.wrap =
     date_stdWrap.strftime= %d-%m-%y
     time_stdWrap.strftime= %H:%M
-    title_stdWrap.wrap = <strong>|</strong>
-    subheader_stdWrap.wrap = <em>|</em>
+    title_stdWrap.wrap = <font face="verdana" size="3"><strong>|</strong></font>
+    subheader_stdWrap.wrap = <strong><em>|</em></strong>
 	author_stdWrap.case = upper
     author_stdWrap.typolink.parameter.field = author_email
-    links_stdWrap.wrap = <br />
+    links_stdWrap.wrap = | <br />
 
     newsLinksHeader_stdWrap.wrap = <strong>|</strong>
     noNewsIdMsg_stdWrap (

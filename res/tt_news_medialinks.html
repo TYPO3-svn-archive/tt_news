@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
-	<title>News example template</title>
+	<title>new News example template</title>
 </head>
 
 <body>
@@ -27,19 +27,6 @@
 <br />
 <br />
 <pre>
-<strong>Global markers, as set up in TypoScript:</strong>
-These are substituted throughout the whole template.
-
-<em>Markers:</em>
-GW1B / GW1E
-GW2B / GW2E
-GW3B / GW3E
-
-GC1
-GC2
-GC3
-GC4
-
 
 <strong>Common markers:</strong>
 These are substituted in all news item displaying templates:
@@ -65,8 +52,24 @@ PAGE_TITLE - Title of the parent page of the news item
 PAGE_AUTHOR - Page author, if any
 PAGE_AUTHOR_EMAIL - Page author email, if any
 
+<em>News Language Markers (see pi/locallang.php):</em>
+LATEST_HEADER - header for the LATEST element
+GOTOARCHIVE - link to archive page in latest template
+ARCHIVE_HEADER - same for AMENU
+MORE - more ;-)
+TEXT_CAT - text output before categories and category images in LIST view (eg: 'categories:')
+TEXT_CAT_LATEST - the same in a shorter form for the LATEST element (eg: 'cat:')
+BACK_TO_LIST - link back to list-view in single-view template
+ARCHIVE_EMPTY_MSG - no items in archive
+SEARCH_EMPTY_MSG - message for empty search results
+TEXT_NEWS_AGE - text inserted before the age of the news item 
+
+
 <em>Wrapped Subparts:</em>
 LINK_ITEM - link to the news item single display
+LINK_PREV - used in the pagebrowser
+BROWSE_LINKS - used in the pagebrowser
+LINK_NEXT - used in the pagebrowser
 </pre>
 
 
@@ -90,7 +93,8 @@ LINK_ITEM - link to the news item single display
 <!-- ###TEMPLATE_LATEST### begin
 	This is the template for the latest news, typically displayed on a frontpage 
 -->
-<h1 class="news-latest-top">###LATEST_HEADER###</h1>
+
+	<div class="news-latest-top">###LATEST_HEADER###</div>
 	<!-- ###CONTENT### begin
 		  This is the part of the template substituted with the list of news: 
 	-->
@@ -98,11 +102,12 @@ LINK_ITEM - link to the news item single display
 			Template for a single item 
 		-->
 			  <div class="news-latest-item">
-				<!--###LINK_ITEM###--><span class="news-latest-date">###NEWS_DATE###</span><br />
+				<!--###LINK_ITEM###--><span class="news-latest-date">###NEWS_DATE### ###NEWS_TIME###</span><br />
 				
 				<span class="news-latest-title">###NEWS_TITLE###</span><!--###LINK_ITEM###--><br />
-				###NEWS_SUBHEADER###
+				<div class="news-latest-img"><!--###LINK_ITEM###-->###NEWS_IMAGE###<!--###LINK_ITEM###--></div>###NEWS_SUBHEADER###
 			  </div>
+
 		<!-- ###NEWS### end-->		
 	<!-- ###CONTENT###  end -->
 <!-- ###TEMPLATE_LATEST### end -->
@@ -139,7 +144,7 @@ LINK_ITEM - link to the news item single display
 			<div class="news-list-item">				
 			  <div class="news-list-title"><span class="news-list-date">###NEWS_DATE###</span> <!--###LINK_ITEM###-->###NEWS_TITLE###<!--###LINK_ITEM###--></div>			  
 			  <div class="news-list-item-img-container"><!--###LINK_ITEM###-->###NEWS_IMAGE###<!--###LINK_ITEM###--></div>
-			###NEWS_SUBHEADER### 
+			 <div class="news-list-subheader">###NEWS_SUBHEADER###</div>
 			<div class="news-list-category">###TEXT_CAT### ###NEWS_CATEGORY### ###NEWS_CATEGORY_IMAGE###</div>
 			  <!--###LINK_ITEM###-->###MORE###<!--###LINK_ITEM###-->
 			  <div class="news-list-clearer"> </div>
@@ -231,7 +236,7 @@ LINK_ITEM - link to the news item single display
 <!-- ###TEMPLATE_ARCHIVE### begin
 	Subpart for the news archive menu
 -->
-		<h1 class="news-archive-top">###ARCHIVE_HEADER###</h1>
+		<div class="news-archive-top">###ARCHIVE_HEADER###</div>
 	
 	<!-- ###CONTENT### begin
 		  This is the part of the template substituted with the list of items: 
@@ -264,8 +269,7 @@ LINK_ITEM - link to the news item single display
 <!-- ###TEMPLATE_ARCHIVE_NOITEMS### begin
 	Shown if the archive has no items!
 -->
-		<h1 class="news-archive-top">###ARCHIVE_HEADER###</h1>
-	
+		<div class="news-archive-top">###ARCHIVE_HEADER###</div>
 	    <div class="news-archive-item">###ARCHIVE_EMPTY_MSG###</div>		
 <!-- ###TEMPLATE_ARCHIVE_NOITEMS### end -->
 
@@ -290,17 +294,21 @@ LINK_ITEM - link to the news item single display
 <!-- ###TEMPLATE_SEARCH### begin
 	Subpart for the search-form
 -->
+<div class="news-search-form">
 <form method="post" action="###FORM_URL###">
 	<input size="30" maxlength="100" type="text" name="swords" value="###SWORDS###" />
-	<input type="submit" name="order" value="Search" />
-</form>
+	<input type="submit" name="search" value="###SEARCH_BUTTON###" />
+</form></div>
 <!-- ###TEMPLATE_SEARCH### end -->
 
 
-this is show if the search result is empty 
-<!-- ###ITEM_SEARCH_EMPTY### begin --> 
-   ###SEARCH_EMPTY_MSG### 
-<!-- ###ITEM_SEARCH_EMPTY### end --> 
+this is shown if the search result is empty 
+
+   
+<!-- ###TEMPLATE_SEARCH_EMPTY### begin -->
+<div class="news-search-emptyMsg">###SEARCH_EMPTY_MSG###</div> 
+<!-- ###TEMPLATE_SEARCH_EMPTY### end -->
+
 
 
 

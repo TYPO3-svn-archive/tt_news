@@ -76,7 +76,15 @@ TD#menu_1 DIV.menu1-level2-act {
   padding-left:20px;
 }
 
-
+TR#menu_2 TD {
+  background-color: #333366;
+  width: 10%;
+  text-align: center;
+  padding: 0px 2px 0px 2px;
+}
+.csc-caption {
+  font-size: 9px;
+}
 
 
 
