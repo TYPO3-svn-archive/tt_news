@@ -1,4 +1,8 @@
 <T3DataStructure>
+    <meta>
+       <langDisable>1</langDisable> 
+	  <!--  <langChildren>1</langChildren>!-->
+        </meta>
   <sheets>
 	<sDEF>
 	  <ROOT>
@@ -9,6 +13,7 @@
 	    <el>
 		  <what_to_display>
 			  <TCEforms>
+
 				<label>LLL:EXT:tt_news/locallang_tca.php:tt_news.pi_flexform.what_to_display</label>
 				<config>
 					<type>select</type>
