@@ -54,6 +54,16 @@ plugin.tt_news {
   newsFilesHeader_stdWrap.wrap = <strong>|</strong>
   newsFiles_stdWrap.wrap = 
 
+  # Display language labels and/or flags
+  # showLangLabels = 1
+  # showFlags = 1
+  # flagPath = 
+  flagImage {
+    file.maxW = 16
+  
+  }
+
+  
   
   # Global wraps & colors - [depreciated] use CSS ;-)
   wrap1.wrap = {$plugin.tt_news.wrap1}

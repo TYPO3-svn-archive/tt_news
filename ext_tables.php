@@ -9,9 +9,10 @@ $TCA['tt_news'] = Array (
 		'tstamp' => 'tstamp',
 		'delete' => 'deleted',
 		'prependAtCopy' => 'LLL:EXT:lang/locallang_general.php:LGL.prependAtCopy',
-
+		
 		'versioning' => TRUE,
 		#'versioning_followPages' => TRUE,
+		'dividers2tabs' => TRUE,
 		
 		'copyAfterDuplFields' => 'sys_language_uid',
 		'useColumnsForDefaultValues' => 'sys_language_uid',
