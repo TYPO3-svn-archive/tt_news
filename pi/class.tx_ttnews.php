@@ -177,20 +177,13 @@ class tx_ttnews extends tslib_pibase {
 		$catSelection = $catSelection?$catSelection:$this->conf['categorySelection'];
 		$this->catExclusive = $this->config['categoryMode']?$catSelection:0; // ignore cat selection if categoryMode isn't set
 
-		$catImageMode = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'catImageMode', 's_category');
-		$this->config['catImageMode'] = (is_numeric($catImageMode)?$catImageMode:$this->conf['catImageMode']);
-		$catTextMode = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'catTextMode', 's_category');
-		$this->config['catTextMode'] = (is_numeric($catTextMode)?$catTextMode:$this->conf['catTextMode']);
-		$catImageMaxWidth = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'catImageMaxWidth', 's_category');
-		$this->config['catImageMaxWidth'] = ($catImageMaxWidth?$catImageMaxWidth:$this->conf['catImageMaxWidth']);
-		$catImageMaxHeight = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'catImageMaxHeight', 's_category');
-		$this->config['catImageMaxHeight'] = ($catImageMaxHeight?$catImageMaxHeight:$this->conf['catImageMaxHeight']);
-		$maxCatImages = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'maxCatImages', 's_category');
-		$this->config['maxCatImages'] = (is_numeric($maxCatImages)?$maxCatImages:$this->conf['maxCatImages']);
-		$catTextLength = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'catTextLength', 's_category');
-		$this->config['catTextLength'] = (is_numeric($catTextLength)?$catTextLength:$this->conf['catTextLength']);
-		$maxCatTexts = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'maxCatTexts', 's_category');
-		$this->config['maxCatTexts'] = (is_numeric($maxCatTexts)?$maxCatTexts:$this->conf['maxCatTexts']);
+		
+		$fields = explode(',','catImageMode,catTextMode,catImageMaxWidth,catImageMaxHeight,maxCatImages,catTextLength,maxCatTexts');
+
+		foreach($fields as $key) {
+			$value = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], $key, 's_category');
+			$this->config[$key] = (is_numeric($value)?$value:$this->conf[$key]);
+		}
 
 		$this->initCategories(); // initialize category-array
 
@@ -351,10 +344,10 @@ class tx_ttnews extends tslib_pibase {
 					// Get language version of the help-template
 					$helpTemplate_lang = '';
 					if ($langKey) {
-						$helpTemplate_lang = $this->cObj->getSubpart($helpTemplate, "###TEMPLATE_".$langKey.'###');
+						$helpTemplate_lang = $this->getNewsSubpart($helpTemplate, "###TEMPLATE_".$langKey.'###');
 					}
 					$helpTemplate = $helpTemplate_lang ? $helpTemplate_lang :
-					$this->cObj->getSubpart($helpTemplate, '###TEMPLATE_DEFAULT###');
+					$this->getNewsSubpart($helpTemplate, '###TEMPLATE_DEFAULT###');
 
 					// Markers and substitution:
 					$markerArray['###CODE###'] = $this->theCode;
@@ -430,7 +423,7 @@ class tx_ttnews extends tslib_pibase {
 			}
 
 			// get template subpart
-			$t['total'] = $this->cObj->getSubpart($this->templateCode, $this->spMarker('###TEMPLATE_ARCHIVE###'));
+			$t['total'] = $this->getNewsSubpart($this->templateCode, $this->spMarker('###TEMPLATE_ARCHIVE###'));
 			$t['item'] = $this->getLayouts($t['total'], $this->alternatingLayouts, 'MENUITEM');
 			$cc = 0;
 
@@ -493,7 +486,7 @@ class tx_ttnews extends tslib_pibase {
 			// if nothing is found in the archive display the TEMPLATE_ARCHIVE_NOITEMS message
 			$markerArray['###ARCHIVE_HEADER###'] = $this->local_cObj->stdWrap($this->pi_getLL('archiveHeader'), $this->conf['archiveHeader_stdWrap.']);
 			$markerArray['###ARCHIVE_EMPTY_MSG###'] = $this->local_cObj->stdWrap($this->pi_getLL('archiveEmptyMsg'), $this->conf['archiveEmptyMsg_stdWrap.']);
-			$noItemsMsg = $this->cObj->getSubpart($this->templateCode, $this->spMarker('###TEMPLATE_ARCHIVE_NOITEMS###'));
+			$noItemsMsg = $this->getNewsSubpart($this->templateCode, $this->spMarker('###TEMPLATE_ARCHIVE_NOITEMS###'));
 			$content = $this->cObj->substituteMarkerArrayCached($noItemsMsg, $markerArray);
 		}
 		return $content;
@@ -534,10 +527,11 @@ class tx_ttnews extends tslib_pibase {
 			// Get the subpart code
 			$item = '';
 			if ($this->config['displayCurrentRecord']) {
-				$item = trim($this->cObj->getSubpart($this->templateCode, $this->spMarker('###TEMPLATE_SINGLE_RECORDINSERT###')));
+				$item = trim($this->getNewsSubpart($this->templateCode, $this->spMarker('###TEMPLATE_SINGLE_RECORDINSERT###'), $row));
 			}
+			
 			if (!$item) {
-				$item = $this->cObj->getSubpart($this->templateCode, $this->spMarker('###TEMPLATE_SINGLE###'));
+				$item = $this->getNewsSubpart($this->templateCode, $this->spMarker('###TEMPLATE_SINGLE###'), $row);
 			}
 
 			// reset marker array
@@ -601,7 +595,7 @@ class tx_ttnews extends tslib_pibase {
 			$formURL = $this->pi_linkTP_keepPIvars_url(array('pointer'=>NULL,'cat'=>NULL),0,'',$this->config['searchPid']) ;
 
 			// Get search subpart
-			$t['search'] = $this->cObj->getSubpart($this->templateCode, $this->spMarker('###TEMPLATE_SEARCH###'));
+			$t['search'] = $this->getNewsSubpart($this->templateCode, $this->spMarker('###TEMPLATE_SEARCH###'));
 			// Substitute the markers for teh searchform
 			$out = $t['search'];
 
@@ -690,9 +684,9 @@ class tx_ttnews extends tslib_pibase {
 				// Init Templateparts: $t['total'] is complete template subpart (TEMPLATE_LATEST f.e.)
 				// $t['item'] is an array with the alternative subparts (NEWS, NEWS_1, NEWS_2 ...)
 				$t = array();
-				$t['total'] = $this->cObj->getSubpart($this->templateCode, $this->spMarker('###'.$templateName.'###'));
-				$t['item'] = $this->getLayouts($t['total'], $this->alternatingLayouts, 'NEWS');
+				$t['total'] = $this->getNewsSubpart($this->templateCode, $this->spMarker('###'.$templateName.'###'));
 
+				$t['item'] = $this->getLayouts($t['total'], $this->alternatingLayouts, 'NEWS');
 				// build query for display:
 
 				$selectConf['selectFields'] = '*';
@@ -738,7 +732,7 @@ class tx_ttnews extends tslib_pibase {
 				if($theCode == 'XML') {
 					$markerArray = $this->getXmlHeader();
 
-                    $subpartArray['###HEADER###']  = $this->cObj->substituteMarkerArray($this->cObj->getSubpart($t['total'], '###HEADER###'), $markerArray);
+                    $subpartArray['###HEADER###']  = $this->cObj->substituteMarkerArray($this->getNewsSubpart($t['total'], '###HEADER###'), $markerArray);
 				}
 
 				// get the list of news items and fill them in the CONTENT subpart
@@ -772,19 +766,19 @@ class tx_ttnews extends tslib_pibase {
 			} elseif (ereg('1=0', $where)) {
 				// first view of the search page with the parameter 'emptySearchAtStart' set
 				$markerArray['###SEARCH_EMPTY_MSG###'] = $this->local_cObj->stdWrap($this->pi_getLL('searchEmptyMsg'), $this->conf['searchEmptyMsg_stdWrap.']);
-				$searchEmptyMsg = $this->cObj->getSubpart($this->templateCode, $this->spMarker('###TEMPLATE_SEARCH_EMPTY###'));
+				$searchEmptyMsg = $this->getNewsSubpart($this->templateCode, $this->spMarker('###TEMPLATE_SEARCH_EMPTY###'));
 
 				$content .= $this->cObj->substituteMarkerArrayCached($searchEmptyMsg, $markerArray);
 			} elseif ($this->piVars['swords']) {
 				// no results
 				$markerArray['###SEARCH_EMPTY_MSG###'] = $this->local_cObj->stdWrap($this->pi_getLL('noResultsMsg'), $this->conf['searchEmptyMsg_stdWrap.']);
-				$searchEmptyMsg = $this->cObj->getSubpart($this->templateCode, $this->spMarker('###TEMPLATE_SEARCH_EMPTY###'));
+				$searchEmptyMsg = $this->getNewsSubpart($this->templateCode, $this->spMarker('###TEMPLATE_SEARCH_EMPTY###'));
 				$content .= $this->cObj->substituteMarkerArrayCached($searchEmptyMsg, $markerArray);
 			} elseif($theCode == 'XML') {
 				// fill at least the template header
 				// Init Templateparts: $t['total'] is complete template subpart (TEMPLATE_LATEST f.e.)
 				$t = array();
-				$t['total'] = $this->cObj->getSubpart($this->templateCode, $this->spMarker('###'.$templateName.'###'));
+				$t['total'] = $this->getNewsSubpart($this->templateCode, $this->spMarker('###'.$templateName.'###'));
 
 				// Reset:
 				$subpartArray = array();
@@ -795,7 +789,7 @@ class tx_ttnews extends tslib_pibase {
 				$markerArray = $this->getXmlHeader();
 
 				// get the list of news items and fill them in the CONTENT subpart
-				$subpartArray['###HEADER###']  = $this->cObj->substituteMarkerArray($this->cObj->getSubpart($t['total'], '###HEADER###'), $markerArray);
+				$subpartArray['###HEADER###']  = $this->cObj->substituteMarkerArray($this->getNewsSubpart($t['total'], '###HEADER###'), $markerArray);
 
 
 				$t['total'] = $this->cObj->substituteSubpart($t['total'], '###HEADER###', $subpartArray['###HEADER###'], 0);
@@ -842,7 +836,7 @@ class tx_ttnews extends tslib_pibase {
 			$markerArray = $this->getItemMarkerArray($row, $prefix_display);
 
 			// XML
-			$markerArray['###NEWS_LINK###'] = $this->config['siteUrl'].substr($wrappedSubpartArray['###LINK_ITEM###'][0], 9, -2);
+			$markerArray['###NEWS_LINK###'] = $this->config['siteUrl'].rawurlencode(substr($wrappedSubpartArray['###LINK_ITEM###'][0], 9, -2));
 
 
 			$layoutNum = $cc%$itempartsCount;
@@ -910,7 +904,12 @@ class tx_ttnews extends tslib_pibase {
 				if ($this->arcExclusive < 0) {
 					$selectConf['where'] .= ' AND (tt_news.datetime=0 OR tt_news.datetime>'.$theTime.')';
 					
-					#$selectConf['where'] .= ' AND (tt_news.datetime=0 OR (tt_news.archivedate=0 AND tt_news.datetime>'.$theTime.') OR tt_news.archivedate>0)'; 
+//					if ($this->conf['enableArchiveDate']) {
+//						$selectConf['where'] .= ' AND (tt_news.datetime=0 OR tt_news.datetime>'.$theTime.' OR tt_news.archivedate>0)';
+//					} else {
+//						$selectConf['where'] .= ' AND (tt_news.datetime=0 OR tt_news.datetime>'.$theTime.')';
+//					}
+				
 					
 				} elseif ($this->arcExclusive > 0) {
 					$selectConf['where'] .= ' AND tt_news.datetime<'.$theTime;
@@ -1021,7 +1020,7 @@ if ($this->conf['oldCatDeselectMode'] && $this->config['categoryMode']==-1) {
 
 		$markerArray = array();
 		// get image markers
-		$markerArray = $this->getImageMarkers($markerArray, $row, $lConf);
+		$markerArray = $this->getImageMarkers($markerArray, $row, $lConf, $textRenderObj);
 
 		$markerArray['###NEWS_UID###'] = $row['uid'];
 		$markerArray['###NEWS_TITLE###'] = $this->local_cObj->stdWrap($row['title'], $lConf['title_stdWrap.']);
@@ -1205,7 +1204,7 @@ if ($this->conf['oldCatDeselectMode'] && $this->config['categoryMode']==-1) {
 	 * @param	array		$lConf: configuration for the current templatepart
 	 * @return	array		$markerArray: filled markerarray
 	 */
-	function getImageMarkers($markerArray, $row, $lConf){
+	function getImageMarkers($markerArray, $row, $lConf, $textRenderObj){
 
 		if ($this->conf['imageMarkerFunc']) {
 			$markerArray = $this->userProcess('imageMarkerFunc', array($markerArray,$lConf));
@@ -1220,6 +1219,7 @@ if ($this->conf['oldCatDeselectMode'] && $this->config['categoryMode']==-1) {
 
 			// unset the img in the image array in single view if the var firstImageIsPreview is set
 			if (count($imgs) > 1 && $this->config['firstImageIsPreview'] && $textRenderObj == 'displaySingle') {
+			$imageNum++; 
 				unset($imgs[0]);
 				unset($imgsCaptions[0]);
 				$cc = 1;
@@ -1437,6 +1437,18 @@ if ($this->conf['oldCatDeselectMode'] && $this->config['categoryMode']==-1) {
 
 		return $markerArray;
 	}
+	/**
+     * Returns a subpart from the input content stream.
+     * Enables pre-/post-processing of templates/templatefiles
+     *
+     * @param    string        Content stream, typically HTML template content.
+     * @param    string        Marker string, typically on the form "###...###"
+     * @param    array        Optional: the aktive row of data - if available
+     * @return    string        The subpart found, if found.
+     */
+    function getNewsSubpart($myTemplate,$myKey,$row=Array()) {
+        return ($this->cObj->getSubpart($myTemplate,$myKey));
+    } 
 }
 
 

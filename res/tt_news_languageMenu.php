@@ -40,9 +40,6 @@
  
 if (!is_object($this)) die ('Error: No parent object present.');
  
-
-
- 
  // First, select all pages_language_overlay records on the current page. Each represents a possibility for a language.
 $res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'pages_language_overlay', 'pid='.intval($GLOBALS['TSFE']->id).$GLOBALS['TSFE']->sys_page->enableFields('pages_language_overlay'), 'sys_language_uid');
 
@@ -54,29 +51,34 @@ while($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))	{
 // Little red arrow, which is inserted to the left of the flag-icon if the TSFE->sys_language_uid equals the language uid (notice that 0=english, 1=danish and 2=german is SPECIFIC to this database, because these numbers refer to uid's of the table sys_language)
 $pointer = '<img src="t3lib/gfx/content_client.gif" width="7" height="10" align="middle" alt="" />';
 
-// Set each icon. If the language is the current, red arrow is printed to the left. If the language is NOT found (represented by a pages_language_overlay record on this page), the icon is dimmed.
+
 
 // changed to keep the links vars from tt_news:
-$queryString = explode('&',t3lib_div::getIndpEnv('QUERY_STRING')) ;
-while (list(, $val) = each($queryString)) {
-  $tmp = explode('=',$val);
-  $paramArray[$tmp[0]] = $val;
+
+unset($GLOBALS['_GET']['L']);
+#$theLink = t3lib_div::linkThisScript(array('L'=>0));
+
+// Set each icon. If the language is the current, red arrow is printed to the left. If the language is NOT found (represented by a pages_language_overlay record on this page), the icon is dimmed.
+$flags = array();
+
+$flags[0] = ($GLOBALS['TSFE']->sys_language_uid==0?$pointer:'').'<a href="'.t3lib_div::linkThisScript(array('L'=>0,'id'=>$GLOBALS['TSFE']->id)).'" target="_top"><img src="media/uploads/flag_uk.gif" width="21" height="13" hspace="5" border="0" alt="" /></a>';
+
+
+
+if ($langArr[1]) {
+    $flags[1] = ($GLOBALS['TSFE']->sys_language_uid==1?$pointer:'').'<a href="'.t3lib_div::linkThisScript(array('L'=>1,'id'=>$GLOBALS['TSFE']->id)).'" target="_top"><img src="media/uploads/flag_dk.gif" width="21" height="13" hspace="5" border="0" alt="" /></a>';
+} else {
+    $flags[1] = '<img src="media/uploads/flag_dk_d.gif" width="21" height="13" hspace="5" border="0" alt="" />';
+}
+if ($langArr[2]) {
+    $flags[2] = ($GLOBALS['TSFE']->sys_language_uid==2?$pointer:'').'<a href="'.t3lib_div::linkThisScript(array('L'=>2,'id'=>$GLOBALS['TSFE']->id)).'" target="_top"><img src="media/uploads/flag_de.gif" width="21" height="13" hspace="5" border="0" alt="" /></a>';
+} else {
+    $flags[2] = '<img src="media/uploads/flag_de_d.gif" width="21" height="13" hspace="5" border="0" alt="" />';
 }
 
-$excludeList = 'L';
-while (list($key, $val) = each($paramArray)) {
-			if (!$val || ($excludeList && t3lib_div::inList($excludeList, $key))) {
-				unset($paramArray[$key]);
-			}
-		}
 
-$theLink = 'index.php?'.implode($paramArray, '&');
-$flags = array();
-$flags[] = ($GLOBALS['TSFE']->sys_language_uid==0?$pointer:'').'<a href="'.htmlspecialchars($theLink.'&L=0').'" target="_top"><img src="media/uploads/flag_uk.gif" width="21" height="13" hspace="5" border="0" alt="" /></a>';
-$flags[] = ($GLOBALS['TSFE']->sys_language_uid==1?$pointer:'').'<a href="'.htmlspecialchars($theLink.'&L=1').'" target="_top"><img src="media/uploads/flag_dk'.($langArr[1]?'':'_d').'.gif" width="21" height="13" hspace="5" border="0" alt="" /></a>';
-$flags[] = ($GLOBALS['TSFE']->sys_language_uid==2?$pointer:'').'<a href="'.htmlspecialchars($theLink.'&L=2').'" target="_top"><img src="media/uploads/flag_de'.($langArr[2]?'':'_d').'.gif" width="21" height="13" hspace="5" border="0" alt="" /></a>';
+$content = '<table border="0" cellpadding="0" cellspacing="0"><tr><td><img src="clear.gif" width="30" height="1" alt="" /></td><td nowrap="nowrap">'.implode('',$flags).'</td></tr></table>';
 
-$content = '<table border="0" cellpadding="0" cellspacing="0"><tr><td><img src="clear.gif" width="30" height="1" alt="" /></td><td>'.implode('',$flags).'</td></tr></table>';
 
 
 
