@@ -29,6 +29,7 @@ $LOCAL_LANG = Array (
 		'.description' => 'Categoriën van het nieuwssysteem.',
 	),
 	'cz' => Array (
+		'.description' => 'Vestavìnı systém kategorií zpráv.',
 	),
 	'pl' => Array (
 	),

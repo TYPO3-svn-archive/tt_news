@@ -38,6 +38,8 @@ $LOCAL_LANG = Array (
 		'pi_plus_wiz_description' => 'Voegt nieuws aan de pagina toe.',
 	),
 	'cz' => Array (
+		'pi_title' => 'Zprávy',
+		'pi_plus_wiz_description' => 'Vloí zprávy na stranu.',
 	),
 	'pl' => Array (
 	),
