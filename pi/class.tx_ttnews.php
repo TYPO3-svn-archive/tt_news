@@ -79,42 +79,46 @@ class tx_ttnews extends tslib_pibase {
 	}
 	
 
-
-
-	/**
-	 * Main news function.
-	 */
-	function main_news($content,$conf)	{
-
-
-		$GLOBALS["TSFE"]->set_no_cache();
-	
+	/***
+	* Init Function here all the needed configuration Values where stored in class variables..
+	* init is normaly called one time in main function!
+	*/
+	function init_news($conf) {
 		// *************************************
 		// *** getting configuration values:
 		// *************************************
-		$this->conf = $conf;
-		$this->tt_news_uid = intval(t3lib_div::_GP("tt_news"));
+		$this->conf = $conf;	//store configuration
+		$this->tt_news_uid = intval(t3lib_div::_GP("tt_news"));	//Get the submitted uid of a news (if any)
+		//Get number of alternative Layouts (loop layout in Archivelist and List view) default is 2:
 		$this->alternativeLayouts = intval($this->conf["alternatingLayouts"])>0 ? intval($this->conf["alternatingLayouts"]) : 2;
 			
-			// Loading language-labels
+		// Loading language-labels
 		$this->pi_loadLL();
-			
-			// Init FlexForm configuration for plugin:
+		
+		// Init FlexForm configuration for plugin:
 		$this->pi_initPIflexForm();
+		$this->enableFields = $this->cObj->enableFields("tt_news");
 			
-			// pid_list is the pid/list of pids from where to fetch the news items.
+		// pid_list is the pid/list of pids from where to fetch the news items.
 		$this->config["pid_list"] = trim($this->cObj->stdWrap($this->conf["pid_list"],$this->conf["pid_list."]));
 		$this->config["pid_list"] = $this->config["pid_list"] ? implode(t3lib_div::intExplode(",",$this->config["pid_list"]),",") : $GLOBALS["TSFE"]->id;
+		
+				
 		$recursive=$this->pi_getFFvalue($this->cObj->data['pi_flexform'],'recursive','sDEF');
 		$this->config["recursive"] = is_numeric($recursive)?$recursive:$this->cObj->stdWrap($conf["recursive"],$conf["recursive."]);
 		list($pid) = explode(",",$this->config["pid_list"]);
 		$this->pid = $pid;
-
+		
 			// "CODE" decides what is rendered:
 		$this->config["code"] = $this->pi_getFFvalue($this->cObj->data['pi_flexform'],'what_to_display','sDEF');
 		$this->config["select_deselect_categories"] = $this->pi_getFFvalue($this->cObj->data['pi_flexform'],'select_deselect_categories','sDEF');
 		$this->config["category_selection"] = $this->pi_getFFvalue($this->cObj->data['pi_flexform'],'category_selection','sDEF');
 		$this->config["archive"] = $this->pi_getFFvalue($this->cObj->data['pi_flexform'],'archive','sDEF');
+		
+		//Set the global flags to this values, they are needed for search query building (the flags could be overriden, for example in CODE LATEST)
+			$this->catExclusive = $this->config['category_selection'];
+			//arc exclusiv means: -1=SHOW NON-ARCHIVED; 0=dont care; 1=SHOW ARCHIVED
+			$this->arcExclusive = $this->config['archive'];
 
 		$this->config["limit"] = t3lib_div::intInRange($conf["limit"],0,1000);
 		$this->config["limit"] = $this->config["limit"] ? $this->config["limit"] : 50;
@@ -134,14 +138,16 @@ class tx_ttnews extends tslib_pibase {
 		$this->config['maxCatImages']=(is_numeric($maxCatImages)?$maxCatImages:$this->conf['maxCatImages']);
 		$this->config['catTextLength']=(is_numeric($catTextLength)?$catTextLength:$this->conf['catTextLength']);
 		$this->config['maxCatTexts']=(is_numeric($maxCatTexts)?$maxCatTexts:$this->conf['maxCatTexts']);
-
-			// If the current record should be displayed.
-		$this->config["displayCurrentRecord"] = $this->conf["displayCurrentRecord"];
-		if ($this->config["displayCurrentRecord"])	{
-			$this->config["code"]="LIST";
-			$this->tt_news_uid=$this->cObj->data["uid"];
+		
+		//Others which could be set in Flexform or TS:
+		$PIDitemDisplay=$this->pi_getFFvalue($this->cObj->data['pi_flexform'],'PIDitemDisplay','sDEF');
+		if (strcmp($PIDitemDisplay,"")) {
+			//If FlexForm Value is given then overwrite
+			$this->conf["PIDitemDisplay"]=$PIDitemDisplay;
 		}
-
+		
+		
+		
 			// template is read.//
 		$templateflex_file=$this->pi_getFFvalue($this->cObj->data['pi_flexform'],'template_file','s_template');
 		$this->templateCode = $this->cObj->fileResource($templateflex_file?"uploads/tx_ttnews/".$templateflex_file:$this->conf["templateFile"]);
@@ -156,27 +162,54 @@ class tx_ttnews extends tslib_pibase {
 
 			// Substitute Global Marker Array
 		$this->templateCode= $this->cObj->substituteMarkerArray($this->templateCode, $globalMarkerArray);
+	}
 
+	/**
+	 * Main news function.
+	 */
+	function main_news($content,$conf)	{
+
+
+		$GLOBALS["TSFE"]->set_no_cache();
+	
+		$this->init_news($conf);
+		
+		// If the current record should be displayed.
+		//It is in content element "insert record"
+		$this->config["displayCurrentRecord"] = $this->conf["displayCurrentRecord"];
+		if ($this->config["displayCurrentRecord"])	{			
+			# rg: added the possibility to change the template, used for 'display current record'. 
+			# if the value is empty, the code is 'single'						
+			$this->config["code"]=$this->conf['defaultCode']?trim($this->conf['defaultCode']):"SINGLE";
+			$this->tt_news_uid=$this->cObj->data["uid"];
+		}
 	
 		// *************************************
 		// *** doing the things...:
 		// *************************************
-		$this->enableFields = $this->cObj->enableFields("tt_news");
-		$this->dontParseContent = $this->conf["dontParseContent"];
-		$this->local_cObj =t3lib_div::makeInstance("tslib_cObj");		// Local cObj.
+		
+		//danp seems not to be need: $this->dontParseContent = $this->conf["dontParseContent"];
+		
+		//make lokal cObj Instance needed for all the Templateparsing stuff in diffrent functions:
+		
+		$this->local_cObj =t3lib_div::makeInstance("tslib_cObj");		// Local cObj.			
 
 		$codes=t3lib_div::trimExplode(",", $this->config["code"]?$this->config["code"]:$this->conf["defaultCode"],1);
 		if (!count($codes))	$codes=array("");
-		while(list(,$theCode)=each($codes))	{
-#			list($theCode,$cat,$aFlag) = explode("/",$theCode);
-			$this->catExclusive = $this->config['category_selection'];
-			$this->arcExclusive	= $this->config['archive'];
+		while(list(,$theCode)=each($codes))	{			
 			$theCode = (string)strtoupper(trim($theCode));
 			$this->theCode = $theCode;
+		
+		
+		#t3lib_div::debug(strtoupper($GLOBALS["TSFE"]->config["config"]["language"]));	
+		
 			switch($theCode)	{
+				
+				case "SINGLE":
+					$content.= $this->single_view();
+				break;
 				case "LATEST":
 				case "LIST":
-				case "SINGLE":
 				case "SEARCH":
 					$content.= $this->news_list();
 				break;
@@ -296,183 +329,243 @@ class tx_ttnews extends tslib_pibase {
 		return $content;
 	}
 	
+	function single_view() {
+		#$this->enableFields = $this->cObj->enableFields("tt_news");
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_news', 'uid='.intval($this->tt_news_uid).' AND type=0'.$this->enableFields);	// type=0 -> only real news.
+		$row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
+		
+		
+		if(is_array($row))		{
+			$this->setPidlist(intval($row["pid"]));
+			$this->generatePageArray();
+
+				// Get the subpart code
+			$item ="";
+			if ($this->config["displayCurrentRecord"])	{
+			
+				#$row=$this->cObj->data;
+				$item = trim($this->cObj->getSubpart($this->templateCode,$this->spMarker("###TEMPLATE_SINGLE_RECORDINSERT###")));
+			}
+			if (!$item)	{$item = $this->cObj->getSubpart($this->templateCode,$this->spMarker("###TEMPLATE_SINGLE###"));}
+
+				// Fill marker arrays
+			$wrappedSubpartArray=array();
+			if($backPid=$this->pi_getFFvalue($this->cObj->data['pi_flexform'],'backPid','sDEF')){
+			}elseif($backPid=$this->conf["backPid"]){
+			}elseif($backPid=t3lib_div::_GP("backPID")){
+			}
+			$wrappedSubpartArray["###LINK_ITEM###"]= array('<a href="'.$this->getLinkUrl($backPid).'">','</a>');
+			$markerArray = $this->getItemMarkerArray($row,"displaySingle");
+				// Substitute
+			$content= $this->cObj->substituteMarkerArrayCached($item,$markerArray,array(),$wrappedSubpartArray);
+		}
+		else {
+			$content.="Wrong parameters, GET/POST var 'tt_news' was missing.";
+		}
+		return $content;
+	}
+	
+	
 	/**
 	 * Displaying single news/ the news list / searching
+	 *
+	 * Things happen: get the query parameters (add where if search was performed)
+	 * First exec count query to get the numbers of results
+	 * If more than one Go into the rendering of the List:
+	 *   Get the general Markers for each Iitem and fill the contentarray (Templatebased)
+	 * Check if a browsebox should be displayed
+	 *
 	 */
 	function news_list()	{
 		$theCode = $this->theCode;
-/*		$this->setPidlist($this->config["pid_list"]);				// The list of pid's we're operation on. All tt_products records must be in the pidlist in order to be selected.
-		$this->initRecursive($this->config["recursive"]);
+									/*		$this->setPidlist($this->config["pid_list"]);				// The list of pid's we're operation on. All tt_products records must be in the pidlist in order to be selected.
+											$this->initRecursive($this->config["recursive"]);
+											$this->initCategories();
+											$this->generatePageArray();
+											
+											debug($this->pageArray);
+											debug($this->categories);
+									
+									*/
 		$this->initCategories();
-		$this->generatePageArray();
 		
-		debug($this->pageArray);
-		debug($this->categories);
-
-*/
-
-		$this->initCategories();
+		$where="";
+		$content="";
+		
+		// in the switch blocks the things which are diffrent for the codefields
 		switch($theCode)	{
 			case "LATEST": 	
 				$prefix_display="displayLatest"; 
 				$templateName = "TEMPLATE_LATEST";
 				$this->arcExclusive=-1;	// Only latest, non archive news
 				if (intval($this->conf["latestLimit"]))	$this->config["limit"] = intval($this->conf["latestLimit"]);
+				$showList=true;								
 			break;
-			case "LIST": 
-			case "SEARCH": 	
+			case "LIST":
+				$showList=true;
 				$prefix_display="displayList"; 
 				$templateName = "TEMPLATE_LIST";
 			break;
-			default:		
-				$prefix_display="displaySingle"; 
-				$templateName = "TEMPLATE_SINGLE";
-			break;
-		}
-
-		if ($this->tt_news_uid)	{
-				// performing query:
-		 	$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_news', 'uid='.intval($this->tt_news_uid).' AND type=0'.$this->enableFields);	// type=0 -> only real news.
-			$row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
-
-			if($this->config["displayCurrentRecord"] || is_array($row))		{
-				$this->setPidlist(intval($row["pid"]));
-				$this->generatePageArray();
-
-					// Get the subpart code
-				$item ="";
-				if ($this->config["displayCurrentRecord"])	{
-					$row=$this->cObj->data;
-					$item = trim($this->cObj->getSubpart($this->templateCode,$this->spMarker("###TEMPLATE_SINGLE_RECORDINSERT###")));
-				}
-				if (!$item)	{$item = $this->cObj->getSubpart($this->templateCode,$this->spMarker("###TEMPLATE_SINGLE###"));}
-
-					// Fill marker arrays
-				$wrappedSubpartArray=array();
-				if($backPid=$this->pi_getFFvalue($this->cObj->data['pi_flexform'],'backPid','sDEF')){
-				}elseif($backPid=$this->conf["backPid"]){
-				}elseif($backPid=t3lib_div::_GP("backPID")){
-				}
-				$wrappedSubpartArray["###LINK_ITEM###"]= array('<a href="'.$this->getLinkUrl($backPid).'">','</a>');
-				$markerArray = $this->getItemMarkerArray($row,"displaySingle");
-					// Substitute
-				$content= $this->cObj->substituteMarkerArrayCached($item,$markerArray,array(),$wrappedSubpartArray);
-			}
-		} elseif ($theCode=="SINGLE") {		
-			$content.="Wrong parameters, GET/POST var 'tt_news' was missing.";
-		} elseif ($this->arcExclusive>0 && !t3lib_div::_GP("pS") && $theCode!="SEARCH") {			// periodStart must be set when listing from the archive.
-			$content.="";
-		} else {		
-			$content="";
-	// List news:
-			$where="";			
-			if ($theCode=="SEARCH")	{
-					// Get search subpart
+			case "SEARCH": 	
+				$prefix_display="displayList"; 
+				$templateName = "TEMPLATE_LIST";
+				
+				// Get search subpart
 				$t["search"] = $this->cObj->getSubpart($this->templateCode,$this->spMarker("###TEMPLATE_SEARCH###"));
-					// Substitute a few markers
+				// Substitute a few markers
 				$out=$t["search"];				
 				$out=$this->cObj->substituteMarker($out, "###FORM_URL###", $this->getLinkUrl($this->conf["PIDsearch"]));
 				$out=$this->cObj->substituteMarker($out, "###SWORDS###", htmlspecialchars(t3lib_div::_GP("swords")));
-					// Add to content
+				// Add to content
 				$content.=$out;
+				
+				//if searchword is given then make the query where and set the flag to show the list
 				if (t3lib_div::_GP("swords"))	{
 					$where = $this->searchWhere(trim(t3lib_div::_GP("swords")));
+					$showList=true;
 				}
-			}
-			$begin_at=t3lib_div::intInRange(t3lib_div::_GP("begin_at"),0,100000);
-			if (($theCode!="SEARCH" && !t3lib_div::_GP("swords")) || $where)	{
-
+			break;			
+			
+		}
+		
+		// Allowed to show the listing? 
+		// AND periodStart must be set when listing from the archive.
+		
+		if ($showList && !($this->arcExclusive>0 && !t3lib_div::_GP("pS") && $theCode!="SEARCH"))	{
+		
+				/*
+				* rg: this change makes it possible to display news-items, which are included by the content
+				*   element 'insert records', either as single item (see changes above
+				*   in the single part of this function), or as a list item.
+				*   configuration is done in TS, the default template is SINGLE.
+				*   element in your template) as the news-search and the search results.
+				*/				 
+				if ($this->config['displayCurrentRecord'] && $this->tt_news_uid) {
+					$this->config['pid_list'] = $this->cObj->data['pid'];
+					$where = 'AND uid='.$this->cObj->data['uid'];
+				}
+				
+				//Get the Listqueryparameters				
 				$selectConf = $this->getSelectConf($where);
 
-					// performing query to count all news (we need to know it for browsing):
+				// performing query to count all news (we need to know it for browsing):
 				$selectConf['selectFields'] = 'count(distinct(uid))'; //count(*)
 				$res = $this->cObj->exec_getQuery("tt_news",$selectConf);
 				$row = $GLOBALS['TYPO3_DB']->sql_fetch_row($res);
 				$newsCount = $row[0];
+			
+				//Only do something if the queryresult is not empty
+				if ($newsCount >0) {
+					//Init the Templateparts
+					// $t["total"] is the part which is defined by the Code (TEMPLATE_LATEST and so on)
+					// $t["item"] is an array with the alternated Subparts (NEWS, NEWS_1 and so on)
+					$t = array();
+					$t["total"] = $this->cObj->getSubpart($this->templateCode,$this->spMarker("###".$templateName."###"));
+					$t["item"] = $this->getLayouts($t["total"],$this->alternativeLayouts,"NEWS");
 
 					// range check to current newsCount
-				$begin_at = t3lib_div::intInRange(($begin_at >= $newsCount) ? ($newsCount-$this->config["limit"]) : $begin_at,0); 
-
+					//get begin at for browsing
+					$begin_at=t3lib_div::intInRange(t3lib_div::_GP("begin_at"),0,100000);
+					$begin_at = t3lib_div::intInRange(($begin_at >= $newsCount) ? ($newsCount-$this->config["limit"]) : $begin_at,0); 
+				
 					// performing query for display:
-				$selectConf["groupBy"] = "uid";
-				$selectConf["orderBy"] = "datetime DESC"; 
-				$selectConf['selectFields'] = '*';
-				$selectConf['max'] = intval($this->config["limit"]+1);
-				$selectConf['begin'] = $begin_at;
-			 	$res = $this->cObj->exec_getQuery("tt_news",$selectConf);
-
-					// Getting elements
-				$itemsOut = "";
-				$t = array();
-				$t["total"] = $this->cObj->getSubpart($this->templateCode,$this->spMarker("###".$templateName."###"));
-				$t["item"] = $this->getLayouts($t["total"],$this->alternativeLayouts,"NEWS");
-				$cc = 0;
-
-				$itemLinkTarget = $this->conf["itemLinkTarget"] ? 'target="'.$this->conf["itemLinkTarget"].'"' : "";
-				while($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))		{
-						// Print Item Title
-					$wrappedSubpartArray=array();
-					if ($row["type"]==1 || $row["type"]==2)	{
-						$this->local_cObj->setCurrentVal($row["type"]==1 ? $row["page"] : $row["ext_url"]);
-						$wrappedSubpartArray["###LINK_ITEM###"]= $this->local_cObj->typolinkWrap($this->conf["pageTypoLink."]);
-					} else {
-					$PIDitemDisplay=$this->pi_getFFvalue($this->cObj->data['pi_flexform'],'PIDitemDisplay','sDEF');
-						$wrappedSubpartArray["###LINK_ITEM###"]= array('<a href="'.$this->getLinkUrl($PIDitemDisplay?$PIDitemDisplay:$this->conf["PIDitemDisplay"]).'&amp;tt_news='.$row["uid"].'" '.$itemLinkTarget.'>','</a>'); 
-					}
-					$markerArray = $this->getItemMarkerArray($row,$prefix_display);
-
-					$itemsOut.= $this->cObj->substituteMarkerArrayCached($t["item"][($cc%count($t["item"]))],$markerArray,array(),$wrappedSubpartArray);
-					$cc++;
-					if ($cc==$this->config["limit"])	{break;}
-				}
-				$out=$itemsOut;
-			}
-			if ($out)	{
-				// next / prev:
-				$url = $this->getLinkUrl("","begin_at");
-					// Reset:
-				$subpartArray=array();
-				$wrappedSubpartArray=array();
-				$markerArray=array();
+					$selectConf["groupBy"] = "uid";
+					$selectConf["orderBy"] = "datetime DESC"; 
+					$selectConf['selectFields'] = '*';
+					$selectConf['max'] = intval($this->config["limit"]+1);
+					$selectConf['begin'] = $begin_at;
 					
-				if ($newsCount > $begin_at+$this->config["limit"])	{
-					$next = ($begin_at+$this->config["limit"] > $newsCount) ? $newsCount-$this->config["limit"] : $begin_at+$this->config["limit"];
-					$wrappedSubpartArray["###LINK_NEXT###"]=array('<a href="'.$url.'&amp;begin_at='.$next.'">','</a>');
-				} else {
-					$subpartArray["###LINK_NEXT###"]="";
-				}
-				if ($begin_at)	{
-					$prev = ($begin_at-$this->config["limit"] < 0) ? 0 : $begin_at-$this->config["limit"];
-					$wrappedSubpartArray["###LINK_PREV###"]=array('<a href="'.$url.'&amp;begin_at='.$prev.'">','</a>');
-				} else {
-					$subpartArray["###LINK_PREV###"]="";
-				}
-				$markerArray["###BROWSE_LINKS###"]="";
-				if ($newsCount > $this->config["limit"] )	{ // there is more than one page, so let's browse
-					for ($i = 0 ; $i < ($newsCount/$this->config["limit"]); $i++) 	{
-						if (($begin_at >= $i*$this->config["limit"]) && ($begin_at < $i*$this->config["limit"]+$this->config["limit"])) 	{
-							$markerArray["###BROWSE_LINKS###"].= ' <b>'.(string)($i+1).'</b> ';
-							//	you may use this if you want to link to the current page also
-							//	$markerArray["###BROWSE_LINKS###"].= ' <a href="'.$url.'&amp;begin_at='.(string)($i * $this->config["limit"]).'"><b>'.(string)($i+1).'</b></a> ';
+				 	
+				 	//debug($this->cObj->getQuery("tt_news",$selectConf,true));
+				
+					//*******The total template must be filled:****
+					 	
+					// Reset:
+					$subpartArray=array();
+					$wrappedSubpartArray=array();
+					$markerArray=array();
+					
+					//The important think include the Newslist in the CONTENT subpart (perhaps use & for not wasting memory)
+					$subpartArray["###CONTENT###"]=$this->get_content_news_list($t["item"],$selectConf,$prefix_display);	
+			
+					$markerArray["###CATEGORY_TITLE###"]="";	// Something here later...
+					$wrappedSubpartArray["###LINK_ARCHIVE###"]=$this->local_cObj->typolinkWrap($this->conf["archiveTypoLink."]);
+					
+					
+					//BROWSEBOXRENDERING -
+						if ($newsCount > $begin_at+$this->config["limit"])	{
+							$next = ($begin_at+$this->config["limit"] > $newsCount) ? $newsCount-$this->config["limit"] : $begin_at+$this->config["limit"];
+							$wrappedSubpartArray["###LINK_NEXT###"]=array('<a href="'.$url.'&amp;begin_at='.$next.'">','</a>');
 						} else {
-							$markerArray["###BROWSE_LINKS###"].= ' <a href="'.$url.'&amp;begin_at='.(string)($i * $this->config["limit"]).'">'.(string)($i+1).'</a> ';
+							$subpartArray["###LINK_NEXT###"]="";
 						}
-					}
+						if ($begin_at)	{
+							$prev = ($begin_at-$this->config["limit"] < 0) ? 0 : $begin_at-$this->config["limit"];
+							$wrappedSubpartArray["###LINK_PREV###"]=array('<a href="'.$url.'&amp;begin_at='.$prev.'">','</a>');
+						} else {
+							$subpartArray["###LINK_PREV###"]="";
+						}
+						$markerArray["###BROWSE_LINKS###"]="";
+						if ($newsCount > $this->config["limit"] )	{ // there is more than one page, so let's browse
+							for ($i = 0 ; $i < ($newsCount/$this->config["limit"]); $i++) 	{
+								if (($begin_at >= $i*$this->config["limit"]) && ($begin_at < $i*$this->config["limit"]+$this->config["limit"])) 	{
+									$markerArray["###BROWSE_LINKS###"].= ' <b>'.(string)($i+1).'</b> ';							
+								} else {
+									$markerArray["###BROWSE_LINKS###"].= ' <a href="'.$url.'&amp;begin_at='.(string)($i * $this->config["limit"]).'">'.(string)($i+1).'</a> ';
+								}
+							}
+						}
+					
+					
+					$content.= $this->cObj->substituteMarkerArrayCached($t["total"],$markerArray,$subpartArray,$wrappedSubpartArray);
+				} elseif ($where)	{
+					//No results but a searchword was given:					
+					$content.=$this->cObj->getSubpart($this->templateCode,$this->spMarker("###ITEM_SEARCH_EMPTY###"));
 				}
-
-				$subpartArray["###CONTENT###"]=$out;
-				$markerArray["###CATEGORY_TITLE###"]="";	// Something here later...
-				$wrappedSubpartArray["###LINK_ARCHIVE###"]=$this->local_cObj->typolinkWrap($this->conf["archiveTypoLink."]);
-
-				$content.= $this->cObj->substituteMarkerArrayCached($t["total"],$markerArray,$subpartArray,$wrappedSubpartArray);
-			} elseif ($where)	{
-				$content.=$this->cObj->getSubpart($this->templateCode,$this->spMarker("###ITEM_SEARCH_EMPTY###"));
-			}
 		}
 		return $content;
 	}
-
-
+	
+	
+	
+	
+		
+	
+	
+	
+	/* For better overview this function is split out from news_list()
+	* It gets the selectConf and a array with templateparts
+	* the markers in this subparts get filled with the help of function getItemMarkerArray()
+	*/	
+	function get_content_news_list($itemparts,$selectConf,$prefix_display) {
+		//Make the Listingquery
+		$res = $this->cObj->exec_getQuery("tt_news",$selectConf);
+			// Getting elements
+		$itemsOut = "";
+		
+		$cc = 0;
+#debug($selectConf);
+		$itemLinkTarget = $this->conf["itemLinkTarget"] ? 'target="'.$this->conf["itemLinkTarget"].'"' : "";
+		
+		while($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))		{
+				// Print Item Title
+			$wrappedSubpartArray=array();
+			if ($row["type"]==1 || $row["type"]==2)	{  //News type article or external url
+				$this->local_cObj->setCurrentVal($row["type"]==1 ? $row["page"] : $row["ext_url"]);
+				$wrappedSubpartArray["###LINK_ITEM###"]= $this->local_cObj->typolinkWrap($this->conf["pageTypoLink."]);
+			} else {
+				$wrappedSubpartArray["###LINK_ITEM###"]= array('<a href="'.$this->getLinkUrl($this->conf["PIDitemDisplay"]).'&amp;tt_news='.$row["uid"].'" '.$itemLinkTarget.'>','</a>'); 
+			}
+			$markerArray = $this->getItemMarkerArray($row,$prefix_display);
+			
+			//Store the result of template parsing in the Var $itemsOut, use the alternating layouts
+			$itemsOut.= $this->cObj->substituteMarkerArrayCached($itemparts[($cc%count($itemparts))],$markerArray,array(),$wrappedSubpartArray);
+			$cc++;
+			if ($cc==$this->config["limit"])	{break;}
+		}
+		return $itemsOut;
+	}
+	
 
 	/**
 	 * Returns a url for use in forms and links
@@ -512,63 +605,73 @@ class tx_ttnews extends tslib_pibase {
 	
 
 
-	function getSelectConf($where,$noPeriod=0)	{
-		$this->setPidlist($this->config["pid_list"]);
-		$this->initRecursive($this->config["recursive"]);
-		$this->generatePageArray();
-
+	function getSelectConf($where, $noPeriod = 0) {
+			 
+			 
+			 
+			$this->setPidlist($this->config['pid_list']);
+			 
+			$this->initRecursive($this->config['recursive']);
+			$this->generatePageArray();
+			 
 			// Get news
-		$selectConf = Array();
-		$selectConf["pidInList"] = $this->pid_list;
-		$selectConf["where"] = "1=1 ".$where;
+			$selectConf = Array();
+			$selectConf['pidInList'] = $this->pid_list;
+			$selectConf['where'] = '1=1 '.$where;
 
-
+			# rg: changed, to make it possible to display an amenu and a latest content element at the same page			 		 
 			// Archive
-		if (intval(t3lib_div::_GP("arc")))	{
-			$this->arcExclusive = intval(t3lib_div::_GP("arc"));
-		}
-		if ($this->arcExclusive)	{
-			if ($this->conf["enableArchiveDate"])	{
-				if ($this->arcExclusive<0)	{	// latest
-					$selectConf["where"].=' AND (tt_news.archivedate=0 OR tt_news.archivedate>'.$GLOBALS["SIM_EXEC_TIME"].')';
-				} elseif ($this->arcExclusive>0)	{
-					$selectConf["where"].=' AND tt_news.archivedate<'.$GLOBALS["SIM_EXEC_TIME"];
+			if ($this->arcExclusive > 0) {
+				if (intval(t3lib_div::_GP('arc'))) {
+					$this->arcExclusive = intval(t3lib_div::_GP('arc'));
+				}
+				 
+				// Period (this is moved from line ~585 )
+				if (!$noPeriod && intval(t3lib_div::_GP('pS'))) {
+					$selectConf['where'] .= ' AND tt_news.datetime>'.intval(t3lib_div::_GP('pS'));
+					if (intval(t3lib_div::_GP('pL'))) {
+						$selectConf['where'] .= ' AND tt_news.datetime<'.(intval(t3lib_div::_GP('pS'))+intval(t3lib_div::_GP('pL')));
+					}
 				}
 			}
-			if ($this->conf["datetimeDaysToArchive"])	{
-				$theTime = $GLOBALS["SIM_EXEC_TIME"]-intval($this->conf["datetimeDaysToArchive"])*3600*24;
-				if ($this->arcExclusive<0)	{	// latest
-					$selectConf["where"].=' AND (tt_news.datetime=0 OR tt_news.datetime>'.$theTime.')';
-				} elseif ($this->arcExclusive>0)	{
-					$selectConf["where"].=' AND tt_news.datetime<'.$theTime;
+			if ($this->arcExclusive) {
+				if ($this->conf['enableArchiveDate']) {
+					if ($this->arcExclusive < 0) {
+						// latest
+						$selectConf['where'] .= ' AND (tt_news.archivedate=0 OR tt_news.archivedate>'.$GLOBALS['SIM_EXEC_TIME'].')';
+					} elseif ($this->arcExclusive > 0) {
+						$selectConf['where'] .= ' AND tt_news.archivedate<'.$GLOBALS['SIM_EXEC_TIME'];
+					}
+				}
+				if ($this->conf['datetimeDaysToArchive']) {
+					$theTime = $GLOBALS['SIM_EXEC_TIME']-intval($this->conf['datetimeDaysToArchive']) * 3600 * 24;
+					if ($this->arcExclusive < 0) {
+						// latest
+						$selectConf['where'] .= ' AND (tt_news.datetime=0 OR tt_news.datetime>'.$theTime.')';
+					} elseif ($this->arcExclusive > 0) {
+						$selectConf['where'] .= ' AND tt_news.datetime<'.$theTime;
+					}
 				}
 			}
-		}
 			// Category
-/*		$codes=t3lib_div::trimExplode(",", $this->config["code"]?$this->config["code"]:$this->conf["defaultCode"],1);
-		if (count($codes)) {
-			while(list(,$theCode)=each($codes))	{
-				list($theCode,$cat,$aFlag) = explode("/",$theCode);
+			/*  $codes=t3lib_div::trimExplode(',', $this->config['code']?$this->config['code']:$this->conf['defaultCode'],1);
+			if (count($codes)) {
+			while (list(,$theCode)=each($codes)) {
+			list($theCode,$cat,$aFlag) = explode('/',$theCode);
 			}
-		}*/
-		if (intval(t3lib_div::_GP("cat")))	{
-			$this->catExclusive = intval(t3lib_div::_GP("cat"));
-			$this->config['category_selection'] = intval(t3lib_div::_GP("cat"));
-		}
-		if ($this->config['category_selection']!='')	{
-			$selectConf["leftjoin"] = "tt_news_cat_mm ON tt_news.uid = tt_news_cat_mm.uid_local";
-			if($this->config['select_deselect_categories']!=1)$selectConf["where"] .= " AND (IFNULL(tt_news_cat_mm.uid_foreign,0) ".($this->config['select_deselect_categories']==3?"NOT ":"")."IN (".$this->config['category_selection']."))";
-#			$selectConf["groupBy"] .= "uid";
-		}
-			// Period
-		if (!$noPeriod && intval(t3lib_div::_GP("pS")))	{
-			$selectConf["where"].=' AND tt_news.datetime>'.intval(t3lib_div::_GP("pS"));
-			if (intval(t3lib_div::_GP("pL")))	{
-				$selectConf["where"].=' AND tt_news.datetime<'.(intval(t3lib_div::_GP("pS"))+intval(t3lib_div::_GP("pL")));
+			}*/
+			if (intval(t3lib_div::_GP('cat'))) {
+				$this->catExclusive = intval(t3lib_div::_GP('cat'));
+				$this->config['category_selection'] = intval(t3lib_div::_GP('cat'));
 			}
+			if ($this->config['category_selection'] != '') {
+				$selectConf['leftjoin'] = 'tt_news_cat_mm ON tt_news.uid = tt_news_cat_mm.uid_local';
+				if ($this->config['select_deselect_categories'] != 1)$selectConf['where'] .= ' AND (IFNULL(tt_news_cat_mm.uid_foreign,0) '.($this->config['select_deselect_categories'] == 3?"NOT ":"").'IN ('.$this->config['category_selection'].'))';
+				#   $selectConf['groupBy'] .= 'uid';
+			}
+			
+			return $selectConf;
 		}
-		return $selectConf;
-	}
 
 
 
