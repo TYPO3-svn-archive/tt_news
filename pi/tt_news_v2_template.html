@@ -3,7 +3,7 @@
 
 <head>
 	<title>new News example template</title>
-    <link href="file:///D|/apache/htdocs/dummy-3.7.0/fileadmin/template/main/tt_news_tut_main_stylesheet.css" rel="stylesheet" type="text/css" />
+    <link href="../res/tt_news_tut_main_stylesheet.css" rel="stylesheet" type="text/css" />
 </head>
 
 <body>
@@ -107,7 +107,7 @@ LINK_NEXT - used in the pagebrowser
 				<span class="news-latest-date"><!--###LINK_ITEM###-->###NEWS_DATE### ###NEWS_TIME###<!--###LINK_ITEM###--></span>
 				<h3><!--###LINK_ITEM###-->###NEWS_TITLE###<!--###LINK_ITEM###--></h3>
 				<!--###LINK_ITEM###-->###NEWS_IMAGE###<!--###LINK_ITEM###-->
-				###NEWS_SUBHEADER###
+				###NEWS_SUBHEADER###<hr class="clearer" />
 				###CATWRAP_B### ###TEXT_CAT_LATEST### ###NEWS_CATEGORY### ###NEWS_CATEGORY_IMAGE### ###CATWRAP_E### 
                 <div class="news-latest-morelink"><!--###LINK_ITEM###-->###MORE###<!--###LINK_ITEM###--></div>
 			  </div>
@@ -157,8 +157,8 @@ LINK_NEXT - used in the pagebrowser
 			 ###NEWS_SUBHEADER###
 			###CATWRAP_B### ###TEXT_CAT### ###NEWS_CATEGORY### ###NEWS_CATEGORY_IMAGE### ###CATWRAP_E###
 			<div class="news-list-morelink"><!--###LINK_ITEM###-->###MORE###<!--###LINK_ITEM###--></div>
-			</div>
 
+<hr class="clearer" /></div>
 		<!-- ###NEWS### end-->
 	<!-- ###CONTENT###  end -->
 	<div class="news-list-browse">###BROWSE_LINKS###</div>
@@ -196,6 +196,7 @@ LINK_NEXT - used in the pagebrowser
 		###NEWS_SUBHEADER###
 		###NEWS_IMAGE### 
 		###NEWS_CONTENT###
+		<hr class="clearer" />
 			###ADDINFO_WRAP_B###
 						  
 				  	###TEXT_RELATED###

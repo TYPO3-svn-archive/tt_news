@@ -515,10 +515,10 @@ class tx_ttnews extends tslib_pibase {
 			// Substitute
 			$content = $this->cObj->substituteMarkerArrayCached($item, $markerArray, array(), $wrappedSubpartArray);
 		}
-		/*elseif ($this->sys_language_mode == 'strict') {
+		elseif ($this->sys_language_mode == 'strict' && $this->tt_news_uid) {
 			$noTranslMsg = $this->local_cObj->stdWrap($this->pi_getLL('noTranslMsg','Sorry, there is no translation for this news-article'), $this->conf['noNewsIdMsg_stdWrap.']);
 			$content .= $noTranslMsg;
-		}*/
+		}
 
 		else {
 			// if singleview is shown with no tt_news_uid given from GPvars, an error message is displayed.
@@ -761,7 +761,14 @@ class tx_ttnews extends tslib_pibase {
 				$t['total'] = $this->cObj->substituteSubpart($t['total'], '###CONTENT###', '', 0);
 
 				$content .= $t['total'];
-			} else {
+			}
+			elseif ($this->arcExclusive && $this->piVars['pS'] && $GLOBALS['TSFE']->sys_language_content)  {
+			// this matches if a user has switched languages within a archive period that contains no items in the desired language 
+
+				$content .= $this->local_cObj->stdWrap($this->pi_getLL('noNewsForArchPeriod','Sorry, there are no translated news-articles in this Archive period'), $this->conf['noNewsToListMsg_stdWrap.']);
+			}
+
+			else {
 				$content .= $this->local_cObj->stdWrap($this->pi_getLL('noNewsToListMsg'), $this->conf['noNewsToListMsg_stdWrap.']);
 			}
 		}
