@@ -910,7 +910,7 @@ class tx_ttnews extends tslib_pibase {
 
 			// Period
 			if (!$noPeriod && intval(t3lib_div::_GP('pS'))) {
-				$selectConf['where'] .= ' AND tt_news.datetime>'.intval(t3lib_div::_GP('pS'));
+				$selectConf['where'] .= ' AND tt_news.datetime>='.intval(t3lib_div::_GP('pS'));
 				if (intval(t3lib_div::_GP('pL'))) {
 					$selectConf['where'] .= ' AND tt_news.datetime<'.(intval(t3lib_div::_GP('pS'))+intval(t3lib_div::_GP('pL')));
 				}

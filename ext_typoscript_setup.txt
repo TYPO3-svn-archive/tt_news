@@ -21,6 +21,12 @@ plugin.tt_news {
   searchPid = 
   emptySearchAtStart = 1
 
+  # mediafiles
+  newsFiles {
+    path = uploads/media/
+    icon = 1
+    stdWrap.wrap =   | <br />
+  }
   
   # add link type and target to links
   itemLinkType = 
