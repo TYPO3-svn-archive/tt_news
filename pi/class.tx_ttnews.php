@@ -217,8 +217,9 @@ class tx_ttnews extends tslib_pibase {
 		$this->config['emptySearchAtStart'] = $this->conf['emptySearchAtStart']; // display only the search form, when entering the news search-page
 
 		// pid of the page with the single view
-		$PIDitemDisplay = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'PIDitemDisplay', 's_misc');
-		$this->config['PIDitemDisplay'] = $PIDitemDisplay ? $PIDitemDisplay : $this->conf['PIDitemDisplay'];
+		$singlePid = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'PIDitemDisplay', 's_misc');
+		$singlePid = $singlePid ? $singlePid : intval($this->conf['singlePid']);
+		$this->config['singlePid'] = $singlePid ? $singlePid : intval($this->conf['PIDitemDisplay']);
 		// pid to return to when leaving single view
 		$backPid = intval($this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'backPid', 'sDEF'));
 		$backPid = $backPid?$backPid:intval($this->conf['backPid']);
@@ -421,7 +422,7 @@ class tx_ttnews extends tslib_pibase {
 			while (list(, $pArr) = each($periodAccum)) {
 				// Print Item Title
 				$wrappedSubpartArray = array();
-				$temp_conf = $this->typolink_conf;
+				
 
 				if ($this->config['catSelection'] && $this->config['amenuWithCatSelector']) { // use the catSelection from GPvars only if 'amenuWithCatSelector' is given.
 					$amenuLinkCat = $this->config['catSelection'];
@@ -444,14 +445,13 @@ class tx_ttnews extends tslib_pibase {
 
 			// Pass to user defined function
 			if ($this->conf['newsAmenuUserFunc']) {
-			#debug ($itemsOutArr);
+
 				$itemsOutArr = $this->userProcess('newsAmenuUserFunc', $itemsOutArr);
 			}
 			foreach ($itemsOutArr as $itemHtml) {
 				$tmpItemsArr[] = $itemHtml['html'];
 
 			}
-	#debug ($tmpItemsArr);
 
 			$itemsOut = implode('',$tmpItemsArr);
 			// Reset:
@@ -500,7 +500,8 @@ class tx_ttnews extends tslib_pibase {
 
 			// set the title of the single view page to the title of the news record
 			$GLOBALS['TSFE']->page['title'] = $this->config['substitutePagetitle']?$row['title']:$GLOBALS['TSFE']->page['title'];
-
+			// set pagetitle for indexed search to news title
+			$GLOBALS['TSFE']->indexedDocTitle = $row['title'];
 			$markerArray = $this->getItemMarkerArray($row, 'displaySingle');
 			// Substitute
 			$content = $this->cObj->substituteMarkerArrayCached($item, $markerArray, array(), $wrappedSubpartArray);
@@ -703,7 +704,7 @@ class tx_ttnews extends tslib_pibase {
 				$wrappedSubpartArray['###LINK_ITEM###'] = $this->local_cObj->typolinkWrap($this->conf['pageTypoLink.']);
 			} else {
 
-				$wrappedSubpartArray['###LINK_ITEM###'] = explode('|', $this->pi_linkTP_keepPIvars('|', array('tt_news'=>$row['uid'],'backPid'=>$this->config['backPid']),$this->allowCaching,'',$this->config['PIDitemDisplay']));
+				$wrappedSubpartArray['###LINK_ITEM###'] = explode('|', $this->pi_linkTP_keepPIvars('|', array('tt_news'=>$row['uid'],'backPid'=>$this->config['backPid']),$this->allowCaching,'',$this->config['singlePid']));
 
 			}
 			$markerArray = $this->getItemMarkerArray($row, $prefix_display);
@@ -864,9 +865,20 @@ if ($this->piVars['arc']) {
 		while (list(, $val) = each($imgs)) {
 			if ($cc == $imageNum) break;
 			if ($val) {
+				$lConf['image.']['altText'] = $lConf['image.']['altText']; // reset altText to value from script
 				$lConf['image.']['file'] = 'uploads/pics/'.$val;
-			}
-			$theImgCode .= $this->local_cObj->IMAGE($lConf['image.']).$this->formatStr($this->local_cObj->stdWrap($imgsCaptions[$cc], $lConf['caption_stdWrap.']));
+				switch($lConf['imgAltTextField']) {
+					case 'image': 
+						$lConf['image.']['altText'] .= $val;
+					break;
+					case 'imagecaption': 
+						$lConf['image.']['altText'] .= $imgsCaptions[$cc];
+					break;
+					default:
+						$lConf['image.']['altText'] .= $row[$lConf['imgAltTextField']];
+				} 
+				}
+			$theImgCode .= $this->local_cObj->IMAGE($lConf['image.']).$this->local_cObj->stdWrap($imgsCaptions[$cc], $lConf['caption_stdWrap.']);
 			$cc++;
 		}
 		$markerArray['###NEWS_IMAGE###'] = '';
@@ -894,8 +906,12 @@ if ($this->piVars['arc']) {
 		$markerArray['###TEXT_LINKS###'] = $newsLinks?$this->local_cObj->stdWrap($this->pi_getLL('textLinks'), $lConf['newsLinksHeader_stdWrap.']):'';
 
 		$markerArray['###MORE###'] = $this->pi_getLL('more');
-		$markerArray['###BACK_TO_LIST###'] = $this->pi_getLL('backToList');
-
+		
+		if ($this->piVars['backPid']) {
+		    $backP = $this->pi_getRecord('pages',$this->piVars['backPid']);
+		}
+		$markerArray['###BACK_TO_LIST###'] =  $this->pi_getLL('backToList').$backP['title'];
+		
 		// related
 		$relatedNews = $this->local_cObj->stdWrap($this->getRelated($row['uid']), $lConf['related_stdWrap.']);
 		$markerArray['###NEWS_RELATED###'] = $relatedNews;
@@ -981,7 +997,9 @@ if ($this->piVars['arc']) {
 					$lConf['imageWrapIfAny'] = '';
 					if ($this->config['catImageMode'] != 1) {
 						if ($this->config['catImageMode'] == 2) { // link to category shortcut
-							$catPicConf['image.']['altText'] = $this->categories[$row['uid']][$key]['shortcut']?$this->pi_getLL('altTextCatShortcut').$this->categories[$row['uid']][$key]['shortcut']:'';
+						$sCpageId = $this->categories[$row['uid']][$key]['shortcut'];
+						$sCpage = $this->pi_getRecord('pages',$sCpageId); // get the title of the shortcut page
+							$catPicConf['image.']['altText'] = $sCpage['title']?$this->pi_getLL('altTextCatShortcut').$sCpage['title']:'';
 							$catPicConf['image.']['stdWrap.']['innerWrap'] = $this->pi_linkToPage('|',$this->categories[$row['uid']][$key]['shortcut'],($catLinkTarget?$catLinkTarget:$this->config['itemLinkTarget']));
 						}
 						if ($this->config['catImageMode'] == 3) { // act as category selector
@@ -1036,7 +1054,7 @@ if ($this->piVars['arc']) {
 				if ($row['type']) { // News type article or external url
 					$tmpConf['10.'][$row['type'].'.']['value'] = $this->pi_linkToPage($row['title'], ($row['type'] == 1 ? $row['page'] : $row['ext_url']),'',array());
 				} else { // normal news
-			    	$tmpConf['10.']['default.']['value'] = $this->pi_linkTP_keepPIvars($row['title'], array('tt_news'=>$row['uid']),$this->allowCaching,'',$this->config['PIDitemDisplay']);
+			    	$tmpConf['10.']['default.']['value'] = $this->pi_linkTP_keepPIvars($row['title'], array('tt_news'=>$row['uid']),$this->allowCaching,'',$this->config['singlePid']);
 				}
 				$lines[] = $veryLocal_cObj->cObjGetSingle($this->conf['getRelatedCObject'], $tmpConf, 'getRelated');
 			}

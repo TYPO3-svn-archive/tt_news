@@ -126,7 +126,7 @@ $TCA['tt_news'] = Array (
 				'items' => Array (
 					Array('LLL:EXT:tt_news/locallang_tca.php:tt_news.type.I.0', 0),
 					Array('LLL:EXT:tt_news/locallang_tca.php:tt_news.type.I.1', 1),
-					Array('LLL:EXT:lang/locallang_general.php:LGL.external', 2)
+					Array('LLL:EXT:tt_news/locallang_tca.php:tt_news.type.I.2', 2)
 				),
 				'default' => 0
 			)
