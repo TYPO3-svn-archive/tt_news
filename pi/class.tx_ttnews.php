@@ -218,6 +218,11 @@ class tx_ttnews extends tslib_pibase {
 		// id of the page where the search results should be displayed
 		$this->config['searchPid'] = intval($this->conf['searchPid']);
 
+		// pages in Single view will be divided by this token
+		$this->config['pageBreakToken'] = trim($this->conf['pageBreakToken'])?trim($this->conf['pageBreakToken']):'<---newpage--->';
+
+		$this->config['singleViewPointerName'] = trim($this->conf['singleViewPointerName'])?trim($this->conf['singleViewPointerName']):'sViewPointer';
+
 		// pid of the page with the single view. the old var PIDitemDisplay is still processed if no other value is found
 		$singlePid = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'PIDitemDisplay', 's_misc');
 		$singlePid = $singlePid?$singlePid:intval($this->conf['singlePid']);
@@ -676,7 +681,11 @@ class tx_ttnews extends tslib_pibase {
 					if ($this->conf['userPageBrowserFunc']) {
 						$markerArray = $this->userProcess('userPageBrowserFunc', $markerArray);
 					} else {
-						$markerArray['###BROWSE_LINKS###'] = $this->pi_list_browseresults($this->conf['pageBrowser.']['showResultCount'], $this->conf['pageBrowser.']['tableParams']);
+						if ($this->conf['usePiBasePagebrowser']) {
+							$markerArray['###BROWSE_LINKS###'] = $this->pi_list_browseresults($this->conf['pageBrowser.']['showResultCount'], $this->conf['pageBrowser.']['tableParams']);
+						} else {
+							$markerArray['###BROWSE_LINKS###'] = $this->makePageBrowser($this->conf['pageBrowser.']['showResultCount'], $this->conf['pageBrowser.']['tableParams']);
+						}
 					}
 				}
 				$content .= $this->cObj->substituteMarkerArrayCached($t['total'], $markerArray, $subpartArray, $wrappedSubpartArray);
@@ -963,7 +972,19 @@ class tx_ttnews extends tslib_pibase {
 
 		$markerArray['###NEWS_SUBHEADER###'] = $this->formatStr($this->local_cObj->stdWrap($row['short'], $lConf['subheader_stdWrap.']));
 
-		$markerArray['###NEWS_CONTENT###'] = $this->formatStr($this->local_cObj->stdWrap($row['bodytext'], $lConf['content_stdWrap.']));
+		if (strpos($row['bodytext'],$this->config['pageBreakToken'])) {
+			if ($this->conf['useMultiPageSingleView'] && $textRenderObj == 'displaySingle') {
+				$newscontent = $this->makeMultiPageSView($row['bodytext'],$lConf);
+			} else {
+				$newscontent = $this->formatStr($this->local_cObj->stdWrap(preg_replace('/'.$this->config['pageBreakToken'].'/','',$row['bodytext']), $lConf['content_stdWrap.']));
+			}
+		} else {
+			$newscontent = $this->formatStr($this->local_cObj->stdWrap($row['bodytext'], $lConf['content_stdWrap.']));
+		}
+
+
+		
+		$markerArray['###NEWS_CONTENT###'] = $newscontent;
 
 
 		$markerArray['###MORE###'] = $this->pi_getLL('more');
@@ -1059,6 +1080,95 @@ class tx_ttnews extends tslib_pibase {
 		}
 
 		return $markerArray;
+	}
+
+	function makeMultiPageSView($bodytext,$lConf) {
+
+		$pointerName=$this->config['singleViewPointerName'];
+		$pagenum = $this->piVars[$pointerName]?$this->piVars[$pointerName]:0;
+		$textArr = t3lib_div::trimExplode($this->config['pageBreakToken'],$bodytext,1);
+		$pagecount = count($textArr);
+		#debug($pagecount);
+		// render a pagebrowser for the single view
+				if ($pagecount > 1) {
+					// configure pagebrowser vars
+					$this->internal['res_count'] = $pagecount;
+					$this->internal['results_at_a_time'] = 1;
+					$this->internal['maxPages'] = $this->conf['pageBrowser.']['maxPages'];
+					if (!$this->conf['pageBrowser.']['showPBrowserText']) {
+						$this->LOCAL_LANG[$this->LLkey]['pi_list_browseresults_page'] = '';
+					}
+					$pagebrowser = $this->makePageBrowser(0, $this->conf['pageBrowser.']['tableParams'],$pointerName);
+					
+				}
+
+		return $this->formatStr($this->local_cObj->stdWrap($textArr[$pagenum], $lConf['content_stdWrap.'])).$pagebrowser;
+	}
+
+	function makePageBrowser($showResultCount=1,$tableParams='',$pointerName='pointer') {
+
+			// Initializing variables:
+		$pointer=$this->piVars[$pointerName];
+		$count=$this->internal['res_count'];
+		$results_at_a_time = t3lib_div::intInRange($this->internal['results_at_a_time'],1,1000);
+		$maxPages = t3lib_div::intInRange($this->internal['maxPages'],1,100);
+		$max = t3lib_div::intInRange(ceil($count/$results_at_a_time),1,$maxPages);
+		$pointer=intval($pointer);
+		$links=array();
+
+			// Make browse-table/links:
+		if ($this->pi_alwaysPrev>=0)	{
+			if ($pointer>0)	{
+				$links[]='
+					<td nowrap="nowrap"><p>'.$this->pi_linkTP_keepPIvars($this->pi_getLL('pi_list_browseresults_prev','< Previous'),array($pointerName=>($pointer-1?$pointer-1:'')),1).'</p></td>';
+			} elseif ($this->pi_alwaysPrev)	{
+				$links[]='
+					<td nowrap="nowrap"><p>'.$this->pi_getLL('pi_list_browseresults_prev','< Previous').'</p></td>';
+			}
+		}
+
+		for($a=0;$a<$max;$a++)	{
+			$links[]='
+					<td'.($pointer==$a?$this->pi_classParam('browsebox-SCell'):'').' nowrap="nowrap"><p>'.
+				$this->pi_linkTP_keepPIvars(trim($this->pi_getLL('pi_list_browseresults_page','Page').' '.($a+1)),array($pointerName=>($a?$a:'')),1).
+				'</p></td>';
+		}
+		if ($pointer<ceil($count/$results_at_a_time)-1)	{
+			$links[]='
+					<td nowrap="nowrap"><p>'.
+				$this->pi_linkTP_keepPIvars($this->pi_getLL('pi_list_browseresults_next','Next >'),array($pointerName=>$pointer+1),1).
+				'</p></td>';
+		}
+
+		$pR1 = $pointer*$results_at_a_time+1;
+		$pR2 = $pointer*$results_at_a_time+$results_at_a_time;
+		$sTables = '
+
+		<!--
+			List browsing box:
+		-->
+		<div'.$this->pi_classParam('browsebox').'>'.
+			($showResultCount ? '
+			<p>'.
+				($this->internal['res_count'] ?
+    			sprintf(
+					str_replace('###SPAN_BEGIN###','<span'.$this->pi_classParam('browsebox-strong').'>',$this->pi_getLL('pi_list_browseresults_displays','Displaying results ###SPAN_BEGIN###%s to %s</span> out of ###SPAN_BEGIN###%s</span>')),
+					$this->internal['res_count'] > 0 ? $pR1 : 0,
+					min(array($this->internal['res_count'],$pR2)),
+					$this->internal['res_count']
+				) :
+				$this->pi_getLL('pi_list_browseresults_noResults','Sorry, no items were found.')).'</p>':''
+			).
+		'
+
+			<'.trim('table '.$tableParams).'>
+				<tr>
+					'.implode('',$links).'
+				</tr>
+			</table>
+		</div>';
+
+		return $sTables;
 	}
 
 	/**
@@ -1272,8 +1382,7 @@ class tx_ttnews extends tslib_pibase {
 		if ($this->conf['imageMarkerFunc']) {
 			$markerArray = $this->userProcess('imageMarkerFunc', array($markerArray, $lConf));
 		} else {
-			$imageNum = isset($lConf['imageCount']) ? $lConf['imageCount']:
-			1;
+			$imageNum = isset($lConf['imageCount']) ? $lConf['imageCount']:1;
 			$imageNum = t3lib_div::intInRange($imageNum, 0, 100);
 			$theImgCode = '';
 			$imgs = t3lib_div::trimExplode(',', $row['image'], 1);
@@ -1282,16 +1391,25 @@ class tx_ttnews extends tslib_pibase {
 			$imgsTitleTexts = explode(chr(10), $row['imagetitletext']);
 
 			reset($imgs);
+
 			$cc = 0;
-			// unset the img in the image array in single view if the var firstImageIsPreview is set
+			// remove first img from the image array in single view if the TSvar firstImageIsPreview is set
 			if (count($imgs) > 1 && $this->config['firstImageIsPreview'] && $textRenderObj == 'displaySingle') {
-				$imageNum++;
-				unset($imgs[0]);
-				unset($imgsCaptions[0]);
-				unset($imgsAltTexts[0]);
-				unset($imgsTitleTexts[0]);
-				$cc = 1;
+				array_shift($imgs);
+				array_shift($imgsCaptions);
+				array_shift($imgsAltTexts);
+				array_shift($imgsTitleTexts);
 			}
+			// get img array parts for single view pages
+			if ($this->piVars[$this->config['singleViewPointerName']]) {
+				$spage = $this->piVars[$this->config['singleViewPointerName']];
+				$astart = $imageNum*$spage;
+				$imgs = array_slice($imgs,$astart,$imageNum);
+				$imgsCaptions = array_slice($imgsCaptions,$astart,$imageNum);
+				$imgsAltTexts = array_slice($imgsAltTexts,$astart,$imageNum);
+				$imgsTitleTexts = array_slice($imgsTitleTexts,$astart,$imageNum);
+			}
+			
 			while (list(, $val) = each($imgs)) {
 				if ($cc == $imageNum) break;
 				if ($val) {
@@ -1347,7 +1465,7 @@ class tx_ttnews extends tslib_pibase {
 			$where = '(('.$where.') OR (tt_news.uid=M.uid_local AND M.uid_foreign=' . $uid .'))';
 		}
 
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery($select_fields, 'tt_news,tt_news_related_mm AS M LEFT JOIN tt_news_cat_mm ON tt_news.uid = tt_news_cat_mm.uid_local AND M.tablenames!="pages"', $where.' AND (IFNULL(tt_news_cat_mm.uid_foreign,0) IN (' . ($visbleCategories?$visbleCategories:0) . '))'.$relPagesWhere.$this->enableFields, $groupBy, $orderBy);
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery($select_fields, 'tt_news,tt_news_related_mm AS M LEFT JOIN tt_news_cat_mm ON tt_news.uid = tt_news_cat_mm.uid_local AND M.tablenames!="pages"', '('.$where.' AND (IFNULL(tt_news_cat_mm.uid_foreign,0) IN (' . ($visbleCategories?$visbleCategories:0) . '))'.$relPagesWhere.')'.$this->enableFields, $groupBy, $orderBy);
 
 
 		if ($res) {

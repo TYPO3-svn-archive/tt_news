@@ -197,6 +197,9 @@ plugin.tt_news {
   }
 
 
+  useMultiPageSingleView = 1
+
+
   # - - - - - - - - - - - rendering of SINGLE news   - - - - - - - - - - -  #
 
   displaySingle {

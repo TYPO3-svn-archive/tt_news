@@ -199,7 +199,9 @@ plugin.tt_news {
     }
   }
 
+  useMultiPageSingleView = 1
 
+  
   ### SINGLE news
   displaySingle {
     age_stdWrap.age = 1
