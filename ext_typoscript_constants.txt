@@ -1,24 +1,49 @@
 plugin.tt_news {
-    # cat=plugin.news/file; type=file[html,htm,tmpl,txt]; label= Template File: HTML-template file for display of news. See EXT:tt_news/pi/news_template.tmpl for an example
+    # cat=plugin.tt_news/file; type=file[html,htm,tmpl,txt]; label= Template File: HTML-template file for display of news. See EXT:tt_news/pi/news_template.tmpl for an example
   file.templateFile = EXT:tt_news/pi/news_template.tmpl
 
-    # cat=plugin.news/typo; type=wrap; label= Wrap 1: This wrap is used in the template-file.
+    # cat=plugin.tt_news/typo/1; type=wrap; label= Wrap 1: This wrap is used in the template-file.
   wrap1 = <font face="verdana" size=2 color=black> | </font>
-    # cat=plugin.news/typo; type=wrap; label= Wrap 2: This wrap is used in the template-file.
+    # cat=plugin.tt_news/typo/2; type=wrap; label= Wrap 2: This wrap is used in the template-file.
   wrap2 = <font face="verdana" size=1 color=black> | </font>
-    # cat=plugin.news/typo; type=wrap; label= Caption stdWrap: This wrap is used for image captions.
+    # cat=plugin.tt_news/typo/3; type=wrap; label= Caption stdWrap: This wrap is used for image captions.
   caption_stdWrap = <font face="verdana" size=1 color=navi> | </font>
 
-    # cat=plugin.news/color; type=color; label= Color 1: This bgcolor is used in the template-file.
-  color1 = #cccccc
-    # cat=plugin.news/color; type=color; label= Color 2: This bgcolor is used in the template-file.
-  color2 = #999999
-    # cat=plugin.news/color; type=color; label= Color 3: This bgcolor is used in the template-file.
-  color3 = #333333
+    # cat=plugin.tt_news/color/1; type=color; label= Color 1: This bgcolor is used in the template-file.
+  color1 = #C7D5FE
+    # cat=plugin.tt_news/color/2; type=color; label= Color 2: This bgcolor is used in the template-file.
+  color2 = #E3EAFE
+    # cat=plugin.tt_news/color/3; type=color; label= Color 3: This bgcolor is used in the template-file.
+  color3 = #90ABFC
 
-    # cat=plugin.news//; type=int+; label= "Single" pid: The PID of the page on which single news items should be displayed
+    # cat=plugin.tt_news/links/1; type=int+; label= SinglePid: The PID of the page on which single news items should be displayed
   PIDitemDisplay = 0
-    # cat=plugin.news//; type=int+; label= "Back" pid: The PID of the page to go back to from single news item display screen.
+    # cat=plugin.tt_news/links/2; type=int+; label= BackPid: The PID of the page to go back to from single news item display screen.
   backPid = 0
+    # cat=plugin.tt_news/links/3; type=int+; label= Archive Link: The PID of the page on which the archive list is displayed. This link appears at the bottom of the 'Latest' template.
+  archiveTypoLink.parameter = 0
+    # cat=plugin.tt_news//4; type=int+; label= Days to Archive: If this is set, then elements are automatically in the archive after the given number of days has passed 
+  datetimeDaysToArchive = 30
+    # cat=plugin.tt_news//5; type=int+; label= List Limit: max items in LIST template.
+  limit = 7
+    # cat=plugin.tt_news//6; type=int+; label= Latest Limit: max news items in LATEST template.
+  latestLimit = 3
+
+      # cat=plugin.tt_news/dims/1; type=int+; label= single-image max height: Max height for an image displayed in SINGLE template
+  singleMaxH = 250
+    # cat=plugin.tt_news/dims/2; type=int+; label= single-image max Width: Max width for an image displayed in SINGLE template
+  singleMaxW = 300
+    # cat=plugin.tt_news/dims/3; type=int+; label= latest-image max width: Max width for an image displayed in LATEST template
+  latestMaxW = 80
+    # cat=plugin.tt_news/dims/4; type=int+; label= latest-image max height: Max height for an image displayed in LATEST template
+  latestMaxH = 80
+  
+    # cat=plugin.tt_news/dims/5; type=int+; label= list-image max width: Max width for an image displayed in LIST template
+  listMaxW = 140
+      # cat=plugin.tt_news/dims/6; type=int+; label= list-image max height: Max height for an image displayed in LIST template
+  listMaxH = 90
+
+
+
 
 }

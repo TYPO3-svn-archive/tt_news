@@ -219,7 +219,7 @@ $TCA['tt_news'] = Array (
 			'config' => Array (
 				"type" => "select",
 				"foreign_table" => "tt_news_cat",
-				"foreign_table_where" => "ORDER BY tt_news_cat.uid",
+				"foreign_table_where" => "AND tt_news_cat.pid=###STORAGE_PID### ORDER BY tt_news_cat.uid",
 				"size" => 6,
 				"minitems" => 0,
 				"maxitems" => 100,
