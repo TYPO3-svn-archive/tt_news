@@ -11,6 +11,7 @@ plugin.tt_news {
   pid_list.field = pages
   recursive.field = recursive
   code.field = select_key
+  allowCaching = 1
 
   # add link type and target to links
   itemLinkType = 
@@ -79,6 +80,7 @@ plugin.tt_news {
   enableArchiveDate = 1
   pageTypoLink.parameter.current = 1
   archiveTypoLink.parameter = {$plugin.tt_news.archiveTypoLink.parameter}
+  showPBrowserText = 1
 
   reverseAMenu = 1
   archiveMenuNoEmpty = 1
@@ -105,6 +107,10 @@ plugin.tt_news {
     10.typolink.parameter = {$plugin.tt_news.PIDitemDisplay}
     10.typolink.additionalParams.field = uid 
     10.typolink.additionalParams.wrap = &tt_news=|
+    10.typolink.useCacheHash = plugin.tt_news.allowCaching
+    10.typolink.no_cache = plugin.tt_news.allowCaching
+    10.typolink.no_cache.if.negate = 1
+
     20 = TEXT
     20.field = datetime
     20.strftime = %d-%m-%y %H:%M

@@ -60,6 +60,7 @@ class tx_ttnews extends tslib_pibase {
 	var $alternativeLayouts;
 	var $pid;
 	var $allowCaching;
+	var $typolink_conf;
 	var $catExclusive;
 	var $arcExclusive;
 	var $searchFieldList = 'short,bodytext,author,keywords,links,imagecaption,title';
@@ -209,6 +210,9 @@ class tx_ttnews extends tslib_pibase {
 		// max items per page
 		$this->config['limit'] = t3lib_div::intInRange($this->conf['limit'], 0, 1000);
 		$this->config['limit'] = $this->config['limit'] ? $this->config['limit'] : 50;
+		// display text like 'page' in pagebrowser ?
+		$this->config['showPBrowserText'] = $this->conf['showPBrowserText'];
+		
 		
 		// message diplayed when single view is called without a tt_news uid		 
 		$this->config['noNewsIdMsg'] = $this->conf['noNewsIdMsg'];
@@ -245,7 +249,7 @@ class tx_ttnews extends tslib_pibase {
 	function main_news($content, $conf) {
 		 
 		 
-		$GLOBALS['TSFE']->set_no_cache();
+		#$GLOBALS['TSFE']->set_no_cache();
 		 
 		$this->init_news($conf);
 
@@ -257,16 +261,26 @@ class tx_ttnews extends tslib_pibase {
 			$this->tt_news_uid = $this->cObj->data['uid'];
 		}
 		 
-		// *************************************
-		// *** doing the things...:
-		// *************************************
-		 
-		//danp seems not to be need: $this->dontParseContent = $this->conf['dontParseContent'];
-		 
-		//make lokal cObj Instance needed for all the Templateparsing stuff in diffrent functions:
-		 
+		/**
+		* doing the things...:
+		*/
+	
+		// Local cObj. 
 		$this->local_cObj = t3lib_div::makeInstance('tslib_cObj');
-		// Local cObj.
+	##### caching/indexing
+		$this->local_cObj->setCurrentVal($GLOBALS['TSFE']->id);
+		$this->typolink_conf = $this->conf['typolink.'];
+		$this->typolink_conf['parameter.']['current'] = 1;
+		$this->typolink_conf['additionalParams'] = $this->cObj->stdWrap($this->typolink_conf['additionalParams'], $this->typolink_conf['additionalParams.']);
+		unset($this->typolink_conf['additionalParams.']);
+
+		// Configure caching
+		$this->allowCaching = $this->conf['allowCaching']?1:0;
+		if (!$this->allowCaching) {
+			$GLOBALS['TSFE']->set_no_cache();
+		}
+	##### caching/indexing end 
+		
 		 
 		$codes = t3lib_div::trimExplode(',', $this->config['code']?$this->config['code']:$this->conf['defaultCode'], 1);
 		if (!count($codes)) $codes = array('');
@@ -404,7 +418,21 @@ class tx_ttnews extends tslib_pibase {
 			while (list(, $pArr) = each($periodAccum)) {
 				// Print Item Title
 				$wrappedSubpartArray = array();
-				$wrappedSubpartArray['###LINK_ITEM###'] = array('<a href="'.$this->getLinkUrl($this->config['archListPid']?$this->config['archListPid']:0).'&amp;pS='.$pArr['start'].'&amp;pL='.($pArr['stop']-$pArr['start']).'&amp;arc=1"'.($target?' target="'.$target.'"':'').'>', '</a>');
+				
+	##### caching/indexing			
+				$temp_conf = $this->typolink_conf;
+				$this->local_cObj->setCurrentVal($GLOBALS["TSFE"]->id);
+				#$temp_conf["additionalParams"] .= '&'.$this->getLinkUrl().'&pS='.$pArr["start"].'&pL='.($pArr["stop"]-$pArr["start"]).'&arc=1';
+				$temp_conf['additionalParams'] .= '&'.$this->getLinkUrl($this->config['archListPid']?$this->config['archListPid']:0).'&pS='.$pArr['start'].'&pL='.($pArr['stop']-$pArr['start']).'&arc=1';
+ 				$temp_conf['useCacheHash'] = $this->allowCaching;
+				$temp_conf['no_cache'] = !$this->allowCaching;
+				$wrappedSubpartArray['###LINK_ITEM###'] = explode('|', $this->local_cObj->typolink('|', $temp_conf));
+				
+			
+	##### caching/indexing end
+				
+				
+				#$wrappedSubpartArray['###LINK_ITEM###'] = array('<a href="'.$this->getLinkUrl($this->config['archListPid']?$this->config['archListPid']:0).'&amp;pS='.$pArr['start'].'&amp;pL='.($pArr['stop']-$pArr['start']).'&amp;arc=1"'.($target?' target="'.$target.'"':'').'>', '</a>');
 				 
 				$markerArray = array();
 				$veryLocal_cObj->start($pArr, '');
@@ -440,10 +468,10 @@ $content = $this->cObj->substituteMarkerArrayCached($noItemsMsg, $markerArray);
 	* @return [type]  ...
 	*/
 	function single_view() {
-		#$this->enableFields = $this->cObj->enableFields('tt_news');
+		
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_news', 'uid='.intval($this->tt_news_uid).' AND type=0'.$this->enableFields); // type=0->only real news.
 		$row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
-		 
+		
 		 
 		if (is_array($row)) {
 			$this->setPidlist(intval($row['pid']));
@@ -462,8 +490,22 @@ $content = $this->cObj->substituteMarkerArrayCached($noItemsMsg, $markerArray);
 			 
 			// Fill marker arrays
 			$wrappedSubpartArray = array();
+
+	##### caching/indexing			
+			$temp_conf = $this->typolink_conf;
+ 		$this->local_cObj->setCurrentVal($this->config['backPid']);
+			$temp_conf['additionalParams'] .= '&'.$this->getLinkUrl($this->config['backPid']);
+			$temp_conf['useCacheHash'] = $this->allowCaching;
+			$temp_conf['no_cache'] = !$this->allowCaching;
+			$wrappedSubpartArray['###LINK_ITEM###'] = explode('|', $this->local_cObj->typolink('|', $temp_conf));
+	##### caching/indexing  end
 			
-			$wrappedSubpartArray['###LINK_ITEM###'] = array('<a href="'.$this->getLinkUrl($this->config['backPid']).'">', '</a>');
+			
+			#$wrappedSubpartArray['###LINK_ITEM###'] = array('<a href="'.$this->getLinkUrl($this->config['backPid']).'">', '</a>');
+	 		
+			// set the titel of the single view page to the title of the news record
+			$GLOBALS['TSFE']->page['title'] = $row['title']; 
+
 			$markerArray = $this->getItemMarkerArray($row, 'displaySingle');
 			// Substitute
 			$content = $this->cObj->substituteMarkerArrayCached($item, $markerArray, array(), $wrappedSubpartArray);
@@ -623,15 +665,31 @@ $content = $this->cObj->substituteMarkerArrayCached($noItemsMsg, $markerArray);
 				*/
 				if ($newsCount > $begin_at+$this->config['limit']) {
 					$next = ($begin_at+$this->config['limit'] > $newsCount) ? $newsCount-$this->config['limit'] : $begin_at+$this->config['limit'];
-					 
-					$wrappedSubpartArray['###LINK_NEXT###'] = array('<a href="'.$url.'&amp;begin_at='.$next.'">'.$this->pi_getLL('pbrLinkNext'), '</a>');
+					
+					
+					$temp_conf = $this->typolink_conf;
+					$this->local_cObj->setCurrentVal($GLOBALS['TSFE']->id);
+					$temp_conf['additionalParams'] .= '&'.$this->getLinkUrl('','begin_at').'&begin_at='.$next;
+					$temp_conf['useCacheHash'] = $this->allowCaching;
+					$temp_conf['no_cache'] = !$this->allowCaching;
+					$wrappedSubpartArray['###LINK_NEXT###'] = explode('|', $this->local_cObj->typolink($this->pi_getLL('pbrLinkNext').'|', $temp_conf));
+					
+					#$wrappedSubpartArray['###LINK_NEXT###'] = array('<a href="'.$url.'&amp;begin_at='.$next.'">'.$this->pi_getLL('pbrLinkNext'), '</a>');
 				} else {
 					$subpartArray['###LINK_NEXT###'] = '';
 				}
 				if ($begin_at) {
-					$prev = ($begin_at-$this->config['limit'] < 0) ? 0 :
-					 $begin_at-$this->config['limit'];
-					$wrappedSubpartArray['###LINK_PREV###'] = array('<a href="'.$url.'&amp;begin_at='.$prev.'">'.$this->pi_getLL('pbrLinkPrev'), '</a>');
+					$prev = ($begin_at-$this->config['limit'] < 0) ? 0 : 					 $begin_at-$this->config['limit'];
+
+					$temp_conf = $this->typolink_conf;
+					$this->local_cObj->setCurrentVal($GLOBALS['TSFE']->id);
+					$temp_conf['additionalParams'] .= '&'.$this->getLinkUrl('','begin_at').'&begin_at='.$prev;
+					$temp_conf['useCacheHash'] = $this->allowCaching;
+					$temp_conf['no_cache'] = !$this->allowCaching;
+					$wrappedSubpartArray['###LINK_PREV###'] = explode('|', $this->local_cObj->typolink($this->pi_getLL('pbrLinkPrev').'|', $temp_conf));
+
+
+					#$wrappedSubpartArray['###LINK_PREV###'] = array('<a href="'.$url.'&amp;begin_at='.$prev.'">'.$this->pi_getLL('pbrLinkPrev'), '</a>');
 				} else {
 					$subpartArray['###LINK_PREV###'] = '';
 				}
@@ -640,9 +698,18 @@ $content = $this->cObj->substituteMarkerArrayCached($noItemsMsg, $markerArray);
 					// there is more than one page, so let's browse
 					for ($i = 0 ; $i < ($newsCount/$this->config['limit']); $i++) {
 						if (($begin_at >= $i * $this->config['limit']) && ($begin_at < $i * $this->config['limit']+$this->config['limit'])) {
-							$markerArray['###BROWSE_LINKS###'] .= ' <b>'.$this->pi_getLL('pbrPage').(string)($i+1).'</b> ';
+							$markerArray['###BROWSE_LINKS###'] .= ' <b>'.($this->config['showPBrowserText']?$this->pi_getLL('pbrPage'):'').(string)($i+1).'</b> ';
 						} else {
-							$markerArray['###BROWSE_LINKS###'] .= ' <a href="'.$url.'&amp;begin_at='.(string)($i * $this->config['limit']).'">'.$this->pi_getLL('pbrPage').(string)($i+1).'</a> ';
+						
+					$temp_conf = $this->typolink_conf;
+					$this->local_cObj->setCurrentVal($GLOBALS['TSFE']->id);
+					$temp_conf['additionalParams'] .= '&'.$this->getLinkUrl('','begin_at').'&begin_at='.(string)($i * $this->config['limit']);
+					$temp_conf['useCacheHash'] = $this->allowCaching;
+					$temp_conf['no_cache'] = !$this->allowCaching;
+					$markerArray['###BROWSE_LINKS###'] .= ' '.$this->local_cObj->typolink(($this->config['showPBrowserText']?$this->pi_getLL('pbrPage'):'').(string)($i+1), $temp_conf).' ';
+						
+						
+							#$markerArray['###BROWSE_LINKS###'] .= ' <a href="'.$url.'&amp;begin_at='.(string)($i * $this->config['limit']).'">'.$this->pi_getLL('pbrPage').(string)($i+1).'</a> ';
 						}
 					}
 				}
@@ -684,7 +751,7 @@ $content = $this->cObj->substituteMarkerArrayCached($noItemsMsg, $markerArray);
 		 
 		$cc = 0;
 		#debug($selectConf);
-		$itemLinkTarget = $this->conf['itemLinkTarget'] ? 'target="'.$this->conf['itemLinkTarget'].'"' :
+		$itemLinkTarget = $this->config['itemLinkTarget'] ? 'target="'.$this->config['itemLinkTarget'].'"' :
 		 "";
 		 
 		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
@@ -695,7 +762,19 @@ $content = $this->cObj->substituteMarkerArrayCached($noItemsMsg, $markerArray);
 				$this->local_cObj->setCurrentVal($row['type'] == 1 ? $row['page'] : $row['ext_url']);
 				$wrappedSubpartArray['###LINK_ITEM###'] = $this->local_cObj->typolinkWrap($this->conf['pageTypoLink.']);
 			} else {
-				$wrappedSubpartArray['###LINK_ITEM###'] = array('<a href="'.$this->getLinkUrl($this->config['PIDitemDisplay']).'&amp;tt_news='.$row['uid'].'" '.$itemLinkTarget.'>', '</a>');
+		
+		
+		##### caching/indexing		
+				$temp_conf = $this->typolink_conf;
+				$this->local_cObj->setCurrentVal($this->conf['PIDitemDisplay']);
+				$temp_conf['additionalParams'] .= '&'.$this->getLinkUrl($this->config['PIDitemDisplay']).'&tt_news='.$row['uid'].$itemLinkTarget;
+				$temp_conf['useCacheHash'] = $this->allowCaching;
+				$temp_conf['no_cache'] = !$this->allowCaching;
+				$wrappedSubpartArray['###LINK_ITEM###'] = explode('|', $this->local_cObj->typolink('|', $temp_conf));
+	 	##### caching/indexing  end
+			
+				
+				#$wrappedSubpartArray['###LINK_ITEM###'] = array('<a href="'.$this->getLinkUrl($this->config['PIDitemDisplay']).'&amp;tt_news='.$row['uid'].'" '.$itemLinkTarget.'>', '</a>');
 			}
 			$markerArray = $this->getItemMarkerArray($row, $prefix_display);
 			 
@@ -717,32 +796,26 @@ $content = $this->cObj->substituteMarkerArrayCached($noItemsMsg, $markerArray);
 	* @param 	string	$excludeList: parameters listed here, are removed from the link (used in the pagebrowser)
 	* @return 	string  the link url
 	*/
-	function getLinkUrl($id = "", $excludeList = '') {
+	function getLinkUrl($id = '', $excludeList = '') {
 		$queryString = array();
 		$queryString['id'] = 'id='.($id ? $id : $GLOBALS['TSFE']->id);
 		
 		$queryString['type'] = $this->config['itemLinkType'] ? 'type='.$this->config['itemLinkType'] : '';
 		$queryString['backPID'] = 'backPID='.($this->config['backPid']?$this->config['backPid']:$GLOBALS['TSFE']->id);
-		$queryString['begin_at'] = t3lib_div::_GP('begin_at') ? 'begin_at='.t3lib_div::_GP('begin_at') :
-		 "";
-		$queryString['swords'] = t3lib_div::_GP('swords') ? "swords=".rawurlencode(t3lib_div::_GP('swords')) :
-		 "";
-		$queryString['pS'] = t3lib_div::_GP('pS') ? "pS=".intval(t3lib_div::_GP('pS')) :
-		""; // period start
-		$queryString['pL'] = t3lib_div::_GP('pL') ? "pL=".intval(t3lib_div::_GP('pL')) :
-		""; // Period length
-		$queryString['arc'] = t3lib_div::_GP('arc') ? "arc=".intval(t3lib_div::_GP('arc')) :
-		""; // Archive flag: 0 = don't care, -1 = latest, 1 = archive
-		$queryString['cat'] = t3lib_div::_GP('cat') ? "cat=".intval(t3lib_div::_GP('cat')) :
-		""; // Category uid, 0 = any
-		$queryString['L'] = t3lib_div::_GP("L") ? "L=".t3lib_div::_GP("L"): ""; 
+		$queryString['begin_at'] = t3lib_div::_GP('begin_at') ? 'begin_at='.t3lib_div::_GP('begin_at') : '';
+		$queryString['swords'] = t3lib_div::_GP('swords') ? 'swords='.rawurlencode(t3lib_div::_GP('swords')) : '';
+		$queryString['pS'] = t3lib_div::_GP('pS') ? 'pS='.intval(t3lib_div::_GP('pS')) : ''; // period start
+		$queryString['pL'] = t3lib_div::_GP('pL') ? 'pL='.intval(t3lib_div::_GP('pL')) : ''; // Period length
+		$queryString['arc'] = t3lib_div::_GP('arc') ? 'arc='.intval(t3lib_div::_GP('arc')) : ''; // Archive flag: 0 = don't care, -1 = latest, 1 = archive
+		$queryString['cat'] = t3lib_div::_GP('cat') ? 'cat='.intval(t3lib_div::_GP('cat')) : ''; // Category uid, 0 = any
+		$queryString['L'] = t3lib_div::_GP('L') ? 'L='.t3lib_div::_GP('L'): ''; 
 		reset($queryString);
 		while (list($key, $val) = each($queryString)) {
 			if (!$val || ($excludeList && t3lib_div::inList($excludeList, $key))) {
 				unset($queryString[$key]);
 			}
 		}
-		return $GLOBALS['TSFE']->absRefPrefix.'index.php?'.implode($queryString, '&amp;');
+		return $GLOBALS['TSFE']->absRefPrefix.'?'.implode($queryString, '&'); 
 	}
 	 
 	/**
