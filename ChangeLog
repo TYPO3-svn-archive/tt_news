@@ -1,3 +1,16 @@
+2004-08-20	rupertgermann
+	* cvsroot/typo3xdev/tx_ttnews/ChangeLog 1.4:
+	* cvsroot/typo3xdev/tx_ttnews/locallang.php 1.5:
+	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews.php 1.39:
+	* cvsroot/typo3xdev/tx_ttnews/pi/locallang.php 1.9:
+	* cvsroot/typo3xdev/tx_ttnews/tca.php 1.10:
+		- fixed a small bug with the “firstImageIsPreview” mode: now the captions are displayed correctly
+		- new feature: 'excludeLatestFromList' by setting this TSvar you can exclude the news already shown in LATEST from the “LIST” view on the same page. (thank goes to Joey who posted this code snippet)
+		- fix: now it is possible to display the PAGE template-markers also in the single view.
+		- Added a message which will appear when no news are found for display in the current list  'noNewsToListMsg'.
+		- Replaced the functions setPidlist and initRecursive with pi_getPidList
+		- updated changelog
+
 2004-08-16	rupertgermann
 	* cvsroot/typo3xdev/tx_ttnews/ext_emconf.php 1.9:
 	* cvsroot/typo3xdev/tx_ttnews/ext_tables.sql 1.4:
