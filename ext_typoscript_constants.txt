@@ -3,13 +3,13 @@ plugin.tt_news {
   file.templateFile = EXT:tt_news/pi/news_template.tmpl
 
     # cat=plugin.tt_news/typo/1; type=wrap; label= Wrap 1: This wrap is used in the template-file (news header in SINGLE view).
-  wrap1 = <font face="verdana" size=2 color=black> | </font>
+  wrap1 = <font face="verdana" size="2" color="black"> | </font>
     # cat=plugin.tt_news/typo/2; type=wrap; label= Wrap 2: This wrap is used in the template-file ([more] links, pagebrowser...). 
-  wrap2 = <font face="verdana" size=1 color=black> | </font>
+  wrap2 = <font face="verdana" size="1" color="black"> | </font>
     # cat=plugin.tt_news/typo/3; type=wrap; label= Wrap 3: This wrap is used in the template-file (ArchiveMenu header, latest header). 
-  wrap3 = <font face="verdana" size=1 color=white><b> | </b></font>
+  wrap3 = <font face="verdana" size="1" color="white"><strong> | </strong></font>
     # cat=plugin.tt_news/typo/3; type=wrap; label= Caption stdWrap: This wrap is used for image captions.
-  caption_stdWrap = <font face="verdana" size=1 color=navi> | </font>
+  caption_stdWrap = <font face="verdana" size="1" color="navi"> | </font>
 
     # cat=plugin.tt_news/color/1; type=color; label= Color 1: First alternating bgcolor in the template.
   color1 = #C7D5FE

@@ -62,7 +62,7 @@ plugin.tt_news {
   		wrap=<span class="ttnews-page">|</span>
   	}
   	activpage_stdWrap {
-  		wrap=<span class="ttnews-page-activ"><b> | </b></span>
+  		wrap=<span class="ttnews-page-activ"> | </span>
   	}
   }
   # set this to '0' if you want the pagebrowser to display only numbers 
@@ -96,16 +96,16 @@ plugin.tt_news {
   }
   
   archiveEmptyMsg_stdWrap.wrap (
-  	<table border=0 cellpadding=0 cellspacing=0 width=100%>
-	<tr><td><b>|</b></td></tr></table>
+  	<table border="0" cellpadding="0" cellspacing="0" width="100%">
+	<tr><td><strong>|</strong></td></tr></table>
   )
   searchEmptyMsg_stdWrap.wrap (
-  	<table border=0 cellpadding=0 cellspacing=0 width=100%>
-	<tr><td><b> | </b></td></tr></table>
+        <table border="0" cellpadding="0" cellspacing="0" width="100%">
+	<tr><td><strong>|</strong></td></tr></table>
   )     
   
   # Related News
-  relatedHeader_stdWrap.wrap = <b>|</b>
+  relatedHeader_stdWrap.wrap = <strong>|</strong>
   getRelatedCObject = COA
     getRelatedCObject {
       10=CASE
@@ -135,7 +135,7 @@ plugin.tt_news {
       20 = TEXT
       20.field = datetime
       20.strftime = %d-%m-%y %H:%M
-      20.wrap = <font size=1> -&nbsp; | </font><br />
+      20.wrap = <font size="1"> -&nbsp; | </font><br />
   }
   
   # the RTE parseFunc configuration
@@ -150,19 +150,19 @@ plugin.tt_news {
 	textNewsAge_stdWrap.wrap = 
     date_stdWrap.strftime= %d-%m-%y
     time_stdWrap.strftime= %H:%M
-    title_stdWrap.wrap = <b>|</b>
+    title_stdWrap.wrap = <strong>|</strong>
     author_stdWrap.case = upper
     author_stdWrap.typolink.parameter.field = author_email
     links_stdWrap.wrap = |<br />
-    newsLinksHeader_stdWrap.wrap = <b>|</b>
+    newsLinksHeader_stdWrap.wrap = <strong>|</strong>
     noNewsIdMsg_stdWrap (
       <table border=0 cellpadding=0 cellspacing=0 width=100%>
-      <tr><td><b>|</b></td></tr></table>
+      <tr><td><strong>|</strong></td></tr></table>
     )    
     imageCount=2
     imageWrapIfAny ( 
-      <table border=0 cellpadding=0 cellspacing=0 align=right width=1><tr><td>
-      <img src=clear.gif width=15 height=1 border=0></td><td> | </td></tr></table>
+      <table border="0" cellpadding="0" cellspacing="0" align="right" width="1"><tr><td>
+      <img src="clear.gif" width="15" height="1" border="0" /></td><td> | </td></tr></table>
     )
 
     email_stdWrap.setContentToCurrent = 1
@@ -174,7 +174,7 @@ plugin.tt_news {
   displaySingle.image {
     file.maxW = {$plugin.tt_news.singleMaxW}
     file.maxH = {$plugin.tt_news.singleMaxH}
-    wrap = | <BR>
+    wrap = | <br />
     imageLinkWrap = 1
     imageLinkWrap {
       enable = 1
@@ -200,9 +200,9 @@ plugin.tt_news {
     subheader_stdWrap.ifEmpty.field = bodytext
     imageCount=1
     imageWrapIfAny ( 
-      <table border=0 cellpadding=0 cellspacing=0 align=left>
+      <table border="0" cellpadding="0" cellspacing="0" align="left">
       <tr><td>|</td><td>
-      <img src=clear.gif width=5 height=1 border=0>
+      <img src="clear.gif" width="5" height="1" border="0" />
       </td></tr></table>
     )
   }
