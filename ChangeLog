@@ -1,6 +1,18 @@
+2004-10-13	rupertgermann
+	* pi/class.tx_ttnews.php 1.54:
+	* res/tt_news_languageMenu.php 1.6:
+		- added rawurlencode to rss links: class.tt_txnews.php zeile 845: $markerArray['###NEWS_LINK###'] = $this->config['siteUrl'].rawurlencode(substr($wrappedSubpartArray['###LINK_ITEM###'][0], 9, -2));
+		- changed the link processing in the language menu. Now the additional params for the linka are build from the GetVars. The effect of this change is, that you can use the tt_news-language menu with simulateStatic. It still does not produce links like “home+M098098.html” but it works ;-)
+		- Inserted new function that returns the template subpart (suggested by Stefan Geith). This gives you the possibility to “XCLASS” tt_news for pre-processing the html-template.
+		- Fixed the “firstImageIsPreview” function. (added the forgotten parameter $textRenderObj to the getImageMarker function)
+
+2004-10-03	rupertgermann
+	* pi/class.tx_ttnews.php 1.53:
+		- removed the TS-var: “amenuShowAll” because it did not work.
+
 2004-10-02	rupertgermann
-	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews.php 1.52:
-	* cvsroot/typo3xdev/tx_ttnews/res/example_userPageBrowserFunc.php 1.1:
+	* pi/class.tx_ttnews.php 1.52:
+	* res/example_userPageBrowserFunc.php 1.1:
 		- added a TYPO3 version control for the multilang features. Now they are disabled if the TYPO3 version is below 3.7.0
 		- new TS-var: “amenuShowAll” by setting this, the amenu always shows all news items, no matter if they are archived or not, or if there is a value for “datetimeDaysToArchive” given.
 		- added a userfunction to use another pagebrowser.
