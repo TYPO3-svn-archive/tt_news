@@ -1,4 +1,33 @@
+2005-02-06	rupertgermann
+	* cvsroot/typo3xdev/tx_ttnews/ext_tables.sql 1.8:
+		fix: added 2 missing commas to create statements
+
+2005-02-05	rupertgermann
+	* cvsroot/typo3xdev/tx_ttnews/ext_emconf.php 1.27:
+		- version number is now 2.0.6
+
+	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews.php 1.68:
+		- new TS-var 'dontUseBackPid':
+		If you enable this, you can prevent the use of the variables for dynamic back-Links in links, that point to the single-view. The advantage is, that all those links will look the same, what will f.e. prevent multiple indexing by the indexed search. (RealUrl Links will also look nicer without a backpid). The backlink in the single-view will still function, but it will only point to a global BackPid (f.e. the list view)
+		
+		- fix: added the forgotten var "$selectConf" to the hook in function getSelectConf
+
+	* cvsroot/typo3xdev/tx_ttnews/res/realUrl_example_setup.txt 1.3:
+		changed server name in example
+
+	* cvsroot/typo3xdev/tx_ttnews/res/tt_news_v2_styles.css 1.3:
+	* cvsroot/typo3xdev/tx_ttnews/static/css/setup.txt 1.4:
+		*** empty log message ***
+
+	* cvsroot/typo3xdev/tx_ttnews/static/ts_new/setup.txt 1.4:
+		- fix: added the forgotten lines for 'display current record' - 
+		now displaying of tt_news-records with the "insert-records" 
+		content-element works again.
+
 2005-01-13	rupertgermann
+	* cvsroot/typo3xdev/tx_ttnews/ChangeLog 1.24:
+		updated changelog
+
 	* cvsroot/typo3xdev/tx_ttnews/ext_tables.php 1.13:
 	* cvsroot/typo3xdev/tx_ttnews/ext_tables.sql 1.7:
 	* cvsroot/typo3xdev/tx_ttnews/locallang_tca.php 1.23:
