@@ -609,12 +609,16 @@ class tx_ttnews extends tslib_pibase {
 
 		$noPeriod = 0;
 
-		// if this is true, we're listing from the archive for the first time (no pS set),
-		// to prevent an empty list page we set the pS value to the archive start
-		if (($this->arcExclusive > 0 && !t3lib_div::_GP('pS') && $theCode != 'SEARCH')) {
-			// set pS to time minus archive startdate
-			t3lib_div::_GETset(array('pS' => (time()-($this->config['datetimeDaysToArchive'] * 86400)))) ;
-		}
+		if (!$this->config['emptyArchListAtStart']) {
+            // if this is true, we're listing from the archive for the first time (no pS set),
+            // to prevent an empty list page we set the pS value to the archive start
+            if (($this->arcExclusive > 0 && !t3lib_div::_GP('pS') && $theCode != 'SEARCH')) {
+                // set pS to time-archive startdate
+                t3lib_div::_GETset(array('pS' => (time()-($this->config['datetimeDaysToArchive']*86400)))) ;
+                // override the period lenght checking in getSelectConf
+               
+            }
+        } 
 
 		if (t3lib_div::_GP('pS') && !t3lib_div::_GP('pL')) {
 			$noPeriod = 1;
@@ -1054,7 +1058,7 @@ class tx_ttnews extends tslib_pibase {
 		$markerArray['###NEWS_DATE###'] = $this->local_cObj->stdWrap($row['datetime'], $lConf['date_stdWrap.']);
 		$markerArray['###NEWS_TIME###'] = $this->local_cObj->stdWrap($row['datetime'], $lConf['time_stdWrap.']);
 		$markerArray['###NEWS_AGE###'] = $this->local_cObj->stdWrap($row['datetime'], $lConf['age_stdWrap.']);
-		$markerArray['###TEXT_NEWS_AGE###'] = $this->local_cObj->stdWrap($this->pi_getLL('textNewsAge'), $lConf['ntextNewsAge_stdWrap.']);
+		$markerArray['###TEXT_NEWS_AGE###'] = $this->local_cObj->stdWrap($this->pi_getLL('textNewsAge'), $lConf['textNewsAge_stdWrap.']);
 
 		$markerArray['###NEWS_SUBHEADER###'] = $this->formatStr($this->local_cObj->stdWrap($row['short'], $lConf['subheader_stdWrap.']));
 
