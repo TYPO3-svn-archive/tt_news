@@ -1,3 +1,18 @@
+2004-09-06	rupertgermann
+	* cvsroot/typo3xdev/tx_ttnews/ChangeLog 1.9:
+	* cvsroot/typo3xdev/tx_ttnews/class.tx_ttnews_itemsProcFunc.php 1.1:
+	* cvsroot/typo3xdev/tx_ttnews/ext_emconf.php 1.13:
+	* cvsroot/typo3xdev/tx_ttnews/ext_tables.php 1.6:
+	* cvsroot/typo3xdev/tx_ttnews/flexform_ds.xml 1.11:
+	* cvsroot/typo3xdev/tx_ttnews/flexform_ds_no_sPID.xml 1.2:
+	* cvsroot/typo3xdev/tx_ttnews/locallang.php 1.10:
+	* cvsroot/typo3xdev/tx_ttnews/locallang_tca.php 1.15:
+	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews.php 1.45:
+		- added new file for processing extra user-codes (class.tx_ttnews_itemsProcFunc.php), added a call  for this function in the flexform xml files (tx_ttnews_itemsProcFunc->user_insertExtraCodes)  this function adds the “extra codes” to the content element that are found in the $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tt_news']['what_to_display'] array.
+		- added some forgotten language markers to the flexform files & locallang_tca.php
+		- added a function Hook for processing the selectConf-array in function getSelectConf() (processSelectConfHook)
+		- changed version number to 1.6.4
+
 2004-09-03	rupertgermann
 	* cvsroot/typo3xdev/tx_ttnews/ext_emconf.php 1.12:
 	* cvsroot/typo3xdev/tx_ttnews/locallang.php 1.9:
@@ -170,27 +185,6 @@
 		- added a new constants and setup.txt files for the css based template
 		- edited the example pagetree so that it can be configured by setting only 3 values for the complete testsite
 		- edited the new htmls template added a css file for this template
-
-2004-08-13	rupertgermann
-	* cvsroot/typo3xdev/tx_ttnews/ChangeLog 1.2:
-	* cvsroot/typo3xdev/tx_ttnews/ext_typoscript_constants.txt 1.9:
-	* cvsroot/typo3xdev/tx_ttnews/ext_typoscript_setup.txt 1.22:
-	* cvsroot/typo3xdev/tx_ttnews/pi/news_template.tmpl 1.11:
-	* cvsroot/typo3xdev/tx_ttnews/res/ext_typoscript_constants.txt 1.1:
-	* cvsroot/typo3xdev/tx_ttnews/res/ext_typoscript_setup.txt 1.1:
-	* cvsroot/typo3xdev/tx_ttnews/res/main/res/tt_news_tut_main_stylesheet.css 1.2:
-	* cvsroot/typo3xdev/tx_ttnews/res/tt_news_medialinks.html 1.3:
-	* cvsroot/typo3xdev/tx_ttnews/res/tt_news_mtb_pagetree-z.t3d 1.3:
-	* cvsroot/typo3xdev/tx_ttnews/res/tt_news_styles.css 1.1:
-		- added a new constants and setup.txt files for the css based template
-		- edited the example pagetree so that it can be configured by setting only 3 values for the complete testsite
-		- edited the new htmls template added a css file for this template
-
-2004-08-12	rupertgermann
-	* cvsroot/typo3xdev/tx_ttnews/ext_typoscript_setup.txt 1.21:
-	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews.php 1.36:
-		- added config for filelinks to default setup.txt
-		- fixed the different archive counting from getSelectConf and get_archiveMenu (thx ralf for pointing me to this)
 
 2004-08-12	rupertgermann
 	* cvsroot/typo3xdev/tx_ttnews/ext_typoscript_setup.txt 1.21:
