@@ -90,7 +90,18 @@ $TCA['tt_news'] = Array (
 			'config' => Array (
 				'type' => 'text',
 				'cols' => '48',
-				'rows' => '5'
+				'rows' => '5',
+				'wizards' => Array(
+					'_PADDING' => 4,
+					'RTE' => Array(
+						'notNewRecords' => 1,
+						'RTEonly' => 1,
+						'type' => 'script',
+						'title' => 'LLL:EXT:cms/locallang_ttc.php:bodytext.W.RTE',
+						'icon' => 'wizard_rte2.gif',
+						'script' => 'wizard_rte.php',
+					),
+				)
 			)
 		),
 		'short' => Array (
@@ -189,7 +200,8 @@ $TCA['tt_news'] = Array (
 				'internal_type' => 'db',
 					'allowed' => 'tt_news',
 					'MM' => 'tt_news_related_mm',
-				'size' => '5',
+				'size' => '3',
+				'autoSizeMax' => 10,
 				'maxitems' => '200',
 				'minitems' => '0',
 				'show_thumbs' => '1'
@@ -217,34 +229,35 @@ $TCA['tt_news'] = Array (
 			'exclude' => 1,	
 			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.category',
 			'config' => Array (
-				"type" => "select",
-				"foreign_table" => "tt_news_cat",
-				"foreign_table_where" => "AND tt_news_cat.pid=###STORAGE_PID### ORDER BY tt_news_cat.uid",
-				"size" => 6,
-				"minitems" => 0,
-				"maxitems" => 100,
-				"MM" => "tt_news_cat_mm",
-				"wizards" => Array(
-					"_PADDING" => 2,
-					"_VERTICAL" => 1,
-					"add" => Array(
-						"type" => "script",
-						"title" => "Create new category",
-						"icon" => "add.gif",
-						"params" => Array(
-							"table"=>"tt_news_cat",
-							"pid" => "###STORAGE_PID###",
-							"setValue" => "set"
+				'type' => 'select',
+				'foreign_table' => 'tt_news_cat',
+				'foreign_table_where' => 'AND tt_news_cat.pid=###STORAGE_PID### ORDER BY tt_news_cat.uid',
+				'size' => 3,
+				'autoSizeMax' => 10,
+				'minitems' => 0,
+				'maxitems' => 100,
+				'MM' => 'tt_news_cat_mm',
+				'wizards' => Array(
+					'_PADDING' => 2,
+					'_VERTICAL' => 1,
+					'add' => Array(
+						'type' => 'script',
+						'title' => 'Create new category',
+						'icon' => 'add.gif',
+						'params' => Array(
+							'table'=>'tt_news_cat',
+							'pid' => '###STORAGE_PID###',
+							'setValue' => 'set'
 						),
-						"script" => "wizard_add.php",
+						'script' => 'wizard_add.php',
 					),
-					"edit" => Array(
-							"type" => "popup",
-							"title" => "Edit category",
-							"script" => "wizard_edit.php",
-							"popup_onlyOpenIfSelected" => 1,
-							"icon" => "edit2.gif",
-							"JSopenParams" => "height=350,width=580,status=0,menubar=0,scrollbars=1",
+					'edit' => Array(
+							'type' => 'popup',
+							'title' => 'Edit category',
+							'script' => 'wizard_edit.php',
+							'popup_onlyOpenIfSelected' => 1,
+							'icon' => 'edit2.gif',
+							'JSopenParams' => 'height=350,width=580,status=0,menubar=0,scrollbars=1',
 					),
 				),
 			)
@@ -261,13 +274,20 @@ $TCA['tt_news'] = Array (
 				'minitems' => '0',
 				'show_thumbs' => '1'
 			)
-		)
+		),
 	),
 	'types' => Array (	
-#non-rte'0' => Array('showitem' => 'hidden;;;;1-1-1,type,title;;;;2-2-2,datetime,starttime;;1,archivedate,category,author,author_email,keywords,--div--,short;;;;3-3-3,bodytext,image;;;;4-4-4,imagecaption,--div--,links;;;;5-5-5,related'),
-		'0' => Array('showitem' => 'hidden;;;;1-1-1,type,title;;;;2-2-2,datetime,starttime;;1,archivedate,category,author,author_email,keywords,--div--,short;;;;3-3-3,bodytext;;9;richtext[*]:rte_transform[flag=rte_enabled|mode=ts];3-3-3,image;;;;4-4-4,imagecaption,--div--,links;;;;5-5-5,related'),
-		'1' => Array('showitem' => 'hidden;;;;1-1-1,type,page,title;;;;2-2-2,datetime,starttime;;1,archivedate,category,author,author_email,keywords,--div--,short;;;;3-3-3,image;;;;4-4-4,imagecaption'),
-		'2' => Array('showitem' => 'hidden;;;;1-1-1,type,ext_url,title;;;;2-2-2,datetime,starttime;;1,archivedate,category,author,author_email,keywords,--div--,short;;;;3-3-3,image;;;;4-4-4,imagecaption')
+// non-rte '0' => Array('showitem' => 'hidden;;;;1-1-1,type,title;;;;2-2-2,datetime,starttime;;1,archivedate,category,author,author_email,keywords,--div--,short;;;;3-3-3,bodytext,image;;;;4-4-4,imagecaption,--div--,links;;;;5-5-5,related'),
+
+// full enabled rte		'0' => Array('showitem' => 'hidden;;;;1-1-1,type,sys_language_uid,title;;;;2-2-2,datetime,starttime;;1,archivedate,category,author,author_email,keywords,--div--,short;;;;3-3-3,bodytext;;9;richtext[*]:rte_transform[flag=rte_enabled|mode=ts];3-3-3,image;;;;4-4-4,imagecaption,--div--,links;;;;5-5-5,related'),
+
+// rte like tt_content
+		'0' => Array('showitem' => 'hidden;;;;1-1-1,type,sys_language_uid,title;;;;2-2-2,datetime,starttime;;1,archivedate,category,author,author_email,keywords,--div--,short;;;;3-3-3,bodytext;;9;richtext[paste|bold|italic|underline|formatblock|class|left|center|right|orderedlist|unorderedlist|outdent|indent|link|image]:rte_transform[flag=rte_enabled|mode=ts];4-4-4, rte_enabled, text_properties;5-5-5,image;;;;6-6-6,imagecaption,--div--,links;;;;7-7-7,related'),
+		
+		
+		
+		'1' => Array('showitem' => 'hidden;;;;1-1-1,type,sys_language_uid,page,title;;;;2-2-2,datetime,starttime;;1,archivedate,category,author,author_email,keywords,--div--,short;;;;3-3-3,image;;;;4-4-4,imagecaption'),
+		'2' => Array('showitem' => 'hidden;;;;1-1-1,type,sys_language_uid,ext_url,title;;;;2-2-2,datetime,starttime;;1,archivedate,category,author,author_email,keywords,--div--,short;;;;3-3-3,image;;;;4-4-4,imagecaption')
 	),
 	'palettes' => Array (
 		'1' => Array('showitem' => 'endtime,fe_group')
@@ -325,10 +345,6 @@ $TCA['tt_news_cat'] = Array (
 		'0' => Array('showitem' => 'title;;;;3-3-3,image,shortcut;;;;1-1-1')
 	)
 );
-
-
-
-
 
 
 

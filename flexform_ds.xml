@@ -392,6 +392,15 @@
 			</config>
 		  	</TCEforms>
 		  </backPid>
+		 <firstImageIsPreview>
+			<TCEforms>
+				<label>LLL:EXT:tt_news/locallang_tca.php:tt_news.pi_flexform.firstImageIsPreview</label>
+				<config>
+					<type>check</type>
+				</config>
+			</TCEforms>
+	      </firstImageIsPreview>
+	  		  
 	    </el>
 	  </ROOT>
     </s_misc>

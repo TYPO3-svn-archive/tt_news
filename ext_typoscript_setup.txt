@@ -69,7 +69,6 @@ plugin.tt_news {
   # Category settings
   catImageMode = {$plugin.tt_news.catImageMode}
   catTextMode = {$plugin.tt_news.catTextMode}
-  catTextLength = 2000
   maxCatImages = 10
   maxCatTexts = 10
   
@@ -79,8 +78,9 @@ plugin.tt_news {
   # -1 = display deselected categories
   categoryMode = 0
   
-  catImageMaxWidth = 40
-  catImageMaxHeight = 40
+  catImageMaxWidth = 20
+  catImageMaxHeight = 20
+  
   
   # Archive settings
   datetimeDaysToArchive = {$plugin.tt_news.datetimeDaysToArchive}
@@ -160,7 +160,7 @@ plugin.tt_news {
 
     newsLinksHeader_stdWrap.wrap = <strong>|</strong>
     noNewsIdMsg_stdWrap (
-      <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <table border="0" cellpadding="0" cellspacing="0" width="100%">
       <tr><td><strong>|</strong></td></tr></table>
     )    
     imageCount=2
@@ -244,6 +244,9 @@ plugin.tt_news {
     # latestHeader = Das Allerneuste vom Neuen!  
     # more = [weiterlesen...]
   }
+  _CSS_DEFAULT_STYLE (
+  
+  )  
 }
 
 

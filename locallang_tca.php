@@ -3,6 +3,7 @@
 $LOCAL_LANG = Array (
 	'default' => Array (
 		'tt_news' => 'News',
+		'tt_news_lang_overlay' => 'news translation',
 		'tt_news.type.I.0' => 'News',
 		'tt_news.type.I.1' => 'Article',
 		'tt_news.datetime' => 'Date/Time:',
@@ -37,6 +38,7 @@ $LOCAL_LANG = Array (
 		'tt_news.pi_flexform.catLinkMode_shownolink' => 'Display, but no links',
 		'tt_news.pi_flexform.catLinkMode_catshortcut' => 'Acts as link to category shortcuts',
 		'tt_news.pi_flexform.catLinkMode_catsel' => 'Acts as a category selector',
+		'tt_news.pi_flexform.firstImageIsPreview' => 'Don\'t display first image in single view (firstImageIsPreview)',
 	),
 	'dk' => Array (
 		'tt_news' => 'Nyheder',
@@ -230,6 +232,7 @@ $LOCAL_LANG = Array (
 		'tt_news.pi_flexform.sheet_general' => 'Yleiset asetukset',
 		'tt_news.pi_flexform.sheet_template' => 'Mallinne',
 		'tt_news.pi_flexform.sheet_category' => 'Luokka asetukset',
+		'tt_news.pi_flexform.sheet_misc' => 'Muut asetukset',
 		'tt_news.pi_flexform.what_to_display' => 'Mitä näytetäään',
 		'tt_news.pi_flexform.select_deselect_categories' => 'Luokka moodi:',
 		'tt_news.pi_flexform.category_selection' => 'Luokan valinta',
