@@ -1,10 +1,9 @@
 <?php
 // adds the possiblity to switch the use of the "StoragePid"(general record Storage Page) for tt_news categories
-$confArr = unserialize($GLOBALS["TYPO3_CONF_VARS"]["EXT"]["extConf"]["tt_news"]);
+$confArr = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['tt_news']);
 if ($confArr['useStoragePid']) {
     $fTableWhere = 'AND tt_news_cat.pid=###STORAGE_PID### ';
 }
-
 
 // ******************************************************************
 // This is the standard TypoScript news table, tt_news

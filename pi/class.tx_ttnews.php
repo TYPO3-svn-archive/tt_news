@@ -223,31 +223,17 @@ class tx_ttnews extends tslib_pibase {
 		// pid_list is the pid/list of pids from where to fetch the news items.
 		$pid_list = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'pages', 'sDEF');
 		$pid_list = $pid_list?$pid_list:trim($this->cObj->stdWrap($this->conf['pid_list'], $this->conf['pid_list.']));
-		$this->config['pid_list'] = $pid_list ? implode(t3lib_div::intExplode(',', $pid_list), ',') : $GLOBALS['TSFE']->id;
+		$pid_list = $pid_list ? implode(t3lib_div::intExplode(',', $pid_list), ',') : $GLOBALS['TSFE']->id;
 
 		$recursive = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'recursive', 'sDEF');
-		$this->config['recursive'] = is_numeric($recursive) ? $recursive : $this->cObj->stdWrap($conf['recursive'], $conf['recursive.']);
-		list($pid) = explode(',', $this->config['pid_list']);
-		$this->pid = $pid;
-
-		/**
-		* Parameters for Links
-		*/
-//		if ($this->conf['itemLinkType']) {
-//			$this->config['itemLinkType'] = $this->conf['itemLinkType'];
-//		} else {
-//			if ($GLOBALS['TSFE']->type) {
-//				$this->config['itemLinkType'] = $GLOBALS['TSFE']->type;
-//			} else {
-//				$this->config['itemLinkType'] = '';
-//			}
-//		}
+		$recursive = is_numeric($recursive) ? $recursive : $this->cObj->stdWrap($conf['recursive'], $conf['recursive.']);
+//		list($pid) = explode(',', $this->config['pid_list']);
+//		$this->pid = $pid;
+		$this->pid_list = $this->pi_getPidList($pid_list,$recursive) ;  
+		$this->generatePageArray();
+		
 		$this->config['itemLinkTarget'] = $this->conf['itemLinkTarget'];
 
-		
-		
-		//For keeping the configured linkVars
-		#$this->config['linkVars'] = t3lib_div::trimexplode(',', $GLOBALS['TSFE']->config['config']['linkVars']);
 
 		// id of the page where the search results should be displayed
 		$this->config['searchPid'] = $this->conf['searchPid'];
@@ -301,7 +287,7 @@ class tx_ttnews extends tslib_pibase {
 		// names of the alternative subparts, used instead of the default subpart-names
 		$this->config['altMainMarkers.'] = $this->conf['altMainMarkers.'];
 
-		##### caching/indexing
+		
 		$this->local_cObj->setCurrentVal($GLOBALS['TSFE']->id);
 		$this->typolink_conf = $this->conf['typolink.'];
 		$this->typolink_conf['parameter.']['current'] = 1;
@@ -455,7 +441,7 @@ class tx_ttnews extends tslib_pibase {
 
 			$veryLocal_cObj = t3lib_div::makeInstance('tslib_cObj');
 
-			// reverse amenu oder if 'reverseAMenu' is given
+			// reverse amenu order if 'reverseAMenu' is given 
 			if ($this->config['reverseAMenu']) {
 				arsort($periodAccum);
 			}
@@ -522,6 +508,7 @@ class tx_ttnews extends tslib_pibase {
 	 */
 	function single_view() {
 
+	
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_news', 'uid='.intval($this->tt_news_uid).' AND type=0'.$this->enableFields); // type=0 -> only real news.
 		$row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
 
@@ -539,14 +526,13 @@ class tx_ttnews extends tslib_pibase {
 			// reset marker array
 			$wrappedSubpartArray = array();
 
-			##### caching/indexing
 			$temp_conf = $this->typolink_conf;
 			$this->local_cObj->setCurrentVal($this->config['backPid']);
-			$temp_conf['additionalParams'] .= '&'.$this->getLinkUrl(0, 'id');
+			$temp_conf['additionalParams'] .= '&'.$this->getLinkUrl(0);
 			$temp_conf['useCacheHash'] = $this->allowCaching;
 			$temp_conf['no_cache'] = !$this->allowCaching;
 			$wrappedSubpartArray['###LINK_ITEM###'] = explode('|', $this->local_cObj->typolink('|', $temp_conf));
-			##### caching/indexing  end
+
 
 			// set the title of the single view page to the title of the news record
 			$GLOBALS['TSFE']->page['title'] = $row['title'];
@@ -599,9 +585,7 @@ class tx_ttnews extends tslib_pibase {
 			if ($this->config['searchPid']) {
 				$temp_conf = $this->typolink_conf;
 				$this->local_cObj->setCurrentVal($this->config['searchPid']);
-
 				$temp_conf['target'] = $this->config['itemLinkTarget'];
-
 				$formURL = $this->local_cObj->TypoLink_URL($temp_conf);
 			}
 
@@ -618,12 +602,12 @@ class tx_ttnews extends tslib_pibase {
 			$content .= $out;
 
 
-			//if searchword is given make t
+			//do the search and add the result to the $where string
 			if (t3lib_div::_GP('swords')) {
 				$where = $this->searchWhere(trim(t3lib_div::_GP('swords')));
 				$theCode = 'SEARCH';
 			} else {
-				$where = ($this->config['emptySearchAtStart']?'AND 1=0':'');
+				$where = ($this->config['emptySearchAtStart']?'AND 1=0':''); // display an empty list, if 'emptySearchAtStart' is set.
 			}
 
 
@@ -640,13 +624,13 @@ class tx_ttnews extends tslib_pibase {
             if (($this->arcExclusive > 0 && !t3lib_div::_GP('pS') && $theCode != 'SEARCH')) {
                 // set pS to time-archive startdate
                 t3lib_div::_GETset(array('pS' => (time()-($this->config['datetimeDaysToArchive']*86400)))) ;
-                // override the period lenght checking in getSelectConf
+                
 
             }
         }
 
 		if (t3lib_div::_GP('pS') && !t3lib_div::_GP('pL')) {
-			$noPeriod = 1;
+			$noPeriod = 1; // override the period lenght checking in getSelectConf
 		}
 
 		// Allowed to show the listing? periodStart must be set, when listing from the archive.
@@ -695,7 +679,16 @@ class tx_ttnews extends tslib_pibase {
 				if ($theCode != 'LATEST' && !$this->conf['latestWithPagebrowser']) {
 					$selectConf['begin'] = $begin_at;
 				}
-
+				// exclude news-records shown in LATEST from the LIST template
+				if ($theCode == 'LIST' && $this->conf['excludeLatestFromList'] && !t3lib_div::_GP('begin_at')) {
+					if  ($this->conf['latestLimit']) {
+							$selectConf['begin'] += $this->conf['latestLimit'];
+					} else {
+						$selectConf['begin'] += $newsCount;
+						// this will clean the display of LIST view when 'latestLimit' is unset because all the news have been shown in LATEST already
+					}
+				}
+				
 				// Reset:
 				$subpartArray = array();
 				$wrappedSubpartArray = array();
@@ -728,6 +721,8 @@ class tx_ttnews extends tslib_pibase {
 				$markerArray['###SEARCH_EMPTY_MSG###'] = $this->local_cObj->stdWrap($this->pi_getLL('noResultsMsg'), $this->conf['searchEmptyMsg_stdWrap.']);
 				$searchEmptyMsg = $this->cObj->getSubpart($this->templateCode, $this->spMarker('###TEMPLATE_SEARCH_EMPTY###'));
 				$content .= $this->cObj->substituteMarkerArrayCached($searchEmptyMsg, $markerArray);
+			} else {
+				$content .= $this->local_cObj->stdWrap($this->pi_getLL('noNewsToListMsg'), $this->conf['noNewsToListMsg_stdWrap.']);
 			}
 		}
 		return $content;
@@ -752,7 +747,7 @@ class tx_ttnews extends tslib_pibase {
 		// Make Next link
 		if ($newsCount > $begin_at+$this->config['limit']) {
 			$next = ($begin_at+$this->config['limit'] > $newsCount) ? $newsCount-$this->config['limit']:$begin_at+$this->config['limit'];
-			$temp_conf['additionalParams'] = $temp_conf_additionalParams.'&'.$this->getLinkUrl('', 'begin_at,id,backPid').'&begin_at='.$next;
+			$temp_conf['additionalParams'] = $temp_conf_additionalParams.'&'.$this->getLinkUrl(0, 'begin_at,backPid').'&begin_at='.$next;
 			$markerArray['###LINK_NEXT###'] = $this->local_cObj->typolink($this->local_cObj->stdWrap($this->pi_getLL('pbrLinkNext'), $this->config['pageBrowser.']['page_stdWrap.']) , $temp_conf);
 		} else {
 			$markerArray['###LINK_NEXT###'] = '';
@@ -761,7 +756,7 @@ class tx_ttnews extends tslib_pibase {
 		// Make Previous link
 		if ($begin_at) {
 			$prev = ($begin_at-$this->config['limit'] < 0)?0:$begin_at-$this->config['limit'];
-			$temp_conf['additionalParams'] = $temp_conf_additionalParams.'&'.$this->getLinkUrl('', 'begin_at,id,backPid').'&begin_at='.$prev;
+			$temp_conf['additionalParams'] = $temp_conf_additionalParams.'&'.$this->getLinkUrl(0, 'begin_at,backPid').'&begin_at='.$prev;
 			$markerArray['###LINK_PREV###'] = $this->local_cObj->typolink($this->local_cObj->stdWrap($this->pi_getLL('pbrLinkPrev'), $this->config['pageBrowser.']['page_stdWrap.']) , $temp_conf);
 		} else {
 			$markerArray['###LINK_PREV###'] = '';
@@ -802,7 +797,7 @@ class tx_ttnews extends tslib_pibase {
 					$item = ($this->config['showPBrowserText']?$this->pi_getLL('pbrPage'):'').(string)($i+1);
 					$markerArray['###BROWSE_LINKS###'] .= ' '.$this->local_cObj->stdWrap($item, $this->config['pageBrowser.']['actPage_stdWrap.']).' ';
 				} else {
-					$temp_conf['additionalParams'] = $temp_conf_additionalParams.'&'.$this->getLinkUrl('', 'begin_at,id,backPid').'&begin_at='.(string)($i * $this->config['limit']);
+					$temp_conf['additionalParams'] = $temp_conf_additionalParams.'&'.$this->getLinkUrl(0, 'begin_at,backPid').'&begin_at='.(string)($i * $this->config['limit']);
 					$item = ($this->config['showPBrowserText']?$this->pi_getLL('pbrPage'):'').(string)($i+1);
 					$markerArray['###BROWSE_LINKS###'] .= ' '.$this->local_cObj->typolink($this->local_cObj->stdWrap($item, $this->config['pageBrowser.']['page_stdWrap.']), $temp_conf).' ';
 				}
@@ -828,7 +823,8 @@ class tx_ttnews extends tslib_pibase {
 	function get_content_news_list($itemparts, $selectConf, $prefix_display) {
 
 		$res = $this->cObj->exec_getQuery('tt_news', $selectConf); //get query for list contents
-		$itemsOut = '';
+		$itemsOut = '';	
+	
 
 		$cc = 0;
 		// Getting elements
@@ -838,18 +834,13 @@ class tx_ttnews extends tslib_pibase {
 				$this->local_cObj->setCurrentVal($row['type'] == 1 ? $row['page'] : $row['ext_url']);
 				$wrappedSubpartArray['###LINK_ITEM###'] = $this->local_cObj->typolinkWrap($this->conf['pageTypoLink.']);
 			} else {
-
-
-				##### caching/indexing
 				$temp_conf = $this->typolink_conf;
 				$this->local_cObj->setCurrentVal($this->config['PIDitemDisplay']);
-				$temp_conf['additionalParams'] .= '&'.$this->getLinkUrl(0, 'id,type').'&tt_news='.$row['uid'];
 				$temp_conf['useCacheHash'] = $this->allowCaching;
 				$temp_conf['no_cache'] = !$this->allowCaching;
 				$temp_conf['target'] = $this->config['itemLinkTarget'];
+				$temp_conf['additionalParams'] .= '&'.$this->getLinkUrl(0).'&tt_news='.$row['uid'];
 				$wrappedSubpartArray['###LINK_ITEM###'] = explode('|', $this->local_cObj->typolink('|', $temp_conf));
-				##### caching/indexing  end
-
 			}
 			$markerArray = $this->getItemMarkerArray($row, $prefix_display);
 
@@ -874,9 +865,8 @@ class tx_ttnews extends tslib_pibase {
 	 */
 	function getLinkUrl($id = '', $excludeList = '') {
 		$queryString = array();
-		$queryString['id'] = 'id='.($id ? $id : $GLOBALS['TSFE']->id);
+		#$queryString['id'] = 'id='.($id ? $id : $GLOBALS['TSFE']->id);
 
-		#$queryString['type'] = $this->config['itemLinkType'] ? 'type='.$this->config['itemLinkType']:'';
 		$queryString['backPid'] = 'backPid='.($this->config['backPid']?$this->config['backPid']:$GLOBALS['TSFE']->id);
 		$queryString['begin_at'] = t3lib_div::_GP('begin_at') ? 'begin_at='.t3lib_div::_GP('begin_at'):'';
 		$queryString['swords'] = t3lib_div::_GP('swords') ? 'swords='.rawurlencode(t3lib_div::_GP('swords')):'';
@@ -908,10 +898,6 @@ class tx_ttnews extends tslib_pibase {
 	 */
 	function getSelectConf($where, $noPeriod = 0) {
 
-		$this->setPidlist($this->config['pid_list']);
-
-		$this->initRecursive($this->config['recursive']);
-		$this->generatePageArray();
 
 		// Get news
 		$selectConf = Array();
@@ -935,10 +921,12 @@ class tx_ttnews extends tslib_pibase {
 				}
 			}
 		}
+		
+		
 		if ($this->arcExclusive) {
 			if ($this->conf['enableArchiveDate']) {
 				if ($this->arcExclusive < 0) {
-					
+		
 					$selectConf['where'] .= ' AND (tt_news.archivedate=0 OR tt_news.archivedate>'.$GLOBALS['SIM_EXEC_TIME'].')';
 				} elseif ($this->arcExclusive > 0) {
 					$selectConf['where'] .= ' AND tt_news.archivedate<'.$GLOBALS['SIM_EXEC_TIME'];
@@ -966,39 +954,13 @@ class tx_ttnews extends tslib_pibase {
 			$selectConf['where'] .= ' AND (IFNULL(tt_news_cat_mm.uid_foreign,0) '.($this->config['categoryMode'] < 0?'NOT ':'').'IN ('.($this->catExclusive?$this->catExclusive:0).'))';
 		}
 
-		// t3lib_div::debug($selectConf);
+		# t3lib_div::debug($selectConf);
 		return $selectConf;
 	}
 
 
 
-	/**
-	 * Sets the pid_list internal var. This var is used in the query to find news records from
-	 * pages given in the 'starting point' field of the content element.
-	 *
-	 * @param	string		$pid_list: pid or commaseparated list of pids
-	 * @return	void
-	 */
-	function setPidlist($pid_list) {
-		$this->pid_list = $pid_list;
-	}
-
-	/**
-	 * Extends the internal pid_list by the levels given by $recursive
-	 *
-	 * @param	integer		$recursive: number of level to extend the pid_list
-	 * @return	void
-	 */
-	function initRecursive($recursive) {
-		if ($recursive) {
-			$pid_list_arr = explode(',', $this->pid_list);
-			$this->pid_list = '';
-			while (list(, $val) = each($pid_list_arr)) {
-				$this->pid_list .= $val.','.$this->cObj->getTreeList($val, intval($recursive));
-			}
-			$this->pid_list = ereg_replace(",$", '', $this->pid_list);
-		}
-	}
+	
 
 	/**
 	 * Getting all tt_news_cat categories into internal array
@@ -1069,10 +1031,12 @@ class tx_ttnews extends tslib_pibase {
 		$imgsCaptions = explode(chr(10), $row['imagecaption']);
 		reset($imgs);
 		$cc = 0;
+		
 		// unset the img in the image array in single view if the var firstImageIsPreview is set
 		if (count($imgs) > 1 && $this->config['firstImageIsPreview'] && $textRenderObj == 'displaySingle') {
 			unset($imgs[0]);
 			unset($imgsCaptions[0]);
+			$cc = 1;
 		}
 
 		while (list(, $val) = each($imgs)) {
@@ -1192,7 +1156,7 @@ class tx_ttnews extends tslib_pibase {
 					// fill parameter array for typolink
 					$temp_conf = $this->typolink_conf;
 					$this->local_cObj->setCurrentVal($this->config['catSelectorTargetPid']?$this->config['catSelectorTargetPid']:$GLOBALS['TSFE']->id);
-					$temp_conf['additionalParams'] .= '&'.$this->getLinkUrl(0, 'id,cat,backPid').'&cat='.$this->categories[$row['uid']][$key]['catid'];
+					$temp_conf['additionalParams'] .= '&'.$this->getLinkUrl(0, 'cat,backPid').'&cat='.$this->categories[$row['uid']][$key]['catid'];
 					$temp_conf['useCacheHash'] = 0;
 					$temp_conf['no_cache'] = 1;
 					$temp_conf['target'] = $this->config['itemLinkTarget'];
@@ -1227,7 +1191,7 @@ class tx_ttnews extends tslib_pibase {
 							$catPicConf['image.']['stdWrap.']['typolink.']['useCacheHash'] = $this->allowCaching;
 							$catPicConf['image.']['stdWrap.']['typolink.']['no_cache'] = !$this->allowCaching;
 							$catPicConf['image.']['stdWrap.']['typolink.']['target'] = $this->config['itemLinkTarget'];
-							$catPicConf['image.']['stdWrap.']['typolink.']['additionalParams'] = $temp_conf['additionalParams'].'&'.$this->getLinkUrl(0, 'id,cat,backPid').'&cat='.$this->categories[$row['uid']][$key]['catid'];
+							$catPicConf['image.']['stdWrap.']['typolink.']['additionalParams'] = $temp_conf['additionalParams'].'&'.$this->getLinkUrl(0, 'cat,backPid').'&cat='.$this->categories[$row['uid']][$key]['catid'];
 							$catPicConf['image.']['altText'] = $this->pi_getLL('altTextCatSelector').$this->categories[$row['uid']][$key]['title'];
 						}
 
@@ -1281,7 +1245,7 @@ class tx_ttnews extends tslib_pibase {
 				$veryLocal_cObj->setCurrentVal($row['type'] == 1 ? $row['page'] : $row['ext_url']);
 			} else {
 
-				$tmpConf['10.']['default.']['typolink.']['additionalParams.']['wrap'] .= '&'.$this->getLinkUrl(0, 'id');
+				$tmpConf['10.']['default.']['typolink.']['additionalParams.']['wrap'] .= '&'.$this->getLinkUrl(0);
 			}
 			$lines[] = $veryLocal_cObj->cObjGetSingle($this->conf['getRelatedCObject'], $tmpConf, 'getRelated');
 		}
@@ -1289,6 +1253,7 @@ class tx_ttnews extends tslib_pibase {
 	}
 
 
+	
 	/**
 	 * Calls user function defined in TypoScript
 	 *
