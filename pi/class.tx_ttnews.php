@@ -2014,9 +2014,11 @@ class tx_ttnews extends tslib_pibase {
 		} else {
 			$markerArray['###NEWS_COPYRIGHT###'] = '';
 		}
-		//promoting TYPO3 in atom feeds
-		$markerArray['###TYPO3_VERSION###'] = $GLOBALS['TYPO_VERSION'];
-
+		//promoting TYPO3 in atom feeds, supress the subversion
+		$version = explode('.',($GLOBALS['TYPO3_VERSION']?$GLOBALS['TYPO3_VERSION']:$GLOBALS['TYPO_VERSION']));
+		unset($version[2]);
+		$markerArray['###TYPO3_VERSION###'] = implode($version,'.');
+		
 		return $markerArray;
 	}
 
