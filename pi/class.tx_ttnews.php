@@ -120,6 +120,8 @@ class tx_ttnews extends tslib_pibase {
 		// Init FlexForm configuration for plugin:
 		$this->pi_initPIflexForm();
 		$this->enableFields = $this->cObj->enableFields('tt_news');
+		
+		$this->initCategories();
 		 
 		// pid_list is the pid/list of pids from where to fetch the news items.
 		$this->config['pid_list'] = trim($this->cObj->stdWrap($this->conf['pid_list'], $this->conf['pid_list.']));
@@ -128,8 +130,7 @@ class tx_ttnews extends tslib_pibase {
 		 
 		 
 		$recursive = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'recursive', 'sDEF');
-		$this->config['recursive'] = is_numeric($recursive)?$recursive:
-		$this->cObj->stdWrap($conf['recursive'], $conf['recursive.']);
+		$this->config['recursive'] = is_numeric($recursive) ? $recursive :	$this->cObj->stdWrap($conf['recursive'], $conf['recursive.']);
 		list($pid) = explode(',', $this->config['pid_list']);
 		$this->pid = $pid;
 		 
@@ -140,8 +141,16 @@ class tx_ttnews extends tslib_pibase {
 		$this->config['code'] = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'what_to_display', 'sDEF');
 		$this->config['code'] = $this->config['code']?$this->config['code']:
 		$this->cObj->stdWrap($this->conf['code'], $this->conf['code.']);
-		 
-		$this->config['select_deselect_categories'] = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'select_deselect_categories', 'sDEF');
+//		 t3lib_div::debug(array(
+//			$this->config['code'],
+//			$this->conf['selectDeselectCategories'],
+//			$this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'select_deselect_categories', 'sDEF')
+//				)
+//			);
+
+		$select_deselect_categories = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'select_deselect_categories', 'sDEF');
+		$this->config['select_deselect_categories'] = $select_deselect_categories?$select_deselect_categories:$this->conf['selectDeselectCategories'];
+		
 		$this->config['category_selection'] = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'category_selection', 'sDEF');
 		$this->config['archive'] = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'archive', 'sDEF');
 		 
@@ -467,7 +476,7 @@ $content = $this->cObj->substituteMarkerArrayCached($noItemsMsg, $markerArray);
 		debug($this->categories);
 		 
 		*/
-		$this->initCategories();
+		
 		 
 		$where = '';
 		$content = '';
@@ -789,9 +798,9 @@ $content = $this->cObj->substituteMarkerArrayCached($noItemsMsg, $markerArray);
 			$this->catExclusive = intval(t3lib_div::_GP('cat'));
 			$this->config['category_selection'] = intval(t3lib_div::_GP('cat'));
 		}
-		if ($this->config['category_selection'] != '') {
+		if ($this->config['category_selection']) {
 			$selectConf['leftjoin'] = 'tt_news_cat_mm ON tt_news.uid = tt_news_cat_mm.uid_local';
-			if ($this->config['select_deselect_categories'] != 1)$selectConf['where'] .= ' AND (IFNULL(tt_news_cat_mm.uid_foreign,0) '.($this->config['select_deselect_categories'] == 3?"NOT ":"").'IN ('.$this->config['category_selection'].'))';
+			if ($this->config['select_deselect_categories'] != 1)$selectConf['where'] .= ' AND (IFNULL(tt_news_cat_mm.uid_foreign,0) '.($this->config['select_deselect_categories'] == 3?'NOT ':'').'IN ('.$this->config['category_selection'].'))';
 			#   $selectConf['groupBy'] .= 'uid';
 		}
 		 
@@ -967,17 +976,20 @@ $content = $this->cObj->substituteMarkerArrayCached($noItemsMsg, $markerArray);
 				if ($this->config['catImageMode'] == 0 or empty($this->categories[$row['uid']][$key]['image'])) {
 					$markerArray['###NEWS_CATEGORY_IMAGE###'] = '';
 				} else {
-					$lConf['image.']['file'] = 'uploads/pics/'.$this->categories[$row['uid']][$key]['image'];
-					$lConf['image.']['file.']['maxW'] = intval($this->config['catImageMaxWidth']);
-					$lConf['image.']['file.']['maxH'] = intval($this->config['catImageMaxHeight']);
-					$lConf['image.']['stdWrap.']['spaceAfter'] = 0;
+					$catPicConf = array();
+					$catPicConf['image.']['file'] = 'uploads/pics/'.$this->categories[$row['uid']][$key]['image'];
+					$catPicConf['image.']['file.']['maxW'] = intval($this->config['catImageMaxWidth']);
+					$catPicConf['image.']['file.']['maxH'] = intval($this->config['catImageMaxHeight']);
+					$catPicConf['image.']['stdWrap.']['spaceAfter'] = 0;
+					// clear the imagewrap to prevent category image from beeing wrapped in a table 
+					$lConf['imageWrapIfAny'] = '';
 					if ($this->config['catImageMode'] != 1) {
-						$lConf['image.']['stdWrap.']['typolink.']['parameter'] = ($this->config['catImageMode'] == 2?$this->categories[$row['uid']][$key]['shortcut']:$GLOBALS['TSFE']->id);
-						$lConf['image.']['stdWrap.']['typolink.']['additionalParams'] = ($this->config['catImageMode'] == 2?"":"&cat=".$this->categories[$row['uid']][$key]['catid']);
+						$catPicConf['image.']['stdWrap.']['typolink.']['parameter'] = ($this->config['catImageMode'] == 2?$this->categories[$row['uid']][$key]['shortcut']:$GLOBALS['TSFE']->id);
+						$catPicConf['image.']['stdWrap.']['typolink.']['additionalParams'] = ($this->config['catImageMode'] == 2?"":"&cat=".$this->categories[$row['uid']][$key]['catid']);
 					}
 					//stdWrap.htmlSpecialChars = 1")??? for xml &amp;
-					$lConf['image.']['altText'] = $this->categories[$row['uid']][$key]['title'];
-					$theCatImgCodeArray[] = $this->local_cObj->IMAGE($lConf['image.']);
+					$catPicConf['image.']['altText'] = $this->categories[$row['uid']][$key]['title'];
+					$theCatImgCodeArray[] = $this->local_cObj->IMAGE($catPicConf['image.']);
 				}
 			}
 			if ($this->config['catTextMode'] != 0) {
