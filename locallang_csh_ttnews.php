@@ -42,6 +42,8 @@ $LOCAL_LANG = Array (
 		'.details' => 'Uutis tapahtumat ovat tyypillisesti web-sivustosi etusivun materiaalia, joista on linkki uutisjutun kokonaisuuteen. Ne voivat olla myös linkkejä sivustosi johonkin artikkeliin.',
 	),
 	'tr' => Array (
+		'.description' => 'Haberler sistemde yapýlandýrýlýyor',
+		'.details' => '"Haberler" nesnesi websitenizin önsayfanýza ve tüm haberler bölümüne link saðlar.Sistemde ayrýca Baþlýklar sunar(linkler tüm sayfaya yönlendirir)',
 	),
 	'se' => Array (
 	),
@@ -94,6 +96,12 @@ $LOCAL_LANG = Array (
 	'jp' => Array (
 	),
 	'vn' => Array (
+	),
+	'ca' => Array (
+	),
+	'ba' => Array (
+	),
+	'kr' => Array (
 	),
 );
 ?>

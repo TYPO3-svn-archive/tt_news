@@ -70,8 +70,8 @@
  *
  */
 
-require_once(PATH_t3lib.'class.t3lib_xml.php');
-require_once(PATH_tslib.'class.tslib_pibase.php');
+require_once (PATH_t3lib.'class.t3lib_xml.php');
+require_once (PATH_tslib.'class.tslib_pibase.php');
 
 /**
  * Plugin 'news' for the 'tt_news' extension.
@@ -551,7 +551,6 @@ class tx_ttnews extends tslib_pibase {
 
 		$where = '';
 		$content = '';
-#debug ($this->pi_getLL('pi_list_browseresults_prev',$alt='',$hsc=FALSE));
 		switch($theCode) {
 			case 'LATEST':
 			$prefix_display = 'displayLatest';
@@ -687,8 +686,7 @@ class tx_ttnews extends tslib_pibase {
 					$selectConf['selectFields'] = 'DISTINCT tt_news.uid,tt_news.*';
 				}
 
-				#$selectConf['max'] = intval($this->config['limit']+1);
-#debug ($selectConf);
+		
 				// exclude the LATEST template from changing its content with the pagebrowser. This can be overridden by setting the conf var latestWithPagebrowser
 				if ($theCode != 'LATEST' && !$this->conf['latestWithPagebrowser']) {
 					$selectConf['begin'] = $this->piVars['pointer']*$this->config['limit'];
@@ -887,13 +885,33 @@ class tx_ttnews extends tslib_pibase {
 			$this->config['categoryMode'] = 1; // force 'select categories' mode if cat is given in GPvars
 			$this->catExclusive = $this->config['catSelection']; // override category selection from other news content-elements with the selection from the catselector
 		}
+		
+// find newsitems by their categories if categoryMode is '1' or '-1'
+if ($this->conf['oldCatDeselectMode'] && $this->config['categoryMode']==-1) {
+		    $selectConf['leftjoin'] = 'tt_news_cat_mm ON tt_news.uid = tt_news_cat_mm.uid_local';
+			$selectConf['where'] .= ' AND (IFNULL(tt_news_cat_mm.uid_foreign,0) NOT IN ('.($this->catExclusive?$this->catExclusive:0).'))';
+		} elseif ($this->catExclusive) {
+			if ($this->config['categoryMode']==1) {  
+				$selectConf['leftjoin'] = 'tt_news_cat_mm ON tt_news.uid = tt_news_cat_mm.uid_local';
+				$selectConf['where'] .= ' AND (IFNULL(tt_news_cat_mm.uid_foreign,0) IN ('.($this->catExclusive?$this->catExclusive:0).'))';
+			}
+			if ($this->config['categoryMode']==-1) {
+				$selectConf['leftjoin'] = 'tt_news_cat_mm ON (tt_news.uid = tt_news_cat_mm.uid_local AND (tt_news_cat_mm.uid_foreign=';
+				if (strstr($this->catExclusive,',')) {
+    				$selectConf['leftjoin'] .= ereg_replace(',', ' OR tt_news_cat_mm.uid_foreign=', $this->catExclusive);
+				} else {
+					$selectConf['leftjoin'] .= $this->catExclusive?$this->catExclusive:0;
+				}
+				$selectConf['leftjoin'] .= '))';
+				$selectConf['where'] .= ' AND (tt_news_cat_mm.uid_foreign IS NULL)';
+			}
+		} elseif ($this->config['categoryMode']) {
+            $selectConf['leftjoin'] = 'tt_news_cat_mm ON tt_news.uid = tt_news_cat_mm.uid_local';
+            $selectConf['where'] .= ' AND (IFNULL(tt_news_cat_mm.uid_foreign,\'nocat\') '.($this->config['categoryMode']>0?'':'!').'=\'nocat\')';
+        }
 
-		// find newsitems by their categories if categoryMode is '1' or '-1'
-		if ($this->config['categoryMode']) {
-			$selectConf['leftjoin'] = 'tt_news_cat_mm ON tt_news.uid = tt_news_cat_mm.uid_local';
-			$selectConf['where'] .= ' AND (IFNULL(tt_news_cat_mm.uid_foreign,0) '.($this->config['categoryMode'] < 0?'NOT ':'').'IN ('.($this->catExclusive?$this->catExclusive:0).'))';
-		}
-
+		
+ 	
 		// function Hook for processing the selectConf array
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tt_news']['selectConfHook'])) {
 					foreach($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tt_news']['selectConfHook'] as $_classRef) {
@@ -901,7 +919,7 @@ class tx_ttnews extends tslib_pibase {
 						$selectConf = $_procObj->processSelectConfHook($this);
 					}
 				}
-		//debug(array('select_conf',$this->piVars,$selectConf,time()));
+		#debug(array('select_conf',$this->piVars,$selectConf,$this->catExclusive));
 		return $selectConf;
 	}
 
@@ -1070,6 +1088,8 @@ class tx_ttnews extends tslib_pibase {
 			$markerArray['###TEXT_CAT_LATEST###'] = '';
 
 		if (isset($this->categories[$row['uid']]) && ($this->config['catImageMode'] || $this->config['catTextMode'])) {
+			
+			
 			$markerArray['###TEXT_CAT###'] = $this->pi_getLL('textCat');
 			$markerArray['###TEXT_CAT_LATEST###'] = $this->pi_getLL('textCatLatest');
 
@@ -1115,7 +1135,13 @@ class tx_ttnews extends tslib_pibase {
 					// add linked category image to output array
 					$theCatImgCodeArray[] = $this->local_cObj->IMAGE($catPicConf['image.']);
 				}
+				// Load the uid of the last assigned category to the register 'newsCategoryUid'
+				$this->local_cObj->LOAD_REGISTER(array('newsCategoryUid' => $this->categories[$row['uid']][$key]['catid']),'');
 			}
+			
+			
+			 
+			
 			if ($this->config['catTextMode'] != 0) {
 				$news_category = implode(', ', array_slice($news_category, 0, intval($this->config['maxCatTexts'])));
 				if ($this->config['catTextLength']) { // crop the complete category titles if 'catTextLength' value is given

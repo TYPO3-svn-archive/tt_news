@@ -33,9 +33,9 @@
  */
 
 /**
- * Example function for adding 4 new imageWraps to the images in "SINGLE" view. 
- * Each image will be wrapped with it's own css class to add f.e. different background colors. 
- * The function expects that you define image wraps in your TS setup, 
+ * Example function that adds 4 new imageWraps to the images in "SINGLE" view. 
+ * Each image will be wrapped with its own css-class to display f.e. different background colors. 
+ * The function expects, that you define image wraps in your TS setup, 
  * that contain a number (see example TS below)  
  * "imageWrapIfAny" (without number) can still be used to wrap all images
  */ 
@@ -67,14 +67,14 @@
 /** 
  * Example function for displaying amenu items in yearly periods.
  *   
- * @param 	array	$paramArray: markerArray and config of the current news item
+ * @param 	array	$paramArray: $markerArray and $config of the current news item in an array
  * @return	array	the processed markerArray 
  */
 function user_imageMarkerFunc($paramArray,$conf){
 
 	$markerArray = $paramArray[0];
 	$lConf = $paramArray[1];
-    $this = &$conf['parentObj']; 
+    $this = &$conf['parentObj']; // make a reference to the parent-object
 	$row = $this->local_cObj->data;
 	
 	$imageNum = isset($lConf['imageCount']) ? $lConf['imageCount']:1;
@@ -85,7 +85,7 @@ function user_imageMarkerFunc($paramArray,$conf){
 	reset($imgs);
 	$cc = 0;
 
-	// unset the img in the image array in single view if the var firstImageIsPreview is set
+	// unset the first image in the array (in single view) if the TS-var 'firstImageIsPreview' is set
 	if (count($imgs) > 1 && $this->config['firstImageIsPreview'] && $textRenderObj == 'displaySingle') {
 		unset($imgs[0]);
 		unset($imgsCaptions[0]);

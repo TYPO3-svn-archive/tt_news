@@ -36,6 +36,7 @@ $LOCAL_LANG = Array (
 		'.description' => 'Sisäänrakennetun uutisjärjestelmän luokat',
 	),
 	'tr' => Array (
+		'.description' => 'Haberler Sistem kategorilerinde yapýlandýrýlýyor',
 	),
 	'se' => Array (
 	),
@@ -86,6 +87,12 @@ $LOCAL_LANG = Array (
 	'jp' => Array (
 	),
 	'vn' => Array (
+	),
+	'ca' => Array (
+	),
+	'ba' => Array (
+	),
+	'kr' => Array (
 	),
 );
 ?>

@@ -61,7 +61,7 @@ function user_processAmenu($amenuItemsArr, $conf){
 	// template-part for the old template
 	$tmpl = '<tr><td bgcolor="'.$lConf['color3.']['wrap'].'" valign="top" nowrap="nowrap">###ARCHIVE_YEAR###</td></tr>';
 	
-	// template-part for the new css based template
+	// template-part for the new css based template:
 	// $tmpl = '<div class="news-archive-item">###ARCHIVE_YEAR###</div>';
 	
 			

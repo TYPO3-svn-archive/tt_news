@@ -46,6 +46,8 @@ $LOCAL_LANG = Array (
 		'pi_plus_wiz_description' => 'Lisää uutiset sivulle',
 	),
 	'tr' => Array (
+		'pi_title' => 'Haberler',
+		'pi_plus_wiz_description' => 'Sayfaya haber ekle',
 	),
 	'se' => Array (
 	),
@@ -98,6 +100,12 @@ $LOCAL_LANG = Array (
 	'jp' => Array (
 	),
 	'vn' => Array (
+	),
+	'ca' => Array (
+	),
+	'ba' => Array (
+	),
+	'kr' => Array (
 	),
 );
 ?>
