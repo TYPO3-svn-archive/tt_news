@@ -34,7 +34,8 @@
 						<numIndex index="1">SEARCH</numIndex>
 					</numIndex>
 					</items>
-					<maxitems>4</maxitems>
+					<itemsProcFunc>tx_ttnews_itemsProcFunc->user_insertExtraCodes</itemsProcFunc>
+					<maxitems>100</maxitems>
 					<size>5</size>
 					<multiple>1</multiple>
 					<selectedListStyle>width:150px</selectedListStyle>
@@ -49,15 +50,15 @@
 					<type>select</type>
 					<items type="array">
 						<numIndex index="0" type="array">
-							<numIndex index="0">Show all (don't care about selection below)</numIndex>
+							<numIndex index="0">LLL:EXT:tt_news/locallang_tca.php:tt_news.pi_flexform.category_selection_showAll</numIndex>
 							<numIndex index="1">0</numIndex>
 						</numIndex>
 						<numIndex index="1" type="array">
-							<numIndex index="0">Show items with selected categories</numIndex>
+							<numIndex index="0">LLL:EXT:tt_news/locallang_tca.php:tt_news.pi_flexform.category_selection_showSelected</numIndex>
 							<numIndex index="1">1</numIndex>
 						</numIndex>
 						<numIndex index="2" type="array">
-							<numIndex index="0">DON'T show items with selected categories</numIndex>
+							<numIndex index="0">LLL:EXT:tt_news/locallang_tca.php:tt_news.pi_flexform.category_selection_DontShowSelected</numIndex>
 							<numIndex index="1">-1</numIndex>
 						</numIndex>
 					</items>
@@ -73,7 +74,7 @@
 					<type>select</type>
 					<items type="array">
 						<numIndex index="100">
-							<numIndex index="0">[Not categorized]</numIndex>
+							<numIndex index="0">LLL:EXT:tt_news/locallang_tca.php:tt_news.pi_flexform.category_selection_notCategorized</numIndex>
 							<numIndex index="1">0</numIndex>
 						</numIndex>
 					</items>

@@ -698,6 +698,7 @@ class tx_ttnews extends tslib_pibase {
 
 		$res = $this->cObj->exec_getQuery('tt_news', $selectConf); //get query for list contents
 		$itemsOut = '';
+		$itempartsCount = count($itemparts);
 
 		$cc = 0;
 		// Getting elements
@@ -715,12 +716,17 @@ class tx_ttnews extends tslib_pibase {
 			}
 			$markerArray = $this->getItemMarkerArray($row, $prefix_display);
 
+			
+			    $layoutNum = $cc%$itempartsCount;
+				
+			
 			// Store the result of template parsing in the Var $itemsOut, use the alternating layouts
-			$itemsOut .= $this->cObj->substituteMarkerArrayCached($itemparts[($cc%count($itemparts))], $markerArray, array(), $wrappedSubpartArray);
+			$itemsOut .= $this->cObj->substituteMarkerArrayCached($itemparts[$layoutNum], $markerArray, array(), $wrappedSubpartArray);
 			$cc++;
 			if ($cc == $this->config['limit']) {
-				break;
-			}
+			   break;
+			} 
+			
 		}
 		
 		
@@ -788,7 +794,14 @@ if ($this->piVars['arc']) {
 			$selectConf['leftjoin'] = 'tt_news_cat_mm ON tt_news.uid = tt_news_cat_mm.uid_local';
 			$selectConf['where'] .= ' AND (IFNULL(tt_news_cat_mm.uid_foreign,0) '.($this->config['categoryMode'] < 0?'NOT ':'').'IN ('.($this->catExclusive?$this->catExclusive:0).'))';
 		}
-
+		
+		// function Hook for processing the selectConf array
+		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tt_news']['selectConfHook'])) {
+					foreach($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tt_news']['selectConfHook'] as $_classRef) {
+						$_procObj = &t3lib_div::getUserObj($_classRef);
+						$selectConf = $_procObj->processSelectConfHook($this);
+					}
+				}
 		//debug(array('select_conf',$this->piVars,$selectConf,time()));
 		return $selectConf;
 	}

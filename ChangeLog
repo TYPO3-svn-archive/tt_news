@@ -1,3 +1,43 @@
+2004-09-03	rupertgermann
+	* cvsroot/typo3xdev/tx_ttnews/ext_emconf.php 1.12:
+	* cvsroot/typo3xdev/tx_ttnews/locallang.php 1.9:
+	* cvsroot/typo3xdev/tx_ttnews/locallang_tca.php 1.14:
+	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews.php 1.44:
+	* cvsroot/typo3xdev/tx_ttnews/pi/locallang.php 1.14:
+		- small fix for the image altTexts (already included in 1.6.3)
+		- new language files from TER
+
+2004-08-29	rupertgermann
+	* cvsroot/typo3xdev/tx_ttnews/doc/manual.sxw 1.8:
+	* cvsroot/typo3xdev/tx_ttnews/ext_emconf.php 1.11:
+		- changed version number to 1.6.1
+
+	* cvsroot/typo3xdev/tx_ttnews/ext_typoscript_setup.txt 1.27:
+	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews.php 1.43:
+	* cvsroot/typo3xdev/tx_ttnews/pi/news_template.tmpl 1.13:
+	* cvsroot/typo3xdev/tx_ttnews/res/ext_typoscript_setup.txt 1.3:
+	* cvsroot/typo3xdev/tx_ttnews/res/tt_news_article.gif 1.1:
+	* cvsroot/typo3xdev/tx_ttnews/res/tt_news_exturl.gif 1.1:
+	* cvsroot/typo3xdev/tx_ttnews/res/tt_news_medialinks.html 1.5:
+	* cvsroot/typo3xdev/tx_ttnews/res/tt_news_styles.css 1.3:
+	* cvsroot/typo3xdev/tx_ttnews/tca.php 1.12:
+		- changed default setting for the field datetime in tca.php to 24/hours format:  'default' => mktime(date("H"),date("i"),0,date("m"),date("d"), date("Y")), old setting for the hours was: date("h")
+		-> this influences the BE form, the “age” output and the archive.
+		
+		- Changed the building of the getRelatedCObject. -> Now it is (again) possible to wrap the titles of related news with stdWraps (e.g. crop)
+		
+		*Important*: this requires changes in the TS setup for tt_news -> see: example configuration in ext_typoscript_setup.txt, *and* it also requires that you change the old TS varname “PIDitemDisplay” to the new one “singlePid” in constants and setup. (otherwise the related news are not linked)
+		
+		- New feature: you can now configure the “order by” and “group by” parts of the query for the related news by TS. (new TS-vars: “orderBy” and “groupBy” )
+		- added “required” to the field newsfiles in tca.php
+		- added some conditions to the function getItemMarkerArray, that will render wraps only if an item is found
+		- changed the caching settings of the search function
+		- to save performance, the getRelated function is now only called, when displaying the "single view" template.
+
+2004-08-27	rupertgermann
+	* cvsroot/typo3xdev/tx_ttnews/ChangeLog 1.8:
+		- updated changelog
+
 2004-08-25	rupertgermann
 	* cvsroot/typo3xdev/tx_ttnews/ChangeLog 1.6:
 	* cvsroot/typo3xdev/tx_ttnews/doc/manual.sxw 1.7:
