@@ -126,8 +126,7 @@ class tx_ttnews extends tslib_pibase {
 		*  codes can be added by TS or FF with priority on FF
 		*/
 		$this->config['code'] = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'what_to_display', 'sDEF');
-		$this->config['code'] = $this->config['code']?$this->config['code']:
-		$this->cObj->stdWrap($this->conf['code'], $this->conf['code.']);
+		$this->config['code'] = $this->config['code'] ? $this->config['code'] : $this->cObj->stdWrap($this->conf['code'], $this->conf['code.']);
 
 		/**
 		* 	categories		
@@ -169,7 +168,7 @@ class tx_ttnews extends tslib_pibase {
 		$this->config['reverseAMenu'] = $this->conf['reverseAMenu'];
 		$this->config['archiveMenuNoEmpty'] = $this->conf['archiveMenuNoEmpty'];
 		$this->config['displayCurrentRecord'] = $this->conf['displayCurrentRecord'];
-		
+		$this->config['archListPid'] = $this->conf['archListPid'];
 		/**
 		* 	PID List		
 		*/ 
@@ -203,8 +202,9 @@ class tx_ttnews extends tslib_pibase {
 		// pid to return to when leaving single view
 		$backPid = intval($this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'backPid', 'sDEF'));
 		$backPid = $backPid?$backPid:intval($this->conf['backPid']);
-		$this->config['backPid'] = intval(t3lib_div::_GP('backPID'))?intval(t3lib_div::_GP('backPID')):$backPid; 
 		
+		$backPid = $backPid?$backPid:intval(t3lib_div::_GP('backPID')); 
+		$this->config['backPid'] = $backPid;
 		
 		// max items per page
 		$this->config['limit'] = t3lib_div::intInRange($this->conf['limit'], 0, 1000);
@@ -404,7 +404,7 @@ class tx_ttnews extends tslib_pibase {
 			while (list(, $pArr) = each($periodAccum)) {
 				// Print Item Title
 				$wrappedSubpartArray = array();
-				$wrappedSubpartArray['###LINK_ITEM###'] = array('<a href="'.$this->getLinkUrl(0).'&amp;pS='.$pArr['start'].'&amp;pL='.($pArr['stop']-$pArr['start']).'&amp;arc=1"'.($target?' target="'.$target.'"':'').'>', '</a>');
+				$wrappedSubpartArray['###LINK_ITEM###'] = array('<a href="'.$this->getLinkUrl($this->config['archListPid']?$this->config['archListPid']:0).'&amp;pS='.$pArr['start'].'&amp;pL='.($pArr['stop']-$pArr['start']).'&amp;arc=1"'.($target?' target="'.$target.'"':'').'>', '</a>');
 				 
 				$markerArray = array();
 				$veryLocal_cObj->start($pArr, '');
@@ -722,7 +722,7 @@ $content = $this->cObj->substituteMarkerArrayCached($noItemsMsg, $markerArray);
 		$queryString['id'] = 'id='.($id ? $id : $GLOBALS['TSFE']->id);
 		
 		$queryString['type'] = $this->config['itemLinkType'] ? 'type='.$this->config['itemLinkType'] : '';
-		$queryString['backPID'] = 'backPID='.$GLOBALS['TSFE']->id;
+		$queryString['backPID'] = 'backPID='.($this->config['backPid']?$this->config['backPid']:$GLOBALS['TSFE']->id);
 		$queryString['begin_at'] = t3lib_div::GPvar('begin_at') ? 'begin_at='.t3lib_div::GPvar('begin_at') :
 		 "";
 		$queryString['swords'] = t3lib_div::GPvar('swords') ? "swords=".rawurlencode(t3lib_div::GPvar('swords')) :
