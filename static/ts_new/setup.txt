@@ -86,6 +86,7 @@ plugin.tt_news {
   datetimeDaysToArchive = {$plugin.tt_news.datetimeDaysToArchive}
   enableArchiveDate = 1
   pageTypoLink.parameter.current = 1
+  useHRDates = {$plugin.tt_news.useHRDates}
 
   reverseAMenu = 1
   archiveMenuNoEmpty = 1

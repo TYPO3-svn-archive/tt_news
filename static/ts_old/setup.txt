@@ -115,6 +115,8 @@ plugin.tt_news {
   archiveTypoLink.parameter = {$plugin.tt_news.archiveTypoLink.parameter}
   reverseAMenu = 1
   archiveMenuNoEmpty = 1
+  useHRDates = {$plugin.tt_news.useHRDates}
+
   
  archiveTitleCObject = COA
   archiveTitleCObject {

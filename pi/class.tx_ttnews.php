@@ -207,12 +207,17 @@ class tx_ttnews extends tslib_pibase {
 
 		// Archive:
 		$this->config['archiveMode'] = trim($this->conf['archiveMode']) ; // month, quarter or year listing in AMENU
+		$this->config['archiveMode'] = $this->config['archiveMode']?$this->config['archiveMode']:'month';
 
 		// arcExclusive : -1=only non-archived; 0=don't care; 1=only archived
 		$arcExclusive = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'archive', 'sDEF');
 		$this->arcExclusive = $arcExclusive?$arcExclusive:$this->conf['archive'];
 
 		$this->config['datetimeDaysToArchive'] = intval($this->conf['datetimeDaysToArchive']);
+
+		if ($this->conf['useHRDates']) {
+			$this->convertDates();
+		}
 
 		// list of pages where news records will be taken from
 		$this->initPidList();
@@ -321,8 +326,7 @@ class tx_ttnews extends tslib_pibase {
 		if ($row['minval'] || $row['maxval']) {
 			// if ($row['minval']) {
 			$dateArr = array();
-			$arcMode = $this->config['archiveMode']?$this->config['archiveMode']:
-			'month';
+			$arcMode = $this->config['archiveMode'];
 			$c = 0;
 			do {
 				switch ($arcMode) {
@@ -394,7 +398,18 @@ class tx_ttnews extends tslib_pibase {
 					$amenuLinkCat = $this->catExclusive;
 				}
 
-				$wrappedSubpartArray['###LINK_ITEM###'] = explode('|', $this->pi_linkTP_keepPIvars('|', array('cat' => ($amenuLinkCat?$amenuLinkCat:null), 'pS' => $pArr['start'], 'pL' => ($pArr['stop'] - $pArr['start']), 'arc' => 1), $this->allowCaching, 1, ($archiveLink?$archiveLink:$GLOBALS['TSFE']->id)));
+				if ($this->conf['useHRDates']) {
+					$year = date('Y',$pArr['start']);
+					$month = date('m',$pArr['start']);
+					if ($arcMode == 'year') {
+						$archLinkArr = $this->pi_linkTP_keepPIvars('|', array('cat' => ($amenuLinkCat?$amenuLinkCat:null), 'year' => $year), $this->allowCaching, 1, ($archiveLink?$archiveLink:$GLOBALS['TSFE']->id));
+					} else {
+						$archLinkArr = $this->pi_linkTP_keepPIvars('|', array('cat' => ($amenuLinkCat?$amenuLinkCat:null), 'year' => $year, 'month' => $month), $this->allowCaching, 1, ($archiveLink?$archiveLink:$GLOBALS['TSFE']->id));
+					}
+					$wrappedSubpartArray['###LINK_ITEM###'] = explode('|', $archLinkArr);
+				} else {
+					$wrappedSubpartArray['###LINK_ITEM###'] = explode('|', $this->pi_linkTP_keepPIvars('|', array('cat' => ($amenuLinkCat?$amenuLinkCat:null), 'pS' => $pArr['start'], 'pL' => ($pArr['stop'] - $pArr['start']), 'arc' => 1), $this->allowCaching, 1, ($archiveLink?$archiveLink:$GLOBALS['TSFE']->id)));
+				}
 
 				$markerArray = array();
 				$veryLocal_cObj->start($pArr, '');
@@ -465,7 +480,12 @@ class tx_ttnews extends tslib_pibase {
 			}
 			// reset marker array
 			$wrappedSubpartArray = array();
-			$wrappedSubpartArray['###LINK_ITEM###'] = explode('|', $this->pi_linkTP_keepPIvars('|', array('tt_news' => null, 'backPid' => null), $this->allowCaching, '', $this->config['backPid'] ));
+			if ($this->conf['useHRDates']) {
+				$wrappedSubpartArray['###LINK_ITEM###'] = explode('|', $this->pi_linkTP_keepPIvars('|', array('tt_news' => null, 'backPid' => null, 'year' => $this->piVars['year'], 'month' => $this->piVars['month'], 'pointer'=>$this->piVars['pointer']), $this->allowCaching, 1, $this->config['backPid'] ));
+			} else {
+				$wrappedSubpartArray['###LINK_ITEM###'] = explode('|', $this->pi_linkTP_keepPIvars('|', array('tt_news' => null, 'backPid' => null), $this->allowCaching, '', $this->config['backPid'] ));
+
+			}
 			// set the title of the single view page to the title of the news record
 			if ($this->conf['substitutePagetitle']) {
 				$GLOBALS['TSFE']->page['title'] = $row['title'];
@@ -520,7 +540,7 @@ class tx_ttnews extends tslib_pibase {
 			$prefix_display = 'displayList';
 			$templateName = 'TEMPLATE_LIST';
 
-			$formURL = $this->pi_linkTP_keepPIvars_url(array('pointer' => null, 'cat' => null), 0, '', $this->config['searchPid']) ;
+			$formURL = $this->pi_linkTP_keepPIvars_url(array('pointer' => null, 'cat' => null), 0, 1, $this->config['searchPid']) ;
 			// Get search subpart
 			$t['search'] = $this->getNewsSubpart($this->templateCode, $this->spMarker('###TEMPLATE_SEARCH###'));
 			// Substitute markers for the searchform
@@ -591,7 +611,7 @@ class tx_ttnews extends tslib_pibase {
 				$this->piVars['pS'] = ($GLOBALS['SIM_EXEC_TIME'] - ($this->config['datetimeDaysToArchive'] * 86400));
 			}
 		}
-
+#debug ($this->piVars);
 		if ($this->piVars['pS'] && !$this->piVars['pL']) {
 			$noPeriod = 1; // override the period lenght checking in getSelectConf
 		}
@@ -698,7 +718,9 @@ class tx_ttnews extends tslib_pibase {
 						if ($this->conf['usePiBasePagebrowser']) {
 							$markerArray['###BROWSE_LINKS###'] = $this->pi_list_browseresults($this->conf['pageBrowser.']['showResultCount'], $this->conf['pageBrowser.']['tableParams']);
 						} else {
+						
 							$markerArray['###BROWSE_LINKS###'] = $this->makePageBrowser($this->conf['pageBrowser.']['showResultCount'], $this->conf['pageBrowser.']['tableParams']);
+							
 						}
 					}
 				}
@@ -782,12 +804,26 @@ class tx_ttnews extends tslib_pibase {
 					$catSPid = array_shift($this->categories[$row['uid']]);
 				}
 				$singlePid = $catSPid['single_pid']?$catSPid['single_pid']:$this->config['singlePid'];
+				if ($this->conf['useHRDates']) {
+					$wrappedSubpartArray['###LINK_ITEM###'] = explode('|', $this->pi_linkTP_keepPIvars('|', array(
+						'tt_news' => $row['uid'],
+						'backPid' => ($this->conf['dontUseBackPid']?null:$this->config['backPid']),
+						'year' => ($this->conf['dontUseBackPid']?null:($this->piVars['year']?$this->piVars['year']:null)),
+						'month' => ($this->conf['dontUseBackPid']?null:($this->piVars['month']?$this->piVars['month']:null))
+						), $this->allowCaching, 1, $singlePid));
 
-				$wrappedSubpartArray['###LINK_ITEM###'] = explode('|', $this->pi_linkTP_keepPIvars('|', array('tt_news' => $row['uid'], 'backPid' => ($this->conf['dontUseBackPid']?null:$this->config['backPid'])), $this->allowCaching, ($this->conf['dontUseBackPid']?1:0), $singlePid));
+					$this->local_cObj->LOAD_REGISTER(array('newsMoreLink' => $this->pi_linkTP_keepPIvars($this->pi_getLL('more'), array(
+						'tt_news' => $row['uid'],
+						'backPid' => ($this->conf['dontUseBackPid']?null:$this->config['backPid']),
+						'year' => ($this->conf['dontUseBackPid']?null:($this->piVars['year']?$this->piVars['year']:null)),
+						'month' => ($this->conf['dontUseBackPid']?null:($this->piVars['month']?$this->piVars['month']:null))
+						), $this->allowCaching, 1, $singlePid)), '');
+				} else {
+					$wrappedSubpartArray['###LINK_ITEM###'] = explode('|', $this->pi_linkTP_keepPIvars('|', array('tt_news' => $row['uid'], 'backPid' => ($this->conf['dontUseBackPid']?null:$this->config['backPid'])), $this->allowCaching, ($this->conf['dontUseBackPid']?1:0), $singlePid));
 
-				// fill the link string in a register to access it from TS
-				$this->local_cObj->LOAD_REGISTER(array('newsMoreLink' => $this->pi_linkTP_keepPIvars($this->pi_getLL('more'), array('tt_news' => $row['uid'], 'backPid' => ($this->conf['dontUseBackPid']?null:$this->config['backPid'])), $this->allowCaching, ($this->conf['dontUseBackPid']?1:0), $singlePid)), '');
-
+					// fill the link string in a register to access it from TS
+					$this->local_cObj->LOAD_REGISTER(array('newsMoreLink' => $this->pi_linkTP_keepPIvars($this->pi_getLL('more'), array('tt_news' => $row['uid'], 'backPid' => ($this->conf['dontUseBackPid']?null:$this->config['backPid'])), $this->allowCaching, ($this->conf['dontUseBackPid']?1:0), $singlePid)), '');
+				}
 			}
 
 			// XML
@@ -833,7 +869,6 @@ class tx_ttnews extends tslib_pibase {
 		// exclude latest from search
 		$selectConf['where'] = '1=1 ' . ($this->theCode == 'LATEST'?'':$where);
 
-		# if ($GLOBALS['TSFE']->sys_language_content >= -1) {
 		if ($this->sys_language_mode == 'strict' && $GLOBALS['TSFE']->sys_language_content) {
 			// sys_language_mode == 'strict': If a certain language is requested, select only news-records from the default language which have a translation. The translated articles will be overlayed later in the list or single function.
 			$tmpres = $this->cObj->exec_getQuery('tt_news', array('selectFields' => 'tt_news.l18n_parent', 'where' => 'tt_news.sys_language_uid = '.$GLOBALS['TSFE']->sys_language_content.$this->enableFields, 'pidInList' => $this->pid_list));
@@ -847,7 +882,6 @@ class tx_ttnews extends tslib_pibase {
 			// sys_language_mode != 'strict': If a certain language is requested, select only news-records in the default language. The translated articles (if they exist) will be overlayed later in the list or single function.
 			$selectConf['where'] .= ' AND tt_news.sys_language_uid IN (0,-1)';
 		}
-		# }
 
 		if ($this->arcExclusive > 0) {
 			if ($this->piVars['arc']) {
@@ -855,10 +889,10 @@ class tx_ttnews extends tslib_pibase {
 				$this->arcExclusive = $this->piVars['arc'];
 			}
 			// select news from a certain period
-			if (!$noPeriod && $this->piVars['pS']) {
-				$selectConf['where'] .= ' AND tt_news.datetime>=' . $this->piVars['pS'];
-				if ($this->piVars['pL']) {
-					$selectConf['where'] .= ' AND tt_news.datetime<' . ($this->piVars['pS'] + $this->piVars['pL']);
+			if (!$noPeriod && intval($this->piVars['pS'])) {
+				$selectConf['where'] .= ' AND tt_news.datetime>=' . intval($this->piVars['pS']);
+				if (intval($this->piVars['pL'])) {
+					$selectConf['where'] .= ' AND tt_news.datetime<' . (intval($this->piVars['pS']) + intval($this->piVars['pL']));
 				}
 			}
 		}
@@ -1215,7 +1249,13 @@ class tx_ttnews extends tslib_pibase {
 	 * @return	string		Output HTML, wrapped in <div>-tags with a class attribute
 	 */
 	function makePageBrowser($showResultCount=1,$tableParams='',$pointerName='pointer') {
-
+  if ($this->conf['useHRDates']) {
+			$tmpPS = $this->piVars['pS'];
+			unset($this->piVars['pS']);
+			$tmpPL = $this->piVars['pL'];
+			unset($this->piVars['pL']);
+		}
+		#debug ($this->piVars);
 			// Initializing variables:
 		$pointer=$this->piVars[$pointerName];
 		$count=$this->internal['res_count'];
@@ -1229,7 +1269,7 @@ class tx_ttnews extends tslib_pibase {
 		if ($this->pi_alwaysPrev>=0)	{
 			if ($pointer>0)	{
 				$links[]='
-					<td nowrap="nowrap"><p>'.$this->pi_linkTP_keepPIvars($this->pi_getLL('pi_list_browseresults_prev','< Previous'),array($pointerName=>($pointer-1?$pointer-1:'')),1).'</p></td>';
+					<td nowrap="nowrap"><p>'.$this->pi_linkTP_keepPIvars($this->pi_getLL('pi_list_browseresults_prev','< Previous'),array($pointerName=>($pointer-1?$pointer-1:'')),$this->allowCaching).'</p></td>';
 			} elseif ($this->pi_alwaysPrev)	{
 				$links[]='
 					<td nowrap="nowrap"><p>'.$this->pi_getLL('pi_list_browseresults_prev','< Previous').'</p></td>';
@@ -1239,13 +1279,13 @@ class tx_ttnews extends tslib_pibase {
 		for($a=0;$a<$max;$a++)	{
 			$links[]='
 					<td'.($pointer==$a?$this->pi_classParam('browsebox-SCell'):'').' nowrap="nowrap"><p>'.
-				$this->pi_linkTP_keepPIvars(trim($this->pi_getLL('pi_list_browseresults_page','Page').' '.($a+1)),array($pointerName=>($a?$a:'')),1).
+				$this->pi_linkTP_keepPIvars(trim($this->pi_getLL('pi_list_browseresults_page','Page').' '.($a+1)),array($pointerName=>($a?$a:'')),$this->allowCaching).
 				'</p></td>';
 		}
 		if ($pointer<ceil($count/$results_at_a_time)-1)	{
 			$links[]='
 					<td nowrap="nowrap"><p>'.
-				$this->pi_linkTP_keepPIvars($this->pi_getLL('pi_list_browseresults_next','Next >'),array($pointerName=>$pointer+1),1).
+				$this->pi_linkTP_keepPIvars($this->pi_getLL('pi_list_browseresults_next','Next >'),array($pointerName=>$pointer+1),$this->allowCaching).
 				'</p></td>';
 		}
 
@@ -1276,6 +1316,10 @@ class tx_ttnews extends tslib_pibase {
 				</tr>
 			</table>
 		</div>';
+		if ($this->conf['useHRDates']) {
+			if ($tmpPS) $this->piVars['pS'] = $tmpPS;
+			if ($tmpPL) $this->piVars['pL'] = $tmpPL;
+		}
 
 		return $sTables;
 	}
@@ -1405,7 +1449,18 @@ class tx_ttnews extends tslib_pibase {
 				} elseif ($this->config['catTextMode'] == 3) {
 					// act as category selector
 					$catSelLinkParams = ($this->conf['catSelectorTargetPid']?($this->config['itemLinkTarget']?$this->conf['catSelectorTargetPid'].' '.$this->config['itemLinkTarget']:$this->conf['catSelectorTargetPid']):$GLOBALS['TSFE']->id);
-					$news_category[] = $this->pi_linkToPage($this->pi_linkTP_keepPIvars($catTitle, array('cat' => $this->categories[$row['uid']][$key]['catid'], 'backPid' => null, 'pointer' => null), '', '', $catSelLinkParams), $this->categories[$row['uid']][$key]['shortcut'], $this->categories[$row['uid']][$key]['shortcut_target']);
+
+					if ($this->conf['useHRDates']) {
+						$news_category[] = $this->pi_linkToPage($this->pi_linkTP_keepPIvars($catTitle, array(
+							'cat' => $this->categories[$row['uid']][$key]['catid'],
+							'year' => ($this->piVars['year']?$this->piVars['year']:null),
+							'month' => ($this->piVars['month']?$this->piVars['month']:null)
+							), '', 1, $catSelLinkParams), $this->categories[$row['uid']][$key]['shortcut'], $this->categories[$row['uid']][$key]['shortcut_target']);
+
+					} else {
+						$news_category[] = $this->pi_linkToPage($this->pi_linkTP_keepPIvars($catTitle, array('cat' => $this->categories[$row['uid']][$key]['catid'], 'backPid' => null, 'pointer' => null), '', '', $catSelLinkParams), $this->categories[$row['uid']][$key]['shortcut'], $this->categories[$row['uid']][$key]['shortcut_target']);
+					}
+					
 				}
 				$catTextLenght += strlen($catTitle);
 				if ($this->config['catImageMode'] == 0 or empty($this->categories[$row['uid']][$key]['image'])) {
@@ -1431,7 +1486,16 @@ class tx_ttnews extends tslib_pibase {
 							// act as category selector
 							$catSelLinkParams = ($this->conf['catSelectorTargetPid']?($this->config['itemLinkTarget']?$this->conf['catSelectorTargetPid'].' '.$this->config['itemLinkTarget']:$this->conf['catSelectorTargetPid']):$GLOBALS['TSFE']->id);
 							$catPicConf['image.']['altText'] = $this->pi_getLL('altTextCatSelector') . $catTitle;
-							$catPicConf['image.']['stdWrap.']['innerWrap'] = $this->pi_linkTP_keepPIvars('|', array('cat' => $this->categories[$row['uid']][$key]['catid'], 'backPid' => null, 'pointer' => null), '', '', $catSelLinkParams);
+							if ($this->conf['useHRDates']) {
+								$catPicConf['image.']['stdWrap.']['innerWrap'] = $this->pi_linkTP_keepPIvars('|', array(
+									'cat' => $this->categories[$row['uid']][$key]['catid'],
+									'year' => ($this->piVars['year']?$this->piVars['year']:null),
+									'month' => ($this->piVars['month']?$this->piVars['month']:null)
+									), '', 1, $catSelLinkParams);
+							} else {
+								$catPicConf['image.']['stdWrap.']['innerWrap'] = $this->pi_linkTP_keepPIvars('|', array('cat' => $this->categories[$row['uid']][$key]['catid'], 'backPid' => null, 'pointer' => null), '', '', $catSelLinkParams);
+
+							}
 						}
 					} else {
 						$catPicConf['image.']['altText'] = $this->categories[$row['uid']][$key]['title'];
@@ -2024,6 +2088,40 @@ class tx_ttnews extends tslib_pibase {
 			array(' '.'&amp;;'),
 			$str);
 		return $cleanedStr;
+	}
+	
+	/**
+	 * Converts the piVars 'pS' and 'pL' to a human readable format which will be filled to
+	 * the piVars 'year' and 'month'.
+	 *
+	 * @return	void
+	 */
+	function convertDates() {
+		//readable archivedates
+		if ($this->piVars['year'] || $this->piVars['month']) {
+			$this->arcExclusive = 1;
+		}
+		if (!$this->piVars['year'] && $this->piVars['pS']) {
+			$this->piVars['year'] = date('Y',$this->piVars['pS']);
+		}	
+		if (!$this->piVars['month'] && $this->piVars['pS']) {
+			$this->piVars['month'] = date('m',$this->piVars['pS']);
+		}
+		if ($this->piVars['year'] || $this->piVars['month']) {
+		$this->piVars['pS'] = mktime (0, 0, 0, $this->piVars['month'], 1, $this->piVars['year']);
+		switch ($this->config['archiveMode']) {
+			case 'month':
+				$this->piVars['pL'] = mktime (0, 0, 0, $this->piVars['month']+1, 1, $this->piVars['year'])-$this->piVars['pS']-1;
+			break;
+			case 'quarter':
+				$this->piVars['pL'] = mktime (0, 0, 0, $this->piVars['month']+3, 1, $this->piVars['year'])-$this->piVars['pS']-1;
+			break;
+			case 'year':
+				$this->piVars['pL'] = mktime (0, 0, 0, 1, 1, $this->piVars['year']+1)-$this->piVars['pS']-1;
+			break;
+		}
+		}
+		#debug($this->piVars,'');
 	}
 
 	/**

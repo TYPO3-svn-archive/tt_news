@@ -25,8 +25,10 @@ plugin.tt_news {
   catTextMode = 1
 	# cat=plugin.tt_news//50; type=int+; label= Category Image mode: same values as catTextMode.
   catImageMode = 1
-	# cat=plugin.tt_news//60; type=bolean; label= Allow Caching: Allow caching of displayed news? If you want your news being indexed by the indexed-search this has to be enabled.
+	# cat=plugin.tt_news//60; type=boolean; label= Allow Caching: Allow caching of displayed news? If you want your news being indexed by the indexed-search this has to be enabled.
   allowCaching = 1
+   # cat=plugin.tt_news//70; type=boolean; label= Use human readable dates: This enables the use of the GETvars 'year' and 'month' for the archive links instead of the non-readable 'pS', 'pL' and 'arc'.
+  useHRDates = 0
 	
 	# cat=plugin.tt_news/dims/110; type=int+; label= single-image max Width: Max width for an image displayed in SINGLE template
   singleMaxW = 240
