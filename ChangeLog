@@ -1,3 +1,102 @@
+2005-04-10	rupertgermann
+	* cvsroot/typo3xdev/tx_ttnews/ext_emconf.php 1.33:
+		- raised highest compatible php version to 5.0.3
+
+	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews.php 1.83:
+	* cvsroot/typo3xdev/tx_ttnews/res/atom_0_3.tmpl 1.2:
+	* cvsroot/typo3xdev/tx_ttnews/res/rdf.tmpl 1.2:
+	* cvsroot/typo3xdev/tx_ttnews/res/rss_0_91.tmpl 1.2:
+	* cvsroot/typo3xdev/tx_ttnews/res/rss_2.tmpl 1.4:
+		- added the marker ###XML_DECLARATION### to all feed templates. this marker is substituted with the xml-declaration including the correct charset that is configured as config.metaCharset (before this iso-8859-1 was hardcoded in the tmpl-files)
+		- new TSvar 'xmlDeclaration' in the displayXML section. If this var contains a value, the marker ###XML_DECLARATION### in the feed templates will be substituted with this string.
+		- new Hook in function displayList. with this hook you can add a userfunction that processes the markerarray for a complete list.
+
+	* cvsroot/typo3xdev/tx_ttnews/static/css/setup.txt 1.6:
+		- added the 'lineheight hack for IE' to the latest template
+
+	* cvsroot/typo3xdev/tx_ttnews/ext_php_api.dat 1.12:
+	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews.php 1.84:
+		- updated php_api
+
+2005-04-07	rupertgermann
+	* cvsroot/typo3xdev/tx_ttnews/ext_icon_ttnews_folder.gif 1.1:
+	* cvsroot/typo3xdev/tx_ttnews/ext_tables.php 1.16:
+		- added a folder icon for tt_news. This icon is not hardcoded 
+		anymore in TYPO3 3.8.0
+
+2005-04-06	rupertgermann
+	* cvsroot/typo3xdev/tx_ttnews/doc/manual.sxw 1.21:
+	* cvsroot/typo3xdev/tx_ttnews/ext_emconf.php 1.32:
+	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews.php 1.81:
+	* cvsroot/typo3xdev/tx_ttnews/static/ts_new/constants.txt 1.3:
+	* cvsroot/typo3xdev/tx_ttnews/static/ts_new/setup.txt 1.8:
+	* cvsroot/typo3xdev/tx_ttnews/static/ts_old/constants.txt 1.3:
+	* cvsroot/typo3xdev/tx_ttnews/static/ts_old/setup.txt 1.7:
+		- new feature 'human readable dates'. This enables the use of the GETvars 'year' and 'month' for the archive links instead of the non-readable 'pS', 'pL' and 'arc'. can be enabled in TS by settin plugin.tt_news.useHRDates = 1 or in the constant editor.
+		- fix: the register newsCategoryUid did contain the wrong cat uid. Fixed by moving the call of the function getCategoryMarkers to the beginning of the getItemMarkerArray function. This fills the register before all other stdWraps are executed.
+
+	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews.php 1.80:
+		- fix: the register newsCategoryUid did contain the wrong cat 
+		uid. Fixed by moving the call of the function getCategoryMarkers 
+		to the beginning of the getItemMarkerArray function. This fills 
+		the register before all other stdWraps are executed.
+
+	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews.php 1.82:
+		- removed the TYPO3 subversion from the promoted generator url 
+		in the atom03 feed
+
+	* cvsroot/typo3xdev/tx_ttnews/static/rss_feed/setup.txt 1.4:
+		- added config.admPanel = 0 to the xmlnews page object
+
+2005-04-05	rupertgermann
+	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews.php 1.79:
+		- added two new registers "newsSubheader" and "newsKeywords": 
+		this allows you to insert those values f.e. as metatags
+
+	* cvsroot/typo3xdev/tx_ttnews/doc/manual.sxw 1.20:
+	* cvsroot/typo3xdev/tx_ttnews/ext_tables.sql 1.14:
+	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews.php 1.78:
+	* cvsroot/typo3xdev/tx_ttnews/res/atom_0_3.tmpl 1.1:
+	* cvsroot/typo3xdev/tx_ttnews/res/rdf.tmpl 1.1:
+	* cvsroot/typo3xdev/tx_ttnews/res/rss_2.tmpl 1.3:
+	* cvsroot/typo3xdev/tx_ttnews/static/rss_feed/constants.txt 1.2:
+	* cvsroot/typo3xdev/tx_ttnews/static/rss_feed/setup.txt 1.3:
+	* cvsroot/typo3xdev/tx_ttnews/tca.php 1.25:
+		- new XML-feed formats: rdf and atom03. A big thank goes to ingo renner who sent me patches and an updated manual.
+		- removed the wrong default values from autoinc lines in tables.sql
+		- added the possibility to render the content of the keywrds field to a template marker (###NEWS_KEYWORDS###)
+		- small field re-arrangement in tca.php to reduce the width of the tt_news BE form.
+		- updated the manual with some of the new features (not complete)
+
+	* cvsroot/typo3xdev/tx_ttnews/static/rss_feed/constants.txt 1.3:
+		- added a selector box for the newsfeed formats to the Constant 
+		editor
+
+	* cvsroot/typo3xdev/tx_ttnews/ext_tables.php 1.15:
+		- changed rss template label
+
+2005-03-18	rupertgermann
+	* cvsroot/typo3xdev/tx_ttnews/ext_emconf.php 1.31:
+	* cvsroot/typo3xdev/tx_ttnews/ext_php_api.dat 1.10:
+	* cvsroot/typo3xdev/tx_ttnews/ext_tables.sql 1.13:
+	* cvsroot/typo3xdev/tx_ttnews/flexform_ds.xml 1.18:
+	* cvsroot/typo3xdev/tx_ttnews/flexform_ds_no_sPID.xml 1.9:
+	* cvsroot/typo3xdev/tx_ttnews/locallang_tca.php 1.28:
+	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews.php 1.76:
+	* cvsroot/typo3xdev/tx_ttnews/pi/tt_news_v2_template.html 1.3:
+	* cvsroot/typo3xdev/tx_ttnews/tca.php 1.24:
+		- new feature: 'insert pagebreaks after a certain amount of words' (new function insertPagebreaks()). It's now possible to configure the amount of words after that a pagebreak is inserted. If the amount of words is reached, the script looks for the next dot (.) and inserts a pagebreak after it. The value for 'maxWordsInSingleView' can be configured globally by TS or for a single Content-element in the FF sheet. Additionally it is possible to switch off automatic Pagebreaks for a single news article with a checkbox in the tt_news record. (has to be improved to make shure, that no pagebreaks are inserted in html tags).
+		- added a new marker for the pagebrowser in the singleview: ###NEWS_SINGLE_PAGEBROWSER###. it is also possible to append the pagebrowser to the bodytext without a special marker by setting 'appendSViewPBtoContent=1'
+		- the subheader is now only displayed on the first page of a singleview with multiple pages. If this is not wanted the subheader can be configured to appear on all those pages by setting 'subheaderOnAllSViewPages=1'
+
+	* cvsroot/typo3xdev/tx_ttnews/ext_php_api.dat 1.11:
+	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews.php 1.77:
+		- updated api_dat and function documentation
+
+2005-03-16	rupertgermann
+	* cvsroot/typo3xdev/tx_ttnews/ChangeLog 1.32:
+		updated Changelog
+
 2005-03-15	rupertgermann
 	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews.php 1.75:
 	* cvsroot/typo3xdev/tx_ttnews/static/css/setup.txt 1.5:
