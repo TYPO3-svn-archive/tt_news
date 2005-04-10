@@ -42,41 +42,43 @@
  *
  *
  *
- *   94: class tx_ttnews extends tslib_pibase
- *  123:     function main_news($content, $conf)
- *  187:     function init($conf)
- *  313:     function newsArchiveMenu()
- *  445:     function displaySingle()
- *  497:     function displayList()
- *  748:     function getListContent($itemparts, $selectConf, $prefix_display)
- *  819:     function getSelectConf($where, $noPeriod = 0)
- *  925:     function generatePageArray()
- *  941:     function getItemMarkerArray ($row, $textRenderObj = 'displaySingle')
- * 1108:     function insertPagebreaks($text)
- * 1139:     function makeMultiPageSView($bodytext,$lConf)
- * 1169:     function makePageBrowser($showResultCount=1,$tableParams='',$pointerName='pointer')
- * 1241:     function getCategories($uid)
- * 1293:     function getSubCategories($catlist, $cc = 0)
- * 1322:     function getCatMarkerArray($markerArray, $row, $lConf)
- * 1436:     function getImageMarkers($markerArray, $row, $lConf, $textRenderObj)
- * 1499:     function getRelated($uid)
- * 1608:     function userProcess($mConfKey, $passVar)
- * 1623:     function spMarker($subpartMarker)
- * 1641:     function searchWhere($sw)
- * 1652:     function formatStr($str)
- * 1667:     function getLayouts($templateCode, $alternatingLayouts, $marker)
- * 1685:     function initLanguages ()
- * 1699:     function initCategoryVars()
- * 1761:     function checkRecords($recordlist)
- * 1791:     function initTemplate()
- * 1816:     function initPidList ()
- * 1843:     function getXmlHeader()
- * 1902:     function main_xmlnewsfeed($content, $conf)
- * 1917:     function getStoriesResult()
- * 1931:     function cleanXML($str)
- * 1948:     function getNewsSubpart($myTemplate, $myKey, $row = Array())
+ *   96: class tx_ttnews extends tslib_pibase
+ *  126:     function main_news($content, $conf)
+ *  190:     function init($conf)
+ *  321:     function newsArchiveMenu()
+ *  463:     function displaySingle()
+ *  520:     function displayList()
+ *  784:     function getListContent($itemparts, $selectConf, $prefix_display)
+ *  873:     function getSelectConf($where, $noPeriod = 0)
+ *  977:     function generatePageArray()
+ *  993:     function getItemMarkerArray ($row, $textRenderObj = 'displaySingle')
+ * 1198:     function insertPagebreaks($text)
+ * 1229:     function makeMultiPageSView($bodytext,$lConf)
+ * 1259:     function makePageBrowser($showResultCount=1,$tableParams='',$pointerName='pointer')
+ * 1341:     function getCategories($uid)
+ * 1393:     function getSubCategories($catlist, $cc = 0)
+ * 1422:     function getCatMarkerArray($markerArray, $row, $lConf)
+ * 1553:     function getImageMarkers($markerArray, $row, $lConf, $textRenderObj)
+ * 1616:     function getRelated($uid)
+ * 1725:     function userProcess($mConfKey, $passVar)
+ * 1740:     function spMarker($subpartMarker)
+ * 1758:     function searchWhere($sw)
+ * 1769:     function formatStr($str)
+ * 1784:     function getLayouts($templateCode, $alternatingLayouts, $marker)
+ * 1802:     function initLanguages ()
+ * 1816:     function initCategoryVars()
+ * 1878:     function checkRecords($recordlist)
+ * 1908:     function initTemplate()
+ * 1933:     function initPidList ()
+ * 1960:     function getXmlHeader()
+ * 2049:     function getW3cDate($datetime)
+ * 2074:     function main_xmlnewsfeed($content, $conf)
+ * 2089:     function getStoriesResult()
+ * 2103:     function cleanXML($str)
+ * 2117:     function convertDates()
+ * 2154:     function getNewsSubpart($myTemplate, $myKey, $row = Array())
  *
- * TOTAL FUNCTIONS: 32
+ * TOTAL FUNCTIONS: 34
  * (This index is automatically created/updated by the extension "extdeveval")
  *
  */
@@ -679,10 +681,10 @@ class tx_ttnews extends tslib_pibase {
 				$subpartArray = array();
 				$wrappedSubpartArray = array();
 				$markerArray = array();
-				
+
 				// get the list of news items and fill them in the CONTENT subpart
 				$subpartArray['###CONTENT###'] = $this->getListContent($t['item'], $selectConf, $prefix_display);
-				
+
 				if ($theCode == 'XML') {
 					$markerArray = $this->getXmlHeader();
 					$subpartArray['###HEADER###'] = $this->cObj->substituteMarkerArray($this->getNewsSubpart($t['total'], '###HEADER###'), $markerArray);
@@ -722,7 +724,7 @@ class tx_ttnews extends tslib_pibase {
 						}
 					}
 				}
-			
+
 				// Adds hook for processing of extra global markers
 				if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tt_news']['extraGlobalMarkerHook'])) {
 					foreach($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tt_news']['extraGlobalMarkerHook'] as $_classRef) {
@@ -843,7 +845,7 @@ class tx_ttnews extends tslib_pibase {
 				// replace square brackets [] in links with their URLcodes and replace the &-sign with its ASCII code
 				$rssUrl = preg_replace(array('/\[/', '/\]/', '/&/'), array('%5B', '%5D', '&#38;') , $rssUrl);
 				$markerArray['###NEWS_LINK###'] = $rssUrl;
-				
+
 				if($this->conf['displayXML.']['xmlFormat'] == 'rdf') {
 					$this->rdfToc .= "\t\t\t\t".'<rdf:li resource="'.$rssUrl.'" />'."\n";
 				}
@@ -1043,7 +1045,7 @@ class tx_ttnews extends tslib_pibase {
 					'newsKeywords' => $row['keywords'],
 					'newsSubheader' => $row['short']
 				), '');
-				
+
 			}
 		}
 
@@ -1119,7 +1121,7 @@ class tx_ttnews extends tslib_pibase {
 			}
 			$markerArray['###FILE_LINK###'] = $filelinks.$files_stdWrap[1];
 		}
-		
+
 		// the both markers: ###ADDINFO_WRAP_B### and ###ADDINFO_WRAP_E### are only inserted, if there are any files, related news or links
 		$markerArray['###ADDINFO_WRAP_B###'] = '';
 		$markerArray['###ADDINFO_WRAP_E###'] = '';
@@ -1170,7 +1172,7 @@ class tx_ttnews extends tslib_pibase {
 
 			$markerArray['###NEWS_ATOM_ENTRY_ID###'] = 'tag:'.substr($this->config['siteUrl'], 11, -1).','.date('Y', $row['crdate']).':article'.$row['uid'];
 			$markerArray['###SITE_LINK###'] = $this->config['siteUrl'];
-			
+
 		}
 
 		// Adds hook for processing of extra item markers
@@ -1466,7 +1468,7 @@ class tx_ttnews extends tslib_pibase {
 					} else {
 						$news_category[] = $this->pi_linkToPage($this->pi_linkTP_keepPIvars($catTitle, array('cat' => $this->categories[$row['uid']][$key]['catid'], 'backPid' => null, 'pointer' => null), '', '', $catSelLinkParams), $this->categories[$row['uid']][$key]['shortcut'], $this->categories[$row['uid']][$key]['shortcut_target']);
 					}
-					
+
 				}
 				$catTextLenght += strlen($catTitle);
 				if ($this->config['catImageMode'] == 0 or empty($this->categories[$row['uid']][$key]['image'])) {
@@ -1964,7 +1966,7 @@ class tx_ttnews extends tslib_pibase {
 		if(!empty($markerArray['###SITE_DESCRIPTION###']) && $this->conf['displayXML.']['xmlFormat'] == 'atom03') {
 			$markerArray['###SITE_DESCRIPTION###'] = '<tagline>'.$markerArray['###SITE_DESCRIPTION###'].'</tagline>';
 		}
-		
+
 		$markerArray['###SITE_LANG###'] = $this->conf['displayXML.']['xmlLang'];
 		if($this->conf['displayXML.']['xmlFormat'] == 'rss2') {
 			$markerArray['###SITE_LANG###'] = '<language>'.$markerArray['###SITE_LANG###'].'</language>';
@@ -1974,7 +1976,7 @@ class tx_ttnews extends tslib_pibase {
 		if(empty($this->conf['displayXML.']['xmlLang'])) {
 			$markerArray['###SITE_LANG###'] = '';
 		}
-		
+
 		$markerArray['###IMG###'] = t3lib_div::getIndpEnv('TYPO3_REQUEST_HOST') . '/' . $this->conf['displayXML.']['xmlIcon'];
 		$imgFile = t3lib_div::getIndpEnv('TYPO3_DOCUMENT_ROOT') . '/' . $this->conf['displayXML.']['xmlIcon'];
 		$imgSize = is_file($imgFile)?getimagesize($imgFile):
@@ -2020,7 +2022,7 @@ class tx_ttnews extends tslib_pibase {
 		} else {
 			$markerArray['###NEWS_COPYRIGHT###'] = '';
 		}
-		
+
 		$charset = ($GLOBALS['TSFE']->metaCharset?$GLOBALS['TSFE']->metaCharset:'iso-8859-1');
 		if ($this->conf['displayXML.']['xmlDeclaration']) {
 			$markerArray['###XML_DECLARATION###'] = trim($this->conf['displayXML.']['xmlDeclaration']);
@@ -2032,7 +2034,7 @@ class tx_ttnews extends tslib_pibase {
 		$version = explode('.',($GLOBALS['TYPO3_VERSION']?$GLOBALS['TYPO3_VERSION']:$GLOBALS['TYPO_VERSION']));
 		unset($version[2]);
 		$markerArray['###TYPO3_VERSION###'] = implode($version,'.');
-		
+
 		return $markerArray;
 	}
 
@@ -2041,7 +2043,7 @@ class tx_ttnews extends tslib_pibase {
 	 * see: http://www.w3.org/TR/NOTE-datetime (same as ISO 8601)
 	 * in php5 it would be so easy: date('c', $row['datetime']);
 	 *
-	 * @param	datetime	the datetime value to be converted to w3c format
+	 * @param	integer		the datetime value to be converted to w3c format
 	 * @return	string		datetime in w3c format
 	 */
 	function getW3cDate($datetime) {
@@ -2105,7 +2107,7 @@ class tx_ttnews extends tslib_pibase {
 			$str);
 		return $cleanedStr;
 	}
-	
+
 	/**
 	 * Converts the piVars 'pS' and 'pL' to a human readable format which will be filled to
 	 * the piVars 'year' and 'month'.
@@ -2119,7 +2121,7 @@ class tx_ttnews extends tslib_pibase {
 		}
 		if (!$this->piVars['year'] && $this->piVars['pS']) {
 			$this->piVars['year'] = date('Y',$this->piVars['pS']);
-		}	
+		}
 		if (!$this->piVars['month'] && $this->piVars['pS']) {
 			$this->piVars['month'] = date('m',$this->piVars['pS']);
 		}
