@@ -44,6 +44,10 @@ plugin.tt_news {
 	color:#fff;
 }
 .news-latest-item {
+	/* IE hack */
+	height: 1%;
+	line-height: 1.3;
+	/* IE hack end */
 	padding:3px;
 	margin:3px;
 	border:1px solid #666;
