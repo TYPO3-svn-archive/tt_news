@@ -718,10 +718,16 @@ class tx_ttnews extends tslib_pibase {
 						if ($this->conf['usePiBasePagebrowser']) {
 							$markerArray['###BROWSE_LINKS###'] = $this->pi_list_browseresults($this->conf['pageBrowser.']['showResultCount'], $this->conf['pageBrowser.']['tableParams']);
 						} else {
-						
 							$markerArray['###BROWSE_LINKS###'] = $this->makePageBrowser($this->conf['pageBrowser.']['showResultCount'], $this->conf['pageBrowser.']['tableParams']);
-							
 						}
+					}
+				}
+			
+				// Adds hook for processing of extra global markers
+				if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tt_news']['extraGlobalMarkerHook'])) {
+					foreach($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tt_news']['extraGlobalMarkerHook'] as $_classRef) {
+						$_procObj = & t3lib_div::getUserObj($_classRef);
+						$resArray = $_procObj->extraGlobalMarkerProcessor($this, $markerArray);
 					}
 				}
 				$content .= $this->cObj->substituteMarkerArrayCached($t['total'], $markerArray, $subpartArray, $wrappedSubpartArray);
@@ -2014,6 +2020,14 @@ class tx_ttnews extends tslib_pibase {
 		} else {
 			$markerArray['###NEWS_COPYRIGHT###'] = '';
 		}
+		
+		$charset = ($GLOBALS['TSFE']->metaCharset?$GLOBALS['TSFE']->metaCharset:'iso-8859-1');
+		if ($this->conf['displayXML.']['xmlDeclaration']) {
+			$markerArray['###XML_DECLARATION###'] = trim($this->conf['displayXML.']['xmlDeclaration']);
+		} else {
+			$markerArray['###XML_DECLARATION###'] = '<?xml version="1.0" encoding="'.$charset.'"?>';
+		}
+
 		//promoting TYPO3 in atom feeds, supress the subversion
 		$version = explode('.',($GLOBALS['TYPO3_VERSION']?$GLOBALS['TYPO3_VERSION']:$GLOBALS['TYPO_VERSION']));
 		unset($version[2]);
