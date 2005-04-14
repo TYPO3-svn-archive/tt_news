@@ -237,7 +237,8 @@ class tx_ttnews extends tslib_pibase {
 
 		$maxWordsInSingleView = intval($this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'maxWordsInSingleView', 's_misc'));
 		$maxWordsInSingleView = $maxWordsInSingleView?$maxWordsInSingleView:intval($this->conf['maxWordsInSingleView']);
-		$this->config['maxWordsInSingleView'] = $maxWordsInSingleView?$maxWordsInSingleView:1;
+		$this->config['maxWordsInSingleView'] = $maxWordsInSingleView?$maxWordsInSingleView:0;
+		$this->config['useMultiPageSingleView'] = $maxWordsInSingleView>1?1:$this->conf['useMultiPageSingleView'];
 
 		// pid of the page with the single view. the old var PIDitemDisplay is still processed if no other value is found
 		$singlePid = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'PIDitemDisplay', 's_misc');
@@ -494,7 +495,6 @@ class tx_ttnews extends tslib_pibase {
 				// set pagetitle for indexed search to news title
 				$GLOBALS['TSFE']->indexedDocTitle = $row['title'];
 			}
-
 			$markerArray = $this->getItemMarkerArray($row, 'displaySingle');
 			// Substitute
 			$content = $this->cObj->substituteMarkerArrayCached($item, $markerArray, array(), $wrappedSubpartArray);
@@ -515,9 +515,10 @@ class tx_ttnews extends tslib_pibase {
 	 * exec count query to get the number of results, check if a browsebox should be displayed,
 	 * get the general Markers for each item and fill the content array, check if a browsebox should be displayed
 	 *
+ 	 * @param	string		$excludeUids : commaseparated list of tt_news uids to exclude from display
 	 * @return	string		html-code for the plugin content
 	 */
-	function displayList() {
+	function displayList($excludeUids = 0) {
 		$theCode = $this->theCode;
 
 		$where = '';
@@ -613,7 +614,6 @@ class tx_ttnews extends tslib_pibase {
 				$this->piVars['pS'] = ($GLOBALS['SIM_EXEC_TIME'] - ($this->config['datetimeDaysToArchive'] * 86400));
 			}
 		}
-#debug ($this->piVars);
 		if ($this->piVars['pS'] && !$this->piVars['pL']) {
 			$noPeriod = 1; // override the period lenght checking in getSelectConf
 		}
@@ -622,6 +622,10 @@ class tx_ttnews extends tslib_pibase {
 			if ($this->conf['displayCurrentRecord'] && $this->tt_news_uid) {
 				$this->pid_list = $this->cObj->data['pid'];
 				$where = 'AND tt_news.uid=' . $this->tt_news_uid;
+			}
+			if ($excludeUids) {
+				$where = ($where?' ':'').'AND tt_news.uid NOT IN ('.$excludeUids.')';
+				
 			}
 			// build parameter Array for List query
 			$selectConf = $this->getSelectConf($where, $noPeriod);
@@ -711,6 +715,23 @@ class tx_ttnews extends tslib_pibase {
 					$this->internal['res_count'] = $newsCount;
 					$this->internal['results_at_a_time'] = $this->config['limit'];
 					$this->internal['maxPages'] = $this->conf['pageBrowser.']['maxPages'];
+					// test
+					/* $this->internal['pagefloat'] = $this->conf['pageBrowser.']['pagefloat'];
+					$this->internal['showFirstLast'] = $this->conf['pageBrowser.']['showFirstLast'];
+					$this->internal['showRange'] = $this->conf['pageBrowser.']['showRange'];
+					$this->internal['dontLinkActivePage'] = $this->conf['pageBrowser.']['dontLinkActivePage'];
+
+					
+					$$wrapArrFields = explode(',', 'disabledLinkWrap,inactiveLinkWrap,activeLinkWrap,browseLinksWrap,showResultsWrap,showResultsNumbersWrap,browseBoxWrap');
+					$wrapArr = array();
+					foreach($$wrapArrFields as $key) {
+						if ($this->conf['pageBrowser.'][$key]) {
+							$wrapArr[$key] = $this->conf['pageBrowser.'][$key];
+						}
+					}
+					$this->pi_isOnlyFields = 'test';
+					*/
+
 					if (!$this->conf['pageBrowser.']['showPBrowserText']) {
 						$this->LOCAL_LANG[$this->LLkey]['pi_list_browseresults_page'] = '';
 					}
@@ -718,7 +739,7 @@ class tx_ttnews extends tslib_pibase {
 						$markerArray = $this->userProcess('userPageBrowserFunc', $markerArray);
 					} else {
 						if ($this->conf['usePiBasePagebrowser']) {
-							$markerArray['###BROWSE_LINKS###'] = $this->pi_list_browseresults($this->conf['pageBrowser.']['showResultCount'], $this->conf['pageBrowser.']['tableParams']);
+							$markerArray['###BROWSE_LINKS###'] = $this->pi_list_browseresults($this->conf['pageBrowser.']['showResultCount'], $this->conf['pageBrowser.']['tableParams']); # ,$wrapArr
 						} else {
 							$markerArray['###BROWSE_LINKS###'] = $this->makePageBrowser($this->conf['pageBrowser.']['showResultCount'], $this->conf['pageBrowser.']['tableParams']);
 						}
@@ -729,7 +750,7 @@ class tx_ttnews extends tslib_pibase {
 				if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tt_news']['extraGlobalMarkerHook'])) {
 					foreach($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tt_news']['extraGlobalMarkerHook'] as $_classRef) {
 						$_procObj = & t3lib_div::getUserObj($_classRef);
-						$resArray = $_procObj->extraGlobalMarkerProcessor($this, $markerArray);
+						$markerArray = $_procObj->extraGlobalMarkerProcessor($this, $markerArray);
 					}
 				}
 				$content .= $this->cObj->substituteMarkerArrayCached($t['total'], $markerArray, $subpartArray, $wrappedSubpartArray);
@@ -998,6 +1019,10 @@ class tx_ttnews extends tslib_pibase {
 		$markerArray = array();
 		// get image markers
 		$markerArray = $this->getImageMarkers($markerArray, $row, $lConf, $textRenderObj);
+
+		// find categories for the current record
+		$this->categories[$row['uid']] = $this->getCategories($row['uid']);
+
 		// get markers and links for categories
 		$markerArray = $this->getCatMarkerArray($markerArray, $row, $lConf);
 
@@ -1036,24 +1061,23 @@ class tx_ttnews extends tslib_pibase {
 			$markerArray['###NEWS_SUBHEADER###'] = $this->formatStr($this->local_cObj->stdWrap($row['short'], $lConf['subheader_stdWrap.']));
 		}
 
-		$markerArray['###NEWS_KEYWORDS###'] = '';
+		$markerArray['###NEWS_KEYWORDS###'] = $this->local_cObj->stdWrap($row['keywords'], $lConf['keywords_stdWrap.']);
+		
 		if (!$this->piVars[$this->config['singleViewPointerName']]) {
-			$markerArray['###NEWS_KEYWORDS###'] = $this->formatStr($this->local_cObj->stdWrap($row['keywords'], $lConf['keywords_stdWrap.']));
 			if ($textRenderObj == 'displaySingle') {
 				// load the keywords the register 'newsKeywords' to access it from TS
 				$this->local_cObj->LOAD_REGISTER(array(
 					'newsKeywords' => $row['keywords'],
 					'newsSubheader' => $row['short']
 				), '');
-
 			}
 		}
 
 		if ($textRenderObj == 'displaySingle' && !$row['no_auto_pb'] && $this->config['maxWordsInSingleView']>1) {
-			$row['bodytext'] = $this->insertPagebreaks($row['bodytext']);
+			$row['bodytext'] = $this->insertPagebreaks($row['bodytext'],count(t3lib_div::trimExplode(' ',$row['short'],1)));
 		}
 		if (strpos($row['bodytext'],$this->config['pageBreakToken'])) {
-			if ($this->conf['useMultiPageSingleView'] && $textRenderObj == 'displaySingle') {
+			if ($this->config['useMultiPageSingleView'] && $textRenderObj == 'displaySingle') {
 				$tmp = $this->makeMultiPageSView($row['bodytext'],$lConf);
 				$newscontent = $tmp[0];
 				$sViewPagebrowser = $tmp[1];
@@ -1131,6 +1155,17 @@ class tx_ttnews extends tslib_pibase {
 			$markerArray['###ADDINFO_WRAP_E###'] = $addInfo_stdWrap[1];
 		}
 
+		// show news with the same categories in SINGLE view
+		$markerArray['###NEWS_RELATED_BY_CATEGORY###'] = '';
+		if ($this->conf['showRelatedNewsByCategory'] && $textRenderObj == 'displaySingle') {
+			$this->catExclusive = implode(array_keys($this->categories[$row['uid']]),',');
+			$this->config['categoryMode'] = 1;
+			$tmpcode = $this->theCode;
+			$this->theCode = 'LIST';
+			$markerArray['###NEWS_RELATED_BY_CATEGORY###'] = $this->displayList($row['uid']);
+			$this->theCode = $tmpcode;
+		}
+
 		// Page fields:
 		$markerArray['###PAGE_UID###'] = $row['pid'];
 		$markerArray['###PAGE_TITLE###'] = $this->pageArray[$row['pid']]['title'];
@@ -1192,30 +1227,45 @@ class tx_ttnews extends tslib_pibase {
 	/**
 	 * inserts pagebreaks after a certain amount of words
 	 *
-	 * @param	string		text with manully inserted 'pageBreakTokens'
+	 * @param	string		text which can contain manully inserted 'pageBreakTokens'
+ 	 * @param	integer		amount of words in the subheader (short). The lenght of the first page will be reduced by that amount of words added to the value of $this->conf['cropWordsFromFirstPage'].
 	 * @return	string		the processed text
 	 */
-	function insertPagebreaks($text) {
-		$words = explode(' ', $text);
-		$wtmp = array();
-		$cc = 0;
-		while (list(,$val) = each ($words)) {
-			$wtmp[] = $val;
-			if (strpos($val,$this->config['pageBreakToken'])) {
-				$cc = 0;
+	function insertPagebreaks($text,$firstPageWordCrop) {
+		$paragraphs = explode(chr(10), $text); // get paragraphs
+ 		$wtmp = array();
+		$firstPageCrop = $firstPageWordCrop+intval($this->conf['cropWordsFromFirstPage']);
+		$cc = 0; // wordcount
+		$isfirst = true; // first paragraph
+		while (list(,$p) = each ($paragraphs)) {
+			$words = explode(' ', $p); // get words
+			$pArr = array();
+			$break = false;
+			foreach ($words as $w) {
+				if (strpos($w,$this->config['pageBreakToken'])) { // manually inserted pagebreaks
+					$cc = 0;
+					$pArr[] = $w;
+					$isfirst = false;
+				} elseif ($cc >= $this->config['maxWordsInSingleView']-($isfirst && !$this->conf['subheaderOnAllSViewPages'] ? $firstPageCrop:0)) {
+					if (!$this->conf['useParagraphAsPagebreak'] && substr($w,-1)=='.') { // break at dot
+   					   $pArr[] = $w.$this->config['pageBreakToken'];
+					} else { // break at paragraph
+						$break = true;
+					}
+					$cc = 0;
+					$isfirst = false;
+				} else {
+					$pArr[] = $w;
+				}
+				$cc++;
 			}
-			if ($cc>=$this->config['maxWordsInSingleView'] && strpos($val,'.')) {
-				$wtmp[] = $this->config['pageBreakToken'];
-				$cc = 0;
+			if ($break) { // add break at end of current paragraph
+				array_push ($pArr, $this->config['pageBreakToken']);
 			}
-			$cc++;
+			$wtmp[] = implode($pArr,' ');
 		}
-
-		#debug(array($words,$wtmp));
-
-		$processedText = implode($wtmp,' ');
+		$processedText = implode($wtmp,chr(10));
 		return $processedText;
-
 	}
 
 	/**
@@ -1257,7 +1307,7 @@ class tx_ttnews extends tslib_pibase {
 	 * @return	string		Output HTML, wrapped in <div>-tags with a class attribute
 	 */
 	function makePageBrowser($showResultCount=1,$tableParams='',$pointerName='pointer') {
-  if ($this->conf['useHRDates']) {
+  		if ($this->conf['useHRDates']) {
 			$tmpPS = $this->piVars['pS'];
 			unset($this->piVars['pS']);
 			$tmpPL = $this->piVars['pL'];
@@ -1428,9 +1478,7 @@ class tx_ttnews extends tslib_pibase {
 		$markerArray['###CATWRAP_B###'] = '';
 		$markerArray['###CATWRAP_E###'] = '';
 
-		$this->categories[$row['uid']] = $this->getCategories($row['uid']);
-	#	 debug($this->categories[$row['uid']],'getCatMarkerArray');
-		if (isset($this->categories[$row['uid']]) && ($this->config['catImageMode'] || $this->config['catTextMode'])) {
+		if (count($this->categories[$row['uid']]) && ($this->config['catImageMode'] || $this->config['catTextMode'])) {
 			// wrap for all categories
 			$cat_stdWrap = t3lib_div::trimExplode('|', $lConf['category_stdWrap.']['wrap']);
 			$markerArray['###CATWRAP_B###'] = $cat_stdWrap[0];
@@ -1858,8 +1906,7 @@ class tx_ttnews extends tslib_pibase {
 
 
 		}
-		#debug ( $this->catExclusive,'$this->catExclusive');
-	// get more category fields from FF or TS
+		// get more category fields from FF or TS
 		$fields = explode(',', 'catImageMode,catTextMode,catImageMaxWidth,catImageMaxHeight,maxCatImages,catTextLength,maxCatTexts');
 		foreach($fields as $key) {
 			$value = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], $key, 's_category');
@@ -2102,7 +2149,7 @@ class tx_ttnews extends tslib_pibase {
 	 */
 	function cleanXML($str) {
 		$cleanedStr = preg_replace(
-		array('/&nbsp;/', '/&;/'),
+			array('/&nbsp;/', '/&;/'),
 			array(' '.'&amp;;'),
 			$str);
 		return $cleanedStr;
@@ -2127,19 +2174,18 @@ class tx_ttnews extends tslib_pibase {
 		}
 		if ($this->piVars['year'] || $this->piVars['month']) {
 		$this->piVars['pS'] = mktime (0, 0, 0, $this->piVars['month'], 1, $this->piVars['year']);
-		switch ($this->config['archiveMode']) {
-			case 'month':
-				$this->piVars['pL'] = mktime (0, 0, 0, $this->piVars['month']+1, 1, $this->piVars['year'])-$this->piVars['pS']-1;
-			break;
-			case 'quarter':
-				$this->piVars['pL'] = mktime (0, 0, 0, $this->piVars['month']+3, 1, $this->piVars['year'])-$this->piVars['pS']-1;
-			break;
-			case 'year':
-				$this->piVars['pL'] = mktime (0, 0, 0, 1, 1, $this->piVars['year']+1)-$this->piVars['pS']-1;
-			break;
+			switch ($this->config['archiveMode']) {
+				case 'month':
+					$this->piVars['pL'] = mktime (0, 0, 0, $this->piVars['month']+1, 1, $this->piVars['year'])-$this->piVars['pS']-1;
+				break;
+				case 'quarter':
+					$this->piVars['pL'] = mktime (0, 0, 0, $this->piVars['month']+3, 1, $this->piVars['year'])-$this->piVars['pS']-1;
+				break;
+				case 'year':
+					$this->piVars['pL'] = mktime (0, 0, 0, 1, 1, $this->piVars['year']+1)-$this->piVars['pS']-1;
+				break;
+			}
 		}
-		}
-		#debug($this->piVars,'');
 	}
 
 	/**
