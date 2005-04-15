@@ -1,6 +1,37 @@
+2005-04-14	rupertgermann
+	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews.php 1.85:
+	* cvsroot/typo3xdev/tx_ttnews/pi/tt_news_v2_template.html 1.4:
+		- added the option "useParagraphAsPagebreak". If this is enabled pagebreaks will be set after a paragraph (an empty line in the bodytext field) instead after the first dot when maxWordsInSingleView was reached.
+		- new feature: "Related news by category". The single view can also be configured to show a list of news articles with the same category as the current article. The feature is disabled by default and can be enabled by setting ?showRelatedNewsByCategory=1?.
+		If news with the same category are found, they will be rendered as news LIST to the new marker ?###NEWS_RELATED_BY_CATEGORY###?.
+
+	* cvsroot/typo3xdev/tx_ttnews/res/realUrl_example_setup.txt 1.4:
+		- new example configuration dor realUrl and tt_news. added the 
+		new archive vars.
+
+	* cvsroot/typo3xdev/tx_ttnews/doc/manual.sxw 1.22:
+		- updated the manual with the new features. Thank goes to Robert 
+		Markula who wrote the "Pagebreaks" section.
+
+	* cvsroot/typo3xdev/tx_ttnews/res/tt_news_v2_styles.css 1.4:
+		- added the 'lineheight hack for IE' to the latest template
+
+	* cvsroot/typo3xdev/tx_ttnews/ext_emconf.php 1.34:
+		- version number is now 2.1.5
+
 2005-04-10	rupertgermann
 	* cvsroot/typo3xdev/tx_ttnews/ext_emconf.php 1.33:
 		- raised highest compatible php version to 5.0.3
+
+	* cvsroot/typo3xdev/tx_ttnews/ChangeLog 1.33:
+		updated Changelog
+
+	* cvsroot/typo3xdev/tx_ttnews/static/css/setup.txt 1.6:
+		- added the 'lineheight hack for IE' to the latest template
+
+	* cvsroot/typo3xdev/tx_ttnews/ext_php_api.dat 1.12:
+	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews.php 1.84:
+		- updated php_api
 
 	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews.php 1.83:
 	* cvsroot/typo3xdev/tx_ttnews/res/atom_0_3.tmpl 1.2:
@@ -10,13 +41,6 @@
 		- added the marker ###XML_DECLARATION### to all feed templates. this marker is substituted with the xml-declaration including the correct charset that is configured as config.metaCharset (before this iso-8859-1 was hardcoded in the tmpl-files)
 		- new TSvar 'xmlDeclaration' in the displayXML section. If this var contains a value, the marker ###XML_DECLARATION### in the feed templates will be substituted with this string.
 		- new Hook in function displayList. with this hook you can add a userfunction that processes the markerarray for a complete list.
-
-	* cvsroot/typo3xdev/tx_ttnews/static/css/setup.txt 1.6:
-		- added the 'lineheight hack for IE' to the latest template
-
-	* cvsroot/typo3xdev/tx_ttnews/ext_php_api.dat 1.12:
-	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews.php 1.84:
-		- updated php_api
 
 2005-04-07	rupertgermann
 	* cvsroot/typo3xdev/tx_ttnews/ext_icon_ttnews_folder.gif 1.1:
