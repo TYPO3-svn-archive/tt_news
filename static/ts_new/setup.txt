@@ -197,8 +197,9 @@ plugin.tt_news {
     }
   }
 
-
-  useMultiPageSingleView = 1
+  # pagebrowser for singleview
+  useMultiPageSingleView = 0
+  maxWordsInSingleView = 0
 
 
   # - - - - - - - - - - - rendering of SINGLE news   - - - - - - - - - - -  #
