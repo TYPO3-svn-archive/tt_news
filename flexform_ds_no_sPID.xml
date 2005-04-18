@@ -52,7 +52,7 @@
 				<config>
 					<type>select</type>
 					<items type="array">
-								<numIndex index="0" type="array">
+						<numIndex index="0" type="array">
 							<numIndex index="0"></numIndex>
 							<numIndex index="1"></numIndex>
 						</numIndex>
@@ -75,7 +75,11 @@
 						<numIndex index="5" type="array">
 							<numIndex index="0">LLL:EXT:lang/locallang_general.php:LGL.type</numIndex>
 							<numIndex index="1">type</numIndex>
-						</numIndex>												
+						</numIndex>
+						<numIndex index="5" type="array">
+							<numIndex index="0">LLL:EXT:tt_news/locallang_tca.php:tt_news.random</numIndex>
+							<numIndex index="1">random</numIndex>
+						</numIndex>		
 					</items>
 					<maxitems>1</maxitems>
 					<size>1</size>

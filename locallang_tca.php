@@ -12,6 +12,7 @@ $LOCAL_LANG = Array (
 		'tt_news.imagealttext' => 'Image alttext',
 		'tt_news.imagetitletext' => 'Image titletext',
 		'tt_news.related' => 'Related news:',
+		'tt_news.random' => 'Randomize Order',
 		'tt_news_cat' => 'News category',
 		'tt_news_cat.image' => 'Category image',
 		'tt_news_cat.title_lang_ol' => 'title language overlays',
