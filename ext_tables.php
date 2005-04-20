@@ -3,19 +3,17 @@ if (!defined ('TYPO3_MODE')) 	die ('Access denied.');
 t3lib_div::loadTCA('tt_content');
 $confArr = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['tt_news']);
 
-
-
 $TCA['tt_news'] = Array (
 	'ctrl' => Array (
 		'title' => 'LLL:EXT:tt_news/locallang_tca.php:tt_news',
-		'label' => 'title',
+		'label' => $confArr['label'],
+		'label_alt' => $confArr['label_alt'].($confArr['label_alt2']?','.$confArr['label_alt2']:''),
+		'label_alt_force' => $confArr['label_alt_force'],
 		'default_sortby' => 'ORDER BY datetime DESC',
 		'tstamp' => 'tstamp',
 		'delete' => 'deleted',
 		'prependAtCopy' => 'LLL:EXT:lang/locallang_general.php:LGL.prependAtCopy',
-		
 		'versioning' => TRUE,
-		#'versioning_followPages' => TRUE,
 		'dividers2tabs' => $confArr['noTabDividers']?FALSE:TRUE,
 		
 		'copyAfterDuplFields' => 'sys_language_uid',
@@ -82,11 +80,6 @@ if ($confArr['useStoragePid']) {
 } else {
 	t3lib_extMgm::addPiFlexFormValue(9, 'FILE:EXT:tt_news/flexform_ds_no_sPID.xml');
 }
-
-
-
-
-
 
 // comment this out, if you don't want users to create news_categories on normal pages
 t3lib_extMgm::allowTableOnStandardPages('tt_news_cat');
