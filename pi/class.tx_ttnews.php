@@ -2238,7 +2238,9 @@ class tx_ttnews extends tslib_pibase {
 	function getHrDateSingle($tstamp) {
 		$this->piVars['year'] = date('Y',$tstamp);
 		$this->piVars['month'] = date('m',$tstamp);
-		$this->piVars['day'] = date('d',$tstamp);
+		if (!$this->conf['useHRDatesSingleWithoutDay'])	{
+			$this->piVars['day'] = date('d',$tstamp);
+		}
 	}
 
 	/**
