@@ -133,6 +133,9 @@ plugin.tt_news {
     
   # - - - - - - -   Settings for Related News:  - - - - - - - -  #
 
+  useBidirectionalRelations = {$plugin.tt_news.useBidirectionalRelations}
+  usePagesRelations = {$plugin.tt_news.usePagesRelations}
+
   related_stdWrap.wrap =  <dl class="news-single-related">|</dl>
   relatedHeader_stdWrap.wrap = <dt>|</dt>
 
@@ -198,7 +201,7 @@ plugin.tt_news {
   }
 
   # pagebrowser for singleview
-  useMultiPageSingleView = 0
+  useMultiPageSingleView = {$plugin.tt_news.useMultiPageSingleView}
   maxWordsInSingleView = 0
 
 

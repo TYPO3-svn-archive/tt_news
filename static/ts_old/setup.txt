@@ -152,6 +152,9 @@ plugin.tt_news {
   pageTypoLink.parameter.current = 1
   
   ### Settings for Related News:
+  related_stdWrap.wrap =  <dl class="news-single-related">|</dl>
+  relatedHeader_stdWrap.wrap = <dt>|</dt>
+  
   relatedHeader_stdWrap.wrap = <strong>|</strong>
   
   # end-wrap for the getRelated objects
@@ -201,7 +204,9 @@ plugin.tt_news {
     }
   }
 
-  useMultiPageSingleView = 1
+  # pagebrowser for singleview
+  useMultiPageSingleView = {$plugin.tt_news.useMultiPageSingleView}
+  maxWordsInSingleView = 0
 
   
   ### SINGLE news
