@@ -3,7 +3,7 @@
 #
 # (see Section Reference in the manual for more options & parameters)
 #
-# tt_news v 2.0.0 
+# tt_news v 2.2.0
 ###
 
 # Includes the newsLib:

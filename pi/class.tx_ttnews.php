@@ -813,15 +813,19 @@ class tx_ttnews extends tslib_pibase {
 		$res = $this->cObj->exec_getQuery('tt_news', $selectConf); //get query for list contents
 		$itemsOut = '';
 		$itempartsCount = count($itemparts);
-
+		$pTmp = $GLOBALS['TSFE']->ATagParams;
 		$cc = 0;
 		// Getting elements
 		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 			$wrappedSubpartArray = array();
+			$lConf = $this->conf[$prefix_display.'.'];
+			$titleField = $lConf['linkTitleField']?$lConf['linkTitleField']:'';
+			$altField = $lConf['linkAltField']?$lConf['linkAltField']:'';
+			
+			$GLOBALS['TSFE']->ATagParams = ($pTmp?$pTmp.' ':'').'title="'.$this->local_cObj->stdWrap($row[$titleField], $lConf['linkTitleField.']).'" alt="'.$this->local_cObj->stdWrap($row[$altField], $lConf['linkAltField.']).'"';
 
 			if ($GLOBALS['TSFE']->sys_language_content) {
 				$row = $GLOBALS['TSFE']->sys_page->getRecordOverlay('tt_news', $row, $GLOBALS['TSFE']->sys_language_content, $GLOBALS['TSFE']->sys_language_contentOL, '');
-
 			}
 			$markerArray = $this->getItemMarkerArray($row, $prefix_display);
 
@@ -833,7 +837,6 @@ class tx_ttnews extends tslib_pibase {
 				// fill the link string in a register to access it from TS
 				$this->local_cObj->LOAD_REGISTER(array('newsMoreLink' => $this->local_cObj->typolink($this->pi_getLL('more'), $this->conf['pageTypoLink.'])), '');
 			} else {
-
 					//  Overwrite the singlePid from config-array with a singlePid given from the first entry in $this->categories
 				if ($this->conf['useSPidFromCategory']) {
 					$catSPid = array_shift($this->categories[$row['uid']]);
@@ -915,6 +918,7 @@ class tx_ttnews extends tslib_pibase {
 				break;
 			}
 		}
+		$GLOBALS['TSFE']->ATagParams = $pTmp;
 
 		return $itemsOut;
 	}

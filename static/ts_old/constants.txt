@@ -4,23 +4,7 @@
 
 
 plugin.tt_news {
-## TSConstantsEditor Config
 
-TSConstantEditor.basic {
-  header = Standard Template "BUSINESS"
-  description = BUSINESS is a framebased template in a very simple layout, based on ....
-  bulletlist = Left-frame image in the top. The dimensions are fixed to ....
-  image = gfx/BUSINESS_basic.gif
-
-  1=leftFrameWidth,menu.file.bgImg,menu.bgCol
-  2=page.file.bgImg,bgCol
-  3=contentOffset
-  4=file.logo
-  5=page.L0.titleWrap
-  6=page.L1.titleWrap
-  7=contentWidth,styles.content.imgtext.maxW
-  8=page.lineCol
-}
     # cat=plugin.tt_news/file; type=file[html,htm,tmpl,txt]; label= Template File: HTML-template file for display of news. See EXT:tt_news/pi/news_template.tmpl for an example
   file.templateFile = EXT:tt_news/pi/news_template.tmpl
 
