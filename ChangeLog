@@ -1,3 +1,69 @@
+2005-04-21	rupertgermann
+	* cvsroot/typo3xdev/tx_ttnews/doc/manual.sxw 1.27:
+	* cvsroot/typo3xdev/tx_ttnews/ext_conf_template.txt 1.5:
+	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews.php 1.89:
+	* cvsroot/typo3xdev/tx_ttnews/static/ts_new/setup.txt 1.11:
+	* cvsroot/typo3xdev/tx_ttnews/static/ts_old/constants.txt 1.5:
+		- added the possibility to insert the contents of certain fields 
+		as "title" or "alt" attribute to links pointing to the single 
+		view. The field is configurable and stdWrap functions can be 
+		added. (news TS vars: "linkTitleField" and "linkAltField")
+
+2005-04-20	rupertgermann
+	* cvsroot/typo3xdev/tx_ttnews/doc/manual.sxw 1.23:
+		- updated manual with the new features
+
+	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews.php 1.87:
+		- new feature: Use human readable dates even for the links to 
+		the single view. If this is enabled all links to the single view 
+		will show year, month and day. useHRDatesSingle=1 will enable 
+		this feature.
+
+	* cvsroot/typo3xdev/tx_ttnews/doc/manual.sxw 1.26:
+		- updated the manual
+
+	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews.php 1.88:
+		- added the option to use HRDatesSingle without the day. Can be 
+		enabled by setting useHRDatesSingleWithoutDay=1
+
+	* cvsroot/typo3xdev/tx_ttnews/doc/manual.sxw 1.24:
+	* cvsroot/typo3xdev/tx_ttnews/doc/manual.sxw 1.25:
+		*** empty log message ***
+
+	* cvsroot/typo3xdev/tx_ttnews/ext_conf_template.txt 1.4:
+	* cvsroot/typo3xdev/tx_ttnews/ext_tables.php 1.17:
+		- added the possiblity to choose the label and the alternative 
+		label to the section "Configuration" which is shown in the 
+		extmanager.
+
+	* cvsroot/typo3xdev/tx_ttnews/static/ts_new/constants.txt 1.4:
+	* cvsroot/typo3xdev/tx_ttnews/static/ts_new/setup.txt 1.10:
+	* cvsroot/typo3xdev/tx_ttnews/static/ts_old/constants.txt 1.4:
+	* cvsroot/typo3xdev/tx_ttnews/static/ts_old/setup.txt 1.8:
+		- added some more options to the contant editor
+
+	* cvsroot/typo3xdev/tx_ttnews/ext_php_api.dat 1.13:
+		- updated php api dat
+
+2005-04-18	rupertgermann
+	* cvsroot/typo3xdev/tx_ttnews/static/ts_new/setup.txt 1.9:
+		- changed the the default setting for the pagebrowser in the 
+		single view. its now disabled by default.
+
+	* cvsroot/typo3xdev/tx_ttnews/ext_emconf.php 1.35:
+	* cvsroot/typo3xdev/tx_ttnews/flexform_ds.xml 1.19:
+	* cvsroot/typo3xdev/tx_ttnews/flexform_ds_no_sPID.xml 1.10:
+	* cvsroot/typo3xdev/tx_ttnews/locallang_tca.php 1.29:
+	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews.php 1.86:
+		- new feature: 'Random News'. I added the keyword 'random' to 
+		the order by selectbox in the content element and also to TS. 
+		choosing this will randomise the ordering of news in lists. 
+		works only with news as USER_INT object or caching disabled
+
+2005-04-15	rupertgermann
+	* cvsroot/typo3xdev/tx_ttnews/ChangeLog 1.34:
+		updated Changelog
+
 2005-04-14	rupertgermann
 	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews.php 1.85:
 	* cvsroot/typo3xdev/tx_ttnews/pi/tt_news_v2_template.html 1.4:
