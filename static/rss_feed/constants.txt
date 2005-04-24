@@ -21,9 +21,9 @@ plugin.tt_news {
   xmlLink = http://your-server.org/
     # cat=plugin.tt_news//87; type=text; label= News-Feed XML-Description: The description of your news feed. (required for rss091, rss2 and rdf. optional for atom03)
   xmlDesc = Latest news
-   	# cat=plugin.tt_news//88; type=int+; label= News-Feed XML-Language: Your site's language. A list of allowable values for <language> in RSS is available at http://backend.userland.com/stories/storyReader$16 (equired for rss091, optional for rss2, not available for rdf, recommended for atom03) 
+   	# cat=plugin.tt_news//88; type=text; label= News-Feed XML-Language: Your site's language. A list of allowable values for <language> in RSS is available at http://backend.userland.com/stories/storyReader$16 (equired for rss091, optional for rss2, not available for rdf, recommended for atom03)
   xmlLang = en
-    # cat=plugin.tt_news//89; type=int+; label= News-Feed XML-Icon: Provide an icon for your news feed with preferred size of 16x16 px, can be gif, jpeg or png. (required for rss091, optional for rss2 and rdf, not available for atom03) 
+    # cat=plugin.tt_news//89; type=text; label= News-Feed XML-Icon: Provide an icon for your news feed with preferred size of 16x16 px, can be gif, jpeg or png. (required for rss091, optional for rss2 and rdf, not available for atom03)
   xmlIcon = EXT:tt_news/ext_icon.gif
     # cat=plugin.tt_news//90; type=int+; label= News-Feed XML-Limit: max news items in RSS feeds.
   xmlLimit = 10

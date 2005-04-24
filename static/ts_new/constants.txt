@@ -6,7 +6,7 @@ plugin.tt_news {
     # cat=plugin.tt_news/file/1; type=file[html,htm,tmpl,txt]; label= Template File: HTML-template file for display of news. See EXT:tt_news/pi/tt_news_v2_template.html for an example
 
   file.templateFile = EXT:tt_news/pi/tt_news_v2_template.html
-    # cat=plugin.tt_news/links/3; type=int+; label= Starting Point (pid_list): The PID of the page where your news items are located.
+    # cat=plugin.tt_news/links/3; type=text; label= Starting Point (pid_list): The PID of the page (or comma separated list pf PIDs) where your news articles are located.
   pid_list = 0
     # cat=plugin.tt_news/links/5; type=int+; label= SinglePid: The PID of the page on which single news items should be displayed (since tt_news v1.6.0 this var is called 'singlePid'. The old var-name 'PIDitemDisplay' does not work anymore).
   singlePid = 0
