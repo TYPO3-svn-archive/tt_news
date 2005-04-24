@@ -865,8 +865,8 @@ class tx_ttnews extends tslib_pibase {
 					$wrappedSubpartArray['###LINK_ITEM###'] = explode('|', $this->pi_linkTP_keepPIvars('|', array(
 						'tt_news' => $row['uid'],
 						'backPid' => ($this->conf['dontUseBackPid']?null:$this->config['backPid']),
-						'year' => ($this->piVars['year']?$this->piVars['year']:null),
-						'month' => ($this->piVars['month']?$this->piVars['month']:null),
+						'year' => $this->piVars['year'],
+						'month' => $this->piVars['month'],
 						'day' => ($this->piVars['day']?$this->piVars['day']:null),
 						), $this->allowCaching, ($this->conf['dontUseBackPid']?1:0), $singlePid));
 
@@ -874,8 +874,8 @@ class tx_ttnews extends tslib_pibase {
 					$this->local_cObj->LOAD_REGISTER(array('newsMoreLink' => $this->pi_linkTP_keepPIvars($this->pi_getLL('more'), array(
 						'tt_news' => $row['uid'],
 						'backPid' => ($this->conf['dontUseBackPid']?null:$this->config['backPid']),
-						'year' => ($this->piVars['year']?$this->piVars['year']:null),
-						'month' => ($this->piVars['month']?$this->piVars['month']:null),
+						'year' => $this->piVars['year'],
+						'month' => $this->piVars['month'],
 						'day' => ($this->piVars['day']?$this->piVars['day']:null),
 						), $this->allowCaching, ($this->conf['dontUseBackPid']?1:0), $singlePid)), '');
 
@@ -954,7 +954,7 @@ class tx_ttnews extends tslib_pibase {
 		if ($this->arcExclusive > 0) {
 			if ($this->piVars['arc']) {
 				// allow overriding of the arcExclusive parameter from GET vars
-				$this->arcExclusive = $this->piVars['arc'];
+				$this->arcExclusive = intval($this->piVars['arc']);
 			}
 			// select news from a certain period
 			if (!$noPeriod && intval($this->piVars['pS'])) {
@@ -1969,7 +1969,7 @@ class tx_ttnews extends tslib_pibase {
 	 */
 	function checkRecords($recordlist) {
 		if ($recordlist) {
-			$temp = explode(',', $recordlist);
+			$temp = t3lib_div::intExplode(',', $recordlist);
 			$newtemp = array();
 			while (list(, $val) = each($temp)) {
 				$val = intval($val);
@@ -2032,7 +2032,7 @@ class tx_ttnews extends tslib_pibase {
 
 		$recursive = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'recursive', 'sDEF');
 		$recursive = is_numeric($recursive)?$recursive:
-		$this->cObj->stdWrap($conf['recursive'], $conf['recursive.']);
+		$this->cObj->stdWrap($this->conf['recursive'], $this->conf['recursive.']);
 		// extend the pid_list by recursive levels
 		$this->pid_list = $this->pi_getPidList($pid_list, $recursive);
 		$this->pid_list = $this->pid_list?$this->pid_list:0;
