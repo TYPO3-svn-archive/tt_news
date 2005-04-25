@@ -81,6 +81,12 @@ if ($confArr['useStoragePid']) {
 	t3lib_extMgm::addPiFlexFormValue(9, 'FILE:EXT:tt_news/flexform_ds_no_sPID.xml');
 }
 
+if (t3lib_extMgm::isLoaded('css_styled_content')) {
+t3lib_extMgm::addPageTSConfig('
+# RTE mode in table "tt_news"
+RTE.config.tt_news.bodytext.proc.overruleMode=ts_css');
+}
+
 // comment this out, if you don't want users to create news_categories on normal pages
 t3lib_extMgm::allowTableOnStandardPages('tt_news_cat');
 
