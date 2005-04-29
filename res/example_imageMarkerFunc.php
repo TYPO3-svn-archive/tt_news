@@ -33,11 +33,11 @@
  */
 
 /**
- * Example function that adds 4 new imageWraps to the images in "SINGLE" view. 
+ * Example function that adds 4 new imageWraps to the images in 'SINGLE' view.
  * Each image will be wrapped with its own css-class to display f.e. different background colors. 
  * The function expects, that you define image wraps in your TS setup, 
  * that contain a number (see example TS below)  
- * "imageWrapIfAny" (without number) can still be used to wrap all images
+ * 'imageWrapIfAny' (without number) can still be used to wrap all images
  */ 
 /*  add this to your TS-setup:
 
@@ -48,10 +48,10 @@
  		# call user function
  		imageMarkerFunc = user_imageMarkerFunc
  		displaySingle {
- 			imageWrapIfAny_0 = <div class="news-single-images-container0"> | </div>
-    		imageWrapIfAny_1 = <div class="news-single-images-container1"> | </div>
-    		imageWrapIfAny_2 = <div class="news-single-images-container2"> | </div>
-    		imageWrapIfAny_3 = <div class="news-single-images-container3"> | </div>
+ 			imageWrapIfAny_0 = <div class='news-single-images-container0'> | </div>
+    		imageWrapIfAny_1 = <div class='news-single-images-container1'> | </div>
+    		imageWrapIfAny_2 = <div class='news-single-images-container2'> | </div>
+    		imageWrapIfAny_3 = <div class='news-single-images-container3'> | </div>
 		}
 		# example styles for the new wraps 
 		_CSS_DEFAULT_STYLE (
@@ -65,7 +65,7 @@
  		
 */
 /** 
- * Example function for displaying amenu items in yearly periods.
+ * Example function that adds different wraps to images.
  *   
  * @param 	array	$paramArray: $markerArray and $config of the current news item in an array
  * @return	array	the processed markerArray 
@@ -120,6 +120,97 @@ function user_imageMarkerFunc($paramArray,$conf){
 	
 }
 
+/**
+ * Example function which adds masks to images
+ */ 
+/*  add this to your TS-setup:
 
+# include the php script
+includeLibs.imageMarkerFunc = EXT:tt_news/res/example_imageMarkerFunc.php
+
+plugin.tt_news {
+  # call user function
+  imageMarkerFunc = user_maskImages
+}
+*/
+/** 
+ * masking images.
+ *   
+ * @param 	array	$paramArray: $markerArray and $config of the current news item in an array
+ * @return	array	the processed markerArray 
+ */
+function user_maskImages($paramArray,$conf){
+
+	$markerArray = $paramArray[0];
+	$lConf = $paramArray[1];
+    $pObj = &$conf['parentObj']; // make a reference to the parent-object
+	$row = $pObj->local_cObj->data;
+
+	$imageNum = isset($lConf['imageCount']) ? $lConf['imageCount']:1;
+	$imageNum = t3lib_div::intInRange($imageNum, 0, 100);
+	$theImgCode = '';
+	$imgs = t3lib_div::trimExplode(',', $row['image'], 1);
+	$imgsCaptions = explode(chr(10), $row['imagecaption']);
+	$imgsAltTexts = explode(chr(10), $row['imagealttext']);
+	$imgsTitleTexts = explode(chr(10), $row['imagetitletext']);
+
+	reset($imgs);
+
+	$cc = 0;
+	// remove first img from the image array in single view if the TSvar firstImageIsPreview is set
+	if (count($imgs) > 1 && $pObj->config['firstImageIsPreview'] && $textRenderObj == 'displaySingle') {
+		array_shift($imgs);
+		array_shift($imgsCaptions);
+		array_shift($imgsAltTexts);
+		array_shift($imgsTitleTexts);
+	}
+	// get img array parts for single view pages
+	if ($pObj->piVars[$pObj->config['singleViewPointerName']]) {
+		$spage = $pObj->piVars[$pObj->config['singleViewPointerName']];
+		$astart = $imageNum*$spage;
+		$imgs = array_slice($imgs,$astart,$imageNum);
+		$imgsCaptions = array_slice($imgsCaptions,$astart,$imageNum);
+		$imgsAltTexts = array_slice($imgsAltTexts,$astart,$imageNum);
+		$imgsTitleTexts = array_slice($imgsTitleTexts,$astart,$imageNum);
+	}
+	$img = t3lib_div::makeInstance('t3lib_stdGraphic');
+	$img->mayScaleUp = 1;
+	while (list(, $val) = each($imgs)) {
+		if ($cc == $imageNum) break;
+		if ($val) {
+
+			$lConf['image.']['altText'] = $imgsAltTexts[$cc];
+			$lConf['image.']['titleText'] = $imgsTitleTexts[$cc];
+			$lConf['image.']['file'] = 'uploads/pics/' . $val;
+		}
+
+		$img->init();
+		if ($pObj->alternativeTempPath && t3lib_div::inList($GLOBALS['TYPO3_CONF_VARS']['FE']['allowedTempPaths'],$pObj->alternativeTempPath)) {
+			$img->tempPath = $pObj->alternativeTempPath;
+		}
+		
+		$imgInfo = $img->imageMagickConvert($lConf['image.']['file'],'',$lConf['image.']['file.']['maxW'],$lConf['image.']['file']['maxH'],'-quality 100','0','');
+	
+		$bgInfo = $img->imageMagickConvert('media/frames/darkroom8_bottom.jpg','',$imgInfo[0],$imgInfo[1],'-quality 100 -negate','0','');
+		$mInfo = $img->imageMagickConvert('media/frames/darkroom8_mask.jpg','',$imgInfo[0],$imgInfo[1],'-quality 100 -negate','0','');
+	
+		$cmd = $img->imageMagickPath.$img->combineScript.' -compose over '.$img->wrapFileName($imgInfo[3]).' '.$img->wrapFileName($bgInfo[3]).'	'.$img->wrapFileName($mInfo[3]).' '.$img->wrapFileName($imgInfo[3]);
+	
+		exec($cmd);
+		if (!$imgInfo[3]) {
+			$theImgCode.= '<img src="fileadmin/Templates/notavaible.gif" border="0">'.$pObj->local_cObj->stdWrap($imgsCaptions[$cc],$lConf['caption_stdWrap.']);
+		} else {
+			$theImgCode.= '<img src="'. $imgInfo[3] .'" border="0">'.$pObj->local_cObj->stdWrap($imgsCaptions[$cc],$lConf['caption_stdWrap.']);
+		}
+		$cc++;
+	}
+	$markerArray['###NEWS_IMAGE###'] = '';
+	if ($cc) {
+		$markerArray['###NEWS_IMAGE###'] = $pObj->local_cObj->wrap(trim($theImgCode), $lConf['imageWrapIfAny']);
+	}
+		
+	return $markerArray;
+
+}
 
 ?>
