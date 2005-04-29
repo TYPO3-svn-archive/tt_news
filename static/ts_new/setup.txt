@@ -81,6 +81,21 @@ plugin.tt_news {
   catImageMaxWidth = 25
   catImageMaxHeight = 25
 
+  # setting for the category menu (CATMENU)
+  displayCatMenu {
+    catmenu_stdWrap.wrap = <div class="news-catmenu">|</div>
+
+    catmenuItem_ACT_stdWrap.wrap = <strong>|</strong>
+    catmenuItem_NO_stdWrap.wrap =
+
+    catmenuLevel1_stdWrap.wrap = <div class="level1">|</div>
+    catmenuLevel2_stdWrap.wrap = <div class="level2">|</div>
+    catmenuLevel3_stdWrap.wrap = <div class="level3">|</div>
+    catmenuLevel4_stdWrap.wrap = <div class="level4">|</div>
+    catmenuLevel5_stdWrap.wrap = <div class="level5">|</div>
+
+  }
+
   # - - - - - - - - -  Archive settings  - - - - - - - - - - - #
   
   datetimeDaysToArchive = {$plugin.tt_news.datetimeDaysToArchive}
