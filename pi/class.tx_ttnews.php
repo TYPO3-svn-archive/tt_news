@@ -154,6 +154,10 @@ class tx_ttnews extends tslib_pibase {
 				case 'AMENU':
 				$content .= $this->newsArchiveMenu();
 				break;
+
+				case 'CATMENU':
+				$content .= $this->displayCatMenu();
+				break;
 				default:
 				// Adds hook for processing of extra codes
 				if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tt_news']['extraCodesHook'])) {
@@ -722,22 +726,6 @@ class tx_ttnews extends tslib_pibase {
 					$this->internal['res_count'] = $newsCount;
 					$this->internal['results_at_a_time'] = $this->config['limit'];
 					$this->internal['maxPages'] = $this->conf['pageBrowser.']['maxPages'];
-					// test
-					/* $this->internal['pagefloat'] = $this->conf['pageBrowser.']['pagefloat'];
-					$this->internal['showFirstLast'] = $this->conf['pageBrowser.']['showFirstLast'];
-					$this->internal['showRange'] = $this->conf['pageBrowser.']['showRange'];
-					$this->internal['dontLinkActivePage'] = $this->conf['pageBrowser.']['dontLinkActivePage'];
-
-
-					$$wrapArrFields = explode(',', 'disabledLinkWrap,inactiveLinkWrap,activeLinkWrap,browseLinksWrap,showResultsWrap,showResultsNumbersWrap,browseBoxWrap');
-					$wrapArr = array();
-					foreach($$wrapArrFields as $key) {
-						if ($this->conf['pageBrowser.'][$key]) {
-							$wrapArr[$key] = $this->conf['pageBrowser.'][$key];
-						}
-					}
-					$this->pi_isOnlyFields = 'test';
-					*/
 
 					if (!$this->conf['pageBrowser.']['showPBrowserText']) {
 						$this->LOCAL_LANG[$this->LLkey]['pi_list_browseresults_page'] = '';
@@ -746,7 +734,19 @@ class tx_ttnews extends tslib_pibase {
 						$markerArray = $this->userProcess('userPageBrowserFunc', $markerArray);
 					} else {
 						if ($this->conf['usePiBasePagebrowser']) {
-							$markerArray['###BROWSE_LINKS###'] = $this->pi_list_browseresults($this->conf['pageBrowser.']['showResultCount'], $this->conf['pageBrowser.']['tableParams']); # ,$wrapArr
+							$this->internal['pagefloat'] = $this->conf['pageBrowser.']['pagefloat'];
+							$this->internal['showFirstLast'] = $this->conf['pageBrowser.']['showFirstLast'];
+							$this->internal['showRange'] = $this->conf['pageBrowser.']['showRange'];
+							$this->internal['dontLinkActivePage'] = $this->conf['pageBrowser.']['dontLinkActivePage'];
+
+							$$wrapArrFields = explode(',', 'disabledLinkWrap,inactiveLinkWrap,activeLinkWrap,browseLinksWrap,showResultsWrap,showResultsNumbersWrap,browseBoxWrap');
+							$wrapArr = array();
+							foreach($$wrapArrFields as $key) {
+								if ($this->conf['pageBrowser.'][$key]) {
+									$wrapArr[$key] = $this->conf['pageBrowser.'][$key];
+								}
+							}
+							$markerArray['###BROWSE_LINKS###'] = $this->pi_list_browseresults($this->conf['pageBrowser.']['showResultCount'], $this->conf['pageBrowser.']['tableParams'],$wrapArr); # ,$wrapArr
 						} else {
 							$markerArray['###BROWSE_LINKS###'] = $this->makePageBrowser($this->conf['pageBrowser.']['showResultCount'], $this->conf['pageBrowser.']['tableParams']);
 						}
@@ -1276,7 +1276,6 @@ class tx_ttnews extends tslib_pibase {
 		$firstPageCrop = $firstPageWordCrop+intval($this->conf['cropWordsFromFirstPage']);
 		$cc = 0; // wordcount
 		$isfirst = true; // first paragraph
-		#debug(t3lib_div::intInRange($this->config['maxWordsInSingleView']-($isfirst && !$this->conf['subheaderOnAllSViewPages'] ? $firstPageCrop:0),0,$this->config['maxWordsInSingleView']));
 		while (list($k,$p) = each ($paragraphs))	{
 			$words = explode(' ', $p); // get words
 			$pArr = array();
@@ -1288,7 +1287,7 @@ class tx_ttnews extends tslib_pibase {
 					$pArr[] = $w;
 					$isfirst = false;
 				} elseif ($cc >= t3lib_div::intInRange($this->config['maxWordsInSingleView']-($isfirst && !$this->conf['subheaderOnAllSViewPages'] ? $firstPageCrop:0),0,$this->config['maxWordsInSingleView'])) {
-								if (trim($paragraphs[$k+1])=='&nbsp;') unset($paragraphs[$k+1]);
+					if (trim($paragraphs[$k+1])=='&nbsp;') unset($paragraphs[$k+1]);
 
 					if (!$this->conf['useParagraphAsPagebreak'] && substr($w,-1)=='.') { // break at dot
    					   $pArr[] = $w.$this->config['pageBreakToken'];
@@ -1410,8 +1409,7 @@ class tx_ttnews extends tslib_pibase {
 					$this->internal['res_count']
 				) :
 				$this->pi_getLL('pi_list_browseresults_noResults','Sorry, no items were found.')).'</p>':''
-			).
-		'
+			).'
 
 			<'.trim('table '.$tableParams).'>
 				<tr>
@@ -1445,7 +1443,7 @@ class tx_ttnews extends tslib_pibase {
 			if ($this->conf['displaySubCategories'] && $this->conf['useSubCategories']) {
 				$subCategories = array();
 				$subcats = implode(',', array_unique(explode(',', $this->getSubCategories($row[0]['uid']))));
-				$subres = $GLOBALS['TYPO3_DB']->exec_SELECTquery ('tt_news_cat.*', 'tt_news_cat', $whereClause = 'tt_news_cat.uid IN ('.($subcats?$subcats:0).')'.$this->SPaddWhere.$this->enableCatFields, $groupBy = '', 'tt_news_cat.'.$this->config['catOrderBy'], $limit = '');
+				$subres = $GLOBALS['TYPO3_DB']->exec_SELECTquery ('tt_news_cat.*', 'tt_news_cat', 'tt_news_cat.uid IN ('.($subcats?$subcats:0).')'.$this->SPaddWhere.$this->enableCatFields, $groupBy = '', 'tt_news_cat.'.$this->config['catOrderBy'], $limit = '');
 				while ($subrow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($subres)) {
 					$subCategories[] = $subrow;
 				}
@@ -1473,7 +1471,6 @@ class tx_ttnews extends tslib_pibase {
 					'mmsorting' => $val['mmsorting'],
 				);
 			}
-
 		}
 		return $categories;
 	}
@@ -1497,15 +1494,92 @@ class tx_ttnews extends tslib_pibase {
 			$subcats = $this->getSubCategories($row['uid'], $cc);
 			$subcats = $subcats?','.$subcats:'';
 			$pcatArr[] = $row['uid'].$subcats;
-			#debug(array('subcats',$subcats,$cc));
 		}
 		$catlist = implode(',', $pcatArr);
 		return $catlist;
 	}
 
 
+	/**
+	 * Displays a hirarchical menu from tt_news categories
+	 *
+	 * @return	string		html for the category menu
+	 */
+	function displayCatMenu() {
+		$orderBy = 'sorting';
+		$fields = '*';
+		$lConf = $this->conf['displayCatMenu.'];
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery($fields, 'tt_news_cat', 'parent_category=0' .$this->SPaddWhere. $this->enableCatFields,'',$orderBy);
+		$cArr = array();
+		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
+ 			$cArr[] = $row;
+			$subcats = $this->getSubCategoriesForMenu($row['uid'],$fields);
+			if (count($subcats))	{
+				$cArr[] = $subcats;
+			}
+		}
+		$content = $this->getCatMenuContent($cArr,$lConf);
+		return $this->local_cObj->stdWrap($content, $lConf['catmenu_stdWrap.']);
+	}
+	
+	/**
+	 * This function calls itself recursively to convert the nested category array to HTML
+	 *
+	 * @param	array		$array_in: the nested categories
+	 * @param	array		$lConf: TS configuration
+	 * @param	integer		$l: level counter
+	 * @return	string		HTML for the category menu
+	 */
+	function getCatMenuContent($array_in,$lConf, $l=0) {
+		$titlefield = 'title';
 
-
+		if (is_array($array_in))	{
+			$result = '';
+			while (list($key,$val)=each($array_in))	{
+				if ($key == $titlefield||is_array($array_in[$key])) {
+					if ($l) {
+						$catmenuLevel_stdWrap = explode('|||',$this->local_cObj->stdWrap('|||',$lConf['catmenuLevel'.$l.'_stdWrap.']));
+						$result.= $catmenuLevel_stdWrap[0];
+					}
+					if (is_array($array_in[$key]))	{
+						$result.=$this->getCatMenuContent($array_in[$key],$lConf,$l+1);
+					} elseif ($key == $titlefield) {
+						if ($this->piVars['cat']==$array_in['uid']) {
+							$result.= $this->local_cObj->stdWrap($this->pi_linkTP_keepPIvars($val, array('cat' => $array_in['uid']), $this->allowCaching, 1, $catSelLinkParams),$lConf['catmenuItem_ACT_stdWrap.']);
+						} else {
+							$result.= $this->local_cObj->stdWrap($this->pi_linkTP_keepPIvars($val, array('cat' => $array_in['uid']), $this->allowCaching, 1, $catSelLinkParams),$lConf['catmenuItem_NO_stdWrap.']);
+						}
+					}
+					if ($l) { $result.= $catmenuLevel_stdWrap[1]; }
+				}
+			}
+		}
+		return $result;
+	}
+	
+	/**
+	 * extends a given list of categories by their subcategories. This function returns a nested array with subcategories (the function getSubCategories() return only a commaseparated list of category UIDs)
+	 *
+	 * @param	string		$catlist: list of categories which will be extended by subcategories
+	 * @param	string		$fields: list of fields for the query
+	 * @param	integer		$cc: counter to detect recursion in nested categories
+	 * @return	array		all categories in a nested array
+	 */
+	function getSubCategoriesForMenu ($catlist, $fields, $cc = 0) {
+		$pcatArr = array();
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery($fields, 'tt_news_cat', 'tt_news_cat.parent_category IN ('.$catlist.')'.$this->SPaddWhere.$this->enableCatFields);
+		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
+			$cc++;
+			if ($cc > 50) {
+				$GLOBALS['TT']->setTSlogMessage('tt_news: one or more recursive categories where found');
+				return $pcatArr;
+			}
+			$subcats = $this->getSubCategoriesForMenu($row['uid'], $fields, $cc);
+			$pcatArr[] = is_array($subcats)?array_merge($row,$subcats):'';
+		}
+		return $pcatArr;
+	}
+	
 	/**
 	 * Fills in the Category markerArray with data
 	 *
@@ -1778,7 +1852,6 @@ class tx_ttnews extends tslib_pibase {
 					if ($queryString) {
 						while (list(, $val) = each($queryString)) {
 							$tmp = explode('=', $val);
-							// debug($tmp);
 							$paramArray[$tmp[0]] = $val;
 						}
 
@@ -1788,7 +1861,6 @@ class tx_ttnews extends tslib_pibase {
 								unset($paramArray[$key]);
 							}
 						}
-						// $paramArray['id']='id='.$GLOBALS['TSFE']->id;
 						$paramArray['tx_ttnews[tt_news]'] = 'tx_ttnews[tt_news]=' . $row['uid'];
 
 						if (!$this->conf['dontUseBackPid']) {
@@ -1957,9 +2029,8 @@ class tx_ttnews extends tslib_pibase {
 			$value = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], $key, 's_category');
 			$this->config[$key] = (is_numeric($value)?$value:$this->conf[$key]);
 		}
-
-
 	}
+
 
 	/**
 	 * Checks the visibility of a list of category-records
