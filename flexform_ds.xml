@@ -38,6 +38,10 @@
 						<numIndex index="0">SEARCH</numIndex>
 						<numIndex index="1">SEARCH</numIndex>
 					</numIndex>
+					<numIndex index="5" type="array">
+						<numIndex index="0">CATMENU</numIndex>
+						<numIndex index="1">CATMENU</numIndex>
+					</numIndex>	
 					</items>
 					<itemsProcFunc>tx_ttnews_itemsProcFunc->user_insertExtraCodes</itemsProcFunc>
 					<maxitems>100</maxitems>
