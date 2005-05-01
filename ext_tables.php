@@ -24,6 +24,8 @@ $TCA['tt_news'] = Array (
 		
 		'crdate' => 'crdate',
 		'type' => 'type',
+		'cruser_id' => 'cruser_id',
+		'editlock' => 'editlock',
 		'enablecolumns' => Array (
 			'disabled' => 'hidden',
 			'starttime' => 'starttime',
@@ -47,6 +49,7 @@ $TCA['tt_news_cat'] = Array (
 		'tstamp' => 'tstamp',
 		'delete' => 'deleted',
 		'sortby' => 'sorting',
+		'treeParentField' => 'parent_category',
 		'enablecolumns' => Array (
 			'disabled' => 'hidden',
 			'starttime' => 'starttime',
@@ -102,7 +105,14 @@ if (TYPO3_MODE=='BE')	{
 	
 	// add extra 'codes' to the 'what to display' selector
 	include_once(t3lib_extMgm::extPath('tt_news').'class.tx_ttnews_itemsProcFunc.php');
+
+	// class for displaying nested categories in BE forms (borrowed from tx_dam)
+	include_once(t3lib_extMgm::extPath($_EXTKEY).'class.tx_ttnews_treeview.php');
+	// use hook in class.t3lib_tcemain.php to process allowed categories
+	include_once(t3lib_extMgm::extPath($_EXTKEY).'class.tx_ttnews_tcemain.php');
 	
+	#include_once(t3lib_extMgm::extPath($_EXTKEY).'class.tx_ttnews_userauthgroup.php');
+
 }
 
 ?>

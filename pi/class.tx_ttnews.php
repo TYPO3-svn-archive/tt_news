@@ -42,44 +42,47 @@
  *
  *
  *
- *   97: class tx_ttnews extends tslib_pibase
- *  127:     function main_news($content, $conf)
- *  192:     function init($conf)
- *  324:     function newsArchiveMenu()
- *  466:     function displaySingle()
- *  523:     function displayList($excludeUids = 0)
- *  812:     function getListContent($itemparts, $selectConf, $prefix_display)
- *  929:     function getSelectConf($where, $noPeriod = 0)
- * 1033:     function generatePageArray()
- * 1049:     function getItemMarkerArray ($row, $textRenderObj = 'displaySingle')
- * 1269:     function insertPagebreaks($text,$firstPageWordCrop)
- * 1320:     function makeMultiPageSView($bodytext,$lConf)
- * 1350:     function makePageBrowser($showResultCount=1,$tableParams='',$pointerName='pointer')
- * 1432:     function getCategories($uid)
- * 1484:     function getSubCategories($catlist, $cc = 0)
- * 1513:     function getCatMarkerArray($markerArray, $row, $lConf)
- * 1642:     function getImageMarkers($markerArray, $row, $lConf, $textRenderObj)
- * 1705:     function getRelated($uid)
- * 1814:     function userProcess($mConfKey, $passVar)
- * 1829:     function spMarker($subpartMarker)
- * 1847:     function searchWhere($sw)
- * 1858:     function formatStr($str)
- * 1873:     function getLayouts($templateCode, $alternatingLayouts, $marker)
- * 1891:     function initLanguages ()
- * 1905:     function initCategoryVars()
- * 1966:     function checkRecords($recordlist)
- * 1996:     function initTemplate()
- * 2021:     function initPidList ()
- * 2048:     function getXmlHeader()
- * 2137:     function getW3cDate($datetime)
- * 2162:     function main_xmlnewsfeed($content, $conf)
- * 2177:     function getStoriesResult()
- * 2191:     function cleanXML($str)
- * 2205:     function convertDates()
- * 2238:     function getHrDateSingle($tstamp)
- * 2253:     function getNewsSubpart($myTemplate, $myKey, $row = Array())
+ *  100: class tx_ttnews extends tslib_pibase
+ *  130:     function main_news($content, $conf)
+ *  198:     function init($conf)
+ *  330:     function newsArchiveMenu()
+ *  472:     function displaySingle()
+ *  529:     function displayList($excludeUids = 0)
+ *  814:     function getListContent($itemparts, $selectConf, $prefix_display)
+ *  935:     function getSelectConf($where, $noPeriod = 0)
+ * 1039:     function generatePageArray()
+ * 1055:     function getItemMarkerArray ($row, $textRenderObj = 'displaySingle')
+ * 1275:     function insertPagebreaks($text,$firstPageWordCrop)
+ * 1325:     function makeMultiPageSView($bodytext,$lConf)
+ * 1355:     function makePageBrowser($showResultCount=1,$tableParams='',$pointerName='pointer')
+ * 1436:     function getCategories($uid)
+ * 1487:     function getSubCategories($catlist, $cc = 0)
+ * 1510:     function displayCatMenu()
+ * 1535:     function getCatMenuContent($array_in,$lConf, $l=0)
+ * 1570:     function getSubCategoriesForMenu ($catlist, $fields, $cc = 0)
+ * 1593:     function getCatMarkerArray($markerArray, $row, $lConf)
+ * 1722:     function getImageMarkers($markerArray, $row, $lConf, $textRenderObj)
+ * 1785:     function getRelated($uid)
+ * 1892:     function userProcess($mConfKey, $passVar)
+ * 1907:     function spMarker($subpartMarker)
+ * 1925:     function searchWhere($sw)
+ * 1936:     function formatStr($str)
+ * 1951:     function getLayouts($templateCode, $alternatingLayouts, $marker)
+ * 1969:     function initLanguages ()
+ * 1983:     function initCategoryVars()
+ * 2043:     function checkRecords($recordlist)
+ * 2073:     function initTemplate()
+ * 2098:     function initPidList ()
+ * 2125:     function getXmlHeader()
+ * 2214:     function getW3cDate($datetime)
+ * 2239:     function main_xmlnewsfeed($content, $conf)
+ * 2254:     function getStoriesResult()
+ * 2268:     function cleanXML($str)
+ * 2282:     function convertDates()
+ * 2315:     function getHrDateSingle($tstamp)
+ * 2332:     function getNewsSubpart($myTemplate, $myKey, $row = Array())
  *
- * TOTAL FUNCTIONS: 35
+ * TOTAL FUNCTIONS: 38
  * (This index is automatically created/updated by the extension "extdeveval")
  *
  */
@@ -129,7 +132,6 @@ class tx_ttnews extends tslib_pibase {
 		$this->init($conf);
 
 		if ($this->conf['displayCurrentRecord']) {
-			// added the possibility to change the template, used whe displaying news with the 'insert records' content-element. if the value is empty, the code is 'single'
 			$this->config['code'] = $this->conf['defaultCode']?trim($this->conf['defaultCode']):
 			'SINGLE';
 			$this->tt_news_uid = $this->cObj->data['uid'];
@@ -154,7 +156,6 @@ class tx_ttnews extends tslib_pibase {
 				case 'AMENU':
 				$content .= $this->newsArchiveMenu();
 				break;
-
 				case 'CATMENU':
 				$content .= $this->displayCatMenu();
 				break;
@@ -821,7 +822,7 @@ class tx_ttnews extends tslib_pibase {
 			$lConf = $this->conf[$prefix_display.'.'];
 			$titleField = $lConf['linkTitleField']?$lConf['linkTitleField']:'';
 			$altField = $lConf['linkAltField']?$lConf['linkAltField']:'';
-			
+
 			$GLOBALS['TSFE']->ATagParams = ($pTmp?$pTmp.' ':'').'title="'.$this->local_cObj->stdWrap($row[$titleField], $lConf['linkTitleField.']).'" alt="'.$this->local_cObj->stdWrap($row[$altField], $lConf['linkAltField.']).'"';
 
 			if ($GLOBALS['TSFE']->sys_language_content) {
@@ -1521,7 +1522,7 @@ class tx_ttnews extends tslib_pibase {
 		$content = $this->getCatMenuContent($cArr,$lConf);
 		return $this->local_cObj->stdWrap($content, $lConf['catmenu_stdWrap.']);
 	}
-	
+
 	/**
 	 * This function calls itself recursively to convert the nested category array to HTML
 	 *
@@ -1556,7 +1557,7 @@ class tx_ttnews extends tslib_pibase {
 		}
 		return $result;
 	}
-	
+
 	/**
 	 * extends a given list of categories by their subcategories. This function returns a nested array with subcategories (the function getSubCategories() return only a commaseparated list of category UIDs)
 	 *
@@ -1579,7 +1580,7 @@ class tx_ttnews extends tslib_pibase {
 		}
 		return $pcatArr;
 	}
-	
+
 	/**
 	 * Fills in the Category markerArray with data
 	 *

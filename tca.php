@@ -279,22 +279,25 @@ $TCA['tt_news'] = Array (
 		'category' => Array (
 			'exclude' => 1,	
 			'l10n_mode' => 'exclude',	
-			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.category',
+			'label' => 'LLL:EXT:tt_news/locallang_tca.php:tt_news_cat',
 			'config' => Array (
 				'type' => 'select',
+				'form_type' => 'user',
+				'userFunc' => 'tx_ttnews_treeview->displayCategoryTree',
+				'treeView' => 1,
 				'foreign_table' => 'tt_news_cat',
 				'foreign_table_where' => $fTableWhere.'ORDER BY tt_news_cat.sorting',
 				'size' => 3,
-				'autoSizeMax' => 10,
+				'autoSizeMax' => 15,
 				'minitems' => 0,
-				'maxitems' => 100,
+				'maxitems' => 500,
 				'MM' => 'tt_news_cat_mm',
 				'wizards' => Array(
 					'_PADDING' => 2,
 					'_VERTICAL' => 1,
 					'add' => Array(
 						'type' => 'script',
-						'title' => 'Create new category',
+						'title' => 'LLL:EXT:tt_news/locallang_tca.php:tt_news.createNewCategory',
 						'icon' => 'add.gif',
 						'params' => Array(
 							'table'=>'tt_news_cat',
@@ -305,7 +308,7 @@ $TCA['tt_news'] = Array (
 					),
 					'edit' => Array(
 							'type' => 'popup',
-							'title' => 'Edit category',
+							'title' => 'LLL:EXT:tt_news/locallang_tca.php:tt_news.editCategory',
 							'script' => 'wizard_edit.php',
 							'popup_onlyOpenIfSelected' => 1,
 							'icon' => 'edit2.gif',
@@ -314,7 +317,6 @@ $TCA['tt_news'] = Array (
 				),
 			)
 		),
-
 		'page' => Array (
 			'exclude' => 1,
 		#	'l10n_mode' => 'mergeIfNotBlank',
@@ -375,14 +377,13 @@ $TCA['tt_news'] = Array (
 				'wizards' => Array(
 					'_PADDING' => 2,
 					'_VERTICAL' => 1,
-					
 					'edit' => Array(
-							'type' => 'popup',
-							'title' => 'edit default language version of this record ',
-							'script' => 'wizard_edit.php',
-							'popup_onlyOpenIfSelected' => 1,
-							'icon' => 'edit2.gif',
-							'JSopenParams' => 'height=600,width=700,status=0,menubar=0,scrollbars=1,resizable=1',
+						'type' => 'popup',
+						'title' => 'LLL:EXT:tt_news/locallang_tca.php:tt_news.editDefLangVersion',
+						'script' => 'wizard_edit.php',
+						'popup_onlyOpenIfSelected' => 1,
+						'icon' => 'edit2.gif',
+						'JSopenParams' => 'height=600,width=700,status=0,menubar=0,scrollbars=1,resizable=1',
 					),
 				),
 			)
@@ -397,12 +398,19 @@ $TCA['tt_news'] = Array (
 				'max' => '30',
 			)
 		),
+		'editlock' => Array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:lang/locallang_tca.php:editlock',
+			'config' => Array (
+				'type' => 'check'
+			)
+		),
 		
 		
 	),
 	'types' => Array (	
 
-		'0' => Array('showitem' => 'title,type;;1;;,datetime;;2;;1-1-1,author;;3;;,short,bodytext;;4;richtext[paste|bold|italic|underline|formatblock|class|left|center|right|orderedlist|unorderedlist|outdent|indent|link|table|image]:rte_transform[flag=rte_enabled|mode=ts];4-4-4,no_auto_pb,--div--;Relations,category,image;;;;1-1-1,imagecaption;;5;;,links;;;;2-2-2,related;;;;3-3-3,news_files;;;;4-4-4'),
+		'0' => Array('showitem' => 'title,type,editlock;;1;;,datetime;;2;;1-1-1,author;;3;;,short,bodytext;;4;richtext[paste|bold|italic|underline|formatblock|class|left|center|right|orderedlist|unorderedlist|outdent|indent|link|table|image]:rte_transform[flag=rte_enabled|mode=ts];4-4-4,no_auto_pb,--div--;Relations,category,image;;;;1-1-1,imagecaption;;5;;,links;;;;2-2-2,related;;;;3-3-3,news_files;;;;4-4-4'),
 
 		
 		
@@ -509,12 +517,37 @@ $TCA['tt_news_cat'] = Array (
 			
 			'label' => 'LLL:EXT:tt_news/locallang_tca.php:tt_news_cat.parent_category',
 			'config' => Array (
-				'type' => 'select',	
+				'type' => 'select',
+					'type' => 'select',
+				'form_type' => 'user',
+				'userFunc' => 'tx_ttnews_treeview->displayCategoryTree',
+				'treeView' => 1,
+				'size' => 1,
+				'autoSizeMax' => 10,
+				'minitems' => 0,
+				'maxitems' => 2,
+
 				'foreign_table' => 'tt_news_cat',
-				'foreign_table_where' => $fTableWhere.' AND tt_news_cat.uid!=###THIS_UID### ORDER BY tt_news_cat.sorting',
-				'items' => Array(
-					Array(),
-				)
+				'foreign_table_where' => $fTableWhere.' ORDER BY tt_news_cat.sorting',
+				'wizards' => Array(
+					'_PADDING' => 2,
+					'_VERTICAL' => 1,
+					'add' => Array(
+						'type' => 'script',
+						'title' => 'LLL:EXT:tt_news/locallang_tca.php:tt_news_cat.createSubCategory',
+						'icon' => 'add.gif',
+						'params' => Array(
+							'table'=>'tt_news_cat',
+							'pid' => '###STORAGE_PID###',
+							'setValue' => 'set',
+							'defVals' => array(
+								'parent_category' => '###THIS_UID###',
+							),
+						),
+						'script' => 'wizard_add.php',
+					),
+				),
+
 			)
 		),
 		'image' => Array (		

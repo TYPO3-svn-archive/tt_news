@@ -309,3 +309,32 @@
 	background-color: #769024;
 	color:#fff;
 }
+
+/*--------------------------------- tt_news Categorymenu (CATMENU) --------------------------------- */
+
+.news-catmenu {
+	padding:10px;
+	margin:0px;
+	background-color:#fafafa;
+}
+
+
+.level0 {
+	background-color:#fff;
+}
+.level1 {
+	padding-left:10px;
+	background-color:#eee;
+}
+.level2 {
+	padding-left:10px;
+	background-color:#ddd;
+}
+.level3 {
+	padding-left:10px;
+	background-color:#ccc;
+}
+.level4 {
+	padding-left:10px;
+	background-color:#bbb;
+}
