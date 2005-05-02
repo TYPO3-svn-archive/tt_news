@@ -279,7 +279,7 @@ $TCA['tt_news'] = Array (
 		'category' => Array (
 			'exclude' => 1,	
 			'l10n_mode' => 'exclude',	
-			'label' => 'LLL:EXT:tt_news/locallang_tca.php:tt_news_cat',
+			'label' => 'LLL:EXT:tt_news/locallang_tca.php:tt_news.category',
 			'config' => Array (
 				'type' => 'select',
 				'form_type' => 'user',
@@ -288,7 +288,7 @@ $TCA['tt_news'] = Array (
 				'foreign_table' => 'tt_news_cat',
 				'foreign_table_where' => $fTableWhere.'ORDER BY tt_news_cat.sorting',
 				'size' => 3,
-				'autoSizeMax' => 15,
+				'autoSizeMax' => 25,
 				'minitems' => 0,
 				'maxitems' => 500,
 				'MM' => 'tt_news_cat_mm',
@@ -301,18 +301,18 @@ $TCA['tt_news'] = Array (
 						'icon' => 'add.gif',
 						'params' => Array(
 							'table'=>'tt_news_cat',
-							'pid' => '###STORAGE_PID###',
+							'pid' => ($fTableWhere?'###STORAGE_PID###':'###CURRENT_PID###'),
 							'setValue' => 'set'
 						),
 						'script' => 'wizard_add.php',
 					),
 					'edit' => Array(
-							'type' => 'popup',
-							'title' => 'LLL:EXT:tt_news/locallang_tca.php:tt_news.editCategory',
-							'script' => 'wizard_edit.php',
-							'popup_onlyOpenIfSelected' => 1,
-							'icon' => 'edit2.gif',
-							'JSopenParams' => 'height=350,width=580,status=0,menubar=0,scrollbars=1',
+						'type' => 'popup',
+						'title' => 'LLL:EXT:tt_news/locallang_tca.php:tt_news.editCategory',
+						'script' => 'wizard_edit.php',
+						'popup_onlyOpenIfSelected' => 1,
+						'icon' => 'edit2.gif',
+						'JSopenParams' => 'height=350,width=580,status=0,menubar=0,scrollbars=1',
 					),
 				),
 			)
@@ -324,7 +324,7 @@ $TCA['tt_news'] = Array (
 			'config' => Array (
 				'type' => 'group',
 				'internal_type' => 'db',
-					'allowed' => 'pages',
+				'allowed' => 'pages',
 				'size' => '1',
 				'maxitems' => '1',
 				'minitems' => '0',
@@ -518,7 +518,7 @@ $TCA['tt_news_cat'] = Array (
 			'label' => 'LLL:EXT:tt_news/locallang_tca.php:tt_news_cat.parent_category',
 			'config' => Array (
 				'type' => 'select',
-					'type' => 'select',
+				'type' => 'select',
 				'form_type' => 'user',
 				'userFunc' => 'tx_ttnews_treeview->displayCategoryTree',
 				'treeView' => 1,
@@ -534,17 +534,38 @@ $TCA['tt_news_cat'] = Array (
 					'_VERTICAL' => 1,
 					'add' => Array(
 						'type' => 'script',
-						'title' => 'LLL:EXT:tt_news/locallang_tca.php:tt_news_cat.createSubCategory',
-						'icon' => 'add.gif',
+						'title' => 'LLL:EXT:tt_news/locallang_tca.php:tt_news.createNewCategory',
+						'icon' => 'EXT:tt_news/res/add_cat.gif',
 						'params' => Array(
 							'table'=>'tt_news_cat',
-							'pid' => '###STORAGE_PID###',
+							'pid' => ($fTableWhere?'###STORAGE_PID###':'###CURRENT_PID###'),
+							'setValue' => 'set'
+						),
+						'script' => 'wizard_add.php',
+					),
+					'addsub' => Array(
+						'type' => 'script',
+						'title' => 'LLL:EXT:tt_news/locallang_tca.php:tt_news_cat.createSubCategory',
+						'icon' => 'EXT:tt_news/res/add_subcat.gif',
+						'params' => Array(
+							'table'=>'tt_news_cat',
+							'pid' => ($fTableWhere?'###STORAGE_PID###':'###CURRENT_PID###'),
 							'setValue' => 'set',
 							'defVals' => array(
 								'parent_category' => '###THIS_UID###',
 							),
 						),
 						'script' => 'wizard_add.php',
+					),
+					'list' => Array(
+						'type' => 'script',
+						'title' => 'LLL:EXT:tt_news/locallang_tca.php:tt_news_cat.listCategories',
+						'icon' => 'list.gif',
+						'params' => Array(
+							'table'=>'tt_news_cat',
+							'pid' => ($fTableWhere?'###STORAGE_PID###':'###CURRENT_PID###'),
+						),
+						'script' => 'wizard_list.php',
 					),
 				),
 
@@ -557,10 +578,10 @@ $TCA['tt_news_cat'] = Array (
 				'type' => 'group',
 				'internal_type' => 'file',
 				'allowed' => 'gif,png,jpeg,jpg',	
-				'max_size' => 100,	
+				'max_size' => 100,
 				'uploadfolder' => 'uploads/pics',
 				'show_thumbs' => 1,	
-				'size' => 1,	
+				'size' => 1,
 				'minitems' => 0,
 				'maxitems' => 1,
 			)
@@ -572,7 +593,7 @@ $TCA['tt_news_cat'] = Array (
 				'type' => 'group',
 				'internal_type' => 'db',
 				'allowed' => 'pages',
-				'size' => '3',
+				'size' => '1',
 				'maxitems' => '1',
 				'minitems' => '0',
 				'show_thumbs' => '1'
@@ -596,7 +617,7 @@ $TCA['tt_news_cat'] = Array (
 				'type' => 'group',
 				'internal_type' => 'db',
 				'allowed' => 'pages',
-				'size' => '3',
+				'size' => '1',
 				'maxitems' => '1',
 				'minitems' => '0',
 				'show_thumbs' => '1'

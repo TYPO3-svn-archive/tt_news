@@ -178,7 +178,7 @@ class ux_SC_wizard_add extends SC_wizard_add {
 		} else {
 			$defVals = '';
 			// get dafault values for new records
-			if (is_array($this->P['params']['defVals'])) {
+			if (is_array($this->P['params']['defVals']) && $this->P['params']['table'] == 'tt_news_cat') {
 				foreach($this->P['params']['defVals'] as $theF => $theV)	{
 					if (isset($GLOBALS['TCA'][$this->P['params']['table']]['columns'][$theF]))	{
 						$defVals .= '&defVals['.$this->P['params']['table'].']['.$theF.']='.$this->P['uid'];

@@ -6,6 +6,10 @@
   label_alt2 = 
   # cat=basic//50; type=boolean; label= Force alternative label: If this is activated the alternative label will be always shown behind the label.
 label_alt_force = 0
+  # cat=basic//60; type=int [0-600]; label= Width of the left category field: This field shows the selected categories in the tt_news db-record (or parent categories in the category db-record). If "categorySelectedWidth" is set to 0 (zero) the default width (=180px) will be taken.
+categorySelectedWidth =
+  # cat=basic//70; type=int [0-600]; label= Width of the right category field: This field shows the category tree in the tt_news db-record (or in the category db-record). If "categoryTreeWidth" is set to 0 (zero) the default width will depend on the browser which displays the TYPO3 BackEnd. The default width for all browsers except IE is 280px, for IE the default width is 320px to suppress the unneeded horizontal scrollbar below the category tree.
+categoryTreeWidth = 
   # cat=basic/enable/110; type=boolean; label= Use StoragePid: Here you can switch the BackEnd behaviour of category listing. If you set this value to "1" (default), categories are only displayed if they are found in the "General record storage page", if you set the value to "0", all categories from the pagetree are displayed in the BackEnd.
 useStoragePid = 1
   # cat=basic/enable/120; type=boolean; label= Do not use Tab-Dividers: Here you can disable the "dividers2tabs" feature (TYPO3 > 3.7.0). "Dividers to Tabs" means: the BE form is divided in 2 sections. If you don't want this, set this value to 1.

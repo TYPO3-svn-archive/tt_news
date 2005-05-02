@@ -2072,7 +2072,7 @@ class tx_ttnews extends tslib_pibase {
 	function initTemplate() {
 		// read template-file and fill and substitute the Global Markers
 		$templateflex_file = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'template_file', 's_template');
-		$this->templateCode = $this->cObj->fileResource($templateflex_file?"uploads/tx_ttnews/" . $templateflex_file:$this->conf['templateFile']);
+		$this->templateCode = $this->cObj->fileResource($templateflex_file?'uploads/tx_ttnews/' . $templateflex_file:$this->conf['templateFile']);
 		$splitMark = md5(microtime());
 		$globalMarkerArray = array();
 		list($globalMarkerArray['###GW1B###'], $globalMarkerArray['###GW1E###']) = explode($splitMark, $this->cObj->stdWrap($splitMark, $this->conf['wrap1.']));
