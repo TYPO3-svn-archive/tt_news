@@ -37,9 +37,9 @@
  *
  *
  *
- *   75: class SC_wizard_add
- *  104:     function init()
- *  157:     function main()
+ *   57: class ux_SC_wizard_add extends SC_wizard_add
+ *   86:     function init()
+ *  139:     function main()
  *
  * TOTAL FUNCTIONS: 2
  * (This index is automatically created/updated by the extension "extdeveval")
@@ -131,8 +131,9 @@ class ux_SC_wizard_add extends SC_wizard_add {
 	}
 
 	/**
-	 * Main function
-	 * Will issue a location-header, redirecting either BACK or to a new alt_doc.php instance...
+	 * This function is a copy of the function main() from typo3/wizard_add.php.
+	 * It is extended by the possibility to set default values while creating a new record with the plus button.
+	 * For tt_news it is used to create a subcategory directly from the category record.
 	 *
 	 * @return	void
 	 */

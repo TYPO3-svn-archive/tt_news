@@ -25,7 +25,7 @@
 /**
  * Class 'tx_ttnews_tcemain' for the tt_news extension.
  *
- * $Id: 
+ * $Id:
  *
  * @author     Rupert Germann <rupi@gmx.li>
  */
@@ -33,6 +33,12 @@
  * [CLASS/FUNCTION INDEX of SCRIPT]
  *
  *
+ *
+ *   53: class tx_ttnews_tcemain
+ *   69:     function processDatamap_preProcessFieldArray(&$fieldArray, $table, $id, &$pObj)
+ *
+ * TOTAL FUNCTIONS: 1
+ * (This index is automatically created/updated by the extension "extdeveval")
  *
  */
 
@@ -89,7 +95,7 @@ class tx_ttnews_tcemain {
 				if ($notAllowedItems[0]) {
 					$pObj->log($table,$id,2,0,1,"Attempt to modify a record from table '%s' without permission. Reason: the record has one or more categories assigned that are not defined in your BE usergroup (tablename.allowedItems).",1,array($table));
 					$fieldArray = array();
-	
+
 				}
 			}
 		}
