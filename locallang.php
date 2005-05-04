@@ -9,7 +9,7 @@
 $LOCAL_LANG = Array (
 	'default' => Array (
 		'pi_title' => 'News',
-		'pi_plus_wiz_description' => 'Adds news to the page.',
+		'pi_plus_wiz_description' => 'Versatile news system for TYPO3',
 	),
 	'dk' => Array (
 		'pi_title' => 'Nyheder',
