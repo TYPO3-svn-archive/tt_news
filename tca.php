@@ -534,7 +534,7 @@ $TCA['tt_news_cat'] = Array (
 					'_VERTICAL' => 1,
 					'add' => Array(
 						'type' => 'script',
-						'title' => 'LLL:EXT:tt_news/locallang_tca.php:tt_news.createNewCategory',
+						'title' => 'LLL:EXT:tt_news/locallang_tca.php:tt_news_cat.createNewParentCategory',
 						'icon' => 'EXT:tt_news/res/add_cat.gif',
 						'params' => Array(
 							'table'=>'tt_news_cat',
@@ -543,20 +543,20 @@ $TCA['tt_news_cat'] = Array (
 						),
 						'script' => 'wizard_add.php',
 					),
-					'addsub' => Array(
-						'type' => 'script',
-						'title' => 'LLL:EXT:tt_news/locallang_tca.php:tt_news_cat.createSubCategory',
-						'icon' => 'EXT:tt_news/res/add_subcat.gif',
-						'params' => Array(
-							'table'=>'tt_news_cat',
-							'pid' => ($fTableWhere?'###STORAGE_PID###':'###CURRENT_PID###'),
-							'setValue' => 'set',
-							'defVals' => array(
-								'parent_category' => '###THIS_UID###',
-							),
-						),
-						'script' => 'wizard_add.php',
-					),
+// 					'addsub' => Array(
+// 						'type' => 'script',
+// 						'title' => 'LLL:EXT:tt_news/locallang_tca.php:tt_news_cat.createSubCategory',
+// 						'icon' => 'EXT:tt_news/res/add_subcat.gif',
+// 						'params' => Array(
+// 							'table'=>'tt_news_cat',
+// 							'pid' => ($fTableWhere?'###STORAGE_PID###':'###CURRENT_PID###'),
+// 							'setValue' => 'set',
+// 							'defVals' => array(
+// 								'parent_category' => '###THIS_UID###',
+// 							),
+// 						),
+// 						'script' => 'wizard_add.php',
+// 					),
 					'list' => Array(
 						'type' => 'script',
 						'title' => 'LLL:EXT:tt_news/locallang_tca.php:tt_news_cat.listCategories',
