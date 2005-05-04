@@ -1,3 +1,117 @@
+2005-05-04	rupertgermann
+	* cvsroot/typo3xdev/tx_ttnews/Attic/class.ux_SC_wizard_add.php 1.4:
+	* cvsroot/typo3xdev/tx_ttnews/ext_localconf.php 1.3:
+	* cvsroot/typo3xdev/tx_ttnews/locallang_tca.php 1.33:
+	* cvsroot/typo3xdev/tx_ttnews/tca.php 1.29:
+		- removed the extended wizsrd_add script because it didn't work right (creates always recursive categories)
+		- changed the label from the "add" button in hte category record to "create new parent category" what it actually does.
+
+	* cvsroot/typo3xdev/tx_ttnews/Attic/class.ux_SC_wizard_add.php 1.3:
+	* cvsroot/typo3xdev/tx_ttnews/class.ext_update.php 1.10:
+	* cvsroot/typo3xdev/tx_ttnews/class.tx_ttnews_tcemain.php 1.2:
+	* cvsroot/typo3xdev/tx_ttnews/ext_php_api.dat 1.15:
+	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews.php 1.94:
+	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews_wizicon.php 1.13:
+		- updated function indexes and api docs
+
+	* cvsroot/typo3xdev/tx_ttnews/ext_localconf.php 1.2:
+		- updated comments
+
+	* cvsroot/typo3xdev/tx_ttnews/class.tx_ttnews_treeview.php 1.3:
+	* cvsroot/typo3xdev/tx_ttnews/flexform_ds.xml 1.21:
+	* cvsroot/typo3xdev/tx_ttnews/flexform_ds_no_sPID.xml 1.12:
+	* cvsroot/typo3xdev/tx_ttnews/locallang_tca.php 1.32:
+		- added the category treeview to the news content element.
+		- extended the treeview class to show default items ("not categorized") in the news content element.
+		- improved detection of recursive categories
+		- updated function indexes and api docs
+
+	* cvsroot/typo3xdev/tx_ttnews/locallang.php 1.21:
+		- changed extension description
+
+2005-05-02	rupertgermann
+	* cvsroot/typo3xdev/tx_ttnews/Attic/class.ux_SC_wizard_add.php 1.2:
+	* cvsroot/typo3xdev/tx_ttnews/class.tx_ttnews_treeview.php 1.2:
+	* cvsroot/typo3xdev/tx_ttnews/ext_conf_template.txt 1.6:
+	* cvsroot/typo3xdev/tx_ttnews/ext_emconf.php 1.38:
+	* cvsroot/typo3xdev/tx_ttnews/locallang_tca.php 1.31:
+	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews.php 1.93:
+	* cvsroot/typo3xdev/tx_ttnews/res/add_cat.gif 1.1:
+	* cvsroot/typo3xdev/tx_ttnews/res/add_subcat.gif 1.1:
+	* cvsroot/typo3xdev/tx_ttnews/tca.php 1.28:
+		- the width of both category fields is configurable now. By default the script detects the browser and make the field wider in case of IE is used.
+		- added an error message which appears when recursive categories where found. Recursive categories will be not displayed in the tree window because class.treeview returns nothing for those categories.
+		- added a message that appears when "useStoragePid" is activated but the current category is not located in the genaral record storage page.
+		- added icons to the wizards in the category record ("create category" and "create subcatgegory")
+		- added an "edit" wizard to the category record
+		- added some conditions to tca.php to set the target pid for category records which have been created with the "add" (+) button according to the "useStorage" setting. (if useStoragePid is disabled, those records will be created in the current page). Those should prevent the well known error message "Attempt to insert record at page 0 ...." when no Genral Record storage page have been set.
+
+2005-05-01	rupertgermann
+	* cvsroot/typo3xdev/tx_ttnews/Attic/class.ux_SC_wizard_add.php 1.1:
+	* cvsroot/typo3xdev/tx_ttnews/class.tx_ttnews_tcemain.php 1.1:
+	* cvsroot/typo3xdev/tx_ttnews/class.tx_ttnews_treeview.php 1.1:
+	* cvsroot/typo3xdev/tx_ttnews/doc/manual.sxw 1.28:
+	* cvsroot/typo3xdev/tx_ttnews/ext_emconf.php 1.37:
+	* cvsroot/typo3xdev/tx_ttnews/ext_localconf.php 1.1:
+	* cvsroot/typo3xdev/tx_ttnews/ext_php_api.dat 1.14:
+	* cvsroot/typo3xdev/tx_ttnews/ext_tables.php 1.19:
+	* cvsroot/typo3xdev/tx_ttnews/ext_tables.sql 1.15:
+	* cvsroot/typo3xdev/tx_ttnews/locallang_tca.php 1.30:
+	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews.php 1.92:
+	* cvsroot/typo3xdev/tx_ttnews/res/example_imageMarkerFunc.php 1.8:
+	* cvsroot/typo3xdev/tx_ttnews/res/tt_news_v2_styles.css 1.5:
+	* cvsroot/typo3xdev/tx_ttnews/tca.php 1.27:
+		some major updates:
+		- new feature: The BE forms for news and categories are showing the categories in a tree-view now. The code for this is borrowed from the extension "tx_dam" - thanks René Fritz for his awesome extension(s).
+		- new feature: A list of allowed categories can be configured for each be_user or group (TSconfig). The non allowed categories are displayed in grey and the user can't select them. "options.useListOfAllowedItems=1" will enable this feature, the list of allowed categories can be set with "tt_newsPerms.tt_news_cat.allowedItems=1,2,3" f.e.
+		- new feature: Now it's possible to prevent editing of news records by their assigned categories. If the record has categories assigned that are not in the list of allowed categories, saving of this record will be disabled. (useful for restrict further editing of a record after a certain category has been assigned to it)
+		- new feature: the "add new record" button (+) in the category db-record is creating a new subcategory of the current category. (XCLASS for typo3/wizard_add.php).
+		- new feature: added an "editlock" field to the tt_news db_record. By activating this field, editing of the record can be disallowed for non admins. (works only in TYPO3 3.8.0 currently)
+		- added an improved version of hte imageMarkerArray userfunction. Now it's possible to set alomost all options by TS.
+
+2005-04-29	rupertgermann
+	* cvsroot/typo3xdev/tx_ttnews/static/css/setup.txt 1.7:
+		- added catmenu css
+
+	* cvsroot/typo3xdev/tx_ttnews/flexform_ds.xml 1.20:
+	* cvsroot/typo3xdev/tx_ttnews/flexform_ds_no_sPID.xml 1.11:
+		- added new code "CATMENU" to flexform files
+
+	* cvsroot/typo3xdev/tx_ttnews/ext_emconf.php 1.36:
+		- raised version number to 2.1.6
+
+	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews.php 1.91:
+		- new feature "hierarchical category menu": by choosing the code CATMENU a category selector will be displayed which shows the nested categories in a hierarchical menu.
+		- new feature: added support for the new extended pagebrowser from class pi_base (in TYPO3 versions below 3.8.0 the pagebrowser will work as known).
+
+	* cvsroot/typo3xdev/tx_ttnews/static/ts_new/setup.txt 1.12:
+	* cvsroot/typo3xdev/tx_ttnews/static/ts_old/setup.txt 1.9:
+		- added TS options for CATMENU (
+		plugin.tt_news.displayCatMenu....)
+
+	* cvsroot/typo3xdev/tx_ttnews/res/example_imageMarkerFunc.php 1.7:
+		- added a second example to the imageMarkerArray userfunction. 
+		The example shows how to mask an image with another image and a 
+		maslimage (thx to Chi Hoang)
+
+2005-04-25	rupertgermann
+	* cvsroot/typo3xdev/tx_ttnews/tca.php 1.26:
+		- removed some comments
+
+	* cvsroot/typo3xdev/tx_ttnews/ext_tables.php 1.18:
+		- now the rte transformation-mode is changed to "ts_css" if 
+		css_styled_content is installed
+
+2005-04-24	rupertgermann
+	* cvsroot/typo3xdev/tx_ttnews/static/rss_feed/constants.txt 1.4:
+	* cvsroot/typo3xdev/tx_ttnews/static/ts_new/constants.txt 1.5:
+	* cvsroot/typo3xdev/tx_ttnews/static/ts_old/constants.txt 1.6:
+		- fix: changed some wrong "int" fields to "text".
+
+	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews.php 1.90:
+		- fix: recursive from TS is working now.
+		- small code cleanup.
+
 2005-04-21	rupertgermann
 	* cvsroot/typo3xdev/tx_ttnews/doc/manual.sxw 1.27:
 	* cvsroot/typo3xdev/tx_ttnews/ext_conf_template.txt 1.5:
@@ -8,6 +122,10 @@
 		as "title" or "alt" attribute to links pointing to the single 
 		view. The field is configurable and stdWrap functions can be 
 		added. (news TS vars: "linkTitleField" and "linkAltField")
+
+2005-04-20	rupertgermann
+	* cvsroot/typo3xdev/tx_ttnews/doc/manual.sxw 1.26:
+		- updated the manual
 
 2005-04-20	rupertgermann
 	* cvsroot/typo3xdev/tx_ttnews/doc/manual.sxw 1.23:
