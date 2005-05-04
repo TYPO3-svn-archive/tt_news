@@ -36,6 +36,7 @@ $LOCAL_LANG = Array (
 		'tt_news.pi_flexform.ascDesc_asc' => 'Ascending',
 		'tt_news.pi_flexform.ascDesc_desc' => 'Descending',
 		'tt_news.pi_flexform.select_deselect_categories' => 'Category mode:',
+		'tt_news.pi_flexform.itemsHeader' => 'Special options:',
 		'tt_news.pi_flexform.category_selection_notCategorized' => '[not categorized]',
 		'tt_news.pi_flexform.category_selection' => 'Category selection',
 		'tt_news.pi_flexform.category_selection_showAll' => 'Show all (don\'t care about selection below)',

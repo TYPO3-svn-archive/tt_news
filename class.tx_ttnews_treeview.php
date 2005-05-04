@@ -23,9 +23,8 @@
 ***************************************************************/
 /**
  * This function displays a selector with nested categories.
- * The code is borrowed from the extension "Digital Asset Management" (tx_dam)
+ * The original code is borrowed from the extension "Digital Asset Management" (tx_dam) author	René Fritz <r.fritz@colorcube.de>
  *
- * @author	René Fritz <r.fritz@colorcube.de>
  * @author	Rupert Germann <rupi@gmx.li>
  * @package TYPO3
  * @subpackage tt_news
@@ -35,25 +34,38 @@
  *
  *
  *
- *   52: class tt_news_tceFunc_selectTreeView extends t3lib_treeview
- *   57:     function wrapTitle($title,$v)
+ *   55: class tx_ttnews_tceFunc_selectTreeView extends t3lib_treeview
+ *   60:     function wrapTitle($title,$v)
  *
  *
- *   75: class user_treeview
- *   88:     function user_categoryTree($PA, $fobj)
+ *   78: class tx_ttnews_treeview
+ *   91:     function displayCategoryTree($PA, $fobj)
+ *  284:     function getNotAllowedItems($PA,$SPaddWhere)
+ *  321:     function findRecursiveCategories ($PA,$row,$table,$storagePid,$treeIds)
+ *  353:     function compareCategoryVals ($treeIds,$catString)
  *
- * TOTAL FUNCTIONS: 2
+ * TOTAL FUNCTIONS: 5
  * (This index is automatically created/updated by the extension "extdeveval")
  *
  */
 
- require_once(PATH_t3lib.'class.t3lib_treeview.php');
-
+require_once(PATH_t3lib.'class.t3lib_treeview.php');
+	/**
+	 * extend class t3lib_treeview to change function wrapTitle().
+	 *
+	 */
 class tx_ttnews_tceFunc_selectTreeView extends t3lib_treeview {
 
 	var $TCEforms_itemFormElName='';
 	var $TCEforms_nonSelectableItemsArray=array();
-
+	
+	/**
+	 * wraps the record titles in the tree with links or not depending on if they are in the TCEforms_nonSelectableItemsArray.
+	 *
+	 * @param	string		$title: the title
+	 * @param	array		$v: an array with uid and title of the current item.
+	 * @return	string		the wrapped title
+	 */
 	function wrapTitle($title,$v)	{
 		if($v['uid']>0) {
 			if (in_array($v['uid'],$this->TCEforms_nonSelectableItemsArray)) {
@@ -68,6 +80,10 @@ class tx_ttnews_tceFunc_selectTreeView extends t3lib_treeview {
 	}
 }
 
+	/**
+	 * this class displays a tree selector with nested tt_news categories.
+	 *
+	 */
 class tx_ttnews_treeview {
 
 	/**
@@ -126,7 +142,6 @@ class tx_ttnews_treeview {
 		$maxitems = intval($config['maxitems']);
 		$minitems = intval($config['minitems']);
 		$size = intval($config['size']);
-
 			// If a SINGLE selector box...
 		if ($maxitems<=1 AND !$config['treeView'])	{
 
@@ -179,54 +194,42 @@ class tx_ttnews_treeview {
 				if ($table==$config['foreign_table']) {
 					$treeViewObj->TCEforms_nonSelectableItemsArray[] = $row['uid'];
 				}
-				
+
 				if (is_array($notAllowedItems) && $notAllowedItems[0]) {
 					foreach ($notAllowedItems as $k) {
 						$treeViewObj->TCEforms_nonSelectableItemsArray[] = $k;
 					}
 				}
-				$treeContent=$treeViewObj->getBrowsableTree();
-				$treeItemC = count($treeViewObj->ids);
 
-				 // find errors
-				$errorMsg = array();
-				if ($table == 'tt_news_cat' || $table == 'tt_news') {
-					if ($table == 'tt_news_cat' && $row['pid'] == $storagePid && intval($row['uid']) && !in_array($row['uid'],$treeViewObj->ids))	{ // if the current category is not empty and not in the array of tree-uids it seems to be part of a chain of recursive categories
-						$recursionDetected = 'RECURSIVE CATEGORIES DETECTED!! <br />This record is part of a chain of recursive categories. The affected categories will not be displayed in the category tree.  You should remove the parent category of this record to prevent this.';
-					}
-					if ($table == 'tt_news' && $row['category']) { // find recursive categories in the tt_news db-record
-						$catvals = explode(',',$row['category']); // categories of the current record
-						$recursiveCategories = array();
-						$showncats = implode($treeViewObj->ids,','); // displayed categories (tree)
-						foreach ($catvals as $k) {
-							$c = explode('|',$k);
-							if(!t3lib_div::inList($showncats,$c[0])) { 
-								$recursiveCategories[]=$c;
-							}
+					// get default items
+				$defItems = array();
+				if (is_array($config['items']) && $table == 'tt_content' && $row['CType']=='list' && $row['list_type']==9 && $field == 'pi_flexform')	{
+					reset ($config['items']);
+					while (list($itemName,$itemValue) = each($config['items']))	{
+						if ($itemValue[0]) {
+							$ITitle = $this->pObj->sL($itemValue[0]);
+							$defItems[] = '<a href="#" onclick="setFormValueFromBrowseWin(\'data['.$table.']['.$row['uid'].']['.$field.'][data][sDEF][lDEF][categorySelection][vDEF]\','.$itemValue[1].',\''.$ITitle.'\'); return false;" style="text-decoration:none;">'.$ITitle.'</a>';
 						}
-						if ($recursiveCategories[0])  {
-							$rcArr = array();
-							foreach ($recursiveCategories as $k => $cat) {
-								$rcArr[] = $cat[1].' ('.$cat[0].')'; // format result: title (uid)
-							}
-							$rcList = implode($rcArr,', ');
-							$recursionDetected = 'RECURSIVE CATEGORIES DETECTED!! <br />This record has the following recursive categories assigned: '.$rcList.'<br />Recursive categories will not be shown in the category tree and will be therefor not selectable. To solve this problem mark these categories in the left select field, click on "edit category" and delete the parent category of the recursive category.';
-						}
-					}
-					if ($recursionDetected) {
-						$errorMsg[] = '<table class="warningbox" border="0" cellpadding="0" cellspacing="0"><tbody><tr><td><img src="gfx/icon_fatalerror.gif" class="absmiddle" alt="" height="16" width="18">'.$recursionDetected.'</td></tr></tbody></table>';
-					}
-					if ($storagePid && $row['pid'] != $storagePid && $table == 'tt_news_cat') { // if a storagePid is defined but the current category is not stored in storagePid
-						$errorMsg[] = '<p style="padding:10px;"><img src="gfx/icon_warning.gif" class="absmiddle" alt="" height="16" width="18"><strong style="color:red;"> Warning:</strong><br />tt_news is configured to display categories only from the "General record storage page" (GRSP). The current category is not located in the GRSP and will so not be displayed. To solve this you should either define a GRSP or disable "Use StoragePid" in the extension manager.</p>';
 					}
 				}
+					// render tree html
+				$treeContent=$treeViewObj->getBrowsableTree();
+				$treeItemC = count($treeViewObj->ids);
+				
+				if ($defItems[0]) { // add default items to the tree table. In this case the value [not categorized]
+					$treeItemC += count($defItems);
+					$treeContent .= '<table border="0" cellpadding="0" cellspacing="0"><tr>
+						<td>'.$this->pObj->sL($config['itemsHeader']).'&nbsp;</td><td>'.implode($defItems,'<br />').'</td>
+						</tr></table>';
+				}
+
+				 	// find recursive categories or "storagePid" related errors and if there are some, add a message to the $errorMsg array.
+				$errorMsg = $this->findRecursiveCategories($PA,$row,$table,$storagePid,$treeViewObj->ids) ;
 
 				$width = 280; // default width for the field with the category tree
-				
-
 				if (intval($confArr['categoryTreeWidth'])) { // if a value is set in extConf take this one.
 					$width = t3lib_div::intInRange($confArr['categoryTreeWidth'],1,600);
-				} elseif ($GLOBALS['CLIENT']['BROWSER']=='msie') { // to suppress the unneeded horizontal scrollbar IE needs a width of at least 320px 
+				} elseif ($GLOBALS['CLIENT']['BROWSER']=='msie') { // to suppress the unneeded horizontal scrollbar IE needs a width of at least 320px
 					$width = 320;
 				}
 
@@ -288,9 +291,10 @@ class tx_ttnews_treeview {
 				'noBrowser' => 1,
 				'thumbnails' => $thumbnails
 			);
+
+
 			$item.= $this->pObj->dbFileIcons($PA['itemFormElName'],'','',$itemArray,'',$params,$PA['onFocus']);
 		}
-		#debug (array($PA));
 
 			// Wizards:
 		$altItem = '<input type="hidden" name="'.$PA['itemFormElName'].'" value="'.htmlspecialchars($PA['itemFormElValue']).'" />';
@@ -300,6 +304,14 @@ class tx_ttnews_treeview {
 
 	}
 
+	/**
+	 * This function checks if the current record has categories assigned that are not allowed for this BE user.
+	 * If such categories where found, $this->NA_Items is filled with an error message.
+	 *
+	 * @param	array		$PA: the paramter array
+	 * @param	string		$SPaddWhere: this string is added to the query for categories when "useStoragePid" is set.
+	 * @return	array		array with not allowed categories 
+	 */
 	function getNotAllowedItems($PA,$SPaddWhere) {
 		$fTable = $PA['fieldConf']['config']['foreign_table'];
 		$allowedItemsList=$GLOBALS['BE_USER']->getTSConfigVal('tt_newsPerms.'.$fTable.'.allowedItems');
@@ -325,6 +337,76 @@ class tx_ttnews_treeview {
 		}
 		return $itemArr;
 
+	}
+
+	/**
+	 * detects recursive categories and returns an error message if recursive categories where found
+	 *
+	 * @param	array		$PA: the paramter array
+	 * @param	array		$row: the current row
+	 * @param	array		$table: current table
+	 * @param	integer		$storagePid: the StoragePid (pid of the category folder)
+	 * @param	array		$treeIds: array with the ids of the categories in the tree
+	 * @return	array		error messages
+	 */
+	function findRecursiveCategories ($PA,$row,$table,$storagePid,$treeIds) {
+		$errorMsg = array();
+		if ($table == 'tt_content' && $row['CType']=='list' && $row['list_type']==9) { // = tt_content element which inserts plugin tt_news
+			$cfgArr = t3lib_div::xml2array($row['pi_flexform']);
+			if (is_array($cfgArr['data']['sDEF']['lDEF']) && $cfgArr['data']['sDEF']['lDEF']['categorySelection']) {
+				$rcList = $this->compareCategoryVals ($treeIds,$cfgArr['data']['sDEF']['lDEF']['categorySelection']['vDEF']);
+			}
+		} elseif ($table == 'tt_news_cat' || $table == 'tt_news') {
+			if ($table == 'tt_news_cat' && $row['pid'] == $storagePid && intval($row['uid']) && !in_array($row['uid'],$treeIds))	{ // if the current category is not empty and not in the array of tree-uids it seems to be part of a chain of recursive categories
+				$recursionMsg = 'RECURSIVE CATEGORIES DETECTED!! <br />This record is part of a chain of recursive categories. The affected categories will not be displayed in the category tree.  You should remove the parent category of this record to prevent this.';
+			}
+			if ($table == 'tt_news' && $row['category']) { // find recursive categories in the tt_news db-record
+				$rcList = $this->compareCategoryVals ($treeIds,$row['category']);
+			}
+			if ($storagePid && $row['pid'] != $storagePid && $table == 'tt_news_cat') { // if a storagePid is defined but the current category is not stored in storagePid
+				$errorMsg[] = '<p style="padding:10px;"><img src="gfx/icon_warning.gif" class="absmiddle" alt="" height="16" width="18"><strong style="color:red;"> Warning:</strong><br />tt_news is configured to display categories only from the "General record storage page" (GRSP). The current category is not located in the GRSP and will so not be displayed. To solve this you should either define a GRSP or disable "Use StoragePid" in the extension manager.</p>';
+			}
+		}
+		if (strlen($rcList)) {
+			$recursionMsg = 'RECURSIVE CATEGORIES DETECTED!! <br />This record has the following recursive categories assigned: '.$rcList.'<br />Recursive categories will not be shown in the category tree and will therefore not be selectable. ';
+
+			if ($table == 'tt_news') {
+				$recursionMsg .= 'To solve this problem mark these categories in the left select field, click on "edit category" and clear the field "parent category" of the recursive category.';
+			} else {
+				$recursionMsg .= 'To solve this problem you should clear the field "parent category" of the recursive category.';
+			}
+		}
+		if ($recursionMsg) $errorMsg[] = '<table class="warningbox" border="0" cellpadding="0" cellspacing="0"><tbody><tr><td><img src="gfx/icon_fatalerror.gif" class="absmiddle" alt="" height="16" width="18">'.$recursionMsg.'</td></tr></tbody></table>';
+		return $errorMsg;
+	}
+
+	/**
+	 * This function compares the selected categories ($catString) with the categories from the category tree ($treeIds).
+	 * If there are categories selected that are not present in the array $treeIds it assumes that those categories are
+	 * parts of a chain of recursive categories returns their uids.
+	 *
+	 * @param	array		$treeIds: array with the ids of the categories in the tree
+	 * @param	string		$catString: the selected categories in a string (format: uid|title,uid|title,...)
+	 * @return	string		list of recursive categories
+	 */
+	function compareCategoryVals ($treeIds,$catString) {
+		$recursiveCategories = array();
+		$showncats = implode($treeIds,','); // the displayed categories (tree)
+		$catvals = explode(',',$catString); // categories of the current record (left field)
+		foreach ($catvals as $k) {
+			$c = explode('|',$k);
+			if(!t3lib_div::inList($showncats,$c[0])) {
+				$recursiveCategories[]=$c;
+			}
+		}
+		if ($recursiveCategories[0])  {
+			$rcArr = array();
+			foreach ($recursiveCategories as $key => $cat) {
+				if ($cat[0]) $rcArr[] = $cat[1].' ('.$cat[0].')'; // format result: title (uid)
+			}
+			$rcList = implode($rcArr,', ');
+		}
+		return $rcList;
 	}
 }
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_news/class.tx_ttnews_treeview.php'])    {
