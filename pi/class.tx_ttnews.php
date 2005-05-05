@@ -27,10 +27,10 @@
 /**
 * class.tx_ttnews.php
 *
-* Creates a news system.
+* versatile news system for TYPO3.
 * $Id$
 *
-* TypoScript config:
+* TypoScript setup:
 * - See static/ts_new/setup.txt
 * - See tt_news Reference: http://typo3.org/documentation/document-library/tt_news/
 * - See TSref: http://typo3.org/documentation/document-library/doc_core_tsref/
