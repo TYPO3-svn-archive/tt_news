@@ -353,7 +353,7 @@ class tx_ttnews_treeview {
 		$errorMsg = array();
 		if ($table == 'tt_content' && $row['CType']=='list' && $row['list_type']==9) { // = tt_content element which inserts plugin tt_news
 			$cfgArr = t3lib_div::xml2array($row['pi_flexform']);
-			if (is_array($cfgArr['data']['sDEF']['lDEF']) && $cfgArr['data']['sDEF']['lDEF']['categorySelection']) {
+			if (is_array($cfgArr) && is_array($cfgArr['data']['sDEF']['lDEF']) && $cfgArr['data']['sDEF']['lDEF']['categorySelection']) {
 				$rcList = $this->compareCategoryVals ($treeIds,$cfgArr['data']['sDEF']['lDEF']['categorySelection']['vDEF']);
 			}
 		} elseif ($table == 'tt_news_cat' || $table == 'tt_news') {
