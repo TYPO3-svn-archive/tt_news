@@ -104,7 +104,7 @@ if (TYPO3_MODE=='BE')	{
 	$ICON_TYPES['news'] = array('icon' => t3lib_extMgm::extRelPath($_EXTKEY).'ext_icon_ttnews_folder.gif');
 	
 	// add extra 'codes' to the 'what to display' selector
-	include_once(t3lib_extMgm::extPath('tt_news').'class.tx_ttnews_itemsProcFunc.php');
+	include_once(t3lib_extMgm::extPath($_EXTKEY).'class.tx_ttnews_itemsProcFunc.php');
 
 	// class for displaying nested categories in BE forms (borrowed from tx_dam)
 	include_once(t3lib_extMgm::extPath($_EXTKEY).'class.tx_ttnews_treeview.php');
