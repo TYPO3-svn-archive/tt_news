@@ -94,7 +94,9 @@ RTE.config.tt_news.bodytext.proc.overruleMode=ts_css');
 t3lib_extMgm::allowTableOnStandardPages('tt_news_cat');
 
 t3lib_extMgm::addLLrefForTCAdescr('tt_news','EXT:tt_news/locallang_csh_ttnews.php');
-t3lib_extMgm::addLLrefForTCAdescr('tt_news_cat','EXT:tt_news/locallang_csh_ttnewsc.php');
+t3lib_extMgm::addLLrefForTCAdescr('tt_news_cat','EXT:tt_news/locallang_csh_ttnewscat.php');
+
+t3lib_extMgm::addLLrefForTCAdescr('xEXT_tt_news','EXT:tt_news/locallang_csh_manual.xml');
 
 	
 if (TYPO3_MODE=='BE')	{
