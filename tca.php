@@ -374,29 +374,18 @@ $TCA['tt_news'] = Array (
 				),
 				'foreign_table' => 'tt_news',
 				'foreign_table_where' => 'AND tt_news.uid=###REC_FIELD_l18n_parent### AND tt_news.sys_language_uid IN (-1,0)',
-				'wizards' => Array(
-					'_PADDING' => 2,
-					'_VERTICAL' => 1,
-					'edit' => Array(
-						'type' => 'popup',
-						'title' => 'LLL:EXT:tt_news/locallang_tca.php:tt_news.editDefLangVersion',
-						'script' => 'wizard_edit.php',
-						'popup_onlyOpenIfSelected' => 1,
-						'icon' => 'edit2.gif',
-						'JSopenParams' => 'height=600,width=700,status=0,menubar=0,scrollbars=1,resizable=1',
-					),
-				),
 			)
 		),
-		'l18n_diffsource' => Array('config'=>array('type'=>'passthrough')),
-		't3ver_label' => Array (
-			'displayCond' => 'EXT:version:LOADED:true',
-			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.versionLabel',
-			'config' => Array (
-				'type' => 'input',
-				'size' => '30',
-				'max' => '30',
-			)
+		'l18n_diffsource' => Array('config'=>array(
+			'type'=>'passthrough')),
+			't3ver_label' => Array (
+				'displayCond' => 'EXT:version:LOADED:true',
+				'label' => 'LLL:EXT:lang/locallang_general.php:LGL.versionLabel',
+				'config' => Array (
+					'type' => 'input',
+					'size' => '30',
+					'max' => '30',
+				)
 		),
 		'editlock' => Array (
 			'exclude' => 1,
@@ -612,12 +601,12 @@ $TCA['tt_news_cat'] = Array (
 	),
 		
 	'types' => Array (	
-		'0' => Array('showitem' => 'title,title_lang_ol,parent_category;;2;;,image;;1;;1-1-1,single_pid'),
+		'0' => Array('showitem' => 'title,title_lang_ol,parent_category;;2;;,image;;;;,shortcut;;1;;1-1-1,single_pid'),
 	
 	),
 	'palettes' => Array (
 		'2' => Array('showitem' => 'hidden,starttime,endtime,fe_group'),
-		'1' => Array('showitem' => 'shortcut,shortcut_target'),
+		'1' => Array('showitem' => 'shortcut_target'),
 	)
 );
 
