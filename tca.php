@@ -1,10 +1,16 @@
 <?php
-// adds the possiblity to switch the use of the "StoragePid"(general record Storage Page) for tt_news categories
+	// get extension confArr
 $confArr = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['tt_news']);
-if ($confArr['useStoragePid']) {
-    $fTableWhere = 'AND tt_news_cat.pid=###STORAGE_PID### ';
-}
-
+	// switch the use of the "StoragePid"(general record Storage Page) for tt_news categories
+$fTableWhere = ($confArr['useStoragePid']?'AND tt_news_cat.pid=###STORAGE_PID### ':'');
+	// page where records will be stored in that have been created with a wizard
+$sPid = ($fTableWhere?'###STORAGE_PID###':'###CURRENT_PID###');
+	// l10n_mode for text fields
+$l10n_mode = ($confArr['l10n_mode_prefixLangTitle']?'prefixLangTitle':'mergeIfNotBlank');
+	// l10n_mode for the image field
+$l10n_mode_image = ($confArr['l10n_mode_imageExclude']?'exclude':'mergeIfNotBlank');
+	// hide new localizations
+$hideNewLocalizations = ($confArr['hideNewLocalizations']?'mergeIfNotBlank':'');
 // ******************************************************************
 // This is the standard TypoScript news table, tt_news
 // ******************************************************************
@@ -45,7 +51,7 @@ $TCA['tt_news'] = Array (
 			)
 		),
 		'hidden' => Array (
-			#'l10n_mode' => 'mergeIfNotBlank',
+			'l10n_mode' => $hideNewLocalizations,
 			'exclude' => 1,	
 			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.hidden',
 			'config' => Array (
@@ -70,7 +76,7 @@ $TCA['tt_news'] = Array (
 		),
 		'title' => Array (
 			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.title',
-			'l10n_mode' => 'prefixLangTitle',
+			'l10n_mode' => $l10n_mode,
 			'config' => Array (
 				'type' => 'input',
 				'size' => '40',
@@ -98,7 +104,7 @@ $TCA['tt_news'] = Array (
 		),
 		'bodytext' => Array (
 			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.text',
-			'l10n_mode' => 'prefixLangTitle',
+			'l10n_mode' => $l10n_mode,
 			'config' => Array (
 				'type' => 'text',
 				'cols' => '48',
@@ -117,6 +123,7 @@ $TCA['tt_news'] = Array (
 			)
 		),
 		'no_auto_pb' => Array (
+			'l10n_mode' => 'mergeIfNotBlank',
 			'exclude' => 1,
 			'label' => 'LLL:EXT:tt_news/locallang_tca.php:tt_news.no_auto_pb',
 			'config' => Array (
@@ -126,7 +133,7 @@ $TCA['tt_news'] = Array (
 		'short' => Array (
 			'exclude' => 1,	
 			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.subheader',	
-			'l10n_mode' => 'prefixLangTitle',
+			'l10n_mode' => $l10n_mode,
 			'config' => Array (
 				'type' => 'text',
 				'cols' => '40',
@@ -173,7 +180,7 @@ $TCA['tt_news'] = Array (
 		),
 		'image' => Array (
 			'exclude' => 1,	
-			'l10n_mode' => 'exclude',	
+			'l10n_mode' => $l10n_mode_image,
 			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.images',
 			'config' => Array (
 				'type' => 'group',
@@ -190,7 +197,7 @@ $TCA['tt_news'] = Array (
 		'imagecaption' => Array (
 			'exclude' => 1,	
 			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.caption',
-			'l10n_mode' => 'prefixLangTitle',
+			'l10n_mode' => $l10n_mode,
 			'config' => Array (
 				'type' => 'text',
 				'cols' => '30',
@@ -200,7 +207,7 @@ $TCA['tt_news'] = Array (
 		'imagealttext' => Array (
 			'exclude' => 1,	
 			'label' => 'LLL:EXT:tt_news/locallang_tca.php:tt_news.imagealttext',
-			'l10n_mode' => 'prefixLangTitle',
+			'l10n_mode' => $l10n_mode,
 			'config' => Array (
 				'type' => 'text',
 				'cols' => '20',
@@ -210,7 +217,7 @@ $TCA['tt_news'] = Array (
 		'imagetitletext' => Array (
 			'exclude' => 1,	
 			'label' => 'LLL:EXT:tt_news/locallang_tca.php:tt_news.imagetitletext',
-			'l10n_mode' => 'prefixLangTitle',
+			'l10n_mode' => $l10n_mode,
 			'config' => Array (
 				'type' => 'text',
 				'cols' => '20',
@@ -241,7 +248,7 @@ $TCA['tt_news'] = Array (
 		),
 		'related' => Array (
 			'exclude' => 1,	
-			'l10n_mode' => 'exclude',	
+			'l10n_mode' => 'exclude',
 			'label' => 'LLL:EXT:tt_news/locallang_tca.php:tt_news.related',
 			'config' => Array (
 				'type' => 'group',
@@ -278,7 +285,7 @@ $TCA['tt_news'] = Array (
 		
 		'category' => Array (
 			'exclude' => 1,	
-			'l10n_mode' => 'exclude',	
+		#	'l10n_mode' => 'exclude', // the localizalion mode will be handled by the userfunction
 			'label' => 'LLL:EXT:tt_news/locallang_tca.php:tt_news.category',
 			'config' => Array (
 				'type' => 'select',
@@ -301,7 +308,7 @@ $TCA['tt_news'] = Array (
 						'icon' => 'EXT:tt_news/res/add_cat.gif',
 						'params' => Array(
 							'table'=>'tt_news_cat',
-							'pid' => ($fTableWhere?'###STORAGE_PID###':'###CURRENT_PID###'),
+							'pid' => $sPid,
 							'setValue' => 'set'
 						),
 						'script' => 'wizard_add.php',
@@ -319,7 +326,7 @@ $TCA['tt_news'] = Array (
 		),
 		'page' => Array (
 			'exclude' => 1,
-		#	'l10n_mode' => 'mergeIfNotBlank',
+			'l10n_mode' => 'exclude',
 			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.shortcut_page',
 			'config' => Array (
 				'type' => 'group',
@@ -334,7 +341,7 @@ $TCA['tt_news'] = Array (
 		# filelinks
 		'news_files' => Array (
 			'exclude' => 1,
-			'l10n_mode' => 'exclude',	
+			'l10n_mode' => 'exclude',
 			'label' => 'LLL:EXT:cms/locallang_ttc.php:media',
 			'config' => Array (
 				'type' => 'group',
@@ -376,19 +383,23 @@ $TCA['tt_news'] = Array (
 				'foreign_table_where' => 'AND tt_news.uid=###REC_FIELD_l18n_parent### AND tt_news.sys_language_uid IN (-1,0)',
 			)
 		),
-		'l18n_diffsource' => Array('config'=>array(
-			'type'=>'passthrough')),
-			't3ver_label' => Array (
-				'displayCond' => 'EXT:version:LOADED:true',
-				'label' => 'LLL:EXT:lang/locallang_general.php:LGL.versionLabel',
-				'config' => Array (
-					'type' => 'input',
-					'size' => '30',
-					'max' => '30',
-				)
+		'l18n_diffsource' => Array(
+			'config'=>array(
+				'type'=>'passthrough')
 		),
+		't3ver_label' => Array (
+			'displayCond' => 'EXT:version:LOADED:true',
+			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.versionLabel',
+			'config' => Array (
+				'type' => 'input',
+				'size' => '30',
+				'max' => '30',
+			)
+		),
+		
 		'editlock' => Array (
 			'exclude' => 1,
+			'l10n_mode' => 'mergeIfNotBlank',
 			'label' => 'LLL:EXT:lang/locallang_tca.php:editlock',
 			'config' => Array (
 				'type' => 'check'
@@ -527,7 +538,7 @@ $TCA['tt_news_cat'] = Array (
 						'icon' => 'EXT:tt_news/res/add_cat.gif',
 						'params' => Array(
 							'table'=>'tt_news_cat',
-							'pid' => ($fTableWhere?'###STORAGE_PID###':'###CURRENT_PID###'),
+							'pid' => $sPid,
 							'setValue' => 'set'
 						),
 						'script' => 'wizard_add.php',
@@ -538,7 +549,7 @@ $TCA['tt_news_cat'] = Array (
 						'icon' => 'list.gif',
 						'params' => Array(
 							'table'=>'tt_news_cat',
-							'pid' => ($fTableWhere?'###STORAGE_PID###':'###CURRENT_PID###'),
+							'pid' => $sPid,
 						),
 						'script' => 'wizard_list.php',
 					),

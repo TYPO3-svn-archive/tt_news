@@ -115,6 +115,7 @@ class tx_ttnews extends tslib_pibase {
 	var $searchFieldList = 'short,bodytext,author,keywords,links,imagecaption,title';
 	var $theCode = '';
 	var $rdfToc = '';
+	var $vPrev = false; // versioning preview 
 
 	var $categories = array(); // Is initialized with the categories of the news system
 	var $pageArray = array(); // Is initialized with an array of the pages in the pid-list
@@ -132,13 +133,13 @@ class tx_ttnews extends tslib_pibase {
 		$this->init($conf);
 
 		if ($this->conf['displayCurrentRecord']) {
-			$this->config['code'] = $this->conf['defaultCode']?trim($this->conf['defaultCode']):
-			'SINGLE';
+			$this->config['code'] = $this->conf['defaultCode']?trim($this->conf['defaultCode']):'SINGLE';
 			$this->tt_news_uid = $this->cObj->data['uid'];
 		}
+
 		// get codes and decide which function is used to process the content
 		$codes = t3lib_div::trimExplode(',', $this->config['code']?$this->config['code']:$this->conf['defaultCode'], 1);
-		if (!count($codes)) $codes = array('');
+		if (!count($codes)) $codes = array();
 			while (list(, $theCode) = each($codes)) {
 			$theCode = (string)strtoupper(trim($theCode));
 			$this->theCode = $theCode;
@@ -146,6 +147,9 @@ class tx_ttnews extends tslib_pibase {
 			switch ($theCode) {
 				case 'SINGLE':
 				$content .= $this->displaySingle();
+				break;
+				case 'VERSION_PREVIEW':
+				$content .= $this->displayVersionPreview();
 				break;
 				case 'LATEST':
 				case 'LIST':
@@ -189,7 +193,7 @@ class tx_ttnews extends tslib_pibase {
 	}
 
 	/**
-	 * Init Function: here all the needed configuration Values are stored in class variables..
+	 * Init Function: here all the needed configuration values are stored in class variables..
 	 *
 	 * @param	array		$conf : configuration array from TS
 	 * @return	void
@@ -201,13 +205,13 @@ class tx_ttnews extends tslib_pibase {
 		$this->pi_initPIflexForm(); // Init FlexForm configuration for plugin
 		$this->enableFields = $this->cObj->enableFields('tt_news');
 		$this->tt_news_uid = intval($this->piVars['tt_news']); // Get the submitted uid of a news (if any)
-
+		
 		// load available syslanguages
 		$this->initLanguages();
 		// sys_language_mode defines what to do if the requested translation is not found
 		$this->sys_language_mode = $this->conf['sys_language_mode']?$this->conf['sys_language_mode'] : $GLOBALS['TSFE']->sys_language_mode;
 
-		// "CODE" decides what is rendered: codes can be added by TS or FF with priority on FF
+		// "CODE" decides what is rendered: codes can be set by TS or FF with priority on FF
 		$code = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'what_to_display', 'sDEF');
 		$this->config['code'] = $code ? $code : $this->cObj->stdWrap($this->conf['code'], $this->conf['code.']);
 
@@ -463,10 +467,9 @@ class tx_ttnews extends tslib_pibase {
 	}
 
 	/**
-	 * generates the single view of a news article. Is also used when displaying single records
-	 * with the 'insert records' content element
+	 * Displays the "single view" of a news article. Is also used when displaying single news records with the "insert records" content element.
 	 *
-	 * @return	string		html-code for a single news item
+	 * @return	string		html-code for the "single view"
 	 */
 	function displaySingle() {
 		$singleWhere = 'tt_news.uid=' . intval($this->tt_news_uid);
@@ -478,25 +481,22 @@ class tx_ttnews extends tslib_pibase {
 			$OLmode = ($this->sys_language_mode == 'strict'?'hideNonTranslated':'');
 			$row = $GLOBALS['TSFE']->sys_page->getRecordOverlay('tt_news', $row, $GLOBALS['TSFE']->sys_language_content, $OLmode);
 		}
-		if (is_array($row)) {
-			// Get the subpart code
-			$item = '';
+		if (is_array($row) && ($row['pid'] > 0 || $this->vPrev)) { // never display versions of a news record (having pid=-1) for normal website users
+				// Get the subpart code
 			if ($this->conf['displayCurrentRecord']) {
 				$item = trim($this->getNewsSubpart($this->templateCode, $this->spMarker('###TEMPLATE_SINGLE_RECORDINSERT###'), $row));
 			}
-
 			if (!$item) {
 				$item = $this->getNewsSubpart($this->templateCode, $this->spMarker('###TEMPLATE_SINGLE###'), $row);
 			}
-			// reset marker array
+				// reset marker array
 			$wrappedSubpartArray = array();
 			if ($this->conf['useHRDates']) {
 				$wrappedSubpartArray['###LINK_ITEM###'] = explode('|', $this->pi_linkTP_keepPIvars('|', array('tt_news' => null, 'backPid' => null, 'year' => $this->piVars['year'], 'month' => $this->piVars['month'], 'pointer'=>$this->piVars['pointer']), $this->allowCaching, 1, $this->config['backPid'] ));
 			} else {
 				$wrappedSubpartArray['###LINK_ITEM###'] = explode('|', $this->pi_linkTP_keepPIvars('|', array('tt_news' => null, 'backPid' => null), $this->allowCaching, '', $this->config['backPid'] ));
-
 			}
-			// set the title of the single view page to the title of the news record
+				// set the title of the single view page to the title of the news record
 			if ($this->conf['substitutePagetitle']) {
 				$GLOBALS['TSFE']->page['title'] = $row['title'];
 				// set pagetitle for indexed search to news title
@@ -505,17 +505,72 @@ class tx_ttnews extends tslib_pibase {
 			$markerArray = $this->getItemMarkerArray($row, 'displaySingle');
 			// Substitute
 			$content = $this->cObj->substituteMarkerArrayCached($item, $markerArray, array(), $wrappedSubpartArray);
-		} elseif ($this->sys_language_mode == 'strict' && $this->tt_news_uid) {
-			$noTranslMsg = $this->local_cObj->stdWrap($this->pi_getLL('noTranslMsg', 'Sorry, there is no translation for this news-article'), $this->conf['noNewsIdMsg_stdWrap.']);
-			$content .= $noTranslMsg;
-		} else {
-			// if singleview is shown with no tt_news_uid given from GPvars, an error message is displayed.
+		} elseif ($this->sys_language_mode == 'strict' && $this->tt_news_uid && $GLOBALS['TSFE']->sys_language_content) { // not existing translation
+			$noTranslMsg = $this->local_cObj->stdWrap($this->pi_getLL('noTranslMsg'), $this->conf['noNewsIdMsg_stdWrap.']);
+			$content = $noTranslMsg;
+		} elseif ($row['pid'] < 0) { // a non-public version of a record was requested
+			$nonPlublicVersion = $this->local_cObj->stdWrap($this->pi_getLL('nonPlublicVersionMsg'), $this->conf['nonPlublicVersionMsg_stdWrap.']);
+			$content = $nonPlublicVersion;
+		} else { // if singleview is shown with no tt_news uid given from GETvars (&tx_ttnews[tt_news]=) an error message is displayed.
 			$noNewsIdMsg = $this->local_cObj->stdWrap($this->pi_getLL('noNewsIdMsg'), $this->conf['noNewsIdMsg_stdWrap.']);
-			$content .= $noNewsIdMsg;
+			$content = $noNewsIdMsg;
 		}
 		return $content;
 	}
 
+	/**
+	 * Displays the "versioning preview".
+	 * The functions checks:
+	 * - if the extension "version" is loaded
+	 * - if a BE_user is logged in
+	 * - the plausibility of the requested "version preview".
+	 * If this is all OK, "displaySingle()" is executed to display the "versioning preview".
+	 *
+	 * @return	string		html code for the "versioning preview"
+	 */
+	function displayVersionPreview () {
+		if (t3lib_extMgm::isLoaded('version')) { 
+			$vPrev = t3lib_div::_GP('ADMCMD_vPrev');
+			if ($this->piVars['ADMCMD_vPrev']) {
+				$piADMCMD = unserialize(rawurldecode($this->piVars['ADMCMD_vPrev']));
+			}
+			if ((is_array($vPrev) || is_array($piADMCMD)) && is_object($GLOBALS['BE_USER'])) { // check if ADMCMD_vPrev is set and if a BE_user is logged in. $this->piVars['ADMCMD_vPrev'] is needed for previewing a "single view with pagebrowser"
+				if (!is_array($vPrev)) { $vPrev = $piADMCMD; }
+				list($table,$t3ver_oid) = explode(':',key($vPrev));
+				if ($table == 'tt_news') {
+					if ($testrec = $this->pi_getRecord('tt_news', intval($vPrev[key($vPrev)]))) { // check if record exists before doing anything
+						if ($testrec['t3ver_oid'] == intval($t3ver_oid) && $testrec['pid']==-1) { // check if requested t3ver_oid is the t3ver_oid of the requested tt_news record, and if the pid of the record is -1 (=non-plublic version)
+							$GLOBALS['TSFE']->set_no_cache(); // version preview will never be cached
+								// make version preview message with a link to the public version of hte record which is previewed
+							$vPrevHeader = $this->local_cObj->stdWrap(
+								$this->pi_getLL('versionPreviewMessage').
+									$this->local_cObj->typolink(
+										$this->local_cObj->stdWrap(
+											$this->pi_getLL('versionPreviewMessageLinkToOriginal'),$this->conf['versionPreviewMessageLinkToOriginal_stdWrap.']
+										),
+										array(
+											'parameter' => $this->config['singlePid'].' _blank',
+											'additionalParams' => '&tx_ttnews[tt_news]='.$t3ver_oid,
+											'no_cache' => 1
+										)
+									),
+								$this->conf['versionPreviewMessage_stdWrap.']
+							);
+							$this->tt_news_uid = $this->piVars['tt_news'] = $vPrev[key($vPrev)];
+							$this->piVars['ADMCMD_vPrev'] = rawurlencode(serialize(array($table.':'.$t3ver_oid => $this->tt_news_uid)));
+							$this->theCode = 'SINGLE';
+							$this->vPrev = true;
+							$content = $vPrevHeader.$this->displaySingle();
+						} else { // error: t3ver_oid mismatch 
+							$GLOBALS['TT']->setTSlogMessage('tt_news: ERROR! The "t3ver_oid" of requested tt_news record and the "t3ver_oid" from GPvars doesn\'t match.');
+						}
+					}
+				}
+			}
+		}
+		return $content;
+	}
+	
 	/**
 	 * Display LIST,LATEST or SEARCH
 	 * Things happen: determine the template-part to use, get the query parameters (add where if search was performed),
@@ -612,7 +667,8 @@ class tx_ttnews extends tslib_pibase {
 				}
 			}
 		}
-		$noPeriod = 0;
+		$noPeriod = 0; // used to call getSelectConf without a period lenght (pL) at the first archive page
+		$pointerName = strtolower($theCode).'_pointer';
 
 		if (!$this->conf['emptyArchListAtStart']) {
 			// if this is true, we're listing from the archive for the first time (no pS set), to prevent an empty list page we set the pS value to the archive start
@@ -674,11 +730,11 @@ class tx_ttnews extends tslib_pibase {
 					$selectConf['selectFields'] = 'DISTINCT tt_news.uid,tt_news.*';
 				}
 				// exclude the LATEST template from changing its content with the pagebrowser. This can be overridden by setting the conf var latestWithPagebrowser
-				if ($theCode != 'LATEST' && !$this->conf['latestWithPagebrowser']) {
-					$selectConf['begin'] = $this->piVars['pointer'] * $this->config['limit'];
+				if ($theCode != 'LATEST' || $this->conf['latestWithPagebrowser']) {
+					$selectConf['begin'] = $this->piVars[$pointerName] * $this->config['limit'];
 				}
 				// exclude news-records shown in LATEST from the LIST template
-				if ($theCode == 'LIST' && $this->conf['excludeLatestFromList'] && !$this->piVars['pointer'] && !$this->piVars['cat']) {
+				if ($theCode == 'LIST' && $this->conf['excludeLatestFromList'] && !$this->piVars[$pointerName] && !$this->piVars['cat']) {
 					if ($this->config['latestLimit']) {
 						$selectConf['begin'] += $this->config['latestLimit'];
 						$newsCount -= $this->config['latestLimit'];
@@ -689,7 +745,7 @@ class tx_ttnews extends tslib_pibase {
 				}
 
 				// List start ID
-				if (($theCode == 'LIST' || $theCode == 'LATEST') && $this->config['listStartId'] && !$this->piVars['pointer'] && !$this->piVars['cat']) {
+				if (($theCode == 'LIST' || $theCode == 'LATEST') && $this->config['listStartId'] && !$this->piVars[$pointerName] && !$this->piVars['cat']) {
 					$selectConf['begin'] = $this->config['listStartId'];
 				}
 
@@ -747,9 +803,10 @@ class tx_ttnews extends tslib_pibase {
 									$wrapArr[$key] = $this->conf['pageBrowser.'][$key];
 								}
 							}
-							$markerArray['###BROWSE_LINKS###'] = $this->pi_list_browseresults($this->conf['pageBrowser.']['showResultCount'], $this->conf['pageBrowser.']['tableParams'],$wrapArr); # ,$wrapArr
+							$this->pi_isOnlyFields = $pointerName.',tt_news,year,month,day,pS,pL,arc';
+							$markerArray['###BROWSE_LINKS###'] = $this->pi_list_browseresults($this->conf['pageBrowser.']['showResultCount'], $this->conf['pageBrowser.']['tableParams'],$wrapArr, $pointerName, $this->conf['pageBrowser.']['hscText']);
 						} else {
-							$markerArray['###BROWSE_LINKS###'] = $this->makePageBrowser($this->conf['pageBrowser.']['showResultCount'], $this->conf['pageBrowser.']['tableParams']);
+							$markerArray['###BROWSE_LINKS###'] = $this->makePageBrowser($this->conf['pageBrowser.']['showResultCount'], $this->conf['pageBrowser.']['tableParams'],$pointerName);
 						}
 					}
 				}
@@ -784,9 +841,9 @@ class tx_ttnews extends tslib_pibase {
 				$markerArray = array();
 				// header data
 				$markerArray = $this->getXmlHeader();
-				// get the list of news items and fill them in the CONTENT subpart
 				$subpartArray['###HEADER###'] = $this->cObj->substituteMarkerArray($this->getNewsSubpart($t['total'], '###HEADER###'), $markerArray);
-
+				// substitute the xml declaration (it's not included in the subpart ###HEADER###)
+				$t['total'] = $this->cObj->substituteMarkerArray($t['total'], array('###XML_DECLARATION###' => $markerArray['###XML_DECLARATION###']));
 				$t['total'] = $this->cObj->substituteSubpart($t['total'], '###HEADER###', $subpartArray['###HEADER###'], 0);
 				$t['total'] = $this->cObj->substituteSubpart($t['total'], '###CONTENT###', '', 0);
 
@@ -857,7 +914,7 @@ class tx_ttnews extends tslib_pibase {
 						'year' => ($this->conf['dontUseBackPid']?null:($this->piVars['year']?$this->piVars['year']:null)),
 						'month' => ($this->conf['dontUseBackPid']?null:($this->piVars['month']?$this->piVars['month']:null))
 						), $this->allowCaching, 1, $singlePid)), '');
-				} else if($this->conf['useHRDates'] && $this->conf['useHRDatesSingle']) {
+				} else if ($this->conf['useHRDates'] && $this->conf['useHRDatesSingle']) {
 						$tmpY = $this->piVars['year'];
 						$tmpM = $this->piVars['month'];
 						$tmpD = $this->piVars['day'];
@@ -1433,7 +1490,7 @@ class tx_ttnews extends tslib_pibase {
 	 * @return	array		$categories: array of found categories
 	 */
 	function getCategories($uid) {
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECT_mm_query ('tt_news_cat.*,tt_news_cat_mm.sorting AS mmsorting', 'tt_news', 'tt_news_cat_mm', 'tt_news_cat', $whereClause = ' AND tt_news_cat_mm.uid_local='.$uid.$this->SPaddWhere.$this->enableCatFields, $groupBy = '', 'mmsorting, '.$this->config['catOrderBy'], $limit = '');
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECT_mm_query ('tt_news_cat.*,tt_news_cat_mm.sorting AS mmsorting', 'tt_news', 'tt_news_cat_mm', 'tt_news_cat', $whereClause = ' AND tt_news_cat_mm.uid_local='.($uid?$uid:0).$this->SPaddWhere.$this->enableCatFields, $groupBy = '', 'mmsorting, '.$this->config['catOrderBy'], $limit = '');
 
 		$categories = array();
 		$maincat = 0;
@@ -1488,7 +1545,7 @@ class tx_ttnews extends tslib_pibase {
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'tt_news_cat', 'tt_news_cat.parent_category IN ('.$catlist.')'.$this->SPaddWhere.$this->enableCatFields);
 		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 			$cc++;
-			if ($cc > 50) {
+			if ($cc > 100) {
 				$GLOBALS['TT']->setTSlogMessage('tt_news: one or more recursive categories where found');
 				return implode(',', $pcatArr);
 			}

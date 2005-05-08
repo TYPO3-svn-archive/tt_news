@@ -80,8 +80,10 @@ plugin.tt_news {
   noNewsIdMsg_stdWrap.wrap (
       <table border="0" cellpadding="0" cellspacing="0" width="100%">
       <tr><td><strong>|</strong></td></tr></table>
-    )
-   
+  )
+  versionPreviewMessage_stdWrap.wrap = <div style="border:2px solid red;padding:10px;margin:10px 0px 10px 0px;"><img src="t3lib/gfx/icon_note.gif" class="absmiddle" alt="" height="16" width="18">&nbsp;<strong>|</strong></div>
+  versionPreviewMessageLinkToOriginal_stdWrap.wrap = &nbsp;<span style="font-weight:normal;">|</span>
+  
   # Pagebrowser settings
   pageBrowser {
     maxPages = 10

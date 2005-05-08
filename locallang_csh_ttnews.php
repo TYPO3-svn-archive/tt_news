@@ -96,8 +96,9 @@ If you don\'t need this field for "&lt;meta&gt; keywords" you can use it as a se
 /** TAB: Relations  */
 
 			// category
-		'category.description' => 'Here you can assign categories to the current news record.',
-		'category.details' => 'You can assign categories to news records. That allows you to select newsitems for display by their assigned categories or subcategories. A news record can be member of multiple categories.
+		'category.description' => 'Here you can assign categories to the current news record (if this record is no translation of another record).',
+		'category.details' => 'You can assign categories to news records that are not translations of other records. That allows you to select newsitems for display by their assigned categories or subcategories. A tt_news record can be member of multiple categories.
+If the current record is a translation (if it has a "translation original" and a non-default syslanguage) the categories are not editable, they will only be listed in the tt_news form.
 		
 Categories can have parent categories. F.e the category "FrontEnd plugins" in the screenshot below does have category "Extensions" selected as "parent category", so "FrontEnd plugins" is a subcategory of "Extensions". That has the result, that the record in this example which has category "FrontEnd plugins" will also appear in a list that shows only category "Extensions".
 With "+" icon next to the categoy tree it\'s possible to create categories directly from the news record.

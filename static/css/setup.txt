@@ -84,7 +84,6 @@ plugin.tt_news {
 
 	border:1px solid #000;
 	background-color:#BBE53A;
-
 }
 
 
@@ -256,7 +255,7 @@ plugin.tt_news {
 }
 .news-single-additional-info {
 	background-color: #BBE53A;
-	clear: both;
+/*	clear: both;*/
 	margin-top: 15px;
 	border: 1px solid #666;
 	padding:3px;

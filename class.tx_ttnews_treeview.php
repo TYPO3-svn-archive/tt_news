@@ -138,6 +138,7 @@ class tx_ttnews_treeview {
 		$nMV_label = isset($PA['fieldTSConfig']['noMatchingValue_label']) ? $this->pObj->sL($PA['fieldTSConfig']['noMatchingValue_label']) : '[ '.$this->pObj->getLL('l_noMatchingValue').' ]';
 		$nMV_label = @sprintf($nMV_label, $PA['itemFormElValue']);
 
+
 			// Prepare some values:
 		$maxitems = intval($config['maxitems']);
 		$minitems = intval($config['minitems']);
@@ -146,20 +147,7 @@ class tx_ttnews_treeview {
 		if ($maxitems<=1 AND !$config['treeView'])	{
 
 		} else {
-			$item.= '<input type="hidden" name="'.$PA['itemFormElName'].'_mul" value="'.($config['multiple']?1:0).'" />';
-
-				// Set max and min items:
-			$maxitems = t3lib_div::intInRange($config['maxitems'],0);
-			if (!$maxitems)	$maxitems=100000;
-			$minitems = t3lib_div::intInRange($config['minitems'],0);
-
-				// Register the required number of elements:
-			$this->pObj->requiredElements[$PA['itemFormElName']] = array($minitems,$maxitems,'imgName'=>$table.'_'.$row['uid'].'_'.$field);
-
-
-			if($config['treeView'] AND $config['foreign_table']) {
-				global $TCA, $LANG;
-
+			if ($row['sys_language_uid'] && $row['l18n_parent'] ) { // the current record is a translation of another record
 				if ($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['tt_news']) { // get tt_news extConf array
 					$confArr = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['tt_news']);
 				}
@@ -167,163 +155,217 @@ class tx_ttnews_treeview {
 					$TSconfig = t3lib_BEfunc::getTCEFORM_TSconfig($table,$row);
 					$storagePid = $TSconfig['_STORAGE_PID']?$TSconfig['_STORAGE_PID']:0;
 					$SPaddWhere = ' AND tt_news_cat.pid IN (' . $storagePid . ')';
-
 				}
+				$errorMsg = array();
+				$notAllowedItems = array();
 				if ($GLOBALS['BE_USER']->getTSConfigVal('options.useListOfAllowedItems') && !$GLOBALS['BE_USER']->isAdmin()) {
+
 					$notAllowedItems = $this->getNotAllowedItems($PA,$SPaddWhere);
 				}
-
-				if($config['treeViewClass'] AND is_object($treeViewObj = &t3lib_div::getUserObj($config['treeViewClass'],'user_',false)))      {
-				} else {
-					$treeViewObj = t3lib_div::makeInstance('tx_ttnews_tceFunc_selectTreeView');
-				}
-				$treeViewObj->table = $config['foreign_table'];
-
-
-				$where = ' '.str_replace('###STORAGE_PID###',$storagePid,$config['foreign_table_where']);
-				$treeViewObj->init($where);
-				$treeViewObj->backPath = $this->pObj->backPath;
-				$treeViewObj->parentField = $TCA[$config['foreign_table']]['ctrl']['treeParentField'];
-				$treeViewObj->expandAll = 1;
-				$treeViewObj->expandFirst = 1;
-
-				$treeViewObj->ext_IconMode = '1'; // no context menu on icons
-				$treeViewObj->title = $LANG->sL($TCA[$config['foreign_table']]['ctrl']['title']);
-
-				$treeViewObj->TCEforms_itemFormElName = $PA['itemFormElName'];
-				if ($table==$config['foreign_table']) {
-					$treeViewObj->TCEforms_nonSelectableItemsArray[] = $row['uid'];
-				}
-
-				if (is_array($notAllowedItems) && $notAllowedItems[0]) {
-					foreach ($notAllowedItems as $k) {
-						$treeViewObj->TCEforms_nonSelectableItemsArray[] = $k;
+					// get categories of the translation original
+				$catres = $GLOBALS['TYPO3_DB']->exec_SELECT_mm_query ('tt_news_cat.uid,tt_news_cat.title,tt_news_cat_mm.sorting AS mmsorting', 'tt_news', 'tt_news_cat_mm', 'tt_news_cat', ' AND tt_news_cat_mm.uid_local='.$row['l18n_parent'].$SPaddWhere,'', 'mmsorting');
+				$categories = array();
+				$na = false;
+				while ($catrow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($catres)) {
+					if(in_array($catrow['uid'],$notAllowedItems)) {
+						$categories[$catrow['uid']] = '<p style="padding:0px;color:red;font-weight:bold;">- '.$catrow['title'].' <span class="typo3-dimmed"><em>['.$catrow['uid'].']</em></span></p>';
+						$na = true;
+					} else {
+						$categories[$catrow['uid']] = '<p style="padding:0px;">- '.$catrow['title'].' <span class="typo3-dimmed"><em>['.$catrow['uid'].']</em></span></p>';
 					}
 				}
+				if($na) {
+					$this->NA_Items = '<table class="warningbox" border="0" cellpadding="0" cellspacing="0"><tbody><tr><td><img src="gfx/icon_fatalerror.gif" class="absmiddle" alt="" height="16" width="18">SAVING DISABLED!! <br />This record has one or more categories assigned that are not defined in your BE usergroup (tablename.allowedItems).</td></tr></tbody></table>';
+				}
+				$item = implode($categories,chr(10));
 
-					// get default items
-				$defItems = array();
-				if (is_array($config['items']) && $table == 'tt_content' && $row['CType']=='list' && $row['list_type']==9 && $field == 'pi_flexform')	{
-					reset ($config['items']);
-					while (list($itemName,$itemValue) = each($config['items']))	{
-						if ($itemValue[0]) {
-							$ITitle = $this->pObj->sL($itemValue[0]);
-							$defItems[] = '<a href="#" onclick="setFormValueFromBrowseWin(\'data['.$table.']['.$row['uid'].']['.$field.'][data][sDEF][lDEF][categorySelection][vDEF]\','.$itemValue[1].',\''.$ITitle.'\'); return false;" style="text-decoration:none;">'.$ITitle.'</a>';
+				if ($item) {
+					$item = 'Categories from the translation original of this record:<br />'.$item;
+				} else {
+					$item = 'The translation original of this record has no categories assigned.<br />';
+				}
+				$item = '<div class="typo3-TCEforms-originalLanguageValue">'.$item.'</div>';
+			} else { // build tree selector
+				$item.= '<input type="hidden" name="'.$PA['itemFormElName'].'_mul" value="'.($config['multiple']?1:0).'" />';
+	
+					// Set max and min items:
+				$maxitems = t3lib_div::intInRange($config['maxitems'],0);
+				if (!$maxitems)	$maxitems=100000;
+				$minitems = t3lib_div::intInRange($config['minitems'],0);
+	
+					// Register the required number of elements:
+				$this->pObj->requiredElements[$PA['itemFormElName']] = array($minitems,$maxitems,'imgName'=>$table.'_'.$row['uid'].'_'.$field);
+	
+	
+				if($config['treeView'] AND $config['foreign_table']) {
+					global $TCA, $LANG;
+	
+					if ($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['tt_news']) { // get tt_news extConf array
+						$confArr = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['tt_news']);
+					}
+					if ($confArr['useStoragePid']) {
+						$TSconfig = t3lib_BEfunc::getTCEFORM_TSconfig($table,$row);
+						$storagePid = $TSconfig['_STORAGE_PID']?$TSconfig['_STORAGE_PID']:0;
+						$SPaddWhere = ' AND tt_news_cat.pid IN (' . $storagePid . ')';
+	
+					}
+					if ($GLOBALS['BE_USER']->getTSConfigVal('options.useListOfAllowedItems') && !$GLOBALS['BE_USER']->isAdmin()) {
+						$notAllowedItems = $this->getNotAllowedItems($PA,$SPaddWhere);
+					}
+	
+					if($config['treeViewClass'] AND is_object($treeViewObj = &t3lib_div::getUserObj($config['treeViewClass'],'user_',false)))      {
+					} else {
+						$treeViewObj = t3lib_div::makeInstance('tx_ttnews_tceFunc_selectTreeView');
+					}
+					$treeViewObj->table = $config['foreign_table'];
+	
+	
+					$where = ' '.str_replace('###STORAGE_PID###',$storagePid,$config['foreign_table_where']);
+					$treeViewObj->init($where);
+					$treeViewObj->backPath = $this->pObj->backPath;
+					$treeViewObj->parentField = $TCA[$config['foreign_table']]['ctrl']['treeParentField'];
+					$treeViewObj->expandAll = 1;
+					$treeViewObj->expandFirst = 1;
+	
+					$treeViewObj->ext_IconMode = '1'; // no context menu on icons
+					$treeViewObj->title = $LANG->sL($TCA[$config['foreign_table']]['ctrl']['title']);
+	
+					$treeViewObj->TCEforms_itemFormElName = $PA['itemFormElName'];
+					if ($table==$config['foreign_table']) {
+						$treeViewObj->TCEforms_nonSelectableItemsArray[] = $row['uid'];
+					}
+	
+					if (is_array($notAllowedItems) && $notAllowedItems[0]) {
+						foreach ($notAllowedItems as $k) {
+							$treeViewObj->TCEforms_nonSelectableItemsArray[] = $k;
 						}
 					}
-				}
-					// render tree html
-				$treeContent=$treeViewObj->getBrowsableTree();
-				$treeItemC = count($treeViewObj->ids);
-				
-				if ($defItems[0]) { // add default items to the tree table. In this case the value [not categorized]
-					$treeItemC += count($defItems);
-					$treeContent .= '<table border="0" cellpadding="0" cellspacing="0"><tr>
-						<td>'.$this->pObj->sL($config['itemsHeader']).'&nbsp;</td><td>'.implode($defItems,'<br />').'</td>
-						</tr></table>';
-				}
-
-				 	// find recursive categories or "storagePid" related errors and if there are some, add a message to the $errorMsg array.
-				$errorMsg = $this->findRecursiveCategories($PA,$row,$table,$storagePid,$treeViewObj->ids) ;
-
-				$width = 280; // default width for the field with the category tree
-				if (intval($confArr['categoryTreeWidth'])) { // if a value is set in extConf take this one.
-					$width = t3lib_div::intInRange($confArr['categoryTreeWidth'],1,600);
-				} elseif ($GLOBALS['CLIENT']['BROWSER']=='msie') { // to suppress the unneeded horizontal scrollbar IE needs a width of at least 320px
-					$width = 320;
-				}
-
-				$config['autoSizeMax'] = t3lib_div::intInRange($config['autoSizeMax'],0);
-				$height = $config['autoSizeMax'] ? t3lib_div::intInRange($treeItemC+2,t3lib_div::intInRange($size,1),$config['autoSizeMax']) : $size;
-					// hardcoded: 16 is the height of the icons
-				$height=$height*16;
-
-				$divStyle = 'position:relative; left:0px; top:0px; height:'.$height.'px; width:'.$width.'px;border:solid 1px;overflow:auto;background:#fff;margin-bottom:5px;';
-				$thumbnails='<div  name="'.$PA['itemFormElName'].'_selTree" style="'.htmlspecialchars($divStyle).'">';
-				$thumbnails.=$treeContent;
-				$thumbnails.='</div>';
-
-			} else {
-
-				$sOnChange = 'setFormValueFromBrowseWin(\''.$PA['itemFormElName'].'\',this.options[this.selectedIndex].value,this.options[this.selectedIndex].text); '.implode('',$PA['fieldChangeFunc']);
-
-					// Put together the select form with selected elements:
-				$selector_itemListStyle = isset($config['itemListStyle']) ? ' style="'.htmlspecialchars($config['itemListStyle']).'"' : ' style="'.$this->pObj->defaultMultipleSelectorStyle.'"';
-				$size = $config['autoSizeMax'] ? t3lib_div::intInRange(count($itemArray)+1,t3lib_div::intInRange($size,1),$config['autoSizeMax']) : $size;
-				$thumbnails = '<select style="width:150px;" name="'.$PA['itemFormElName'].'_sel"'.$this->pObj->insertDefStyle('select').($size?' size="'.$size.'"':'').' onchange="'.htmlspecialchars($sOnChange).'"'.$PA['onFocus'].$selector_itemListStyle.'>';
-				#$thumbnails = '<select                       name="'.$PA['itemFormElName'].'_sel"'.$this->pObj->insertDefStyle('select').($size?' size="'.$size.'"':'').' onchange="'.htmlspecialchars($sOnChange).'"'.$PA['onFocus'].$selector_itemListStyle.'>';
-				foreach($selItems as $p)	{
-					$thumbnails.= '<option value="'.htmlspecialchars($p[1]).'">'.htmlspecialchars($p[0]).'</option>';
-				}
-				$thumbnails.= '</select>';
-
-			}
-
-				// Perform modification of the selected items array:
-			$itemArray = t3lib_div::trimExplode(',',$PA['itemFormElValue'],1);
-			foreach($itemArray as $tk => $tv) {
-				$tvP = explode('|',$tv,2);
-				if (in_array($tvP[0],$removeItems) && !$PA['fieldTSConfig']['disableNoMatchingValueElement'])	{
-					$tvP[1] = rawurlencode($nMV_label);
-				} elseif (isset($PA['fieldTSConfig']['altLabels.'][$tvP[0]])) {
-					$tvP[1] = rawurlencode($this->pObj->sL($PA['fieldTSConfig']['altLabels.'][$tvP[0]]));
+	
+						// get default items
+					$defItems = array();
+					if (is_array($config['items']) && $table == 'tt_content' && $row['CType']=='list' && $row['list_type']==9 && $field == 'pi_flexform')	{
+						reset ($config['items']);
+						while (list($itemName,$itemValue) = each($config['items']))	{
+							if ($itemValue[0]) {
+								$ITitle = $this->pObj->sL($itemValue[0]);
+								$defItems[] = '<a href="#" onclick="setFormValueFromBrowseWin(\'data['.$table.']['.$row['uid'].']['.$field.'][data][sDEF][lDEF][categorySelection][vDEF]\','.$itemValue[1].',\''.$ITitle.'\'); return false;" style="text-decoration:none;">'.$ITitle.'</a>';
+							}
+						}
+					}
+						// render tree html
+					$treeContent=$treeViewObj->getBrowsableTree();
+					$treeItemC = count($treeViewObj->ids);
+					
+					if ($defItems[0]) { // add default items to the tree table. In this case the value [not categorized]
+						$treeItemC += count($defItems);
+						$treeContent .= '<table border="0" cellpadding="0" cellspacing="0"><tr>
+							<td>'.$this->pObj->sL($config['itemsHeader']).'&nbsp;</td><td>'.implode($defItems,'<br />').'</td>
+							</tr></table>';
+					}
+	
+						// find recursive categories or "storagePid" related errors and if there are some, add a message to the $errorMsg array.
+					$errorMsg = $this->findRecursiveCategories($PA,$row,$table,$storagePid,$treeViewObj->ids) ;
+	
+					$width = 280; // default width for the field with the category tree
+					if (intval($confArr['categoryTreeWidth'])) { // if a value is set in extConf take this one.
+						$width = t3lib_div::intInRange($confArr['categoryTreeWidth'],1,600);
+					} elseif ($GLOBALS['CLIENT']['BROWSER']=='msie') { // to suppress the unneeded horizontal scrollbar IE needs a width of at least 320px
+						$width = 320;
+					}
+	
+					$config['autoSizeMax'] = t3lib_div::intInRange($config['autoSizeMax'],0);
+					$height = $config['autoSizeMax'] ? t3lib_div::intInRange($treeItemC+2,t3lib_div::intInRange($size,1),$config['autoSizeMax']) : $size;
+						// hardcoded: 16 is the height of the icons
+					$height=$height*16;
+	
+					$divStyle = 'position:relative; left:0px; top:0px; height:'.$height.'px; width:'.$width.'px;border:solid 1px;overflow:auto;background:#fff;margin-bottom:5px;';
+					$thumbnails='<div  name="'.$PA['itemFormElName'].'_selTree" style="'.htmlspecialchars($divStyle).'">';
+					$thumbnails.=$treeContent;
+					$thumbnails.='</div>';
+	
 				} else {
-					$tvP[1] = rawurlencode($this->pObj->sL(rawurldecode($tvP[1])));
+	
+					$sOnChange = 'setFormValueFromBrowseWin(\''.$PA['itemFormElName'].'\',this.options[this.selectedIndex].value,this.options[this.selectedIndex].text); '.implode('',$PA['fieldChangeFunc']);
+	
+						// Put together the select form with selected elements:
+					$selector_itemListStyle = isset($config['itemListStyle']) ? ' style="'.htmlspecialchars($config['itemListStyle']).'"' : ' style="'.$this->pObj->defaultMultipleSelectorStyle.'"';
+					$size = $config['autoSizeMax'] ? t3lib_div::intInRange(count($itemArray)+1,t3lib_div::intInRange($size,1),$config['autoSizeMax']) : $size;
+					$thumbnails = '<select style="width:150px;" name="'.$PA['itemFormElName'].'_sel"'.$this->pObj->insertDefStyle('select').($size?' size="'.$size.'"':'').' onchange="'.htmlspecialchars($sOnChange).'"'.$PA['onFocus'].$selector_itemListStyle.'>';
+					#$thumbnails = '<select                       name="'.$PA['itemFormElName'].'_sel"'.$this->pObj->insertDefStyle('select').($size?' size="'.$size.'"':'').' onchange="'.htmlspecialchars($sOnChange).'"'.$PA['onFocus'].$selector_itemListStyle.'>';
+					foreach($selItems as $p)	{
+						$thumbnails.= '<option value="'.htmlspecialchars($p[1]).'">'.htmlspecialchars($p[0]).'</option>';
+					}
+					$thumbnails.= '</select>';
+	
 				}
-				$itemArray[$tk]=implode('|',$tvP);
+	
+					// Perform modification of the selected items array:
+				$itemArray = t3lib_div::trimExplode(',',$PA['itemFormElValue'],1);
+				foreach($itemArray as $tk => $tv) {
+					$tvP = explode('|',$tv,2);
+					if (in_array($tvP[0],$removeItems) && !$PA['fieldTSConfig']['disableNoMatchingValueElement'])	{
+						$tvP[1] = rawurlencode($nMV_label);
+					} elseif (isset($PA['fieldTSConfig']['altLabels.'][$tvP[0]])) {
+						$tvP[1] = rawurlencode($this->pObj->sL($PA['fieldTSConfig']['altLabels.'][$tvP[0]]));
+					} else {
+						$tvP[1] = rawurlencode($this->pObj->sL(rawurldecode($tvP[1])));
+					}
+					$itemArray[$tk]=implode('|',$tvP);
+				}
+				$sWidth = 150; // default width for the left field of the category select
+				if (intval($confArr['categorySelectedWidth'])) {
+					$sWidth = t3lib_div::intInRange($confArr['categorySelectedWidth'],1,600);
+				}
+				$params=array(
+					'size' => $size,
+					'autoSizeMax' => t3lib_div::intInRange($config['autoSizeMax'],0),
+					#'style' => isset($config['selectedListStyle']) ? ' style="'.htmlspecialchars($config['selectedListStyle']).'"' : ' style="'.$this->pObj->defaultMultipleSelectorStyle.'"',
+					'style' => ' style="width:'.$sWidth.'px;"',
+					'dontShowMoveIcons' => ($maxitems<=1),
+					'maxitems' => $maxitems,
+					'info' => '',
+					'headers' => array(
+						'selector' => $this->pObj->getLL('l_selected').':<br />',
+						'items' => $this->pObj->getLL('l_items').':<br />'
+					),
+					'noBrowser' => 1,
+					'thumbnails' => $thumbnails
+				);
+				$item.= $this->pObj->dbFileIcons($PA['itemFormElName'],'','',$itemArray,'',$params,$PA['onFocus']);
+				// Wizards:
+				$altItem = '<input type="hidden" name="'.$PA['itemFormElName'].'" value="'.htmlspecialchars($PA['itemFormElValue']).'" />';
+				$item = $this->pObj->renderWizards(array($item,$altItem),$config['wizards'],$table,$row,$field,$PA,$PA['itemFormElName'],$specConf);
 			}
-			$sWidth = 150; // default width for the left field of the category select
-			if (intval($confArr['categorySelectedWidth'])) {
-				$sWidth = t3lib_div::intInRange($confArr['categorySelectedWidth'],1,600);
-			}
-			$params=array(
-				'size' => $size,
-				'autoSizeMax' => t3lib_div::intInRange($config['autoSizeMax'],0),
-				#'style' => isset($config['selectedListStyle']) ? ' style="'.htmlspecialchars($config['selectedListStyle']).'"' : ' style="'.$this->pObj->defaultMultipleSelectorStyle.'"',
-				'style' => ' style="width:'.$sWidth.'px;"',
-				'dontShowMoveIcons' => ($maxitems<=1),
-				'maxitems' => $maxitems,
-				'info' => '',
-				'headers' => array(
-					'selector' => $this->pObj->getLL('l_selected').':<br />',
-					'items' => $this->pObj->getLL('l_items').':<br />'
-				),
-				'noBrowser' => 1,
-				'thumbnails' => $thumbnails
-			);
-
-
-			$item.= $this->pObj->dbFileIcons($PA['itemFormElName'],'','',$itemArray,'',$params,$PA['onFocus']);
 		}
-
-			// Wizards:
-		$altItem = '<input type="hidden" name="'.$PA['itemFormElName'].'" value="'.htmlspecialchars($PA['itemFormElValue']).'" />';
-		$item = $this->pObj->renderWizards(array($item,$altItem),$config['wizards'],$table,$row,$field,$PA,$PA['itemFormElName'],$specConf);
-
+		
 		return $this->NA_Items.implode($errorMsg,chr(10)).$item;
 
 	}
 
 	/**
-	 * This function checks if the current record has categories assigned that are not allowed for this BE user.
-	 * If such categories where found, $this->NA_Items is filled with an error message.
+	 * This function checks if there are categories selectable that are not allowed for this BE user and if the current record has
+	 * already categories assigned that are not allowed.
+	 * If such categories were found they will be returned and "$this->NA_Items" is filled with an error message.
+	 * The array "$itemArr" which will be returned contains the list of all non-selectable categories. This array will be added to "$treeViewObj->TCEforms_nonSelectableItemsArray". If a category is in this array the "select item" link will not be added to it.
 	 *
 	 * @param	array		$PA: the paramter array
 	 * @param	string		$SPaddWhere: this string is added to the query for categories when "useStoragePid" is set.
-	 * @return	array		array with not allowed categories 
+	 * @return	array		array with not allowed categories
+	 * @see tx_ttnews_tceFunc_selectTreeView::wrapTitle()
 	 */
 	function getNotAllowedItems($PA,$SPaddWhere) {
 		$fTable = $PA['fieldConf']['config']['foreign_table'];
+			// get list of allowed categories for the current BE user
 		$allowedItemsList=$GLOBALS['BE_USER']->getTSConfigVal('tt_newsPerms.'.$fTable.'.allowedItems');
-
+			// get all categories 
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', $fTable, '1=1' .$SPaddWhere. t3lib_BEfunc::BEenableFields($fTable));
 		$itemArr = array();
 		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
-			if(!t3lib_div::inList($allowedItemsList,$row['uid'])) {
+			if(!t3lib_div::inList($allowedItemsList,$row['uid'])) { // remove all allowed categories from the category result
 				$itemArr[]=$row['uid'];
 			}
 		}
-		$catvals = explode(',',$PA['row']['category']);
+		$catvals = explode(',',$PA['row']['category']); // get categories from the current record
 		$notAllowedItems = array();
 		foreach ($catvals as $k) {
 			$c = explode('|',$k);
@@ -357,12 +399,13 @@ class tx_ttnews_treeview {
 				$rcList = $this->compareCategoryVals ($treeIds,$cfgArr['data']['sDEF']['lDEF']['categorySelection']['vDEF']);
 			}
 		} elseif ($table == 'tt_news_cat' || $table == 'tt_news') {
-			if ($table == 'tt_news_cat' && $row['pid'] == $storagePid && intval($row['uid']) && !in_array($row['uid'],$treeIds))	{ // if the current category is not empty and not in the array of tree-uids it seems to be part of a chain of recursive categories
+			if ($table == 'tt_news_cat' && $row['pid'] == $storagePid && intval($row['uid']) && !in_array($row['uid'],$treeIds))	{ // if the selected category is not empty and not in the array of tree-uids it seems to be part of a chain of recursive categories
 				$recursionMsg = 'RECURSIVE CATEGORIES DETECTED!! <br />This record is part of a chain of recursive categories. The affected categories will not be displayed in the category tree.  You should remove the parent category of this record to prevent this.';
 			}
 			if ($table == 'tt_news' && $row['category']) { // find recursive categories in the tt_news db-record
 				$rcList = $this->compareCategoryVals ($treeIds,$row['category']);
 			}
+			// in case of localized records this doesn't work
 			if ($storagePid && $row['pid'] != $storagePid && $table == 'tt_news_cat') { // if a storagePid is defined but the current category is not stored in storagePid
 				$errorMsg[] = '<p style="padding:10px;"><img src="gfx/icon_warning.gif" class="absmiddle" alt="" height="16" width="18"><strong style="color:red;"> Warning:</strong><br />tt_news is configured to display categories only from the "General record storage page" (GRSP). The current category is not located in the GRSP and will so not be displayed. To solve this you should either define a GRSP or disable "Use StoragePid" in the extension manager.</p>';
 			}

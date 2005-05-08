@@ -34,10 +34,14 @@
  *
  *
  *
- *   53: class tx_ttnews_tcemain
- *   69:     function processDatamap_preProcessFieldArray(&$fieldArray, $table, $id, &$pObj)
+ *   57: class tx_ttnews_tcemain
+ *   72:     function processDatamap_preProcessFieldArray(&$fieldArray, $table, $id, &$pObj)
  *
- * TOTAL FUNCTIONS: 1
+ *
+ *  110: class tx_ttnews_tcemain_cmdmap
+ *  122:     function processCmdmap_preProcess($command, &$table, $id, $value, &$pObj)
+ *
+ * TOTAL FUNCTIONS: 2
  * (This index is automatically created/updated by the extension "extdeveval")
  *
  */
@@ -52,11 +56,10 @@
  */
 class tx_ttnews_tcemain {
 	function processDatamap_preProcessIncomingFieldArray() {
-		// this function seems to needed for compatibility with TYPO3 3.7.0. In this version tcemain ckecks the existence of the method "processDatamap_preProcessIncomingFieldArray()" and calls "processDatamap_preProcessFieldArray()"
+		// this function seems to needed for compatibility with TYPO3 3.7.0. In this TYPO3 version tcemain ckecks the existence of the method "processDatamap_preProcessIncomingFieldArray()" and calls "processDatamap_preProcessFieldArray()"
 	}
 	/**
-	 * This method is called by a hook in the TYPO3 Core Engine (TCEmain). We use it to check if a element reference
-	 * has changed and update the table tx_templavoila_elementreferences accordingly
+	 * This method is called by a hook in the TYPO3 Core Engine (TCEmain) when a record is saved. We use it to disable saving of the current record if it has categories assigned that are not allowed for the BE user.
 	 *
 	 * @param	string		$status: The TCEmain operation status, fx. 'update'
 	 * @param	string		$table: The table TCEmain is currently processing
@@ -67,35 +70,95 @@ class tx_ttnews_tcemain {
 	 * @access public
 	 */
 	function processDatamap_preProcessFieldArray(&$fieldArray, $table, $id, &$pObj) {
-		if ($table == 'tt_news') {
-			if ($GLOBALS['BE_USER']->getTSConfigVal('options.useListOfAllowedItems') && !$GLOBALS['BE_USER']->isAdmin()) {
-				if (!$fieldArray['category']) { // either the record has no category or all assigned categories have been deleted at the same time
+		if ($table == 'tt_news' && !$GLOBALS['BE_USER']->isAdmin()) {
+			if (isset($GLOBALS['_POST']['_savedokview_x']))	{ // open current record in single view if "savedokview" has been pressed
+				$pagesTSC = t3lib_BEfunc::getPagesTSconfig($GLOBALS['_POST']['popViewId']);
+				$GLOBALS['_POST']['popViewId_addParams'] = '&no_cache=1&tx_ttnews[tt_news]='.$id;
+				$GLOBALS['_POST']['popViewId'] = $pagesTSC['tx_ttnews.']['singlePid'];
 
-					$res = $GLOBALS['TYPO3_DB']->exec_SELECT_mm_query ('tt_news_cat.uid,tt_news_cat_mm.sorting AS mmsorting', 'tt_news', 'tt_news_cat_mm', 'tt_news_cat', ' AND tt_news_cat_mm.uid_local='.(is_int($id)?$id:0).t3lib_BEfunc::BEenableFields('tt_news_cat'));
+			}
+			if ($GLOBALS['BE_USER']->getTSConfigVal('options.useListOfAllowedItems')) {
 
-					$categories = array();
-					while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
-						$categories[] = $row['uid'];
-					}
-					if (!$categories[0]) { // original record has no categories
-						$notAllowedItems = array();
-					} else {
-						$notAllowedItems[]='empty';
-					}
-				} else {
+				// get categories from the tt_news record in db
+				$res = $GLOBALS['TYPO3_DB']->exec_SELECT_mm_query ('tt_news_cat.uid,tt_news_cat_mm.sorting AS mmsorting', 'tt_news', 'tt_news_cat_mm', 'tt_news_cat', ' AND tt_news_cat_mm.uid_local='.(is_int($fieldArray['l18n_parent'])?$fieldArray['l18n_parent']:$id).t3lib_BEfunc::BEenableFields('tt_news_cat'));
+				$categories = array();
+				while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
+					$categories[] = $row['uid'];
+				}
+				$notAllowedItems = array();
+				if ($categories[0]) { // original record has categories
 					$allowedItemsList=$GLOBALS['BE_USER']->getTSConfigVal('tt_newsPerms.tt_news_cat.allowedItems');
-					$catArr = t3lib_div::trimExplode(',',$fieldArray['category'],1);
-					$notAllowedItems = array();
-					foreach ($catArr as $k) {
+					foreach ($categories as $k) {
 						if(!t3lib_div::inList($allowedItemsList,$k)) {
 							$notAllowedItems[]=$k;
 						}
 					}
 				}
 				if ($notAllowedItems[0]) {
-					$pObj->log($table,$id,2,0,1,"Attempt to modify a record from table '%s' without permission. Reason: the record has one or more categories assigned that are not defined in your BE usergroup (tablename.allowedItems).",1,array($table));
-					$fieldArray = array();
 
+					$pObj->log($table,$id,2,0,1,"processDatamap: Attempt to modify a record from table '%s' without permission. Reason: the record has one or more categories assigned that are not defined in your BE usergroup (".implode($notAllowedItems,',').").",1,array($table));
+						// unset fieldArray to prevent saving of the record
+					$fieldArray = array();
+				}
+				
+			}
+		}
+	}
+}
+
+/**
+ * Class being included by TCEmain using a hook
+ *
+ * @author	Rupert Germann <rupi@gmx.li>
+ * @package TYPO3
+ * @subpackage tt_news
+ */
+class tx_ttnews_tcemain_cmdmap {
+	/**
+	* This method is called by a hook in the TYPO3 Core Engine (TCEmain) when a command was executed (copy,move,delete...).
+	* For tt_news it is used to disable saving of the current record if it has an editlock or if it has categories assigned that are not allowed for the current BE user.
+	*
+	* @param	string		$command: The TCEmain command, fx. 'delete'
+	* @param	string		$table: The table TCEmain is currently processing
+	* @param	string		$id: The records id (if any)
+	* @param	array		$value: The new value of the field which has been changed
+	* @param	object		$reference: Reference to the parent object (TCEmain)
+	* @return	void
+	* @access public
+	*/
+	function processCmdmap_preProcess($command, &$table, $id, $value, &$pObj) {
+		if ($table == 'tt_news' && !$GLOBALS['BE_USER']->isAdmin()) {
+			$rec = t3lib_BEfunc::getRecord($table,$id,'editlock'); // get record to check if it has an editlock
+			if ($rec['editlock']) {
+				$pObj->log($table,$id,2,0,1,"processCmdmap [editlock]: Attempt to ".$command." a record from table '%s' which is locked by an 'editlock' (= record can only be edited by admins).",1,array($table));
+				$error = true;
+			}
+			if ($GLOBALS['BE_USER']->getTSConfigVal('options.useListOfAllowedItems')) {
+					// get categories from the (untranslated) record in db
+				if ($table == 'tt_news') {
+					$res = $GLOBALS['TYPO3_DB']->exec_SELECT_mm_query ('tt_news_cat.uid,tt_news_cat_mm.sorting AS mmsorting', 'tt_news', 'tt_news_cat_mm', 'tt_news_cat', ' AND tt_news_cat_mm.uid_local='.(is_int($id)?$id:0).t3lib_BEfunc::BEenableFields('tt_news_cat'));
+					$categories = array();
+					while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
+						$categories[] = $row['uid'];
+					}
+					if (!$categories[0]) { // original record has no categories
+						$notAllowedItems = array();
+					} else { // original record has categories
+						$allowedItemsList=$GLOBALS['BE_USER']->getTSConfigVal('tt_newsPerms.tt_news_cat.allowedItems');
+						$notAllowedItems = array();
+						foreach ($categories as $k) {
+							if(!t3lib_div::inList($allowedItemsList,$k)) {
+								$notAllowedItems[]=$k;
+							}
+						}
+					}
+				}
+				if ($notAllowedItems[0]) {
+					$pObj->log($table,$id,2,0,1,"tt_news processCmdmap: Attempt to ".$command." a record from table '%s' without permission. Reason: the record has one or more categories assigned that are not defined in your BE usergroup (tablename.allowedItems).",1,array($table));
+					$error = true;
+				}
+				if ($error) {
+					$table = ''; // unset table to prevent saving
 				}
 			}
 		}
