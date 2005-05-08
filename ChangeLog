@@ -1,22 +1,106 @@
+2005-05-08	rupertgermann
+	* cvsroot/typo3xdev/tx_ttnews/res/example_userPageBrowserFunc.php 1.6:
+		- change linebreaks to unix format
+
+	* cvsroot/typo3xdev/tx_ttnews/class.tx_ttnews_tcemain.php 1.3:
+	* cvsroot/typo3xdev/tx_ttnews/class.tx_ttnews_treeview.php 1.5:
+	* cvsroot/typo3xdev/tx_ttnews/doc/manual.sxw 1.30:
+	* cvsroot/typo3xdev/tx_ttnews/ext_conf_template.txt 1.7:
+	* cvsroot/typo3xdev/tx_ttnews/ext_emconf.php 1.39:
+	* cvsroot/typo3xdev/tx_ttnews/ext_localconf.php 1.4:
+	* cvsroot/typo3xdev/tx_ttnews/ext_php_api.dat 1.16:
+	* cvsroot/typo3xdev/tx_ttnews/ext_tables.php 1.22:
+	* cvsroot/typo3xdev/tx_ttnews/flexform_ds.xml 1.22:
+	* cvsroot/typo3xdev/tx_ttnews/locallang_csh_ttnews.php 1.9:
+	* cvsroot/typo3xdev/tx_ttnews/locallang_tca.php 1.34:
+	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews.php 1.96:
+	* cvsroot/typo3xdev/tx_ttnews/pi/locallang.php 1.20:
+	* cvsroot/typo3xdev/tx_ttnews/res/tt_news_v2_styles.css 1.6:
+	* cvsroot/typo3xdev/tx_ttnews/static/css/setup.txt 1.8:
+	* cvsroot/typo3xdev/tx_ttnews/static/ts_new/setup.txt 1.13:
+	* cvsroot/typo3xdev/tx_ttnews/static/ts_old/setup.txt 1.10:
+	* cvsroot/typo3xdev/tx_ttnews/tca.php 1.32:
+		- new feature: "versioning preview". If the extension "version" is enabled on the system, a new "code" (VERSION_PREVIEW) will be added to the "what to display" selector in the tt_news content element. If a content element with this code exists on a page, it does nothing until the GPvar "ADMCMD_vPrev" is set which indentifies a version preview. Unfortenutely the id of the page for the version preview is not configurable, so the VERSION_PREVIEW element has to be on the next displayable page above the news sysfolder in the pagetree.
+		- If a version preview is displayed a message with a link to the original version of the article will be inserted above it. TSparameters: versionPreviewMessage_stdWrap and versionPreviewMessageLinkToOriginal_stdWrap.
+		- new feature: "direct preview". The "save & view" button in the tt_news record in BE does open a "single" view of the current record now. The singlePid for this page has to be set in pageTS config: "tx_ttnews.singlePid".
+		- tt_news uses different names for the pagebrowser pointer in list and latest now. this makes it possible to have up to 3 indipendend pagebrowsers at one page (single,list,latest).
+		- fix: "latestWithPagebrowser" is working now. (thanks Marlies for pointing me to that)
+		- improvement for "editlock": Now all actions concerning records with an editlock are disabled for non-admin BE users (copy,move,modify,delete,version,localize).
+		- the same actions are prevented for records with categories that are not allowed for the current BE user.
+		- fix: the marker ###XML_DECLARATION### for xml feeds will now be substituted in feeds without items.
+		- improved handling of localized records with non-allowed categories.
+		- added display of categories from the original record to the localization of a news record
+		- new feature (extconfig): now it's possible to disable the "[translate to ...]"-prefix in text fields of localized news articles. (switches between the l10n_modes 'prefixLangTitle' and 'mergeIfNotBlank')
+		- new feature (extconfig): the image field in localized news articles can be made editable now. (switches between the l10n_modes 'prefixLangTitle' and 'mergeIfNotBlank')
+		- added and edited many function comments
+		- added all FE error-messages to pi/locallang.php
+
+	* cvsroot/typo3xdev/tx_ttnews/res/tt_news_article__h.gif 1.1:
+	* cvsroot/typo3xdev/tx_ttnews/res/tt_news_article__ht.gif 1.1:
+	* cvsroot/typo3xdev/tx_ttnews/res/tt_news_article__htu.gif 1.1:
+	* cvsroot/typo3xdev/tx_ttnews/res/tt_news_article__hu.gif 1.1:
+	* cvsroot/typo3xdev/tx_ttnews/res/tt_news_article__t.gif 1.1:
+	* cvsroot/typo3xdev/tx_ttnews/res/tt_news_article__tu.gif 1.1:
+	* cvsroot/typo3xdev/tx_ttnews/res/tt_news_article__u.gif 1.1:
+	* cvsroot/typo3xdev/tx_ttnews/res/tt_news_article__x.gif 1.1:
+	* cvsroot/typo3xdev/tx_ttnews/res/tt_news_exturl__h.gif 1.1:
+	* cvsroot/typo3xdev/tx_ttnews/res/tt_news_exturl__ht.gif 1.1:
+	* cvsroot/typo3xdev/tx_ttnews/res/tt_news_exturl__htu.gif 1.1:
+	* cvsroot/typo3xdev/tx_ttnews/res/tt_news_exturl__hu.gif 1.1:
+	* cvsroot/typo3xdev/tx_ttnews/res/tt_news_exturl__t.gif 1.1:
+	* cvsroot/typo3xdev/tx_ttnews/res/tt_news_exturl__tu.gif 1.1:
+	* cvsroot/typo3xdev/tx_ttnews/res/tt_news_exturl__u.gif 1.1:
+	* cvsroot/typo3xdev/tx_ttnews/res/tt_news_exturl__x.gif 1.1:
+		- added icons for types 1 and 2 (copied the images from t3lib/
+		gfx/i/)
+
+	* cvsroot/typo3xdev/tx_ttnews/pi/news_conf1.png 1.3:
+	* cvsroot/typo3xdev/tx_ttnews/pi/news_help.tmpl 1.6:
+		- updated help image (no code message)
+
+2005-05-06	rupertgermann
+	* cvsroot/typo3xdev/tx_ttnews/ext_tables.php 1.21:
+		- fix: changed name of the included csh file for tt_news cat
+
+	* cvsroot/typo3xdev/tx_ttnews/cshimages/tt_news_cat_recursive_error.png 1.1:
+	* cvsroot/typo3xdev/tx_ttnews/cshimages/tt_news_categoy.png 1.1:
+		- added csh images
+
+	* cvsroot/typo3xdev/tx_ttnews/locallang_csh_manual.xml 1.1:
+	* cvsroot/typo3xdev/tx_ttnews/locallang_csh_ttnews.php 1.8:
+	* cvsroot/typo3xdev/tx_ttnews/locallang_csh_ttnewscat.php 1.3:
+	* cvsroot/typo3xdev/tx_ttnews/tca.php 1.31:
+		- added csh descriptions for tables tt_news and tt_news_cat
+		- added csh extension description (new file: locallang_csh_manual.xml
+
+	* cvsroot/typo3xdev/tx_ttnews/cshimages/tt_news_cat_title_lang_ol.png 1.1:
+	* cvsroot/typo3xdev/tx_ttnews/locallang_csh_ttnewscat.php 1.2:
+		- added context sensitive help to the tt_news_cat table
+
+2005-05-05	rupertgermann
+	* cvsroot/typo3xdev/tx_ttnews/class.tx_ttnews_treeview.php 1.4:
+		- fix: added an additional is_array() check for to prevent a 
+		PHP5 related error ("cannot use string offset as an array ....")
+
+	* cvsroot/typo3xdev/tx_ttnews/ext_tables.php 1.20:
+		changed hardcoded extname to $_EXTKEY
+
+	* cvsroot/typo3xdev/tx_ttnews/res/add_cat.gif 1.2:
+	* cvsroot/typo3xdev/tx_ttnews/tca.php 1.30:
+		- changed icon for "add new category" wizard
+
+	* cvsroot/typo3xdev/tx_ttnews/doc/manual.sxw 1.29:
+		- updated some screenshots
+
+	* cvsroot/typo3xdev/tx_ttnews/Attic/locallang_csh_ttnewsc.php 1.8:
+	* cvsroot/typo3xdev/tx_ttnews/locallang_csh_ttnewscat.php 1.1:
+		- renamed locallang_csh_ttnewsc.php to 
+		locallang_csh_ttnewscat.php
+
+	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews.php 1.95:
+		- changed some comments
+
 2005-05-04	rupertgermann
-	* cvsroot/typo3xdev/tx_ttnews/Attic/class.ux_SC_wizard_add.php 1.4:
-	* cvsroot/typo3xdev/tx_ttnews/ext_localconf.php 1.3:
-	* cvsroot/typo3xdev/tx_ttnews/locallang_tca.php 1.33:
-	* cvsroot/typo3xdev/tx_ttnews/tca.php 1.29:
-		- removed the extended wizsrd_add script because it didn't work right (creates always recursive categories)
-		- changed the label from the "add" button in hte category record to "create new parent category" what it actually does.
-
-	* cvsroot/typo3xdev/tx_ttnews/Attic/class.ux_SC_wizard_add.php 1.3:
-	* cvsroot/typo3xdev/tx_ttnews/class.ext_update.php 1.10:
-	* cvsroot/typo3xdev/tx_ttnews/class.tx_ttnews_tcemain.php 1.2:
-	* cvsroot/typo3xdev/tx_ttnews/ext_php_api.dat 1.15:
-	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews.php 1.94:
-	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews_wizicon.php 1.13:
-		- updated function indexes and api docs
-
-	* cvsroot/typo3xdev/tx_ttnews/ext_localconf.php 1.2:
-		- updated comments
-
 	* cvsroot/typo3xdev/tx_ttnews/class.tx_ttnews_treeview.php 1.3:
 	* cvsroot/typo3xdev/tx_ttnews/flexform_ds.xml 1.21:
 	* cvsroot/typo3xdev/tx_ttnews/flexform_ds_no_sPID.xml 1.12:
@@ -28,6 +112,27 @@
 
 	* cvsroot/typo3xdev/tx_ttnews/locallang.php 1.21:
 		- changed extension description
+
+	* cvsroot/typo3xdev/tx_ttnews/ext_localconf.php 1.2:
+		- updated comments
+
+	* cvsroot/typo3xdev/tx_ttnews/Attic/class.ux_SC_wizard_add.php 1.4:
+	* cvsroot/typo3xdev/tx_ttnews/ext_localconf.php 1.3:
+	* cvsroot/typo3xdev/tx_ttnews/locallang_tca.php 1.33:
+	* cvsroot/typo3xdev/tx_ttnews/tca.php 1.29:
+		- removed the extended wizsrd_add script because it didn't work right (creates always recursive categories)
+		- changed the label from the "add" button in hte category record to "create new parent category" what it actually does.
+
+	* cvsroot/typo3xdev/tx_ttnews/ChangeLog 1.36:
+		updated Changelog
+
+	* cvsroot/typo3xdev/tx_ttnews/Attic/class.ux_SC_wizard_add.php 1.3:
+	* cvsroot/typo3xdev/tx_ttnews/class.ext_update.php 1.10:
+	* cvsroot/typo3xdev/tx_ttnews/class.tx_ttnews_tcemain.php 1.2:
+	* cvsroot/typo3xdev/tx_ttnews/ext_php_api.dat 1.15:
+	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews.php 1.94:
+	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews_wizicon.php 1.13:
+		- updated function indexes and api docs
 
 2005-05-02	rupertgermann
 	* cvsroot/typo3xdev/tx_ttnews/Attic/class.ux_SC_wizard_add.php 1.2:
