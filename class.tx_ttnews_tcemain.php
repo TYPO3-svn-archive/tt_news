@@ -70,14 +70,13 @@ class tx_ttnews_tcemain {
 	 * @access public
 	 */
 	function processDatamap_preProcessFieldArray(&$fieldArray, $table, $id, &$pObj) {
-		if ($table == 'tt_news' && !$GLOBALS['BE_USER']->isAdmin()) {
+		if ($table == 'tt_news') {
 			if (isset($GLOBALS['_POST']['_savedokview_x']))	{ // open current record in single view if "savedokview" has been pressed
 				$pagesTSC = t3lib_BEfunc::getPagesTSconfig($GLOBALS['_POST']['popViewId']);
-				$GLOBALS['_POST']['popViewId_addParams'] = '&no_cache=1&tx_ttnews[tt_news]='.$id;
+				$GLOBALS['_POST']['popViewId_addParams'] = '&L='.$fieldArray['sys_language_uid'].'&no_cache=1&tx_ttnews[tt_news]='.$id;
 				$GLOBALS['_POST']['popViewId'] = $pagesTSC['tx_ttnews.']['singlePid'];
-
 			}
-			if ($GLOBALS['BE_USER']->getTSConfigVal('options.useListOfAllowedItems')) {
+			if ($GLOBALS['BE_USER']->getTSConfigVal('options.useListOfAllowedItems') && !$GLOBALS['BE_USER']->isAdmin()) {
 
 				// get categories from the tt_news record in db
 				$res = $GLOBALS['TYPO3_DB']->exec_SELECT_mm_query ('tt_news_cat.uid,tt_news_cat_mm.sorting AS mmsorting', 'tt_news', 'tt_news_cat_mm', 'tt_news_cat', ' AND tt_news_cat_mm.uid_local='.(is_int($fieldArray['l18n_parent'])?$fieldArray['l18n_parent']:$id).t3lib_BEfunc::BEenableFields('tt_news_cat'));
