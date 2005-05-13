@@ -139,11 +139,13 @@ class tx_ttnews extends tslib_pibase {
 
 		// get codes and decide which function is used to process the content
 		$codes = t3lib_div::trimExplode(',', $this->config['code']?$this->config['code']:$this->conf['defaultCode'], 1);
-		if (!count($codes)) $codes = array();
-			while (list(, $theCode) = each($codes)) {
+		if (!count($codes)) { // no code at all
+			$codes = array();
+			$noCode = true;
+		}
+		while (list(, $theCode) = each($codes)) {
 			$theCode = (string)strtoupper(trim($theCode));
 			$this->theCode = $theCode;
-
 			switch ($theCode) {
 				case 'SINGLE':
 				$content .= $this->displaySingle();
@@ -183,14 +185,17 @@ class tx_ttnews extends tslib_pibase {
 					// Markers and substitution:
 					$markerArray['###CODE###'] = $this->theCode;
 					$markerArray['###EXTPATH###'] = $GLOBALS['TYPO3_LOADED_EXT']['tt_news']['siteRelPath'];
-					$content .= $this->cObj->substituteMarkerArray($helpTemplate, $markerArray);
+					$content .= $this->displayFEHelp();
 				}
 				break;
 			}
 		}
-
+		if($noCode) {
+			$content .= $this->displayFEHelp();
+		}
 		return $content;
 	}
+
 
 	/**
 	 * Init Function: here all the needed configuration values are stored in class variables..
@@ -217,8 +222,17 @@ class tx_ttnews extends tslib_pibase {
 
 		// initialize category vars
 		$this->initCategoryVars();
-
-		// Archive:
+		
+			// get fieldnames from the tt_news db-table
+		$this->fieldNames = array_keys($GLOBALS['TYPO3_DB']->admin_get_fields('tt_news'));
+		
+		if ($this->conf['searchFieldList']) {
+			$searchFieldList = $this->validateFields($this->conf['searchFieldList']);
+			if ($searchFieldList) {
+				$this->searchFieldList = $searchFieldList;
+			}
+		}
+			// Archive:
 		$this->config['archiveMode'] = trim($this->conf['archiveMode']) ; // month, quarter or year listing in AMENU
 		$this->config['archiveMode'] = $this->config['archiveMode']?$this->config['archiveMode']:'month';
 
@@ -803,7 +817,9 @@ class tx_ttnews extends tslib_pibase {
 									$wrapArr[$key] = $this->conf['pageBrowser.'][$key];
 								}
 							}
+							// if there is a GETvar in the URL that is not in this list, caching will be disabled for the pagebrowser links
 							$this->pi_isOnlyFields = $pointerName.',tt_news,year,month,day,pS,pL,arc';
+							$this->pi_alwaysPrev = $this->conf['pageBrowser.']['alwaysPrev'];
 							$markerArray['###BROWSE_LINKS###'] = $this->pi_list_browseresults($this->conf['pageBrowser.']['showResultCount'], $this->conf['pageBrowser.']['tableParams'],$wrapArr, $pointerName, $this->conf['pageBrowser.']['hscText']);
 						} else {
 							$markerArray['###BROWSE_LINKS###'] = $this->makePageBrowser($this->conf['pageBrowser.']['showResultCount'], $this->conf['pageBrowser.']['tableParams'],$pointerName);
@@ -1975,7 +1991,7 @@ class tx_ttnews extends tslib_pibase {
 	/**
 	 * Generates a search where clause.
 	 *
-	 * @param	string		$searchword(s)
+	 * @param	string		$sw: searchword(s)
 	 * @return	string		querypart
 	 */
 	function searchWhere($sw) {
@@ -2374,6 +2390,34 @@ class tx_ttnews extends tslib_pibase {
 		if (!$this->conf['useHRDatesSingleWithoutDay'])	{
 			$this->piVars['day'] = date('d',$tstamp);
 		}
+	}
+
+
+	function displayFEHelp() {
+		$langKey = strtoupper($GLOBALS['TSFE']->config['config']['language']);
+		$helpTemplate = $this->cObj->fileResource('EXT:tt_news/pi/news_help.tmpl');
+		// Get language version of the help-template
+		$helpTemplate_lang = '';
+		if ($langKey) {
+			$helpTemplate_lang = $this->getNewsSubpart($helpTemplate, "###TEMPLATE_" . $langKey . '###');
+		}
+		$helpTemplate = $helpTemplate_lang ? $helpTemplate_lang : $this->getNewsSubpart($helpTemplate, '###TEMPLATE_DEFAULT###');
+		// Markers and substitution:
+		$markerArray['###CODE###'] = $this->theCode?$this->theCode:'no CODE given!';
+		$markerArray['###EXTPATH###'] = $GLOBALS['TYPO3_LOADED_EXT']['tt_news']['siteRelPath'];
+		return $this->cObj->substituteMarkerArray($helpTemplate, $markerArray);
+	}
+	
+	function validateFields($fieldlist) {
+		$checkedFields = array();
+		$fArr = t3lib_div::trimExplode(',',$this->conf['searchFieldList'],1);
+			while (list(,$fN) = each($fArr)) {
+				if (in_array($fN,$this->fieldNames)) {
+					$checkedFields[] = $fN;
+				}
+			}
+		$checkedFieldlist = implode($checkedFields,',');
+		return $checkedFieldlist;
 	}
 
 	/**
