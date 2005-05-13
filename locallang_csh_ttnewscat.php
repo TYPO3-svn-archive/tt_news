@@ -45,7 +45,6 @@ Sometimes it might happen that some nested categories build an endless loop. Rec
 		'parent_category.image_descr' => 'Error message when the current category is part of a loop of recursive categories.',
 		'_parent_category.seeAlso'=>'tt_news:categories,be_groups:TSconfig,be_users',
 
-				
 		'hidden.description' => 'Use this to temporarily exclude this tt_news category from display and all news which are member of this category.',
 		'hidden.details' => 'Setting this option is practical while editing a new tt_news db-record. When it is set, the newsitem will not be displayed unless you - if you\'re logged in as backend user - enable the Admin Panel&gt;Preview&gt;Show hidden records option.',
 		'_hidden.seeAlso' => 'tt_news_cat:starttime,tt_news_cat:endtime,tt_news_cat:fe_group',
@@ -73,14 +72,17 @@ The category titles/images can act as shortcut to a page or as "category selecto
 		'shortcut.details' => 'Category titles or images can also act as shortcut to an internal page. If this is enabled and a visible page is defined as shortcut, the link from the category title or image points to this page.',
 		'_shortcut.seeAlso' => 'tt_news_cat:shortcut_target',
 
-		
 		'shortcut_target.description' => 'Target for news category shortcut.',
 		'shortcut_target.details' => 'With the field "Target for ..." you can configure a target for the category shortcut (this setting will have priority over a global setting for link targets in your website).',
 		'_shortcut_target.seeAlso' => 'tt_news_cat:shortcut',
 
 		'single_pid.description' => 'The page which is defined here overrides the globally configured "singlePid".',
 		'single_pid.details' => 'The field "Single-view page for news from this category" gives you the possibility to define a Single-View page for each category. If a news-record has 2 or more categories assigned the SinglePid from the first category is choosen. The ordering of categories can be changed with the TSvar "catOrderBy". ',
-
+		
+		'description.description' => 'Here you can enter a description for the current category which will be shown as tooltip in the category tree.',
+		'description.details' => 'If you have long description texts (>70 chars) Firefox and Mozilla will not display the tooltips correctly.
+		Solution:
+		There are some Firefox extensions which correct this problem. I tried "Popup Alt Attribute" which works flawless for me.',
 	),
 	'dk' => Array (
 		'.description' => 'Indbygget nyhedssystem - kategorier.',

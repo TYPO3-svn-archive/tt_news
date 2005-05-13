@@ -108,9 +108,14 @@ The titles of the assigned categories will substite the html-template marker ###
 <strong>Note:</strong>
 The use of subcategories has to be enabled in the TypoScript setup:
 <em>
-plugin.tt_news.useSubCategories = 1</em>',
-		'_category.image' => 'EXT:tt_news/cshimages/tt_news_categoy.png',
-		'category.image_descr' => 'the field category in the tt_news db-record.',
+plugin.tt_news.useSubCategories = 1</em>
+
+<strong>Controlling editing permissions with assigned categories:</strong>
+It\'s possible to control the editing permissions of news records with the assigned categories. If this feature is enabled a BE user can only change news records that have categories assigned that are defined in the list of allowed categories for this BE-user. If a BE-user performs any action (move,delete,hide,localize,copy,version,modify) with a record that has non-allowed categories assigned an error message will be displayed and the action will be ignored. Another message will be displayed in the news record above the fields "Title" and "Category". Non-selectable categories will be displayed in grey text and not linked. See second screenshot below.
+',
+		'_category.image' => 'EXT:tt_news/cshimages/tt_news_categoy.png,EXT:tt_news/cshimages/tt_news_categoy_msg.png',
+		'category.image_descr' => 'the field "Category" in the tt_news db-record.
+		If a BE-user opens a record that has non-allowed categories assigned this message will be displayed.',
 		'_category.seeAlso' => 'tt_news_cat:parent_category,section "Categories" from tt_news manual | http://typo3.org/documentation/document-library/tt_news/',
 			// image
 		'image.description' => 'Here you can assign images that will be shown in the news record.',
@@ -137,12 +142,13 @@ F.e.: <em>&lt;LINK http://typo3.org _blank&gt;open typo3.org&lt;/LINK&gt;</em>',
 		'_links.seeAlso' => '',
 			// related news
 		'related.description' => 'Related news articles or pages.',
-		'related.details' => '.',
-		'_related.seeAlso' => '',
+		'related.details' => 'In this field you can select news records or pages that will be displayed as related news. Related news with type "news" will point to the single view of the related news item. Related news with type "External URL" or "internal Link" will point to the url or page id that is inserted in the newsrecord. Related pages will be handled as news with type link to internal pages.
+
+tt_news can be configured to insert the link which points back from the related record to this record automatically. To enable this "bi-directional relations" set "useBidirectionalRelations" to 1 in  the constant editor or by TS.',
 			// files
-		'news_files.description' => 'Files.',
-		'news_files.details' => '.',
-		'_news_files.seeAlso' => '',
+		'news_files.description' => 'Here you can attach files to a news record.',
+		'news_files.details' => 'The atached files will be rendered through the stdWrap function "filelink". See default TS setup for an example.',
+		#'_news_files.seeAlso' => '',
 		
 		
 	),
