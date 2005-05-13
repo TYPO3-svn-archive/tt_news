@@ -70,6 +70,8 @@ CREATE TABLE tt_news_cat (
   deleted tinyint(3) unsigned DEFAULT '0' NOT NULL,
   single_pid int(11) unsigned DEFAULT '0' NOT NULL,
   parent_category int(11) unsigned DEFAULT '0' NOT NULL,
+  description mediumtext NOT NULL,
+
   PRIMARY KEY (uid),
   KEY parent (pid)
 );

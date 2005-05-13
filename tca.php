@@ -68,7 +68,7 @@ $TCA['tt_news'] = Array (
 				'items' => Array (
 					Array('', 0),
 					Array('LLL:EXT:lang/locallang_general.php:LGL.hide_at_login', -1),
-					Array('LLL:EXT:lang/locallang_general.php:LGL.any_login', -2),					
+					Array('LLL:EXT:lang/locallang_general.php:LGL.any_login', -2),
 					Array('LLL:EXT:lang/locallang_general.php:LGL.usergroups', '--div--')
 				),
 				'foreign_table' => 'fe_groups'
@@ -76,11 +76,11 @@ $TCA['tt_news'] = Array (
 		),
 		'title' => Array (
 			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.title',
-			'l10n_mode' => $l10n_mode,
 			'config' => Array (
-				'type' => 'input',
-				'size' => '40',
-				'max' => '256'
+				'type' => 'user',
+				'userFunc' => 'tx_ttnews_treeview->displayTitleFieldCheckCategories',
+				'foreign_table' => 'tt_news_cat',
+				'foreign_table_where' => $fTableWhere.'ORDER BY tt_news_cat.sorting',
 			)
 		),
 		'ext_url' => Array (
@@ -609,10 +609,19 @@ $TCA['tt_news_cat'] = Array (
 				'show_thumbs' => '1'
 			)
 		),
+		'description' => Array (
+			'exclude' => 1,	
+			'label' => 'LLL:EXT:tt_news/locallang_tca.php:tt_news_cat.description',
+			'config' => Array (
+				'type' => 'text',
+				'cols' => '40',
+				'rows' => '3'
+			)
+		),
 	),
 		
 	'types' => Array (	
-		'0' => Array('showitem' => 'title,title_lang_ol,parent_category;;2;;,image;;;;,shortcut;;1;;1-1-1,single_pid'),
+		'0' => Array('showitem' => 'title,title_lang_ol,parent_category;;2;;,image;;;;,shortcut;;1;;1-1-1,single_pid,description'),
 	
 	),
 	'palettes' => Array (

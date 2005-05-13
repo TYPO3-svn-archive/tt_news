@@ -69,10 +69,11 @@ class tx_ttnews_tceFunc_selectTreeView extends t3lib_treeview {
 	function wrapTitle($title,$v)	{
 		if($v['uid']>0) {
 			if (in_array($v['uid'],$this->TCEforms_nonSelectableItemsArray)) {
-				return '<span style="color:grey">'.$title.'</span>';
+				return '<a href="#" title="'.$v['description'].'"><span style="color:#999;cursor:default;">'.$title.'</span></a>';
 			} else {
+				$hrefTitle = $v['description'];
 				$aOnClick = 'setFormValueFromBrowseWin(\''.$this->TCEforms_itemFormElName.'\','.$v['uid'].',\''.$title.'\'); return false;';
-				return '<a href="#" onclick="'.htmlspecialchars($aOnClick).'">'.$title.'</a>';
+				return '<a href="#" onclick="'.htmlspecialchars($aOnClick).'" title="'.htmlentities($v['description']).'">'.$title.'</a>';
 			}
 		} else {
 			return $title;
@@ -89,13 +90,7 @@ class tx_ttnews_treeview {
 	/**
 	 * Generation of TCEform elements of the type "select"
 	 * This will render a selector box element, or possibly a special construction with two selector boxes. That depends on configuration.
-	 * (this is a copy of the function getSingleField_selectTree() from class tx_dam_tceFunc.
 	 *
-	 * @param	string		The table name of the record
-	 * @param	string		The field name which this element is supposed to edit
-	 * @param	array		The record data array where the value(s) for the field can be found
-	 * @param	array		An array with additional configuration options.
-	 * @return	string		The HTML code for the TCEform field
 	 */
 	function displayCategoryTree($PA, $fobj)    {
 
@@ -159,23 +154,23 @@ class tx_ttnews_treeview {
 				$errorMsg = array();
 				$notAllowedItems = array();
 				if ($GLOBALS['BE_USER']->getTSConfigVal('options.useListOfAllowedItems') && !$GLOBALS['BE_USER']->isAdmin()) {
-
 					$notAllowedItems = $this->getNotAllowedItems($PA,$SPaddWhere);
 				}
 					// get categories of the translation original
 				$catres = $GLOBALS['TYPO3_DB']->exec_SELECT_mm_query ('tt_news_cat.uid,tt_news_cat.title,tt_news_cat_mm.sorting AS mmsorting', 'tt_news', 'tt_news_cat_mm', 'tt_news_cat', ' AND tt_news_cat_mm.uid_local='.$row['l18n_parent'].$SPaddWhere,'', 'mmsorting');
 				$categories = array();
+				$NACats = array();
 				$na = false;
 				while ($catrow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($catres)) {
 					if(in_array($catrow['uid'],$notAllowedItems)) {
-						$categories[$catrow['uid']] = '<p style="padding:0px;color:red;font-weight:bold;">- '.$catrow['title'].' <span class="typo3-dimmed"><em>['.$catrow['uid'].']</em></span></p>';
+						$categories[$catrow['uid']] = $NACats[] = '<p style="padding:0px;color:red;font-weight:bold;">- '.$catrow['title'].' <span class="typo3-dimmed"><em>['.$catrow['uid'].']</em></span></p>';
 						$na = true;
 					} else {
 						$categories[$catrow['uid']] = '<p style="padding:0px;">- '.$catrow['title'].' <span class="typo3-dimmed"><em>['.$catrow['uid'].']</em></span></p>';
 					}
 				}
 				if($na) {
-					$this->NA_Items = '<table class="warningbox" border="0" cellpadding="0" cellspacing="0"><tbody><tr><td><img src="gfx/icon_fatalerror.gif" class="absmiddle" alt="" height="16" width="18">SAVING DISABLED!! <br />This record has one or more categories assigned that are not defined in your BE usergroup (tablename.allowedItems).</td></tr></tbody></table>';
+					$this->NA_Items = '<table class="warningbox" border="0" cellpadding="0" cellspacing="0"><tbody><tr><td><img src="gfx/icon_fatalerror.gif" class="absmiddle" alt="" height="16" width="18">SAVING DISABLED!! <br />'.($row['l18n_parent']&&$row['sys_language_uid']?'The translation original of this':'This').' record has the following categories assigned that are not defined in your BE usergroup: '.implode($NACats,chr(10)).'</td></tr></tbody></table>';
 				}
 				$item = implode($categories,chr(10));
 
@@ -219,14 +214,13 @@ class tx_ttnews_treeview {
 					}
 					$treeViewObj->table = $config['foreign_table'];
 	
-	
-					$where = ' '.str_replace('###STORAGE_PID###',$storagePid,$config['foreign_table_where']);
-					$treeViewObj->init($where);
+					$treeViewObj->init($SPaddWhere);
 					$treeViewObj->backPath = $this->pObj->backPath;
 					$treeViewObj->parentField = $TCA[$config['foreign_table']]['ctrl']['treeParentField'];
 					$treeViewObj->expandAll = 1;
 					$treeViewObj->expandFirst = 1;
-	
+					$treeViewObj->fieldArray = array('uid','title','description'); // those fields will be filled to the array $treeViewObj->tree
+
 					$treeViewObj->ext_IconMode = '1'; // no context menu on icons
 					$treeViewObj->title = $LANG->sL($TCA[$config['foreign_table']]['ctrl']['title']);
 	
@@ -265,7 +259,7 @@ class tx_ttnews_treeview {
 	
 						// find recursive categories or "storagePid" related errors and if there are some, add a message to the $errorMsg array.
 					$errorMsg = $this->findRecursiveCategories($PA,$row,$table,$storagePid,$treeViewObj->ids) ;
-	
+
 					$width = 280; // default width for the field with the category tree
 					if (intval($confArr['categoryTreeWidth'])) { // if a value is set in extConf take this one.
 						$width = t3lib_div::intInRange($confArr['categoryTreeWidth'],1,600);
@@ -357,26 +351,32 @@ class tx_ttnews_treeview {
 		$fTable = $PA['fieldConf']['config']['foreign_table'];
 			// get list of allowed categories for the current BE user
 		$allowedItemsList=$GLOBALS['BE_USER']->getTSConfigVal('tt_newsPerms.'.$fTable.'.allowedItems');
-			// get all categories 
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', $fTable, '1=1' .$SPaddWhere. t3lib_BEfunc::BEenableFields($fTable));
+
 		$itemArr = array();
-		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
-			if(!t3lib_div::inList($allowedItemsList,$row['uid'])) { // remove all allowed categories from the category result
-				$itemArr[]=$row['uid'];
+		if ($allowedItemsList) {
+				// get all categories
+			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', $fTable, '1=1' .$SPaddWhere. ' AND NOT deleted');
+			while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
+				if(!t3lib_div::inList($allowedItemsList,$row['uid'])) { // remove all allowed categories from the category result
+					$itemArr[]=$row['uid'];
+				}
 			}
-		}
-		$catvals = explode(',',$PA['row']['category']); // get categories from the current record
-		$notAllowedItems = array();
-		foreach ($catvals as $k) {
-			$c = explode('|',$k);
-			if(!t3lib_div::inList($allowedItemsList,$c[0])) {
-				$notAllowedItems[]=$c[0];
+			if (!$PA['row']['sys_language_uid'] && !$PA['row']['l18n_parent']) {
+				$catvals = explode(',',$PA['row']['category']); // get categories from the current record
+				$notAllowedCats = array();
+				foreach ($catvals as $k) {
+					$c = explode('|',$k);
+					if($c[0] && !t3lib_div::inList($allowedItemsList,$c[0])) {
+						$notAllowedCats[]= '<p style="padding:0px;color:red;font-weight:bold;">- '.$c[1].' <span class="typo3-dimmed"><em>['.$c[0].']</em></span></p>';
+					}
+				}
+				if ($notAllowedCats[0]) {
+					$this->NA_Items = '<table class="warningbox" border="0" cellpadding="0" cellspacing="0"><tbody><tr><td><img src="gfx/icon_fatalerror.gif" class="absmiddle" alt="" height="16" width="18">SAVING DISABLED!! <br />This record has the following categories assigned that are not defined in your BE usergroup: '.implode($notAllowedCats,chr(10)).'</td></tr></tbody></table>';
+				}
 			}
 		}
 
-		if ($notAllowedItems[0]) {
-			$this->NA_Items = '<table class="warningbox" border="0" cellpadding="0" cellspacing="0"><tbody><tr><td><img src="gfx/icon_fatalerror.gif" class="absmiddle" alt="" height="16" width="18">SAVING DISABLED!! <br />This record has one or more categories assigned that are not defined in your BE usergroup (tablename.allowedItems).</td></tr></tbody></table>';
-		}
+
 		return $itemArr;
 
 	}
@@ -451,7 +451,52 @@ class tx_ttnews_treeview {
 		}
 		return $rcList;
 	}
+
+	
+	function displayTitleFieldCheckCategories($PA, $fobj)    {
+		$fieldHTML = '<input
+					name="'.$PA['itemFormElName'].'"
+					value="'.htmlspecialchars($PA['itemFormElValue']).'"
+					onchange="'.htmlspecialchars(implode('',$PA['fieldChangeFunc'])).'"
+					'.$PA['onFocus'].' style="width: 384px;" maxlength="256" 
+				 />';
+		$table = $PA['table'];
+		$field = $PA['field'];
+		$row = $PA['row'];
+		
+		if ($GLOBALS['BE_USER']->getTSConfigVal('options.useListOfAllowedItems') && !$GLOBALS['BE_USER']->isAdmin()) {
+			$notAllowedItems = array();
+			if ($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['tt_news']) { // get tt_news extConf array
+				$confArr = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['tt_news']);
+			}
+			if ($confArr['useStoragePid']) {
+				$TSconfig = t3lib_BEfunc::getTCEFORM_TSconfig($table,$row);
+				$storagePid = $TSconfig['_STORAGE_PID']?$TSconfig['_STORAGE_PID']:0;
+				$SPaddWhere = ' AND tt_news_cat.pid IN (' . $storagePid . ')';
+			}
+			$notAllowedItems = $this->getNotAllowedItems($PA,$SPaddWhere);
+			if ($notAllowedItems[0]) {
+					// get categories of the record in db
+				$uidField = $row['l18n_parent']&&$row['sys_language_uid']?$row['l18n_parent']:$row['uid'];
+				$catres = $GLOBALS['TYPO3_DB']->exec_SELECT_mm_query ('tt_news_cat.uid,tt_news_cat.title,tt_news_cat_mm.sorting AS mmsorting', 'tt_news', 'tt_news_cat_mm', 'tt_news_cat', ' AND tt_news_cat_mm.uid_local='.$uidField.$SPaddWhere,'', 'mmsorting');
+				$NACats = array();
+				while ($catrow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($catres)) {
+					if($catrow['uid'] && $notAllowedItems[0] && in_array($catrow['uid'],$notAllowedItems)) {
+						$NACats[]= '<p style="padding:0px;color:red;font-weight:bold;">- '.$catrow['title'].' <span class="typo3-dimmed"><em>['.$catrow['uid'].']</em></span></p>';
+					}
+				}
+				if($NACats[0]) {
+					$NA_Items =  '<table class="warningbox" border="0" cellpadding="0" cellspacing="0"><tbody><tr><td><img src="gfx/icon_fatalerror.gif" class="absmiddle" alt="" height="16" width="18">SAVING DISABLED!! <br />'.($row['l18n_parent']&&$row['sys_language_uid']?'The translation original of this':'This').' record has the following categories assigned that are not defined in your BE usergroup: '.implode($NACats,chr(10)).'</td></tr></tbody></table>';
+				}
+			}
+				
+
+		}
+		return $NA_Items.$fieldHTML;
+	}
 }
+
+
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_news/class.tx_ttnews_treeview.php'])    {
     include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_news/class.tx_ttnews_treeview.php']);
 }
