@@ -84,7 +84,7 @@ t3lib_extMgm::allowTableOnStandardPages('tt_news');
 t3lib_extMgm::addToInsertRecords('tt_news');
 
 
-// switch the XML files for the FlexForm depending on if "use StoragePid"(general record Storage Page) is set or not.
+	// switch the XML files for the FlexForm depending on if "use StoragePid"(general record Storage Page) is set or not.
 if ($confArr['useStoragePid']) {
 	t3lib_extMgm::addPiFlexFormValue(9, 'FILE:EXT:tt_news/flexform_ds.xml');
 } else {
@@ -112,9 +112,9 @@ if (TYPO3_MODE=='BE')	{
 	
 		// adds processing for extra "codes" that have been added to the "what to display" selector in the content element by other extensions
 	include_once(t3lib_extMgm::extPath($_EXTKEY).'class.tx_ttnews_itemsProcFunc.php');
-		// class for displaying the category tree in BE forms
+		// class for displaying the category tree in BE forms. 
 	include_once(t3lib_extMgm::extPath($_EXTKEY).'class.tx_ttnews_treeview.php');
-		// class that uses hooks in class.t3lib_tcemain.php (processDatamapClass and processCmdmapClass) to process allowed "commands" for a certain BE usergroup
+		// class that uses hooks in class.t3lib_tcemain.php (processDatamapClass and processCmdmapClass) to prevent not allowed "commands" (copy,delete,...) for a certain BE usergroup
 	include_once(t3lib_extMgm::extPath($_EXTKEY).'class.tx_ttnews_tcemain.php');
 }
 
