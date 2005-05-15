@@ -312,13 +312,31 @@
 
 /*--------------------------------- tt_news Categorymenu (CATMENU) --------------------------------- */
 
-.news-catmenu {
-	padding:10px;
+
+.news-catmenu  {
+	padding:5px;
+	margin:10px 0px 10px 10px;
+	border:1px solid #666;
+	background-color:#F9FFE5;
+}
+.news-catmenu-header  {
+	font-size:11px;
+	font-weight:bold;
+}
+.news-catmenu DIV {
+	font-size:10px;
+	white-space: nowrap;
+}
+.news-catmenu DIV img {
 	margin:0px;
-	background-color:#fafafa;
+	padding:0px;
+	vertical-align: middle;
+}
+.news-catmenu-ACT {
+	font-weight:bold;
 }
 
-
+/*  Styles for catmenu mode "nestedWraps" */
 .level0 {
 	background-color:#fff;
 }
@@ -338,3 +356,6 @@
 	padding-left:10px;
 	background-color:#bbb;
 }
+
+
+

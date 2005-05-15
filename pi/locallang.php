@@ -1,7 +1,7 @@
 <?php
 /**
  * Language labels for plugin 'tt_news'
- * 
+ *
  * This file is detected by the translation tool.
  */
 
@@ -35,6 +35,7 @@ $LOCAL_LANG = Array (
 		'searchButtonLabel' => 'Search',
 		'altTextCatSelector' => 'Display only category: ',
 		'altTextCatShortcut' => 'Go to: ',
+		'catmenuHeader' => 'Select a category:',
 	),
 	'dk' => Array (
 		'latestHeader' => 'Seneste nyt:',

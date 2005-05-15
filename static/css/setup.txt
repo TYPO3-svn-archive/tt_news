@@ -316,31 +316,57 @@ plugin.tt_news {
 
 /*--------------------------------- tt_news Categorymenu (CATMENU) --------------------------------- */
 
-.news-catmenu {
-	padding:10px;
+
+.news-catmenu  {
+	padding:5px 0px 0px 5px;
+	margin:10px 0px 10px 10px;
+	border:1px solid #666;
+	background-color:#F9FFE5;
+}
+.news-catmenu-header {
+	font-size:11px;
+	font-weight:bold;
+}
+.news-catmenu DIV {
+	font-size:10px;
+	white-space: nowrap;
+}
+.news-catmenu DIV img, .news-catmenu img, .news-catmenu-header img {
 	margin:0px;
-	background-color:#fafafa;
+	padding: 0px 3px 3px 0px;
+	vertical-align: middle;
+}
+.news-catmenu-ACT {
+	font-weight:bold;
 }
 
-
-.level0 {
-	background-color:#fff;
-}
+/*  Styles for catmenu mode "nestedWraps" */
 .level1 {
+	padding:1px;
 	padding-left:10px;
-	background-color:#eee;
+	background-color:#ebf8bf;
+	border-left:1px solid #666;
+	border-top:1px solid #666;
 }
 .level2 {
+	padding:1px;
 	padding-left:10px;
-	background-color:#ddd;
+	background-color:#ddf393;
+	border-left:1px solid #666;
 }
 .level3 {
+	padding:1px;
 	padding-left:10px;
-	background-color:#ccc;
+	background-color:#cae46e;
+	border-left:1px solid #666;
+	border-top:1px solid #666;
+
 }
 .level4 {
+	padding:1px;
 	padding-left:10px;
-	background-color:#bbb;
+	background-color:#b0cb51;
+	border-left:1px solid #666;
 }
 
 
