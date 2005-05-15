@@ -1,6 +1,6 @@
 <?php
 if (!defined ('TYPO3_MODE')) 	die ('Access denied.');
-	// get extension configuration 
+	// get extension configuration
 $confArr = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['tt_news']);
 
 $TCA['tt_news'] = Array (
@@ -72,9 +72,9 @@ $TCA['tt_content']['types']['list']['subtypes_addlist'][9]='pi_flexform';
 t3lib_extMgm::addPlugin(Array('LLL:EXT:tt_news/locallang_tca.php:tt_news', '9'));
 
 	// initialize static extension templates
-t3lib_extMgm::addStaticFile($_EXTKEY,'static/ts_new/','CSS-based tmpl');	
-t3lib_extMgm::addStaticFile($_EXTKEY,'static/css/','default CSS-styles');	
-t3lib_extMgm::addStaticFile($_EXTKEY,'static/ts_old/','table-based tmpl');	
+t3lib_extMgm::addStaticFile($_EXTKEY,'static/ts_new/','CSS-based tmpl');
+t3lib_extMgm::addStaticFile($_EXTKEY,'static/css/','default CSS-styles');
+t3lib_extMgm::addStaticFile($_EXTKEY,'static/ts_old/','table-based tmpl');
 t3lib_extMgm::addStaticFile($_EXTKEY,'static/rss_feed/','News-feed (RSS,RDF,Atom03)');
 
 	// allow news and news-category records on normal pages
@@ -103,16 +103,16 @@ t3lib_extMgm::addLLrefForTCAdescr('tt_news','EXT:tt_news/locallang_csh_ttnews.ph
 t3lib_extMgm::addLLrefForTCAdescr('tt_news_cat','EXT:tt_news/locallang_csh_ttnewscat.php');
 t3lib_extMgm::addLLrefForTCAdescr('xEXT_tt_news','EXT:tt_news/locallang_csh_manual.xml');
 
-	
+
 if (TYPO3_MODE=='BE')	{
 		// Adds a tt_news wizard icon to the content element wizard.
 	$TBE_MODULES_EXT['xMOD_db_new_content_el']['addElClasses']['tx_ttnews_wizicon'] = t3lib_extMgm::extPath($_EXTKEY).'pi/class.tx_ttnews_wizicon.php';
 		// add folder icon
 	$ICON_TYPES['news'] = array('icon' => t3lib_extMgm::extRelPath($_EXTKEY).'ext_icon_ttnews_folder.gif');
-	
+
 		// adds processing for extra "codes" that have been added to the "what to display" selector in the content element by other extensions
 	include_once(t3lib_extMgm::extPath($_EXTKEY).'class.tx_ttnews_itemsProcFunc.php');
-		// class for displaying the category tree in BE forms. 
+		// class for displaying the category tree in BE forms.
 	include_once(t3lib_extMgm::extPath($_EXTKEY).'class.tx_ttnews_treeview.php');
 		// class that uses hooks in class.t3lib_tcemain.php (processDatamapClass and processCmdmapClass) to prevent not allowed "commands" (copy,delete,...) for a certain BE usergroup
 	include_once(t3lib_extMgm::extPath($_EXTKEY).'class.tx_ttnews_tcemain.php');

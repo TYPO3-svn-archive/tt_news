@@ -1,7 +1,7 @@
 <?php
 /**
  * Language labels for extension "tt_news"
- * 
+ *
  * TYPO3 CVS ID: $Id$
  * This file is detected by the translation tool.
  */

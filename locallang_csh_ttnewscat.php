@@ -17,13 +17,13 @@ $LOCAL_LANG = Array (
 			// table description
 		'.description' => 'tt_news categories.',
 		'_.seeAlso'=>'tt_news,tt_news manual | http://typo3.org/documentation/document-library/tt_news/',
-		
+
 		'title.description' => 'The category title for the default language. The title can act as shortcut to a certain page or as category selector (configured by "categoryMode").',
 		'title.details' => 'The display of the category title on the website is configured in the tt_news content element (sheet: category settings) or by TypoScript ("categoryMode"). The titles for additional website languages are inserted in the field "title language overlays".
 
 The category titles/images can act as shortcut to a page or as "category selector" which means: the contents of a news-list ist filtered by category. Filtering by category works recursive for subcategories.',
 		'_title.seeAlso'=>'tt_news_cat:title_lang_ol,tt_news_cat:image,tt_news_cat:shortcut,tt_news manual | http://typo3.org/documentation/document-library/tt_news/',
-			
+
 		'title_lang_ol.description' => 'In the field "title language overlays" you can define category titles for other website languages.',
 		'title_lang_ol.details' => 'If you have more than one additional website language, you can split the titles with the "|" character.
 
@@ -57,7 +57,7 @@ If you insert eg. a "d" the current date is inserted. You can also append any va
 		'endtime.description' => 'The "Stop" time is the date from which the category and the news which have this category assigned will not be online anymore.',
 		'endtime.syntax' => 'See tt_news_cat / Start (click below).',
 		'_endtime.seeAlso' => 'tt_news_cat:starttime,tt_news_cat:hidden,tt_news_cat:fe_group',
-		
+
 		'fe_group.description' => 'Use this to hide the tt_news category and all news which have this category assigned for users that are not member of the website usergroup (fe_groups) which is selected in this field.',
 		'fe_group.details' => 'If "Access" is set to a usergroup name, only website users which are members of the selected usergroup will be able to view news with this category when they are logged in. The special option "Hide at login" means the news from this category will not be visible for website users that are logged in. Likewise "Show at login" will make those news visible for any logged in frontend user.',
 		'_fe_group.seeAlso' => 'tt_news_cat:starttime,tt_news_cat:endtime,tt_news_cat:hidden,fe_groups',
@@ -67,7 +67,7 @@ If you insert eg. a "d" the current date is inserted. You can also append any va
 
 The category titles/images can act as shortcut to a page or as "category selector" which means: the contents of a news-list ist filtered by category. Filtering by category works recursive for subcategories.',
 		'_image.seeAlso' => 'tt_news_cat:title',
-		
+
 		'shortcut.description' => 'An internal page where the category titles and/or images are linked to.',
 		'shortcut.details' => 'Category titles or images can also act as shortcut to an internal page. If this is enabled and a visible page is defined as shortcut, the link from the category title or image points to this page.',
 		'_shortcut.seeAlso' => 'tt_news_cat:shortcut_target',
@@ -78,7 +78,7 @@ The category titles/images can act as shortcut to a page or as "category selecto
 
 		'single_pid.description' => 'The page which is defined here overrides the globally configured "singlePid".',
 		'single_pid.details' => 'The field "Single-view page for news from this category" gives you the possibility to define a Single-View page for each category. If a news-record has 2 or more categories assigned the SinglePid from the first category is choosen. The ordering of categories can be changed with the TSvar "catOrderBy". ',
-		
+
 		'description.description' => 'Here you can enter a description for the current category which will be shown as tooltip in the category tree.',
 		'description.details' => 'If you have long description texts (>70 chars) Firefox and Mozilla will not display the tooltips correctly.
 		Solution:
