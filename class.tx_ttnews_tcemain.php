@@ -38,8 +38,8 @@
  *   72:     function processDatamap_preProcessFieldArray(&$fieldArray, $table, $id, &$pObj)
  *
  *
- *  110: class tx_ttnews_tcemain_cmdmap
- *  122:     function processCmdmap_preProcess($command, &$table, $id, $value, &$pObj)
+ *  115: class tx_ttnews_tcemain_cmdmap
+ *  128:     function processCmdmap_preProcess($command, &$table, $id, $value, &$pObj)
  *
  * TOTAL FUNCTIONS: 2
  * (This index is automatically created/updated by the extension "extdeveval")
@@ -76,7 +76,7 @@ class tx_ttnews_tcemain {
 				$GLOBALS['_POST']['popViewId_addParams'] = ($fieldArray['sys_language_uid']>0?'&L='.$fieldArray['sys_language_uid']:'').'&no_cache=1&tx_ttnews[tt_news]='.$id;
 				$GLOBALS['_POST']['popViewId'] = $pagesTSC['tx_ttnews.']['singlePid'];
 			}
-			if ($GLOBALS['BE_USER']->getTSConfigVal('options.useListOfAllowedItems') && !$GLOBALS['BE_USER']->isAdmin()) { 
+			if ($GLOBALS['BE_USER']->getTSConfigVal('options.useListOfAllowedItems') && !$GLOBALS['BE_USER']->isAdmin()) {
 
 					// get categories from the tt_news record in db
 				$res = $GLOBALS['TYPO3_DB']->exec_SELECT_mm_query ('tt_news_cat.uid,tt_news_cat_mm.sorting AS mmsorting', 'tt_news', 'tt_news_cat_mm', 'tt_news_cat', ' AND tt_news_cat_mm.uid_local='.(is_int($fieldArray['l18n_parent'])?$fieldArray['l18n_parent']:$id).t3lib_BEfunc::BEenableFields('tt_news_cat'));
@@ -99,7 +99,7 @@ class tx_ttnews_tcemain {
 						// unset fieldArray to prevent saving of the record
 					$fieldArray = array();
 				}
-				
+
 			}
 		}
 	}
@@ -114,17 +114,17 @@ class tx_ttnews_tcemain {
  */
 class tx_ttnews_tcemain_cmdmap {
 	/**
-	* This method is called by a hook in the TYPO3 Core Engine (TCEmain) when a command was executed (copy,move,delete...).
-	* For tt_news it is used to disable saving of the current record if it has an editlock or if it has categories assigned that are not allowed for the current BE user.
-	*
-	* @param	string		$command: The TCEmain command, fx. 'delete'
-	* @param	string		$table: The table TCEmain is currently processing
-	* @param	string		$id: The records id (if any)
-	* @param	array		$value: The new value of the field which has been changed
-	* @param	object		$reference: Reference to the parent object (TCEmain)
-	* @return	void
-	* @access public
-	*/
+ * This method is called by a hook in the TYPO3 Core Engine (TCEmain) when a command was executed (copy,move,delete...).
+ * For tt_news it is used to disable saving of the current record if it has an editlock or if it has categories assigned that are not allowed for the current BE user.
+ *
+ * @param	string		$command: The TCEmain command, fx. 'delete'
+ * @param	string		$table: The table TCEmain is currently processing
+ * @param	string		$id: The records id (if any)
+ * @param	array		$value: The new value of the field which has been changed
+ * @param	object		$pObj: Reference to the parent object (TCEmain)
+ * @return	void
+ * @access public
+ */
 	function processCmdmap_preProcess($command, &$table, $id, $value, &$pObj) {
 		if ($table == 'tt_news' && !$GLOBALS['BE_USER']->isAdmin()) {
 			$rec = t3lib_BEfunc::getRecord($table,$id,'editlock'); // get record to check if it has an editlock

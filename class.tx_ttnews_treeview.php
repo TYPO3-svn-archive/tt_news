@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2003-2004 René Fritz (r.fritz@colorcube.de)
+*  (c) 2005 Rupert Germann <rupi@gmx.li>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -23,7 +23,7 @@
 ***************************************************************/
 /**
  * This function displays a selector with nested categories.
- * The original code is borrowed from the extension "Digital Asset Management" (tx_dam) author	René Fritz <r.fritz@colorcube.de>
+ * The original code is borrowed from the extension "Digital Asset Management" (tx_dam) author: René Fritz <r.fritz@colorcube.de>
  *
  * @author	Rupert Germann <rupi@gmx.li>
  * @package TYPO3
@@ -34,17 +34,18 @@
  *
  *
  *
- *   55: class tx_ttnews_tceFunc_selectTreeView extends t3lib_treeview
- *   60:     function wrapTitle($title,$v)
+ *   58: class tx_ttnews_tceFunc_selectTreeView extends t3lib_treeview
+ *   70:     function wrapTitle($title,$v)
  *
  *
- *   78: class tx_ttnews_treeview
- *   91:     function displayCategoryTree($PA, $fobj)
- *  284:     function getNotAllowedItems($PA,$SPaddWhere)
- *  321:     function findRecursiveCategories ($PA,$row,$table,$storagePid,$treeIds)
- *  353:     function compareCategoryVals ($treeIds,$catString)
+ *   89: class tx_ttnews_treeview
+ *   99:     function displayCategoryTree($PA, $fobj)
+ *  353:     function getNotAllowedItems($PA,$SPaddWhere)
+ *  397:     function findRecursiveCategories ($PA,$row,$table,$storagePid,$treeIds)
+ *  438:     function compareCategoryVals ($treeIds,$catString)
+ *  466:     function displayTitleFieldCheckCategories($PA, $fobj)
  *
- * TOTAL FUNCTIONS: 5
+ * TOTAL FUNCTIONS: 6
  * (This index is automatically created/updated by the extension "extdeveval")
  *
  */
@@ -58,7 +59,7 @@ class tx_ttnews_tceFunc_selectTreeView extends t3lib_treeview {
 
 	var $TCEforms_itemFormElName='';
 	var $TCEforms_nonSelectableItemsArray=array();
-	
+
 	/**
 	 * wraps the record titles in the tree with links or not depending on if they are in the TCEforms_nonSelectableItemsArray.
 	 *
@@ -91,6 +92,9 @@ class tx_ttnews_treeview {
 	 * Generation of TCEform elements of the type "select"
 	 * This will render a selector box element, or possibly a special construction with two selector boxes. That depends on configuration.
 	 *
+	 * @param	array		$PA: the parameter array for the current field
+	 * @param	object		$fobj: Reference to the parent object
+	 * @return	string		the HTML code for the field
 	 */
 	function displayCategoryTree($PA, $fobj)    {
 
@@ -99,7 +103,6 @@ class tx_ttnews_treeview {
 		$row = $PA['row'];
 
 		$this->pObj = &$PA['pObj'];
-
 
 			// Field configuration from TCA:
 		$config = $PA['fieldConf']['config'];
@@ -182,19 +185,19 @@ class tx_ttnews_treeview {
 				$item = '<div class="typo3-TCEforms-originalLanguageValue">'.$item.'</div>';
 			} else { // build tree selector
 				$item.= '<input type="hidden" name="'.$PA['itemFormElName'].'_mul" value="'.($config['multiple']?1:0).'" />';
-	
+
 					// Set max and min items:
 				$maxitems = t3lib_div::intInRange($config['maxitems'],0);
 				if (!$maxitems)	$maxitems=100000;
 				$minitems = t3lib_div::intInRange($config['minitems'],0);
-	
+
 					// Register the required number of elements:
 				$this->pObj->requiredElements[$PA['itemFormElName']] = array($minitems,$maxitems,'imgName'=>$table.'_'.$row['uid'].'_'.$field);
-	
-	
+
+
 				if($config['treeView'] AND $config['foreign_table']) {
 					global $TCA, $LANG;
-	
+
 					if ($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['tt_news']) { // get tt_news extConf array
 						$confArr = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['tt_news']);
 					}
@@ -202,18 +205,18 @@ class tx_ttnews_treeview {
 						$TSconfig = t3lib_BEfunc::getTCEFORM_TSconfig($table,$row);
 						$storagePid = $TSconfig['_STORAGE_PID']?$TSconfig['_STORAGE_PID']:0;
 						$SPaddWhere = ' AND tt_news_cat.pid IN (' . $storagePid . ')';
-	
+
 					}
 					if ($GLOBALS['BE_USER']->getTSConfigVal('options.useListOfAllowedItems') && !$GLOBALS['BE_USER']->isAdmin()) {
 						$notAllowedItems = $this->getNotAllowedItems($PA,$SPaddWhere);
 					}
-	
+
 					if($config['treeViewClass'] AND is_object($treeViewObj = &t3lib_div::getUserObj($config['treeViewClass'],'user_',false)))      {
 					} else {
 						$treeViewObj = t3lib_div::makeInstance('tx_ttnews_tceFunc_selectTreeView');
 					}
 					$treeViewObj->table = $config['foreign_table'];
-	
+
 					$treeViewObj->init($SPaddWhere);
 					$treeViewObj->backPath = $this->pObj->backPath;
 					$treeViewObj->parentField = $TCA[$config['foreign_table']]['ctrl']['treeParentField'];
@@ -223,18 +226,18 @@ class tx_ttnews_treeview {
 
 					$treeViewObj->ext_IconMode = '1'; // no context menu on icons
 					$treeViewObj->title = $LANG->sL($TCA[$config['foreign_table']]['ctrl']['title']);
-	
+
 					$treeViewObj->TCEforms_itemFormElName = $PA['itemFormElName'];
 					if ($table==$config['foreign_table']) {
 						$treeViewObj->TCEforms_nonSelectableItemsArray[] = $row['uid'];
 					}
-	
+
 					if (is_array($notAllowedItems) && $notAllowedItems[0]) {
 						foreach ($notAllowedItems as $k) {
 							$treeViewObj->TCEforms_nonSelectableItemsArray[] = $k;
 						}
 					}
-	
+
 						// get default items
 					$defItems = array();
 					if (is_array($config['items']) && $table == 'tt_content' && $row['CType']=='list' && $row['list_type']==9 && $field == 'pi_flexform')	{
@@ -249,14 +252,14 @@ class tx_ttnews_treeview {
 						// render tree html
 					$treeContent=$treeViewObj->getBrowsableTree();
 					$treeItemC = count($treeViewObj->ids);
-					
+
 					if ($defItems[0]) { // add default items to the tree table. In this case the value [not categorized]
 						$treeItemC += count($defItems);
 						$treeContent .= '<table border="0" cellpadding="0" cellspacing="0"><tr>
 							<td>'.$this->pObj->sL($config['itemsHeader']).'&nbsp;</td><td>'.implode($defItems,'<br />').'</td>
 							</tr></table>';
 					}
-	
+
 						// find recursive categories or "storagePid" related errors and if there are some, add a message to the $errorMsg array.
 					$errorMsg = $this->findRecursiveCategories($PA,$row,$table,$storagePid,$treeViewObj->ids) ;
 
@@ -266,21 +269,21 @@ class tx_ttnews_treeview {
 					} elseif ($GLOBALS['CLIENT']['BROWSER']=='msie') { // to suppress the unneeded horizontal scrollbar IE needs a width of at least 320px
 						$width = 320;
 					}
-	
+
 					$config['autoSizeMax'] = t3lib_div::intInRange($config['autoSizeMax'],0);
 					$height = $config['autoSizeMax'] ? t3lib_div::intInRange($treeItemC+2,t3lib_div::intInRange($size,1),$config['autoSizeMax']) : $size;
 						// hardcoded: 16 is the height of the icons
 					$height=$height*16;
-	
+
 					$divStyle = 'position:relative; left:0px; top:0px; height:'.$height.'px; width:'.$width.'px;border:solid 1px;overflow:auto;background:#fff;margin-bottom:5px;';
 					$thumbnails='<div  name="'.$PA['itemFormElName'].'_selTree" style="'.htmlspecialchars($divStyle).'">';
 					$thumbnails.=$treeContent;
 					$thumbnails.='</div>';
-	
+
 				} else {
-	
+
 					$sOnChange = 'setFormValueFromBrowseWin(\''.$PA['itemFormElName'].'\',this.options[this.selectedIndex].value,this.options[this.selectedIndex].text); '.implode('',$PA['fieldChangeFunc']);
-	
+
 						// Put together the select form with selected elements:
 					$selector_itemListStyle = isset($config['itemListStyle']) ? ' style="'.htmlspecialchars($config['itemListStyle']).'"' : ' style="'.$this->pObj->defaultMultipleSelectorStyle.'"';
 					$size = $config['autoSizeMax'] ? t3lib_div::intInRange(count($itemArray)+1,t3lib_div::intInRange($size,1),$config['autoSizeMax']) : $size;
@@ -290,9 +293,9 @@ class tx_ttnews_treeview {
 						$thumbnails.= '<option value="'.htmlspecialchars($p[1]).'">'.htmlspecialchars($p[0]).'</option>';
 					}
 					$thumbnails.= '</select>';
-	
+
 				}
-	
+
 					// Perform modification of the selected items array:
 				$itemArray = t3lib_div::trimExplode(',',$PA['itemFormElValue'],1);
 				foreach($itemArray as $tk => $tv) {
@@ -331,7 +334,7 @@ class tx_ttnews_treeview {
 				$item = $this->pObj->renderWizards(array($item,$altItem),$config['wizards'],$table,$row,$field,$PA,$PA['itemFormElName'],$specConf);
 			}
 		}
-		
+
 		return $this->NA_Items.implode($errorMsg,chr(10)).$item;
 
 	}
@@ -452,18 +455,25 @@ class tx_ttnews_treeview {
 		return $rcList;
 	}
 
-	
+	/**
+	 * This functions displays the title field of a news record and checks if the record has categories assigned that are not allowed for the current BE user.
+	 * If there are non allowed categories an error message will be displayed.
+	 *
+	 * @param	array		$PA: the parameter array for the current field
+	 * @param	object		$fobj: Reference to the parent object
+	 * @return	string		the HTML code for the field and the error message
+	 */
 	function displayTitleFieldCheckCategories($PA, $fobj)    {
 		$fieldHTML = '<input
 					name="'.$PA['itemFormElName'].'"
 					value="'.htmlspecialchars($PA['itemFormElValue']).'"
 					onchange="'.htmlspecialchars(implode('',$PA['fieldChangeFunc'])).'"
-					'.$PA['onFocus'].' style="width: 384px;" maxlength="256" 
+					'.$PA['onFocus'].' style="width: 384px;" maxlength="256"
 				 />';
 		$table = $PA['table'];
 		$field = $PA['field'];
 		$row = $PA['row'];
-		
+
 		if ($GLOBALS['BE_USER']->getTSConfigVal('options.useListOfAllowedItems') && !$GLOBALS['BE_USER']->isAdmin()) {
 			$notAllowedItems = array();
 			if ($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['tt_news']) { // get tt_news extConf array
@@ -489,7 +499,7 @@ class tx_ttnews_treeview {
 					$NA_Items =  '<table class="warningbox" border="0" cellpadding="0" cellspacing="0"><tbody><tr><td><img src="gfx/icon_fatalerror.gif" class="absmiddle" alt="" height="16" width="18">SAVING DISABLED!! <br />'.($row['l18n_parent']&&$row['sys_language_uid']?'The translation original of this':'This').' record has the following categories assigned that are not defined in your BE usergroup: '.implode($NACats,chr(10)).'</td></tr></tbody></table>';
 				}
 			}
-				
+
 
 		}
 		return $NA_Items.$fieldHTML;
