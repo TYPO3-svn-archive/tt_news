@@ -74,7 +74,7 @@ function user_processAmenu($amenuItemsArr, $conf){
 			if ($year != $oldyear) { // if year has changed, add a new item to the array
 			    if ($item['data']['start']<20000) {
 				    $year = 'no date';
-				}	
+				}
 			    $markerArray['###ARCHIVE_YEAR###'] = $conf['parentObj']->local_cObj->stdWrap($year, $lConf['wrap3.']);
 				$out[]['html'] = $conf['parentObj']->cObj->substituteMarkerArrayCached($tmpl, $markerArray);
 

@@ -70,12 +70,12 @@ plugin.tt_news {
 */
 
 /**
-* Alternative pagebrowser function
-*
-* @param array $markerArray
-* @param array
-* @return array $markerArray with filled in pagebrowser marker
-*/
+ * Alternative pagebrowser function
+ *
+ * @param	array		$markerArray
+ * @param	array
+ * @return	array		$markerArray with filled in pagebrowser marker
+ */
 function user_substPageBrowser($markerArray, $conf) {
 	$pObj = &$conf['parentObj']; // make a reference to the parent object
 
@@ -177,13 +177,12 @@ plugin.tt_news {
 */
 
 /**
-* Alternative Pagebrowser 2
-*
-* @param array $markerArray : array with template markers
-* @param array $conf :
-* @return array marker Array with filled in markers for the pagebrowser
-*/
-
+ * Alternative Pagebrowser 2
+ *
+ * @param	array		$markerArray : array with template markers
+ * @param	array		$conf :
+ * @return	array		marker Array with filled in markers for the pagebrowser
+ */
 function user_substPageBrowser2 ($markerArray, $conf) {
 	$pObj = &$conf['parentObj']; // make a reference to the parent object
 
