@@ -1,6 +1,94 @@
+2005-05-16	rupertgermann
+	* cvsroot/typo3xdev/tx_ttnews/doc/manual.sxw 1.32:
+	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews.php 1.99:
+	* cvsroot/typo3xdev/tx_ttnews/pi/locallang.php 1.22:
+	* cvsroot/typo3xdev/tx_ttnews/pi/news_template.tmpl 1.15:
+	* cvsroot/typo3xdev/tx_ttnews/pi/tt_news_v2_template.html 1.5:
+	* cvsroot/typo3xdev/tx_ttnews/static/ts_new/setup.txt 1.15:
+	* cvsroot/typo3xdev/tx_ttnews/static/ts_old/setup.txt 1.12:
+		- changed the handling of "related news by category". Now those 
+		news are handled like related news. Template markers: ###
+		TEXT_RELATEDBYCATEGORY### and ###NEWS_RELATEDBYCATEGORY### - new 
+		template part: ###TEMPLATE_CAT_RELATED###
+
+2005-05-15	rupertgermann
+	* cvsroot/typo3xdev/tx_ttnews/doc/manual.sxw 1.31:
+		- updated manual with the new features
+
+	* cvsroot/typo3xdev/tx_ttnews/tca.php 1.34:
+		- removed some unneeded tabs at line ends
+
+	* cvsroot/typo3xdev/tx_ttnews/ext_tables.php 1.24:
+	* cvsroot/typo3xdev/tx_ttnews/locallang.php 1.22:
+	* cvsroot/typo3xdev/tx_ttnews/locallang_csh_ttnews.php 1.11:
+	* cvsroot/typo3xdev/tx_ttnews/locallang_csh_ttnewscat.php 1.5:
+		- removed some empty lines
+
+	* cvsroot/typo3xdev/tx_ttnews/class.tx_ttnews_tcemain.php 1.6:
+	* cvsroot/typo3xdev/tx_ttnews/class.tx_ttnews_treeview.php 1.7:
+		- updated php api dat and function comments
+
+	* cvsroot/typo3xdev/tx_ttnews/class.tx_ttnews_catmenu.php 1.1:
+	* cvsroot/typo3xdev/tx_ttnews/ext_emconf.php 1.40:
+	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews.php 1.98:
+	* cvsroot/typo3xdev/tx_ttnews/pi/locallang.php 1.21:
+	* cvsroot/typo3xdev/tx_ttnews/res/arrow.gif 1.1:
+	* cvsroot/typo3xdev/tx_ttnews/res/tt_news_v2_styles.css 1.7:
+	* cvsroot/typo3xdev/tx_ttnews/static/css/setup.txt 1.9:
+	* cvsroot/typo3xdev/tx_ttnews/static/ts_new/setup.txt 1.14:
+	* cvsroot/typo3xdev/tx_ttnews/static/ts_old/setup.txt 1.11:
+		- new feature: second "render mode" for the CATMENU content element. The new mode "tree" (default) renders the catmenu in the same manner as the category trees in BE forms. The icons and some other options are configurable.
+		The other mode ("nestedWraps") is a improved version of the known catmenu mode which I added first. see manual section "the category menu" for details.
+		- added a hook to the function displayCatmenu which makes it possible to render the catemenu with a userdefinef function.
+
+	* cvsroot/typo3xdev/tx_ttnews/static/ts_new/constants.txt 1.6:
+	* cvsroot/typo3xdev/tx_ttnews/static/ts_old/constants.txt 1.7:
+		- added some more options to the constant editor
+
+	* cvsroot/typo3xdev/tx_ttnews/ext_php_api.dat 1.17:
+	* cvsroot/typo3xdev/tx_ttnews/res/example_amenuUserFunc.php 1.8:
+	* cvsroot/typo3xdev/tx_ttnews/res/example_imageMarkerFunc.php 1.9:
+	* cvsroot/typo3xdev/tx_ttnews/res/example_itemMarkerArrayFunc.php 1.8:
+	* cvsroot/typo3xdev/tx_ttnews/res/example_userPageBrowserFunc.php 1.7:
+	* cvsroot/typo3xdev/tx_ttnews/res/news_amenuUserFunc2.php 1.3:
+	* cvsroot/typo3xdev/tx_ttnews/res/tt_news_languageMenu.php 1.14:
+		- updated php api dat
+
+2005-05-13	rupertgermann
+	* cvsroot/typo3xdev/tx_ttnews/ext_tables.php 1.23:
+		- changed some comments
+
+	* cvsroot/typo3xdev/tx_ttnews/class.tx_ttnews_treeview.php 1.6:
+	* cvsroot/typo3xdev/tx_ttnews/ext_tables.sql 1.16:
+	* cvsroot/typo3xdev/tx_ttnews/locallang_tca.php 1.35:
+	* cvsroot/typo3xdev/tx_ttnews/tca.php 1.33:
+		- new feature: "category description". added a new field "description" to the category form in BE. The content of this field will be inserted to the alt & title attributes of the category links in the tree selector.
+		Problem: long descriptions or linebreaks in the desciption are not displayed correctly in firefox and mozilla (seems to be a known bug of the gecko engine).
+
+	* cvsroot/typo3xdev/tx_ttnews/cshimages/tt_news_categoy_msg.png 1.1:
+	* cvsroot/typo3xdev/tx_ttnews/locallang_csh_ttnews.php 1.10:
+	* cvsroot/typo3xdev/tx_ttnews/locallang_csh_ttnewscat.php 1.4:
+		- completed context sensitive help (csh)
+
+	* cvsroot/typo3xdev/tx_ttnews/ext_conf_template.txt 1.8:
+		- changed the order of the options in the configuration form
+
+	* cvsroot/typo3xdev/tx_ttnews/class.tx_ttnews_tcemain.php 1.5:
+	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews.php 1.97:
+	* cvsroot/typo3xdev/tx_ttnews/pi/news_help.tmpl 1.7:
+		- added the non-allowed categories check also to the field "title" to display the "non-allowed categories" message already on the first tab of the resord. before this the message appeared only at the "Category" field.
+		- edited the help template.
+		- fix: when no code at all is given then the help message appears now. (before it appeared only when a wrong code was given) introduced new function displayFEHelp() to the tt_news class.
+		- new feature: the list of fields for the internal search is configurable now: "plugin.tt_news.searchFieldList". Added a new function validateFields to ckeck if the configured search fields are actually existing in the db.
+
 2005-05-08	rupertgermann
-	* cvsroot/typo3xdev/tx_ttnews/res/example_userPageBrowserFunc.php 1.6:
-		- change linebreaks to unix format
+	* cvsroot/typo3xdev/tx_ttnews/pi/news_conf1.png 1.3:
+	* cvsroot/typo3xdev/tx_ttnews/pi/news_help.tmpl 1.6:
+		- updated help image (no code message)
+
+	* cvsroot/typo3xdev/tx_ttnews/class.tx_ttnews_tcemain.php 1.4:
+		- fix: Now direct preview is working also for admins
+		- added L paramter to the preview URL.
 
 	* cvsroot/typo3xdev/tx_ttnews/class.tx_ttnews_tcemain.php 1.3:
 	* cvsroot/typo3xdev/tx_ttnews/class.tx_ttnews_treeview.php 1.5:
@@ -35,6 +123,12 @@
 		- added and edited many function comments
 		- added all FE error-messages to pi/locallang.php
 
+	* cvsroot/typo3xdev/tx_ttnews/ChangeLog 1.37:
+		updated Changelog
+
+	* cvsroot/typo3xdev/tx_ttnews/res/example_userPageBrowserFunc.php 1.6:
+		- change linebreaks to unix format
+
 	* cvsroot/typo3xdev/tx_ttnews/res/tt_news_article__h.gif 1.1:
 	* cvsroot/typo3xdev/tx_ttnews/res/tt_news_article__ht.gif 1.1:
 	* cvsroot/typo3xdev/tx_ttnews/res/tt_news_article__htu.gif 1.1:
@@ -53,10 +147,6 @@
 	* cvsroot/typo3xdev/tx_ttnews/res/tt_news_exturl__x.gif 1.1:
 		- added icons for types 1 and 2 (copied the images from t3lib/
 		gfx/i/)
-
-	* cvsroot/typo3xdev/tx_ttnews/pi/news_conf1.png 1.3:
-	* cvsroot/typo3xdev/tx_ttnews/pi/news_help.tmpl 1.6:
-		- updated help image (no code message)
 
 2005-05-06	rupertgermann
 	* cvsroot/typo3xdev/tx_ttnews/ext_tables.php 1.21:
