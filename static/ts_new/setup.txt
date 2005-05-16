@@ -206,6 +206,12 @@ plugin.tt_news {
     icon = 1
     stdWrap.wrap = <dd>|</dd>
   }
+
+  # related news by category
+  relatedByCategory_stdWrap.wrap =  <dl class="news-single-related">|</dl>
+  relatedByCategoryHeader_stdWrap.wrap = <dt>|</dt>
+  # globalwrap 3 is used to wrap the list items
+  wrap3.wrap = <dd>|</dd>
   
     
   # - - - - - - -   Settings for Related News:  - - - - - - - -  #

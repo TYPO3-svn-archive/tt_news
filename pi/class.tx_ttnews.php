@@ -684,7 +684,7 @@ class tx_ttnews extends tslib_pibase {
 					$templateName = 'TEMPLATE_' . $ucode[0] ;
 				}
 			}
-		}
+		} 
 		$noPeriod = 0; // used to call getSelectConf without a period lenght (pL) at the first archive page
 		$pointerName = $this->pointerName = strtolower($theCode).'_pointer';
 
@@ -1262,26 +1262,34 @@ class tx_ttnews extends tslib_pibase {
 			}
 			$markerArray['###FILE_LINK###'] = $filelinks.$files_stdWrap[1];
 		}
+		
+		// show news with the same categories in SINGLE view
+		if ($textRenderObj == 'displaySingle') {
+			$this->catExclusive = implode(array_keys($this->categories[$row['uid']]),',');
+			$this->config['categoryMode'] = 1;
+			$tmpcode = $this->theCode;
+			$this->theCode = 'LIST';
+			$relNewsByCat = $this->displayList($row['uid']);
+			$this->theCode = $tmpcode;
+		}
+		$markerArray['###NEWS_RELATEDBYCATEGORY###'] = '';
+		$markerArray['###TEXT_RELATEDBYCATEGORY###'] = '';
+		if ($this->conf['showRelatedNewsByCategory'] && $relNewsByCat) {
+			$cat_rel_stdWrap = t3lib_div::trimExplode('|', $this->conf['relatedByCategory_stdWrap.']['wrap']);
+			$markerArray['###TEXT_RELATEDBYCATEGORY###'] = $cat_rel_stdWrap[0].$this->local_cObj->stdWrap($this->pi_getLL('textRelatedByCategory'), $this->conf['relatedByCategoryHeader_stdWrap.']);
+			$markerArray['###NEWS_RELATEDBYCATEGORY###'] = $relNewsByCat.$cat_rel_stdWrap[1];
+		}
 
 		// the both markers: ###ADDINFO_WRAP_B### and ###ADDINFO_WRAP_E### are only inserted, if there are any files, related news or links
 		$markerArray['###ADDINFO_WRAP_B###'] = '';
 		$markerArray['###ADDINFO_WRAP_E###'] = '';
-		if ($relatedNews || $row['links'] || $row['news_files']) {
+		if ($relatedNews || $row['links'] || $row['news_files'] || $relNewsByCat) {
 			$addInfo_stdWrap = t3lib_div::trimExplode('|', $lConf['addInfo_stdWrap.']['wrap']);
 			$markerArray['###ADDINFO_WRAP_B###'] = $addInfo_stdWrap[0];
 			$markerArray['###ADDINFO_WRAP_E###'] = $addInfo_stdWrap[1];
 		}
 
-		// show news with the same categories in SINGLE view
-		$markerArray['###NEWS_RELATED_BY_CATEGORY###'] = '';
-		if ($this->conf['showRelatedNewsByCategory'] && $textRenderObj == 'displaySingle') {
-			$this->catExclusive = implode(array_keys($this->categories[$row['uid']]),',');
-			$this->config['categoryMode'] = 1;
-			$tmpcode = $this->theCode;
-			$this->theCode = 'LIST';
-			$markerArray['###NEWS_RELATED_BY_CATEGORY###'] = $this->displayList($row['uid']);
-			$this->theCode = $tmpcode;
-		}
+
 
 		// Page fields:
 		$markerArray['###PAGE_UID###'] = $row['pid'];
@@ -1404,16 +1412,16 @@ class tx_ttnews extends tslib_pibase {
 		$textArr = t3lib_div::trimExplode($this->config['pageBreakToken'],$bodytext,1);
 		$pagecount = count($textArr);
 		// render a pagebrowser for the single view
-				if ($pagecount > 1) {
-					// configure pagebrowser vars
-					$this->internal['res_count'] = $pagecount;
-					$this->internal['results_at_a_time'] = 1;
-					$this->internal['maxPages'] = $this->conf['pageBrowser.']['maxPages'];
-					if (!$this->conf['pageBrowser.']['showPBrowserText']) {
-						$this->LOCAL_LANG[$this->LLkey]['pi_list_browseresults_page'] = '';
-					}
-					$pagebrowser = $this->makePageBrowser(0, $this->conf['pageBrowser.']['tableParams'],$pointerName);
-				}
+		if ($pagecount > 1) {
+			// configure pagebrowser vars
+			$this->internal['res_count'] = $pagecount;
+			$this->internal['results_at_a_time'] = 1;
+			$this->internal['maxPages'] = $this->conf['pageBrowser.']['maxPages'];
+			if (!$this->conf['pageBrowser.']['showPBrowserText']) {
+				$this->LOCAL_LANG[$this->LLkey]['pi_list_browseresults_page'] = '';
+			}
+			$pagebrowser = $this->makePageBrowser(0, $this->conf['pageBrowser.']['tableParams'],$pointerName);
+		}
 		return array($this->formatStr($this->local_cObj->stdWrap($textArr[$pagenum], $lConf['content_stdWrap.'])),$pagebrowser);
 	}
 

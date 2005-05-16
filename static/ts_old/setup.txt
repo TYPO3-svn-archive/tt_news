@@ -273,6 +273,12 @@ plugin.tt_news {
       20 < plugin.tt_news.tmp.20
     }
   }
+  
+  # related news by category
+  relatedByCategory_stdWrap.wrap =  <dl class="news-single-related">|</dl>
+  relatedByCategoryHeader_stdWrap.wrap = <dt>|</dt>
+  # globalwrap 3 is used to wrap the list items
+  wrap3.wrap = <dd>|</dd>
 
   # pagebrowser for singleview
   useMultiPageSingleView = {$plugin.tt_news.useMultiPageSingleView}

@@ -29,6 +29,7 @@ $LOCAL_LANG = Array (
 		'textRelated' => 'Related News:',
 		'textLinks' => 'Links:',
 		'textFiles' => 'Files:',
+		'textRelatedByCategory' => 'Other news from this category:',
 		'pi_list_browseresults_prev' => '< Previous',
 		'pi_list_browseresults_page' => 'Page ',
 		'pi_list_browseresults_next' => 'Next >',
