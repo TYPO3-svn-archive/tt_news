@@ -318,7 +318,7 @@ plugin.tt_news {
 
 
 .news-catmenu  {
-	padding:5px 0px 0px 5px;
+	padding:5px;
 	margin:10px 0px 10px 10px;
 	border:1px solid #666;
 	background-color:#F9FFE5;
@@ -333,7 +333,7 @@ plugin.tt_news {
 }
 .news-catmenu DIV img, .news-catmenu img, .news-catmenu-header img {
 	margin:0px;
-	padding: 0px 3px 3px 0px;
+	padding: 0px;
 	vertical-align: middle;
 }
 .news-catmenu-ACT {
