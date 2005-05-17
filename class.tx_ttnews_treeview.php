@@ -43,7 +43,7 @@
  *  353:     function getNotAllowedItems($PA,$SPaddWhere)
  *  397:     function findRecursiveCategories ($PA,$row,$table,$storagePid,$treeIds)
  *  438:     function compareCategoryVals ($treeIds,$catString)
- *  466:     function displayTitleFieldCheckCategories($PA, $fobj)
+ *  466:     function displayTypeFieldCheckCategories($PA, $fobj)
  *
  * TOTAL FUNCTIONS: 6
  * (This index is automatically created/updated by the extension "extdeveval")
@@ -463,13 +463,7 @@ class tx_ttnews_treeview {
 	 * @param	object		$fobj: Reference to the parent object
 	 * @return	string		the HTML code for the field and the error message
 	 */
-	function displayTitleFieldCheckCategories($PA, $fobj)    {
-		$fieldHTML = '<input
-					name="'.$PA['itemFormElName'].'"
-					value="'.htmlspecialchars($PA['itemFormElValue']).'"
-					onchange="'.htmlspecialchars(implode('',$PA['fieldChangeFunc'])).'"
-					'.$PA['onFocus'].' style="width: 384px;" maxlength="256"
-				 />';
+	function displayTypeFieldCheckCategories(&$PA, $fobj)    {
 		$table = $PA['table'];
 		$field = $PA['field'];
 		$row = $PA['row'];
@@ -499,8 +493,12 @@ class tx_ttnews_treeview {
 					$NA_Items =  '<table class="warningbox" border="0" cellpadding="0" cellspacing="0"><tbody><tr><td><img src="gfx/icon_fatalerror.gif" class="absmiddle" alt="" height="16" width="18">SAVING DISABLED!! <br />'.($row['l18n_parent']&&$row['sys_language_uid']?'The translation original of this':'This').' record has the following categories assigned that are not defined in your BE usergroup: '.implode($NACats,chr(10)).'</td></tr></tbody></table>';
 				}
 			}
-
-
+				// unset foreign table to prevent adding of categories to the "type" field
+			$PA['fieldConf']['config']['foreign_table'] = '';
+			$PA['fieldConf']['config']['foreign_table_where'] = '';
+		}
+		if (!$row['l18n_parent'] && !$row['sys_language_uid']) { // render "type" field only for records in the default language
+			$fieldHTML = $fobj->getSingleField_typeSelect($table,$field,$row,&$PA);
 		}
 		return $NA_Items.$fieldHTML;
 	}

@@ -6,7 +6,8 @@ $fTableWhere = ($confArr['useStoragePid']?'AND tt_news_cat.pid=###STORAGE_PID###
 	// page where records will be stored in that have been created with a wizard
 $sPid = ($fTableWhere?'###STORAGE_PID###':'###CURRENT_PID###');
 	// l10n_mode for text fields
-$l10n_mode = ($confArr['l10n_mode_prefixLangTitle']?'prefixLangTitle':'mergeIfNotBlank');
+$l10n_mode = ($confArr['l10n_mode_prefixLangTitle']?'prefixLangTitle':'');
+$l10n_mode_author = ($confArr['l10n_mode_prefixLangTitle']?'mergeIfNotBlank':'');
 	// l10n_mode for the image field
 $l10n_mode_image = ($confArr['l10n_mode_imageExclude']?'exclude':'mergeIfNotBlank');
 	// hide new localizations
@@ -74,15 +75,15 @@ $TCA['tt_news'] = Array (
 				'foreign_table' => 'fe_groups'
 			)
 		),
-		'title' => Array (
-			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.title',
-			'config' => Array (
-				'type' => 'user',
-				'userFunc' => 'tx_ttnews_treeview->displayTitleFieldCheckCategories',
-				'foreign_table' => 'tt_news_cat',
-				'foreign_table_where' => $fTableWhere.'ORDER BY tt_news_cat.sorting',
-			)
-		),
+ 		'title' => Array (
+ 			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.title',
+			'l10n_mode' => $l10n_mode,
+ 			'config' => Array (
+ 				'type' => 'input',
+ 				'size' => '40',
+ 				'max' => '256'
+ 			)
+ 		),
 		'ext_url' => Array (
 			'l10n_mode' => 'mergeIfNotBlank',
 			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.external',
@@ -140,12 +141,15 @@ $TCA['tt_news'] = Array (
 				'rows' => '3'
 			)
 		),
+		// the "type" field is misused ;-) to load the userfunction which checks for non-allowed categories in the first "tab" of the tt_news editform
 		'type' => Array (
 			'exclude' => 1,
-			'l10n_mode' => 'exclude',
 			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.type',
 			'config' => Array (
-				'type' => 'select',
+				'type' => 'user',
+				'userFunc' => 'tx_ttnews_treeview->displayTypeFieldCheckCategories',
+				'foreign_table' => 'tt_news_cat',
+				'foreign_table_where' => $fTableWhere.'ORDER BY tt_news_cat.sorting',
 				'items' => Array (
 					Array('LLL:EXT:tt_news/locallang_tca.php:tt_news.type.I.0', 0),
 					Array('LLL:EXT:tt_news/locallang_tca.php:tt_news.type.I.1', 1),
@@ -226,7 +230,7 @@ $TCA['tt_news'] = Array (
 		),
 		'author' => Array (
 			'exclude' => 1,
-			'l10n_mode' => 'mergeIfNotBlank',
+			'l10n_mode' => $l10n_mode_author,
 			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.author',
 			'config' => Array (
 				'type' => 'input',
@@ -236,8 +240,7 @@ $TCA['tt_news'] = Array (
 			)
 		),
 		'author_email' => Array (
-			'exclude' => 1,
-			'l10n_mode' => 'mergeIfNotBlank',
+			'l10n_mode' => $l10n_mode_author,
 			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.email',
 			'config' => Array (
 				'type' => 'input',
@@ -273,7 +276,7 @@ $TCA['tt_news'] = Array (
 			)
 		),
 		'links' => Array (
-			'l10n_mode' => 'mergeIfNotBlank',
+			'l10n_mode' => $l10n_mode_author,
 			'exclude' => 1,
 			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.links',
 			'config' => Array (
@@ -338,7 +341,6 @@ $TCA['tt_news'] = Array (
 				'show_thumbs' => '1'
 			)
 		),
-		# filelinks
 		'news_files' => Array (
 			'exclude' => 1,
 			'l10n_mode' => 'exclude',
@@ -405,8 +407,6 @@ $TCA['tt_news'] = Array (
 				'type' => 'check'
 			)
 		),
-
-
 	),
 	'types' => Array (
 
