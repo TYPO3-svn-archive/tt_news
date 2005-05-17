@@ -921,41 +921,38 @@ class tx_ttnews extends tslib_pibase {
 				}
 				$singlePid = $catSPid['single_pid']?$catSPid['single_pid']:$this->config['singlePid'];
 				if ($this->conf['useHRDates'] && !$this->conf['useHRDatesSingle']) {
-					$wrappedSubpartArray['###LINK_ITEM###'] = explode('|', $this->pi_linkTP_keepPIvars('|', array(
+					$piVarsArray = array(
 						'tt_news' => $row['uid'],
 						'backPid' => ($this->conf['dontUseBackPid']?null:$this->config['backPid']),
 						'year' => ($this->conf['dontUseBackPid']?null:($this->piVars['year']?$this->piVars['year']:null)),
-						'month' => ($this->conf['dontUseBackPid']?null:($this->piVars['month']?$this->piVars['month']:null))
-						), $this->allowCaching, ($this->conf['dontUseBackPid']?1:0), $singlePid));
+						'month' => ($this->conf['dontUseBackPid']?null:($this->piVars['month']?$this->piVars['month']:null)),
+						'pS' => null,
+						'pL' => null,
+						'arc' => null,
+						);
+					$wrappedSubpartArray['###LINK_ITEM###'] = explode('|', $this->pi_linkTP_keepPIvars('|', $piVarsArray, $this->allowCaching, ($this->conf['dontUseBackPid']?1:0), $singlePid));
 
-					$this->local_cObj->LOAD_REGISTER(array('newsMoreLink' => $this->pi_linkTP_keepPIvars($this->pi_getLL('more'), array(
-						'tt_news' => $row['uid'],
-						'backPid' => ($this->conf['dontUseBackPid']?null:$this->config['backPid']),
-						'year' => ($this->conf['dontUseBackPid']?null:($this->piVars['year']?$this->piVars['year']:null)),
-						'month' => ($this->conf['dontUseBackPid']?null:($this->piVars['month']?$this->piVars['month']:null))
-						), $this->allowCaching,($this->conf['dontUseBackPid']?1:0), $singlePid)), '');
-				} else if ($this->conf['useHRDates'] && $this->conf['useHRDatesSingle']) {
-						$tmpY = $this->piVars['year'];
-						$tmpM = $this->piVars['month'];
-						$tmpD = $this->piVars['day'];
+					$this->local_cObj->LOAD_REGISTER(array('newsMoreLink' => $this->pi_linkTP_keepPIvars($this->pi_getLL('more'), $piVarsArray, $this->allowCaching,($this->conf['dontUseBackPid']?1:0), $singlePid)), '');
+				} elseif ($this->conf['useHRDates'] && $this->conf['useHRDatesSingle']) {
+					$tmpY = $this->piVars['year'];
+					$tmpM = $this->piVars['month'];
+					$tmpD = $this->piVars['day'];
 
 					$this->getHrDateSingle($row['datetime']);
-					$wrappedSubpartArray['###LINK_ITEM###'] = explode('|', $this->pi_linkTP_keepPIvars('|', array(
+					$piVarsArray = array(
 						'tt_news' => $row['uid'],
 						'backPid' => ($this->conf['dontUseBackPid']?null:$this->config['backPid']),
 						'year' => $this->piVars['year'],
 						'month' => $this->piVars['month'],
 						'day' => ($this->piVars['day']?$this->piVars['day']:null),
-						), $this->allowCaching, ($this->conf['dontUseBackPid']?1:0), $singlePid));
+						'pS' => null,
+						'pL' => null,
+						'arc' => null,
+						);
+					$wrappedSubpartArray['###LINK_ITEM###'] = explode('|', $this->pi_linkTP_keepPIvars('|',$piVarsArray, $this->allowCaching, ($this->conf['dontUseBackPid']?1:0), $singlePid));
 
 					// fill the link string in a register to access it from TS
-					$this->local_cObj->LOAD_REGISTER(array('newsMoreLink' => $this->pi_linkTP_keepPIvars($this->pi_getLL('more'), array(
-						'tt_news' => $row['uid'],
-						'backPid' => ($this->conf['dontUseBackPid']?null:$this->config['backPid']),
-						'year' => $this->piVars['year'],
-						'month' => $this->piVars['month'],
-						'day' => ($this->piVars['day']?$this->piVars['day']:null),
-						), $this->allowCaching, ($this->conf['dontUseBackPid']?1:0), $singlePid)), '');
+					$this->local_cObj->LOAD_REGISTER(array('newsMoreLink' => $this->pi_linkTP_keepPIvars($this->pi_getLL('more'), $piVarsArray, $this->allowCaching, ($this->conf['dontUseBackPid']?1:0), $singlePid)), '');
 
 					$this->piVars['year'] = $tmpY;
 					$this->piVars['month'] = $tmpM;
