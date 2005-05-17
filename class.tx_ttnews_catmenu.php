@@ -69,7 +69,13 @@ class tx_ttnews_catmenu extends t3lib_treeview {
 		$catSelLinkParams = ($newsConf['catSelectorTargetPid']?($newsConfig['itemLinkTarget']?$newsConf['catSelectorTargetPid'].' '.$newsConfig['itemLinkTarget']:$newsConf['catSelectorTargetPid']):$GLOBALS['TSFE']->id);
 
 		if($v['uid']>0) {
- 			$piVars = &$this->tt_news_obj->piVars;
+			if ($GLOBALS['TSFE']->sys_language_content && $v['uid']) {
+				// get translations of category titles
+				$catTitleArr = t3lib_div::trimExplode('|', $v['title_lang_ol']);
+				$syslang = $GLOBALS['TSFE']->sys_language_content-1;
+				$title = $catTitleArr[$syslang]?$catTitleArr[$syslang]:$title;
+			}
+			$piVars = &$this->tt_news_obj->piVars;
 			$pTmp = $GLOBALS['TSFE']->ATagParams;
 			if ($newsConf['displayCatMenu.']['insertDescrAsTitle']) {
 				$GLOBALS['TSFE']->ATagParams = ($pTmp?$pTmp.' ':'').'title="'.$v['description'].'" alt="'.$v['description'].'"';
@@ -336,5 +342,7 @@ class tx_ttnews_catmenu extends t3lib_treeview {
 		return $icon;
 	}
 }
-
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_news/class.tx_ttnews_catmenu.php'])    {
+    include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_news/class.tx_ttnews_catmenu.php']);
+}
 ?>

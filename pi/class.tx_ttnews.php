@@ -509,7 +509,7 @@ class tx_ttnews extends tslib_pibase {
 				// reset marker array
 			$wrappedSubpartArray = array();
 			if ($this->conf['useHRDates']) {
-				$pointerName = ($this->piVars['latest_pointer']?'latest_pointer':'list_pointer');
+				$pointerName = 'pointer';
 				$wrappedSubpartArray['###LINK_ITEM###'] = explode('|', $this->pi_linkTP_keepPIvars('|', array('tt_news' => null, 'backPid' => null, 'year' => $this->piVars['year'], 'month' => $this->piVars['month'], $pointerName=>$this->piVars[$pointerName]), $this->allowCaching, 1, $this->config['backPid'] ));
 			} else {
 				$wrappedSubpartArray['###LINK_ITEM###'] = explode('|', $this->pi_linkTP_keepPIvars('|', array('tt_news' => null, 'backPid' => null), $this->allowCaching, '', $this->config['backPid'] ));
@@ -623,7 +623,7 @@ class tx_ttnews extends tslib_pibase {
 			$prefix_display = 'displayList';
 			$templateName = 'TEMPLATE_LIST';
 
-			$formURL = $this->pi_linkTP_keepPIvars_url(array('list_pointer' => null, 'cat' => null), 0, 1, $this->config['searchPid']) ;
+			$formURL = $this->pi_linkTP_keepPIvars_url(array('pointer' => null, 'cat' => null), 0, 1, $this->config['searchPid']) ;
 			// Get search subpart
 			$t['search'] = $this->getNewsSubpart($this->templateCode, $this->spMarker('###TEMPLATE_SEARCH###'));
 			// Substitute markers for the searchform
@@ -686,7 +686,7 @@ class tx_ttnews extends tslib_pibase {
 			}
 		} 
 		$noPeriod = 0; // used to call getSelectConf without a period lenght (pL) at the first archive page
-		$pointerName = $this->pointerName = strtolower($theCode).'_pointer';
+		$pointerName = $this->pointerName = 'pointer';
 
 		if (!$this->conf['emptyArchListAtStart']) {
 			// if this is true, we're listing from the archive for the first time (no pS set), to prevent an empty list page we set the pS value to the archive start
@@ -1621,7 +1621,7 @@ class tx_ttnews extends tslib_pibase {
 				$treeViewObj->parentField = 'parent_category';
 				$treeViewObj->expandAll = 1;
 				$treeViewObj->expandFirst = 1;
-				$treeViewObj->fieldArray = array('uid','title','description','image'); // those fields will be filled to the array $treeViewObj->tree
+				$treeViewObj->fieldArray = array('uid','title','title_lang_ol','description','image'); // those fields will be filled to the array $treeViewObj->tree
 				$treeViewObj->ext_IconMode = '1'; // no context menu on icons
 				$treeViewObj->title = $this->pi_getLL('catmenuHeader','Select a category:');
 				$treeViewObj->getTree(0);
@@ -1663,6 +1663,13 @@ class tx_ttnews extends tslib_pibase {
 					if (is_array($array_in[$key]))	{
 						$result.=$this->getCatMenuContent($array_in[$key],$lConf,$l+1);
 					} elseif ($key == $titlefield) {
+						if ($GLOBALS['TSFE']->sys_language_content && $array_in['uid']) {
+							// get translations of category titles
+							$catTitleArr = t3lib_div::trimExplode('|', $array_in['title_lang_ol']);
+							$syslang = $GLOBALS['TSFE']->sys_language_content-1;
+							$val = $catTitleArr[$syslang]?$catTitleArr[$syslang]:$val;
+						}
+						if (!$title) $title = $val;
 						$catSelLinkParams = ($this->conf['catSelectorTargetPid']?($this->config['itemLinkTarget']?$this->conf['catSelectorTargetPid'].' '.$this->config['itemLinkTarget']:$this->conf['catSelectorTargetPid']):$GLOBALS['TSFE']->id);
 						$pTmp = $GLOBALS['TSFE']->ATagParams;
 						if ($this->conf['displayCatMenu.']['insertDescrAsTitle']) {
