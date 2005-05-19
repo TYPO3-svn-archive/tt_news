@@ -235,6 +235,8 @@ tt_news can be configured to insert the link which points back from the related 
 	'bg' => Array (
 	),
 	'br' => Array (
+		'.description' => 'Sistema de notícias.',
+		'.details' => 'Os elementos de "notícias" são aqueles que tipicamente vão nas páginas iniciais e lhe permitem ligar com uma página que contém a história completa. Também podem representar artigos (ligação a páginas completas) do sistema.',
 	),
 	'et' => Array (
 	),
@@ -255,6 +257,12 @@ tt_news can be configured to insert the link which points back from the related 
 	'ba' => Array (
 	),
 	'kr' => Array (
+	),
+	'eo' => Array (
+	),
+	'my' => Array (
+	),
+	'hi' => Array (
 	),
 );
 ?>

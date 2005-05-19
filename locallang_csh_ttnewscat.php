@@ -154,6 +154,7 @@ The category titles/images can act as shortcut to a page or as "category selecto
 	'bg' => Array (
 	),
 	'br' => Array (
+		'.description' => 'Categorias do sistema de notícias',
 	),
 	'et' => Array (
 	),
@@ -174,6 +175,12 @@ The category titles/images can act as shortcut to a page or as "category selecto
 	'ba' => Array (
 	),
 	'kr' => Array (
+	),
+	'eo' => Array (
+	),
+	'my' => Array (
+	),
+	'hi' => Array (
 	),
 );
 ?>

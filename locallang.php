@@ -96,6 +96,8 @@ $LOCAL_LANG = Array (
 	'bg' => Array (
 	),
 	'br' => Array (
+		'pi_title' => 'Notícias',
+		'pi_plus_wiz_description' => 'Adiciona notícias à página.',
 	),
 	'et' => Array (
 	),
@@ -116,6 +118,12 @@ $LOCAL_LANG = Array (
 	'ba' => Array (
 	),
 	'kr' => Array (
+	),
+	'eo' => Array (
+	),
+	'my' => Array (
+	),
+	'hi' => Array (
 	),
 );
 ?>
