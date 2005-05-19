@@ -1,3 +1,45 @@
+2005-05-19	rupertgermann
+	* cvsroot/typo3xdev/tx_ttnews/ext_emconf.php 1.41:
+		- raised version number to 2.2.5
+
+	* cvsroot/typo3xdev/tx_ttnews/locallang.php 1.23:
+	* cvsroot/typo3xdev/tx_ttnews/locallang_csh_ttnews.php 1.12:
+	* cvsroot/typo3xdev/tx_ttnews/locallang_csh_ttnewscat.php 1.6:
+	* cvsroot/typo3xdev/tx_ttnews/locallang_tca.php 1.36:
+	* cvsroot/typo3xdev/tx_ttnews/pi/locallang.php 1.23:
+		- added new language files from TER
+
+2005-05-17	rupertgermann
+	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews.php 1.101:
+		- fix: prevented adding of the GETvars "pS", "pL" and "arc" to 
+		links to the single view with this configuration for links: 
+		dontUseBackPid=0 and useHRDatesSingle=1.
+
+	* cvsroot/typo3xdev/tx_ttnews/ext_conf_template.txt 1.9:
+	* cvsroot/typo3xdev/tx_ttnews/ext_tables.php 1.25:
+		- added a new option to the extension configuration: the "
+		prependAtCopy" feature which adds the string "(copy [#])" to 
+		titles of copied records is configurable now. If prefixLangTitle 
+		is disabled it is useful to disable prependAtCopy too, otherwise 
+		"(copy [#])" is also added to localizations.
+
+	* cvsroot/typo3xdev/tx_ttnews/class.tx_ttnews_catmenu.php 1.2:
+	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews.php 1.100:
+		- added multilanguage support to both catmenu modes
+		- fix: reverted this change: "tt_news uses different names for the pagebrowser pointer in list and latest now" because it was incompatible with the pagebrowser in TYPO3 3.7.0. The name for the pagebrowser var in list and latest is now again "pointer".
+
+	* cvsroot/typo3xdev/tx_ttnews/doc/manual.sxw 1.33:
+		- completed the manual - should now contain all new features and 
+		options
+
+	* cvsroot/typo3xdev/tx_ttnews/static/css/setup.txt 1.10:
+		- changed styles for the catmenu
+
+	* cvsroot/typo3xdev/tx_ttnews/class.tx_ttnews_treeview.php 1.8:
+	* cvsroot/typo3xdev/tx_ttnews/tca.php 1.35:
+		- fix: rendering the "title" field with type "user" was not compatible with "prefixLangTitle" (this mode isn't available for "user" fields).
+		Changed the "title" field back to type "input" and added the check for non allowed categoried to the "type" field. Renamed function displayTitleFieldCheckCategories to displayTypeFieldCheckCategories.
+
 2005-05-16	rupertgermann
 	* cvsroot/typo3xdev/tx_ttnews/doc/manual.sxw 1.32:
 	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews.php 1.99:
@@ -10,6 +52,9 @@
 		news are handled like related news. Template markers: ###
 		TEXT_RELATEDBYCATEGORY### and ###NEWS_RELATEDBYCATEGORY### - new 
 		template part: ###TEMPLATE_CAT_RELATED###
+
+	* cvsroot/typo3xdev/tx_ttnews/ChangeLog 1.38:
+		updated changelog
 
 2005-05-15	rupertgermann
 	* cvsroot/typo3xdev/tx_ttnews/doc/manual.sxw 1.31:
