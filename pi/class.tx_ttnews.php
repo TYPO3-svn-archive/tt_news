@@ -1631,7 +1631,7 @@ class tx_ttnews extends tslib_pibase {
 				if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tt_news']['userDisplayCatmenuHook'])) {
 					foreach($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tt_news']['userDisplayCatmenuHook'] as $_classRef) {
 						$_procObj = & t3lib_div::getUserObj($_classRef);
-						$content = $_procObj->userDisplayCatmenu($lConf, &$this);
+						$content = $_procObj->userDisplayCatmenu($lConf, $this);
 					}
 				}
 			break;

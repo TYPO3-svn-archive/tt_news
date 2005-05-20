@@ -498,7 +498,7 @@ class tx_ttnews_treeview {
 			$PA['fieldConf']['config']['foreign_table_where'] = '';
 		}
 		if (!$row['l18n_parent'] && !$row['sys_language_uid']) { // render "type" field only for records in the default language
-			$fieldHTML = $fobj->getSingleField_typeSelect($table,$field,$row,&$PA);
+			$fieldHTML = $fobj->getSingleField_typeSelect($table,$field,$row,$PA);
 		}
 		return $NA_Items.$fieldHTML;
 	}
