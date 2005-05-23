@@ -415,10 +415,10 @@ $TCA['tt_news'] = Array (
 
 
 		'1' => Array('showitem' =>
-		'title;;1;;,datetime;;2;;1-1-1,author;;3;;,short,page;;4;;,--div--;Relations,category,image;;;;1-1-1,imagecaption'),
+		'title;;1;;,type,datetime;;2;;1-1-1,author;;3;;,short,page;;4;;,--div--;Relations,category,image;;;;1-1-1,imagecaption'),
 
 		'2' => Array('showitem' =>
-		'title;;1;;,datetime;;2;;1-1-1,author;;3;;,short,ext_url;;4;;,--div--;Relations,category,image;;;;1-1-1,imagecaption')
+		'title;;1;;,type,datetime;;2;;1-1-1,author;;3;;,short,ext_url;;4;;,--div--;Relations,category,image;;;;1-1-1,imagecaption')
 	),
 	'palettes' => Array (
 		'1' => Array('showitem' => 'hidden,starttime,endtime,fe_group'),
