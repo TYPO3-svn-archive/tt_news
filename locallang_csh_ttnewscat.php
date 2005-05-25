@@ -77,7 +77,8 @@ The category titles/images can act as shortcut to a page or as "category selecto
 		'_shortcut_target.seeAlso' => 'tt_news_cat:shortcut',
 
 		'single_pid.description' => 'The page which is defined here overrides the globally configured "singlePid".',
-		'single_pid.details' => 'The field "Single-view page for news from this category" gives you the possibility to define a Single-View page for each category. If a news-record has 2 or more categories assigned the SinglePid from the first category is choosen. The ordering of categories can be changed with the TSvar "catOrderBy". ',
+		'single_pid.details' => 'The field "Single-view page for news from this category" gives you the possibility to define a single-view page for each category. If you want to use this feature it is required to add "useSPidFromCategory = 1" to the TypoScript setup.
+If a news-record has 2 or more categories assigned the SinglePid will be taken from the first category which is assigned to the news record.',
 
 		'description.description' => 'Here you can enter a description for the current category which will be shown as tooltip in the category tree.',
 		'description.details' => 'If you have long description texts (>70 chars) Firefox and Mozilla will not display the tooltips correctly.
