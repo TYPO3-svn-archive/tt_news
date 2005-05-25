@@ -216,8 +216,7 @@ class tx_ttnews_treeview {
 						$treeViewObj = t3lib_div::makeInstance('tx_ttnews_tceFunc_selectTreeView');
 					}
 					$treeViewObj->table = $config['foreign_table'];
-
-					$treeViewObj->init($SPaddWhere);
+					$treeViewObj->init($SPaddWhere.' ORDER BY tt_news_cat.'.$confArr['category_OrderBy']);
 					$treeViewObj->backPath = $this->pObj->backPath;
 					$treeViewObj->parentField = $TCA[$config['foreign_table']]['ctrl']['treeParentField'];
 					$treeViewObj->expandAll = 1;
@@ -493,10 +492,10 @@ class tx_ttnews_treeview {
 					$NA_Items =  '<table class="warningbox" border="0" cellpadding="0" cellspacing="0"><tbody><tr><td><img src="gfx/icon_fatalerror.gif" class="absmiddle" alt="" height="16" width="18">SAVING DISABLED!! <br />'.($row['l18n_parent']&&$row['sys_language_uid']?'The translation original of this':'This').' record has the following categories assigned that are not defined in your BE usergroup: '.implode($NACats,chr(10)).'</td></tr></tbody></table>';
 				}
 			}
-				// unset foreign table to prevent adding of categories to the "type" field
-			$PA['fieldConf']['config']['foreign_table'] = '';
-			$PA['fieldConf']['config']['foreign_table_where'] = '';
 		}
+			// unset foreign table to prevent adding of categories to the "type" field
+		$PA['fieldConf']['config']['foreign_table'] = '';
+		$PA['fieldConf']['config']['foreign_table_where'] = '';
 		if (!$row['l18n_parent'] && !$row['sys_language_uid']) { // render "type" field only for records in the default language
 			$fieldHTML = $fobj->getSingleField_typeSelect($table,$field,$row,$PA);
 		}

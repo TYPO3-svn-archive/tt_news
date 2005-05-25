@@ -1515,7 +1515,7 @@ class tx_ttnews extends tslib_pibase {
 	 * @return	array		$categories: array of found categories
 	 */
 	function getCategories($uid) {
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECT_mm_query ('tt_news_cat.*,tt_news_cat_mm.sorting AS mmsorting', 'tt_news', 'tt_news_cat_mm', 'tt_news_cat', $whereClause = ' AND tt_news_cat_mm.uid_local='.($uid?$uid:0).$this->SPaddWhere.$this->enableCatFields, $groupBy = '', 'mmsorting, '.$this->config['catOrderBy'], $limit = '');
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECT_mm_query ('tt_news_cat.*,tt_news_cat_mm.sorting AS mmsorting', 'tt_news', 'tt_news_cat_mm', 'tt_news_cat', $whereClause = ' AND tt_news_cat_mm.uid_local='.($uid?$uid:0).$this->SPaddWhere.$this->enableCatFields, $groupBy = '', ($this->config['catOrderBy']&&$this->config['catOrderBy']!='sorting'?$this->config['catOrderBy']:'mmsorting'), $limit = '');
 
 		$categories = array();
 		$maincat = 0;
@@ -1596,7 +1596,7 @@ class tx_ttnews extends tslib_pibase {
 				$orderBy = 'sorting';
 				$fields = '*';
 				$lConf = $this->conf['displayCatMenu.'];
-				$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery($fields, 'tt_news_cat', 'parent_category=0' .$this->SPaddWhere. $this->enableCatFields,'',$orderBy);
+				$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery($fields, 'tt_news_cat', 'parent_category=0' .$this->SPaddWhere. $this->enableCatFields,'',$this->config['catOrderBy']);
 				$cArr = array();
 				$cArr[] = $this->local_cObj->stdWrap($this->pi_getLL('catmenuHeader','Select a category:'),$lConf['catmenuHeader_stdWrap.']);
 				while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
@@ -1613,7 +1613,7 @@ class tx_ttnews extends tslib_pibase {
 				$treeViewObj = t3lib_div::makeInstance('tx_ttnews_catmenu');
 	
 				$treeViewObj->table = 'tt_news_cat';
-				$treeViewObj->init($this->SPaddWhere. $this->enableCatFields);
+				$treeViewObj->init($this->SPaddWhere.$this->enableCatFields, $this->config['catOrderBy']);
 				$treeViewObj->backPath = 't3lib/';
 				$treeViewObj->parentField = 'parent_category';
 				$treeViewObj->expandAll = 1;
@@ -2122,6 +2122,7 @@ class tx_ttnews extends tslib_pibase {
 		$this->enableCatFields = $this->cObj->enableFields('tt_news_cat');
 
 		$catOrderBy = trim($this->conf['catOrderBy']);
+		if ($catOrderBy) { $catOrderBy = $this->validateFields($catOrderBy); }
 		$this->config['catOrderBy'] = $catOrderBy?$catOrderBy:'sorting';
 
 		// categoryModes are: 0=display all categories, 1=display selected categories, -1=display deselected categories
