@@ -29,8 +29,6 @@ label_alt2 =
   # cat=basic//50; type=boolean; label= Force alternative label: If this is activated the alternative label will be always shown behind the label.
 label_alt_force = 0
 
-  # cat=basic//55; type=options[uid,title,same order as in BE list view (sorting)=sorting,creation date=crdate,last change=tstamp]; label= Order of categories: Here you can choose the field by which the categories in BackEnd forms are ordered. Default is to order the categories by their "uid". This setting works for the categories in web/list view and for the category tree in the right part of the category select fields in BackEnd forms.
-category_OrderBy = uid
 
   # cat=basic//60; type=int [0-600]; label= Width of the left category field: This field shows the selected categories in the tt_news db-record (or parent categories in the category db-record). If "categorySelectedWidth" is set to 0 (zero) the default width (=180px) will be taken.
 categorySelectedWidth =
