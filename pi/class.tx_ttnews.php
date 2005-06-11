@@ -967,6 +967,7 @@ class tx_ttnews extends tslib_pibase {
 
 
 			}
+			$markerArray = $this->getItemMarkerArray($row, $prefix_display);
 
 			// XML
 			if ($this->theCode == 'XML') {
@@ -985,8 +986,6 @@ class tx_ttnews extends tslib_pibase {
 				}
 
 			}
-
-			$markerArray = $this->getItemMarkerArray($row, $prefix_display);
 
 			$layoutNum = $cc % $itempartsCount;
 			// Store the result of template parsing in the Var $itemsOut, use the alternating layouts
