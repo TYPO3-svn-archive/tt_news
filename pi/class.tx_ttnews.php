@@ -1989,8 +1989,10 @@ class tx_ttnews extends tslib_pibase {
 				}
 				if ($this->conf['checkCategoriesOfRelatedNews']) {
 					if (count($currentCats))  { // record has categories
-						if (t3lib_div::inList($visibleCategories,implode(array_keys($currentCats), ','))) {
-							$relrows[$relrow['uid']] = $relrow;
+						foreach ($currentCats as $cUid) {
+							if (t3lib_div::inList($visibleCategories,$cUid['catid'])) { // if the record has at least one visible category assigned it will be shown
+								$relrows[$relrow['uid']] = $relrow;
+							}
 						}
 					} else { // record has NO categories
 						$relrows[$relrow['uid']] = $relrow;
@@ -2010,9 +2012,9 @@ class tx_ttnews extends tslib_pibase {
 			if (is_array($relPages[0]) && $this->conf['usePagesRelations']) {
 				$relrows = array_merge_recursive($relPages,$relrows);
 			}
+			
 			$veryLocal_cObj = t3lib_div::makeInstance('tslib_cObj'); // Local cObj.
 			$lines = array();
-			if (!is_array($relrows[0])) return '';
 			foreach($relrows as $k => $row) {
 				if ($GLOBALS['TSFE']->sys_language_content && $row['tablenames']!='pages') {
 					$OLmode = ($this->sys_language_mode == 'strict' ? 'hideNonTranslated' : '');
