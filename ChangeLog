@@ -1,3 +1,7 @@
+2005-09-30	Ingo Renner  <typo3@ingo-renner.com>
+
+	* FIX removed alt attribute in catmenu which is not allowed for anchor tags
+
 2005-05-19	rupertgermann
 	* cvsroot/typo3xdev/tx_ttnews/ext_emconf.php 1.41:
 		- raised version number to 2.2.5
