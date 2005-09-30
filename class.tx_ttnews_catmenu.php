@@ -78,7 +78,7 @@ class tx_ttnews_catmenu extends t3lib_treeview {
 			$piVars = &$this->tt_news_obj->piVars;
 			$pTmp = $GLOBALS['TSFE']->ATagParams;
 			if ($newsConf['displayCatMenu.']['insertDescrAsTitle']) {
-				$GLOBALS['TSFE']->ATagParams = ($pTmp?$pTmp.' ':'').'title="'.$v['description'].'" alt="'.$v['description'].'"';
+				$GLOBALS['TSFE']->ATagParams = ($pTmp?$pTmp.' ':'').'title="'.$v['description'].'"';
 			}
 			if ($newsConf['useHRDates']) {
 				$link = $this->tt_news_obj->pi_linkTP_keepPIvars($title, array(
