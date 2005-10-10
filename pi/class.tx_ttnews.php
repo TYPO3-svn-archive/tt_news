@@ -1847,7 +1847,14 @@ class tx_ttnews extends tslib_pibase {
 			}
 			// XML
 			if ($this->theCode == 'XML') {
-				$markerArray['###NEWS_CATEGORY###'] = $news_category;
+				$newsCategories = explode(', ', $news_category);
+				
+				$xmlCategories = '';
+				foreach($newsCategories as $xmlCategory) {
+					$xmlCategories .= '<category>'.$xmlCategory.'</category>'."\n\t\t\t";
+				}
+				
+				$markerArray['###NEWS_CATEGORY###'] = $xmlCategories;
 			}
 		}
 		return $markerArray;
@@ -2446,8 +2453,8 @@ class tx_ttnews extends tslib_pibase {
 	 */
 	function cleanXML($str) {
 		$cleanedStr = preg_replace(
-			array('/&nbsp;/', '/&;/'),
-			array(' '.'&amp;;'),
+			array('/&nbsp;/', '/&;/', '/</', '/>/'),
+			array(' ', '&amp;;', '&lt;', '&gt;'),
 			$str);
 		return $cleanedStr;
 	}
