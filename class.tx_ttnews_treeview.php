@@ -145,7 +145,7 @@ class tx_ttnews_treeview {
 		if ($maxitems<=1 AND !$config['treeView'])	{
 
 		} else {
-			if ($row['sys_language_uid'] && $row['l18n_parent'] ) { // the current record is a translation of another record
+			if ($row['sys_language_uid'] && $row['l18n_parent'] && ($table == 'tt_news' || $table == 'tt_news_cat')) { // the current record is a translation of another record
 				if ($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['tt_news']) { // get tt_news extConf array
 					$confArr = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['tt_news']);
 				}
