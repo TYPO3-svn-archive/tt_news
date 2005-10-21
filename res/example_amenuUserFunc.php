@@ -65,7 +65,7 @@ function user_processAmenu($amenuItemsArr, $conf){
 	// template-part for the new css based template:
 	// $tmpl = '<div class="news-archive-item">###ARCHIVE_YEAR###</div>';
 
-
+	$oldyear = 0;
 	$out = array();
 	if ($amenuItemsArr) {
 		foreach ($amenuItemsArr as $item){

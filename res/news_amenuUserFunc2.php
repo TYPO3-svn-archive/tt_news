@@ -63,9 +63,9 @@ function user_processAmenu($amenuItemsArr, $conf){
 	#$tmpl = '<tr><td bgcolor="'.$lConf['color3.']['wrap'].'" valign="top" nowrap="nowrap">###ARCHIVE_YEAR###</td></tr>';
 
 	// template-part for the new css based template:
- $tmpl = '<li class="news-amenu-item-year">###ARCHIVE_YEAR###</li>';
+ 	$tmpl = '<li class="news-amenu-item-year">###ARCHIVE_YEAR###</li>';
 
-
+	$oldyear = 0;
 	$out = array();
 	if ($amenuItemsArr) {
 		foreach ($amenuItemsArr as $item){
