@@ -1,3 +1,7 @@
+2005-11-05	Ingo Renner  <typo3@ingo-renner.com>
+
+	* FIX fixed bug 0001777: Icon for news with "futuretiming" is missing
+
 2005-10-10	Ingo Renner  <typo3@ingo-renner.com>
 
 	* FIX fixed bug 0001313: tt_news rss feeds not rss 2.0 compliant
