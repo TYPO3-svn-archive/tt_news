@@ -1,3 +1,8 @@
+2005-11-12	Ingo Renner  <typo3@ingo-renner.com>
+
+	* FIX fixed bug 0001718: Stil alt in a-tag
+	* FIX fixed bug 0001743: news_files field (tinyblob) too small
+	
 2005-11-05	Ingo Renner  <typo3@ingo-renner.com>
 
 	* FIX fixed bug 0001777: Icon for news with "futuretiming" is missing

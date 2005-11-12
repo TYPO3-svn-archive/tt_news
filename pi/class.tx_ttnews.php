@@ -1714,7 +1714,7 @@ class tx_ttnews extends tslib_pibase {
 						$catSelLinkParams = ($this->conf['catSelectorTargetPid']?($this->config['itemLinkTarget']?$this->conf['catSelectorTargetPid'].' '.$this->config['itemLinkTarget']:$this->conf['catSelectorTargetPid']):$GLOBALS['TSFE']->id);
 						$pTmp = $GLOBALS['TSFE']->ATagParams;
 						if ($this->conf['displayCatMenu.']['insertDescrAsTitle']) {
-							$GLOBALS['TSFE']->ATagParams = ($pTmp?$pTmp.' ':'').'title="'.$array_in['description'].'" alt="'.$array_in['description'].'"';
+							$GLOBALS['TSFE']->ATagParams = ($pTmp?$pTmp.' ':'').'title="'.$array_in['description'].'"';
 						}
 						if ($array_in['uid']) {
 							if ($this->piVars['cat']==$array_in['uid']) {
