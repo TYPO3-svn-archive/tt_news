@@ -1,3 +1,8 @@
+2005-05-19	Rupert Germann <rupi@gmx.li>
+	* feature: added support for Workspaces in TYPO3 4.0
+	* fix: changed TYPO3_version and PHP_version in $emconf
+	* updated emconf: version nr is 2.2.40 now
+
 2005-11-12	Ingo Renner  <typo3@ingo-renner.com>
 
 	* FIX fixed bug 0001718: Stil alt in a-tag
