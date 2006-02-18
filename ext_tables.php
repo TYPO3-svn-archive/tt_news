@@ -11,8 +11,15 @@ $TCA['tt_news'] = Array (
 		'label_alt_force' => $confArr['label_alt_force'],
 		'default_sortby' => 'ORDER BY datetime DESC',
 		'prependAtCopy' => $confArr['prependAtCopy']?'LLL:EXT:lang/locallang_general.php:LGL.prependAtCopy':'',
-		'versioning' => TRUE,
+
+// see condition below
+// 		'versioning' => TRUE,
+// 		'versioningWS' => TRUE,
 		'versioning_followPages' => TRUE,
+		'origUid' => 't3_origuid',
+		'shadowColumnsForNewPlaceholders' => 'sys_language_uid,l18n_parent,starttime,endtime,fe_group',
+
+
 		'dividers2tabs' => $confArr['noTabDividers']?FALSE:TRUE,
 		'useColumnsForDefaultValues' => 'type',
 		'transOrigPointerField' => 'l18n_parent',
@@ -40,6 +47,14 @@ $TCA['tt_news'] = Array (
 		'dynamicConfigFile' => t3lib_extMgm::extPath($_EXTKEY).'tca.php'
 	)
 );
+
+// enable Workspace versioning only for TYPO3 v 4.0 and higher
+if (t3lib_div::int_from_ver(TYPO3_version) >= 4000000) {
+	$TCA['tt_news']['ctrl']['versioningWS'] = TRUE;
+} else {
+	$TCA['tt_news']['ctrl']['versioning'] = TRUE;
+}
+
 
 #$category_OrderBy = $confArr['category_OrderBy'];
 $TCA['tt_news_cat'] = Array (
@@ -94,7 +109,7 @@ if ($confArr['useStoragePid']) {
 
 	// sets the transformation mode for the RTE to "ts_css" if the extension css_styled_content is installed (default is: "ts")
 if (t3lib_extMgm::isLoaded('css_styled_content')) {
-t3lib_extMgm::addPageTSConfig('
+	t3lib_extMgm::addPageTSConfig('
 # RTE mode in table "tt_news"
 RTE.config.tt_news.bodytext.proc.overruleMode=ts_css');
 }
@@ -104,6 +119,12 @@ t3lib_extMgm::addLLrefForTCAdescr('tt_news','EXT:tt_news/locallang_csh_ttnews.ph
 t3lib_extMgm::addLLrefForTCAdescr('tt_news_cat','EXT:tt_news/locallang_csh_ttnewscat.php');
 t3lib_extMgm::addLLrefForTCAdescr('xEXT_tt_news','EXT:tt_news/locallang_csh_manual.xml');
 
+	// adds processing for extra "codes" that have been added to the "what to display" selector in the content element by other extensions
+include_once(t3lib_extMgm::extPath($_EXTKEY).'class.tx_ttnews_itemsProcFunc.php');
+	// class for displaying the category tree in BE forms.
+include_once(t3lib_extMgm::extPath($_EXTKEY).'class.tx_ttnews_treeview.php');
+	// class that uses hooks in class.t3lib_tcemain.php (processDatamapClass and processCmdmapClass) to prevent not allowed "commands" (copy,delete,...) for a certain BE usergroup
+include_once(t3lib_extMgm::extPath($_EXTKEY).'class.tx_ttnews_tcemain.php');
 
 if (TYPO3_MODE=='BE')	{
 		// Adds a tt_news wizard icon to the content element wizard.
@@ -111,12 +132,6 @@ if (TYPO3_MODE=='BE')	{
 		// add folder icon
 	$ICON_TYPES['news'] = array('icon' => t3lib_extMgm::extRelPath($_EXTKEY).'ext_icon_ttnews_folder.gif');
 
-		// adds processing for extra "codes" that have been added to the "what to display" selector in the content element by other extensions
-	include_once(t3lib_extMgm::extPath($_EXTKEY).'class.tx_ttnews_itemsProcFunc.php');
-		// class for displaying the category tree in BE forms.
-	include_once(t3lib_extMgm::extPath($_EXTKEY).'class.tx_ttnews_treeview.php');
-		// class that uses hooks in class.t3lib_tcemain.php (processDatamapClass and processCmdmapClass) to prevent not allowed "commands" (copy,delete,...) for a certain BE usergroup
-	include_once(t3lib_extMgm::extPath($_EXTKEY).'class.tx_ttnews_tcemain.php');
 }
 
 ?>
