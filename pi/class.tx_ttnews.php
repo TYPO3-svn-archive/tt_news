@@ -349,11 +349,17 @@ class tx_ttnews extends tslib_pibase {
 	 * @return	string		html code of the archive menu
 	 */
 	function newsArchiveMenu() {
+
 		$this->arcExclusive = 1;
 		$selectConf = $this->getSelectConf('', 1);
 		// Finding maximum and minimum values:
 		$selectConf['selectFields'] = 'max(datetime) as maxval, min(datetime) as minval';
+						
+
 		$res = $this->cObj->exec_getQuery('tt_news', $selectConf);
+
+		
+
 		$row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
 		if ($row['minval'] || $row['maxval']) {
 			// if ($row['minval']) {
@@ -396,7 +402,11 @@ class tx_ttnews extends tslib_pibase {
 				// execute a query to count the archive periods
 				$selectConf['selectFields'] = 'count(distinct(uid))';
 				$selectConf['where'] = $selectConf2['where'] . ' AND datetime>=' . $periodInfo['start'] . ' AND datetime<' . $periodInfo['stop'];
+
+
 				$res = $this->cObj->exec_getQuery('tt_news', $selectConf);
+
+
 				$row = $GLOBALS['TYPO3_DB']->sql_fetch_row($res);
 				$periodInfo['count'] = $row[0];
 
@@ -481,6 +491,7 @@ class tx_ttnews extends tslib_pibase {
 			$noItemsMsg = $this->getNewsSubpart($this->templateCode, $this->spMarker('###TEMPLATE_ARCHIVE_NOITEMS###'));
 			$content = $this->cObj->substituteMarkerArrayCached($noItemsMsg, $markerArray);
 		}
+
 		return $content;
 	}
 
@@ -492,6 +503,8 @@ class tx_ttnews extends tslib_pibase {
 	function displaySingle() {
 		$singleWhere = 'tt_news.uid=' . intval($this->tt_news_uid);
 		$singleWhere .= ' AND type NOT IN(1,2)' . $this->enableFields; // only real news -> type=0
+
+
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_news', $singleWhere);
 		$row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
 		// get the translated record if the content language is not the default language
@@ -499,6 +512,11 @@ class tx_ttnews extends tslib_pibase {
 			$OLmode = ($this->sys_language_mode == 'strict'?'hideNonTranslated':'');
 			$row = $GLOBALS['TSFE']->sys_page->getRecordOverlay('tt_news', $row, $GLOBALS['TSFE']->sys_language_content, $OLmode);
 		}
+		// get workspaces Overlay
+		$GLOBALS['TSFE']->sys_page->versionOL('tt_news',$row);
+		// fix pid for record from workspace
+		$GLOBALS['TSFE']->sys_page->fixVersioningPid('tt_news',$row);
+		
 		if (is_array($row) && ($row['pid'] > 0 || $this->vPrev)) { // never display versions of a news record (having pid=-1) for normal website users
 				// Get the subpart code
 			if ($this->conf['displayCurrentRecord']) {
@@ -713,7 +731,11 @@ class tx_ttnews extends tslib_pibase {
 			$selectConf = $this->getSelectConf($where, $noPeriod);
 			// performing query to count all news (we need to know it for browsing):
 			$selectConf['selectFields'] = 'COUNT(DISTINCT(tt_news.uid))'; //count(*)
+
 			$res = $this->cObj->exec_getQuery('tt_news', $selectConf);
+
+
+		
 			$row = $GLOBALS['TYPO3_DB']->sql_fetch_row($res);
 			$newsCount = $row[0];
 			// Only do something if the queryresult is not empty
@@ -890,7 +912,11 @@ class tx_ttnews extends tslib_pibase {
 	 * @return	string		$itemsOut: itemlist as htmlcode
 	 */
 	function getListContent($itemparts, $selectConf, $prefix_display) {
+
+
 		$res = $this->cObj->exec_getQuery('tt_news', $selectConf); //get query for list contents
+
+
 		$itemsOut = '';
 		$itempartsCount = count($itemparts);
 		$pTmp = $GLOBALS['TSFE']->ATagParams;
@@ -906,6 +932,10 @@ class tx_ttnews extends tslib_pibase {
 			if ($GLOBALS['TSFE']->sys_language_content) {
 				$row = $GLOBALS['TSFE']->sys_page->getRecordOverlay('tt_news', $row, $GLOBALS['TSFE']->sys_language_content, $GLOBALS['TSFE']->sys_language_contentOL, '');
 			}
+
+			// get workspaces Overlay
+			$GLOBALS['TSFE']->sys_page->versionOL('tt_news',$row);
+
 			$this->categories[$row['uid']] = $this->getCategories($row['uid']);
 
 			if ($row['type'] == 1 || $row['type'] == 2) {
@@ -1026,7 +1056,10 @@ class tx_ttnews extends tslib_pibase {
 		if ($this->sys_language_mode == 'strict' && $GLOBALS['TSFE']->sys_language_content) {
 			// sys_language_mode == 'strict': If a certain language is requested, select only news-records from the default language which have a translation. The translated articles will be overlayed later in the list or single function.
 
+
 			$tmpres = $this->cObj->exec_getQuery('tt_news', array('selectFields' => 'tt_news.l18n_parent', 'where' => 'tt_news.sys_language_uid = '.$GLOBALS['TSFE']->sys_language_content.$this->enableFields, 'pidInList' => $this->pid_list));
+
+
 			$strictUids = array();
 
 			while ($tmprow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($tmpres)) {
@@ -1064,24 +1097,30 @@ class tx_ttnews extends tslib_pibase {
 		}
 
 		if ($this->arcExclusive) {
-			if ($this->conf['enableArchiveDate']) {
-				if ($this->arcExclusive < 0) {
-					// show archived
-					$selectConf['where'] .= ' AND (tt_news.archivedate=0 OR tt_news.archivedate>' . $GLOBALS['SIM_EXEC_TIME'] . ')';
-				} elseif ($this->arcExclusive > 0) {
-					$selectConf['where'] .= ' AND tt_news.archivedate<' . $GLOBALS['SIM_EXEC_TIME'];
-				}
-			}
-			if ($this->config['datetimeDaysToArchive']) {
+			if ($this->conf['enableArchiveDate'] && $this->config['datetimeDaysToArchive'] && $this->arcExclusive > 0) {
 				$theTime = $GLOBALS['SIM_EXEC_TIME'] - intval($this->config['datetimeDaysToArchive']) * 3600 * 24;
-				if ($this->arcExclusive < 0) {
-					$selectConf['where'] .= ' AND (tt_news.datetime=0 OR tt_news.datetime>' . $theTime . ')';
+				$selectConf['where'] .= ' AND (tt_news.archivedate<'.$GLOBALS['SIM_EXEC_TIME'].' OR tt_news.datetime<'.$theTime.')';
+			} else { 
+				if ($this->conf['enableArchiveDate']) {
+					if ($this->arcExclusive < 0) {
+						// show archived
+						$selectConf['where'] .= ' AND (tt_news.archivedate=0 OR tt_news.archivedate>' . $GLOBALS['SIM_EXEC_TIME'] . ')';
+					} elseif ($this->arcExclusive > 0) {
+						$selectConf['where'] .= ' AND tt_news.archivedate<' . $GLOBALS['SIM_EXEC_TIME'];
+					}
+				}
+				if ($this->config['datetimeDaysToArchive']) {
+					$theTime = $GLOBALS['SIM_EXEC_TIME'] - intval($this->config['datetimeDaysToArchive']) * 3600 * 24;
+					if ($this->arcExclusive < 0) {
+						$selectConf['where'] .= ' AND (tt_news.datetime=0 OR tt_news.datetime>' . $theTime . ')';
 
-				} elseif ($this->arcExclusive > 0) {
-					$selectConf['where'] .= ' AND tt_news.datetime<' . $theTime;
+					} elseif ($this->arcExclusive > 0) {
+						$selectConf['where'] .= ' AND tt_news.datetime<' . $theTime;
+					}
 				}
 			}
 		}
+
 		// exclude LATEST and AMENU from changing their contents with the cat selector. This can be overridden by setting the TSvars 'latestWithCatSelector' or 'amenuWithCatSelector'
 		if ($this->config['catSelection'] && (($this->theCode == 'LATEST' && $this->conf['latestWithCatSelector']) || ($this->theCode == 'AMENU' && $this->conf['amenuWithCatSelector']) || ($this->theCode == 'LIST' || $this->theCode == 'SEARCH'))) {
 			$this->config['categoryMode'] = 1; // force 'select categories' mode if cat is given in GPvars
@@ -1134,7 +1173,11 @@ class tx_ttnews extends tslib_pibase {
 	 */
 	function generatePageArray() {
 		// Get pages (for category titles)
+
+
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('title,uid,author,author_email', 'pages', 'uid IN (' . $this->pid_list . ')');
+
+
 		$this->pageArray = array();
 		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 			$this->pageArray[$row['uid']] = $row;
@@ -1238,7 +1281,9 @@ class tx_ttnews extends tslib_pibase {
 		// get title (or its language overlay) of the page where the backLink points to (this is done only in single view)
 		if ($this->config['backPid'] && $textRenderObj == 'displaySingle') {
 			if ($GLOBALS['TSFE']->sys_language_content) {
+
 				$p_res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'pages_language_overlay', '1=1 AND pid=' . $this->config['backPid'] . ' AND  sys_language_uid=' . $GLOBALS['TSFE']->sys_language_content);
+				
 				$backP = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($p_res);
 			} else {
 				$backP = $this->pi_getRecord('pages', $this->config['backPid']);
@@ -1546,7 +1591,10 @@ class tx_ttnews extends tslib_pibase {
 	 * @return	array		$categories: array of found categories
 	 */
 	function getCategories($uid, $getAll=false) {
+
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECT_mm_query ('tt_news_cat.*,tt_news_cat_mm.sorting AS mmsorting', 'tt_news', 'tt_news_cat_mm', 'tt_news_cat', $whereClause = ' AND tt_news_cat_mm.uid_local='.($uid?$uid:0).$this->SPaddWhere.($getAll?' AND tt_news_cat.deleted=0':$this->enableCatFields), $groupBy = '', ($this->config['catOrderBy']&&$this->config['catOrderBy']!='sorting'?$this->config['catOrderBy']:'mmsorting'), $limit = '');
+
+
 
 		$categories = array();
 		$maincat = 0;
@@ -1557,7 +1605,10 @@ class tx_ttnews extends tslib_pibase {
 			if ($this->conf['displaySubCategories'] && $this->conf['useSubCategories']) {
 				$subCategories = array();
 				$subcats = implode(',', array_unique(explode(',', $this->getSubCategories($row[0]['uid']))));
+
 				$subres = $GLOBALS['TYPO3_DB']->exec_SELECTquery ('tt_news_cat.*', 'tt_news_cat', 'tt_news_cat.uid IN ('.($subcats?$subcats:0).')'.$this->SPaddWhere.$this->enableCatFields, $groupBy = '', 'tt_news_cat.'.$this->config['catOrderBy'], $limit = '');
+
+
 				while ($subrow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($subres)) {
 					$subCategories[] = $subrow;
 				}
@@ -1598,7 +1649,10 @@ class tx_ttnews extends tslib_pibase {
 	 */
 	function getSubCategories($catlist, $cc = 0) {
 		$pcatArr = array();
+
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'tt_news_cat', 'tt_news_cat.parent_category IN ('.$catlist.')'.$this->SPaddWhere.$this->enableCatFields);
+
+
 		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 			$cc++;
 			if ($cc > 100) {
@@ -1639,7 +1693,10 @@ class tx_ttnews extends tslib_pibase {
 				$orderBy = 'sorting';
 				$fields = '*';
 				$lConf = $this->conf['displayCatMenu.'];
+
 				$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery($fields, 'tt_news_cat', 'parent_category=0' .$this->SPaddWhere. $this->enableCatFields.$catlistWhere,'',$this->config['catOrderBy']);
+
+
 				$cArr = array();
 				$cArr[] = $this->local_cObj->stdWrap($this->pi_getLL('catmenuHeader','Select a category:'),$lConf['catmenuHeader_stdWrap.']);
 				while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
@@ -1744,7 +1801,10 @@ class tx_ttnews extends tslib_pibase {
 	 */
 	function getSubCategoriesForMenu ($catlist, $fields, $cc = 0) {
 		$pcatArr = array();
+
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery($fields, 'tt_news_cat', 'tt_news_cat.parent_category IN ('.$catlist.')'.$this->SPaddWhere.$this->enableCatFields);
+
+
 		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 			$cc++;
 			if ($cc > 50) {
@@ -1964,13 +2024,16 @@ class tx_ttnews extends tslib_pibase {
 	/**
 	 * Find related news records and pages, add links to them and wrap them with stdWraps from TS.
 	 *
-	 * @param	integer		$uid : it of the current news record
+	 * @param	integer		$uid of the current news record
 	 * @return	string		html code for the related news list
 	 */
 	function getRelated($uid) {
 		$lConf = $this->conf['getRelatedCObject.'];
 		// find visible categories and their singlePids
+
 		$catres = $GLOBALS['TYPO3_DB']->exec_SELECTquery ('tt_news_cat.uid,tt_news_cat.single_pid', 'tt_news_cat','1=1'.$this->SPaddWhere.$this->enableCatFields);
+
+
 		$catTemp = array();
 		$sPidByCat = array();
 		while ($catrow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($catres)) {
@@ -1983,11 +2046,14 @@ class tx_ttnews extends tslib_pibase {
 
 		if ($this->conf['usePagesRelations']) {
 			$relPages = array();
+
 			$pres = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
 				'uid,title,tstamp,description,subtitle,M.tablenames',
 				'pages,tt_news_related_mm AS M',
 				'pages.uid=M.uid_foreign AND M.uid_local=' . $uid . ' AND M.tablenames="pages"'.$this->cObj->enableFields('pages'),
 				'', 'title');
+
+
 			while ($prow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($pres)) {
 				if ($GLOBALS['TSFE']->sys_language_content) {
 					$prow = $GLOBALS['TSFE']->sys_page->getPageOverlay($prow, $GLOBALS['TSFE']->sys_language_content);
@@ -2020,6 +2086,8 @@ class tx_ttnews extends tslib_pibase {
 		}
 
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery($select_fields, 'tt_news,tt_news_related_mm AS M', $where . $this->enableFields, $groupBy, $orderBy);
+
+
 
 		if ($res) {
 			$relrows = array();
@@ -2187,7 +2255,10 @@ class tx_ttnews extends tslib_pibase {
 	 * @return	void
 	 */
 	function initLanguages () {
+
 		$lres = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'sys_language', '1=1' . $this->cObj->enableFields('sys_language'));
+
+
 		$this->langArr = array();
 		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($lres)) {
 			$this->langArr[$row['uid']] = $row;
@@ -2216,6 +2287,7 @@ class tx_ttnews extends tslib_pibase {
 
 		// categoryModes are: 0=display all categories, 1=display selected categories, -1=display deselected categories
 		$categoryMode = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'categoryMode', 'sDEF');
+	
 		$this->config['categoryMode'] = $categoryMode ? $categoryMode: intval($this->conf['categoryMode']);
 		// catselection holds only the uids of the categories selected by GETvars
 		if ($this->piVars['cat']) {
@@ -2263,9 +2335,11 @@ class tx_ttnews extends tslib_pibase {
 	 */
 	function checkRecords($recordlist) {
 		if ($recordlist) {
-			$temp = t3lib_div::intExplode(',', $recordlist);
+			$temp = t3lib_div::trimExplode(',', $recordlist,1);
+			// debug($temp);
 			$newtemp = array();
 			while (list(, $val) = each($temp)) {
+				if ($val === '0') $this->nocat = true;
 				$val = intval($val);
 				if ($val) {
 					$test = $GLOBALS['TSFE']->sys_page->checkRecord('tt_news_cat',$val,1); // test, if the record is visible
@@ -2295,7 +2369,7 @@ class tx_ttnews extends tslib_pibase {
 		// read template-file and fill and substitute the Global Markers
 		$templateflex_file = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'template_file', 's_template');
 		$this->templateCode = $this->cObj->fileResource($templateflex_file?'uploads/tx_ttnews/' . $templateflex_file:$this->conf['templateFile']);
-		$splitMark = md5(microtime());
+		$splitMark = md5(microtime(true));
 		$globalMarkerArray = array();
 		list($globalMarkerArray['###GW1B###'], $globalMarkerArray['###GW1E###']) = explode($splitMark, $this->cObj->stdWrap($splitMark, $this->conf['wrap1.']));
 		list($globalMarkerArray['###GW2B###'], $globalMarkerArray['###GW2E###']) = explode($splitMark, $this->cObj->stdWrap($splitMark, $this->conf['wrap2.']));
@@ -2378,7 +2452,10 @@ class tx_ttnews extends tslib_pibase {
 		$selectConf['pidInList'] = $this->pid_list;
 		// select only normal news (type=0) for the RSS feed. You can override this with other types with the TS-var 'xmlNewsTypes'
 		$selectConf['selectFields'] = 'max(datetime) as maxval';
+
 		$res = $this->cObj->exec_getQuery('tt_news', $selectConf);
+
+
 		$row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
 		// optional tags
 		if ($this->conf['displayXML.']['xmlLastBuildDate']) {
@@ -2473,7 +2550,10 @@ class tx_ttnews extends tslib_pibase {
 	 * @return	pointer		MySQL select result pointer / DBAL object
 	 */
 	function getStoriesResult() {
+
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_news', 'pid=' . intval($GLOBALS['TSFE']->id) . $this->cObj->enableFields('tt_news'), '', 'datetime DESC');
+
+
 		return $res;
 	}
 
@@ -2569,12 +2649,12 @@ class tx_ttnews extends tslib_pibase {
 	 */
 	function validateFields($fieldlist) {
 		$checkedFields = array();
-		$fArr = t3lib_div::trimExplode(',',$this->conf['searchFieldList'],1);
-			while (list(,$fN) = each($fArr)) {
-				if (in_array($fN,$this->fieldNames)) {
-					$checkedFields[] = $fN;
-				}
+		$fArr = t3lib_div::trimExplode(',',$fieldlist,1);
+		while (list(,$fN) = each($fArr)) {
+			if (in_array($fN,$this->fieldNames)) {
+				$checkedFields[] = $fN;
 			}
+		}
 		$checkedFieldlist = implode($checkedFields,',');
 		return $checkedFieldlist;
 	}
