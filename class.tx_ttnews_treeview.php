@@ -285,6 +285,7 @@ class tx_ttnews_treeview {
 
 						// Put together the select form with selected elements:
 					$selector_itemListStyle = isset($config['itemListStyle']) ? ' style="'.htmlspecialchars($config['itemListStyle']).'"' : ' style="'.$this->pObj->defaultMultipleSelectorStyle.'"';
+					$itemArray = array();
 					$size = $config['autoSizeMax'] ? t3lib_div::intInRange(count($itemArray)+1,t3lib_div::intInRange($size,1),$config['autoSizeMax']) : $size;
 					$thumbnails = '<select style="width:150px;" name="'.$PA['itemFormElName'].'_sel"'.$this->pObj->insertDefStyle('select').($size?' size="'.$size.'"':'').' onchange="'.htmlspecialchars($sOnChange).'"'.$PA['onFocus'].$selector_itemListStyle.'>';
 					#$thumbnails = '<select                       name="'.$PA['itemFormElName'].'_sel"'.$this->pObj->insertDefStyle('select').($size?' size="'.$size.'"':'').' onchange="'.htmlspecialchars($sOnChange).'"'.$PA['onFocus'].$selector_itemListStyle.'>';
@@ -330,7 +331,7 @@ class tx_ttnews_treeview {
 				$item.= $this->pObj->dbFileIcons($PA['itemFormElName'],'','',$itemArray,'',$params,$PA['onFocus']);
 				// Wizards:
 				$altItem = '<input type="hidden" name="'.$PA['itemFormElName'].'" value="'.htmlspecialchars($PA['itemFormElValue']).'" />';
-				$item = $this->pObj->renderWizards(array($item,$altItem),$config['wizards'],$table,$row,$field,$PA,$PA['itemFormElName'],$specConf);
+				$item = $this->pObj->renderWizards(array($item,$altItem),$config['wizards'],$table,$row,$field,$PA,$PA['itemFormElName'],array());
 			}
 		}
 
@@ -365,6 +366,7 @@ class tx_ttnews_treeview {
 			}
 			if (!$PA['row']['sys_language_uid'] && !$PA['row']['l18n_parent']) {
 				$catvals = explode(',',$PA['row']['category']); // get categories from the current record
+// 				debug($catvals,__FUNCTION__);
 				$notAllowedCats = array();
 				foreach ($catvals as $k) {
 					$c = explode('|',$k);
@@ -478,18 +480,25 @@ class tx_ttnews_treeview {
 				$SPaddWhere = ' AND tt_news_cat.pid IN (' . $storagePid . ')';
 			}
 			$notAllowedItems = $this->getNotAllowedItems($PA,$SPaddWhere);
-			
+
 			if ($notAllowedItems[0]) {
-					// get categories of the record in db
 				$uidField = $row['l18n_parent']&&$row['sys_language_uid']?$row['l18n_parent']:$row['uid'];
-				if (is_int($uidField)) {
+
+				if ($uidField) {
+
+				
+					// get categories of the record in db
 					$catres = $GLOBALS['TYPO3_DB']->exec_SELECT_mm_query ('tt_news_cat.uid,tt_news_cat.title,tt_news_cat_mm.sorting AS mmsorting', 'tt_news', 'tt_news_cat_mm', 'tt_news_cat', ' AND tt_news_cat_mm.uid_local='.$uidField.$SPaddWhere,'', 'mmsorting');
 					$NACats = array();
-					while ($catrow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($catres)) {
-						if($catrow['uid'] && $notAllowedItems[0] && in_array($catrow['uid'],$notAllowedItems)) {
-							$NACats[]= '<p style="padding:0px;color:red;font-weight:bold;">- '.$catrow['title'].' <span class="typo3-dimmed"><em>['.$catrow['uid'].']</em></span></p>';
+					if ($catres) {
+						while ($catrow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($catres)) {
+							if($catrow['uid'] && $notAllowedItems[0] && in_array($catrow['uid'],$notAllowedItems)) {
+	
+								$NACats[]= '<p style="padding:0px;color:red;font-weight:bold;">- '.$catrow['title'].' <span class="typo3-dimmed"><em>['.$catrow['uid'].']</em></span></p>';
+							}
 						}
 					}
+
 					if($NACats[0]) {
 						$NA_Items =  '<table class="warningbox" border="0" cellpadding="0" cellspacing="0"><tbody><tr><td><img src="gfx/icon_fatalerror.gif" class="absmiddle" alt="" height="16" width="18">SAVING DISABLED!! <br />'.($row['l18n_parent']&&$row['sys_language_uid']?'The translation original of this':'This').' record has the following categories assigned that are not defined in your BE usergroup: '.implode($NACats,chr(10)).'</td></tr></tbody></table>';
 					}				
@@ -502,6 +511,7 @@ class tx_ttnews_treeview {
 		if (!$row['l18n_parent'] && !$row['sys_language_uid']) { // render "type" field only for records in the default language
 			$fieldHTML = $fobj->getSingleField_typeSelect($table,$field,$row,$PA);
 		}
+
 		return $NA_Items.$fieldHTML;
 	}
 }
