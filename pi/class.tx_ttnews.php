@@ -689,6 +689,11 @@ class tx_ttnews extends tslib_pibase {
 				$templateName = 'TEMPLATE_ATOM03';
 				$this->templateCode = $this->cObj->fileResource($this->conf['displayXML.']['atom03_tmplFile']);
 				break;
+				
+				case 'atom1':
+				$templateName = 'TEMPLATE_ATOM1';
+				$this->templateCode = $this->cObj->fileResource($this->conf['displayXML.']['atom1_tmplFile']);
+				break;
 
 			}
 			break;
@@ -1372,14 +1377,16 @@ class tx_ttnews extends tslib_pibase {
 		if ($this->theCode == 'XML') {
 			$markerArray['###NEWS_TITLE###'] = $this->cleanXML($this->local_cObj->stdWrap($row['title'], $lConf['title_stdWrap.']));
 			$markerArray['###NEWS_AUTHOR###'] = $row['author_email']?'<author>'.$row['author_email'].'</author>':'';
-			if($this->conf['displayXML.']['xmlFormat'] == 'atom03') {
+			if($this->conf['displayXML.']['xmlFormat'] == 'atom03' ||
+			   $this->conf['displayXML.']['xmlFormat'] == 'atom1') {
 				$markerArray['###NEWS_AUTHOR###'] =	$row['author'];
 			}
 
 			if($this->conf['displayXML.']['xmlFormat'] == 'rss2' ||
 				$this->conf['displayXML.']['xmlFormat'] == 'rss091') {
 				$markerArray['###NEWS_SUBHEADER###'] = $this->cleanXML($this->local_cObj->stdWrap($row['short'], $lConf['subheader_stdWrap.']));
-			} elseif ($this->conf['displayXML.']['xmlFormat'] == 'atom03') {
+			} elseif ($this->conf['displayXML.']['xmlFormat'] == 'atom03' ||
+			          $this->conf['displayXML.']['xmlFormat'] == 'atom1') {
 				//html doesn't need to be striped off in atom feeds
 				$lConf['subheader_stdWrap.']['stripHtml'] = 0;
 				$markerArray['###NEWS_SUBHEADER###'] = $this->local_cObj->stdWrap($row['short'], $lConf['subheader_stdWrap.']);
@@ -1391,7 +1398,8 @@ class tx_ttnews extends tslib_pibase {
 			if($this->conf['displayXML.']['xmlFormat'] == 'rss2' ||
 				$this->conf['displayXML.']['xmlFormat'] == 'rss091') {
 				$markerArray['###NEWS_DATE###'] = date('D, d M Y H:i:s O', $row['datetime']);
-			} elseif ($this->conf['displayXML.']['xmlFormat'] == 'atom03') {
+			} elseif ($this->conf['displayXML.']['xmlFormat'] == 'atom03' ||
+			          $this->conf['displayXML.']['xmlFormat'] == 'atom1') {
 				$markerArray['###NEWS_DATE###'] = $this->getW3cDate($row['datetime']);
 			}
 			//dates for atom03
@@ -2423,8 +2431,12 @@ class tx_ttnews extends tslib_pibase {
 		$markerArray['###SITE_TITLE###'] = $this->conf['displayXML.']['xmlTitle'];
 		$markerArray['###SITE_LINK###'] = $this->config['siteUrl'];
 		$markerArray['###SITE_DESCRIPTION###'] = $this->conf['displayXML.']['xmlDesc'];
-		if(!empty($markerArray['###SITE_DESCRIPTION###']) && $this->conf['displayXML.']['xmlFormat'] == 'atom03') {
-			$markerArray['###SITE_DESCRIPTION###'] = '<tagline>'.$markerArray['###SITE_DESCRIPTION###'].'</tagline>';
+		if(!empty($markerArray['###SITE_DESCRIPTION###'])) {
+			if($this->conf['displayXML.']['xmlFormat'] == 'atom03') {
+				$markerArray['###SITE_DESCRIPTION###'] = '<tagline>'.$markerArray['###SITE_DESCRIPTION###'].'</tagline>';
+			} elseif($this->conf['displayXML.']['xmlFormat'] == 'atom1') {
+				$markerArray['###SITE_DESCRIPTION###'] = '<subtitle>'.$markerArray['###SITE_DESCRIPTION###'].'</subtitle>';
+			}
 		}
 
 		$markerArray['###SITE_LANG###'] = $this->conf['displayXML.']['xmlLang'];
@@ -2464,7 +2476,8 @@ class tx_ttnews extends tslib_pibase {
 			$markerArray['###NEWS_LASTBUILD###'] = '';
 		}
 
-		if($this->conf['displayXML.']['xmlFormat'] == 'atom03') {
+		if($this->conf['displayXML.']['xmlFormat'] == 'atom03' ||
+		   $this->conf['displayXML.']['xmlFormat'] == 'atom1') {
 			$markerArray['###NEWS_LASTBUILD###'] = $this->getW3cDate($row['maxval']);
 		}
 
@@ -2481,7 +2494,11 @@ class tx_ttnews extends tslib_pibase {
 		}
 
 		if ($this->conf['displayXML.']['xmlCopyright']) {
-			$markerArray['###NEWS_COPYRIGHT###'] = '<copyright>' . $this->conf['displayXML.']['xmlCopyright'] . '</copyright>';
+			if($this->conf['displayXML.']['xmlFormat'] == 'atom1') {
+				$markerArray['###NEWS_COPYRIGHT###'] = '<rights>' . $this->conf['displayXML.']['xmlCopyright'] . '</rights>';
+			} else {			
+				$markerArray['###NEWS_COPYRIGHT###'] = '<copyright>' . $this->conf['displayXML.']['xmlCopyright'] . '</copyright>';
+			}
 		} else {
 			$markerArray['###NEWS_COPYRIGHT###'] = '';
 		}
@@ -2524,7 +2541,7 @@ class tx_ttnews extends tslib_pibase {
 		} else {
 			$offset = '+'.$offset;
 		}
-		return strftime('%Y-%m-%dT%T', $datetime).$offset.':00';
+		return strftime('%Y-%m-%dT%H:%M:%S', $datetime).$offset.':00';
  	}
 
 	/**

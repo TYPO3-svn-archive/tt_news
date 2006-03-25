@@ -20,9 +20,10 @@ plugin.tt_news {
     rss2_tmplFile = {$plugin.tt_news.displayXML.rss2_tmplFile}
     rdf_tmplFile = {$plugin.tt_news.displayXML.rdf_tmplFile}
     atom03_tmplFile = {$plugin.tt_news.displayXML.atom03_tmplFile}
-   
-    xmlFormat = {$plugin.tt_news.displayXML.xmlFormat}
+    atom1_tmplFile = {$plugin.tt_news.displayXML.atom1_tmplFile}
+
     # possibile values: rss091 / rss2 / rdf / atom03
+    xmlFormat = {$plugin.tt_news.displayXML.xmlFormat}
 
     xmlTitle = {$plugin.tt_news.displayXML.xmlTitle}
     xmlLink = {$plugin.tt_news.displayXML.xmlLink}
