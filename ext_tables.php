@@ -91,7 +91,7 @@ t3lib_extMgm::addPlugin(Array('LLL:EXT:tt_news/locallang_tca.php:tt_news', '9'))
 t3lib_extMgm::addStaticFile($_EXTKEY,'static/ts_new/','CSS-based tmpl');
 t3lib_extMgm::addStaticFile($_EXTKEY,'static/css/','default CSS-styles');
 t3lib_extMgm::addStaticFile($_EXTKEY,'static/ts_old/','table-based tmpl');
-t3lib_extMgm::addStaticFile($_EXTKEY,'static/rss_feed/','News-feed (RSS,RDF,Atom03)');
+t3lib_extMgm::addStaticFile($_EXTKEY,'static/rss_feed/','News-feed (RSS,RDF,Atom03,Atom1)');
 
 	// allow news and news-category records on normal pages
 t3lib_extMgm::allowTableOnStandardPages('tt_news_cat');
