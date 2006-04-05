@@ -55,6 +55,8 @@ xmlnews {
   10.pid_list = {$plugin.tt_news.pid_list}
   10.singlePid = {$plugin.tt_news.singlePid}
   10.defaultCode = XML
+  10.catTextMode = 1
+  10.catImageMode = 0
 
 
   config {

@@ -66,7 +66,7 @@ For new created records the current time is automatically inserted as datetime.'
 		'_author.seeAlso' => 'tt_news:email',
 			// t3ver_label
 		't3ver_label.description' => 'The versioning label of this record.',
-		't3ver_label.details' => 'appears only when the extension "versioning" (extkey version) is installed.',
+		't3ver_label.details' => 'You can edit this field in the versioning module or in the workspaces module. This field appears only if it has a value.',
 			// author_email
 		'author_email.description' => 'The email address of the news author.',
 		'author_email.details' => 'In the default TS setup the value of this field will be taken as typolink parameter for the author name (if it is a valid email address). The value of this field will substitute the html-template marker ###NEWS_EMAIL###.',
@@ -112,6 +112,8 @@ plugin.tt_news.useSubCategories = 1</em>
 
 <strong>Controlling editing permissions with assigned categories:</strong>
 It\'s possible to control the editing permissions of news records with the assigned categories. If this feature is enabled a BE user can only change news records that have categories assigned that are defined in the list of allowed categories for this BE-user. If a BE-user performs any action (move,delete,hide,localize,copy,version,modify) with a record that has non-allowed categories assigned an error message will be displayed and the action will be ignored. Another message will be displayed in the news record above the fields "Title" and "Category". Non-selectable categories will be displayed in grey text and not linked. See second screenshot below.
+
+The size of both fields for the category selection can be configured in the extension manager.
 ',
 		'_category.image' => 'EXT:tt_news/cshimages/tt_news_categoy.png,EXT:tt_news/cshimages/tt_news_categoy_msg.png',
 		'category.image_descr' => 'the field "Category" in the tt_news db-record.

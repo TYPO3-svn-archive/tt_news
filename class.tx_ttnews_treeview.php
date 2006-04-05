@@ -25,6 +25,8 @@
  * This function displays a selector with nested categories.
  * The original code is borrowed from the extension "Digital Asset Management" (tx_dam) author: René Fritz <r.fritz@colorcube.de>
  *
+ * $Id$
+ *
  * @author	Rupert Germann <rupi@gmx.li>
  * @package TYPO3
  * @subpackage tt_news
@@ -114,9 +116,17 @@ class tx_ttnews_treeview {
 		$selItems = $this->pObj->addItems($selItems,$PA['fieldTSConfig']['addItems.']);
 		#if ($config['itemsProcFunc']) $selItems = $this->pObj->procItems($selItems,$PA['fieldTSConfig']['itemsProcFunc.'],$config,$table,$row,$field);
 
+
 			// Possibly remove some items:
 		$removeItems=t3lib_div::trimExplode(',',$PA['fieldTSConfig']['removeItems'],1);
 
+/** get include/exclude items */
+		$this->excludeList = $GLOBALS['BE_USER']->getTSConfigVal('tt_newsPerms.tt_news_cat.excludeList');
+// 		if ($this->excludeList) {
+// 			$removeItems .= ','.$this->excludeList;
+// 		}
+		$this->includeList = $GLOBALS['BE_USER']->getTSConfigVal('tt_newsPerms.tt_news_cat.includeList');
+			
 		foreach($selItems as $tk => $p)	{
 			if (in_array($p[1],$removeItems))	{
 				unset($selItems[$tk]);
@@ -135,6 +145,7 @@ class tx_ttnews_treeview {
 			// Creating the label for the "No Matching Value" entry.
 		$nMV_label = isset($PA['fieldTSConfig']['noMatchingValue_label']) ? $this->pObj->sL($PA['fieldTSConfig']['noMatchingValue_label']) : '[ '.$this->pObj->getLL('l_noMatchingValue').' ]';
 		$nMV_label = @sprintf($nMV_label, $PA['itemFormElValue']);
+
 
 
 			// Prepare some values:
@@ -215,13 +226,31 @@ class tx_ttnews_treeview {
 					} else {
 						$treeViewObj = t3lib_div::makeInstance('tx_ttnews_tceFunc_selectTreeView');
 					}
+
+
+/** exclude some categories */
+					
+
+
+					if ($this->excludeList) {
+						$catlistWhere = ' AND tt_news_cat.uid NOT IN ('.implode(t3lib_div::intExplode(',',$this->excludeList),',').')';
+					}
+					
 					$treeViewObj->table = $config['foreign_table'];
-					$treeViewObj->init($SPaddWhere);
+					$treeViewObj->init($SPaddWhere.$catlistWhere);
 					$treeViewObj->backPath = $this->pObj->backPath;
 					$treeViewObj->parentField = $TCA[$config['foreign_table']]['ctrl']['treeParentField'];
 					$treeViewObj->expandAll = 1;
 					$treeViewObj->expandFirst = 1;
 					$treeViewObj->fieldArray = array('uid','title','description'); // those fields will be filled to the array $treeViewObj->tree
+
+
+/** show only certain categories */
+
+
+					if ($this->includeList) {
+						$treeViewObj->MOUNTS = t3lib_div::intExplode(',',$this->includeList);
+					}
 
 					$treeViewObj->ext_IconMode = '1'; // no context menu on icons
 					$treeViewObj->title = $LANG->sL($TCA[$config['foreign_table']]['ctrl']['title']);
@@ -249,7 +278,17 @@ class tx_ttnews_treeview {
 						}
 					}
 						// render tree html
-					$treeContent=$treeViewObj->getBrowsableTree();
+					$treeContent = $treeViewObj->getBrowsableTree();
+// 					if ($this->excludeList) {
+// 						$tmpTreeIds = $treeViewObj->ids;
+// 						$treeViewObj->ids = array();
+// 						foreach ($tmpTreeIds as $k => $v) {
+// 							if (!t3lib_div::inList($this->excludeList,$v)) {
+// 								$treeViewObj->ids[$k] = $v;
+// 							}
+// 						}
+// 					}
+
 					$treeItemC = count($treeViewObj->ids);
 
 					if ($defItems[0]) { // add default items to the tree table. In this case the value [not categorized]
@@ -375,14 +414,11 @@ class tx_ttnews_treeview {
 					}
 				}
 				if ($notAllowedCats[0]) {
-					$this->NA_Items = '<table class="warningbox" border="0" cellpadding="0" cellspacing="0"><tbody><tr><td><img src="gfx/icon_fatalerror.gif" class="absmiddle" alt="" height="16" width="18">SAVING DISABLED!! <br />This record has the following categories assigned that are not defined in your BE usergroup: '.implode($notAllowedCats,chr(10)).'</td></tr></tbody></table>';
+					$this->NA_Items = '<table class="warningbox" border="0" cellpadding="0" cellspacing="0"><tbody><tr><td><img src="gfx/icon_fatalerror.gif" class="absmiddle" alt="" height="16" width="18">SAVING DISABLED!! <br />This record has the following categories assigned that are not defined in your BE usergroup: '.urldecode(implode($notAllowedCats,chr(10))).'</td></tr></tbody></table>';
 				}
 			}
 		}
-
-
 		return $itemArr;
-
 	}
 
 	/**
@@ -397,33 +433,37 @@ class tx_ttnews_treeview {
 	 */
 	function findRecursiveCategories ($PA,$row,$table,$storagePid,$treeIds) {
 		$errorMsg = array();
-		if ($table == 'tt_content' && $row['CType']=='list' && $row['list_type']==9) { // = tt_content element which inserts plugin tt_news
-			$cfgArr = t3lib_div::xml2array($row['pi_flexform']);
-			if (is_array($cfgArr) && is_array($cfgArr['data']['sDEF']['lDEF']) && $cfgArr['data']['sDEF']['lDEF']['categorySelection']) {
-				$rcList = $this->compareCategoryVals ($treeIds,$cfgArr['data']['sDEF']['lDEF']['categorySelection']['vDEF']);
+		if (!$this->excludeList && !$this->includeList) {
+			if ($table == 'tt_content' && $row['CType']=='list' && $row['list_type']==9) { // = tt_content element which inserts plugin tt_news
+				$cfgArr = t3lib_div::xml2array($row['pi_flexform']);
+				if (is_array($cfgArr) && is_array($cfgArr['data']['sDEF']['lDEF']) && $cfgArr['data']['sDEF']['lDEF']['categorySelection']) {
+					$rcList = $this->compareCategoryVals ($treeIds,$cfgArr['data']['sDEF']['lDEF']['categorySelection']['vDEF']);
+				}
+			} elseif ($table == 'tt_news_cat' || $table == 'tt_news') {
+				if ($table == 'tt_news_cat' && $row['pid'] == $storagePid && intval($row['uid']) && !in_array($row['uid'],$treeIds))	{ // if the selected category is not empty and not in the array of tree-uids it seems to be part of a chain of recursive categories
+					$recursionMsg = 'RECURSIVE CATEGORIES DETECTED!! <br />This record is part of a chain of recursive categories. The affected categories will not be displayed in the category tree.  You should remove the parent category of this record to prevent this.';
+				
+				}
+				if ($table == 'tt_news' && $row['category']) { // find recursive categories in the tt_news db-record
+					$rcList = $this->compareCategoryVals ($treeIds,$row['category']);
+				}
+				// in case of localized records this doesn't work
+				if ($storagePid && $row['pid'] != $storagePid && $table == 'tt_news_cat') { // if a storagePid is defined but the current category is not stored in storagePid
+					$errorMsg[] = '<p style="padding:10px;"><img src="gfx/icon_warning.gif" class="absmiddle" alt="" height="16" width="18"><strong style="color:red;"> Warning:</strong><br />tt_news is configured to display categories only from the "General record storage page" (GRSP). The current category is not located in the GRSP and will so not be displayed. To solve this you should either define a GRSP or disable "Use StoragePid" in the extension manager.</p>';
+				}
 			}
-		} elseif ($table == 'tt_news_cat' || $table == 'tt_news') {
-			if ($table == 'tt_news_cat' && $row['pid'] == $storagePid && intval($row['uid']) && !in_array($row['uid'],$treeIds))	{ // if the selected category is not empty and not in the array of tree-uids it seems to be part of a chain of recursive categories
-				$recursionMsg = 'RECURSIVE CATEGORIES DETECTED!! <br />This record is part of a chain of recursive categories. The affected categories will not be displayed in the category tree.  You should remove the parent category of this record to prevent this.';
+			if (strlen($rcList)) {
+				$recursionMsg = 'RECURSIVE CATEGORIES DETECTED!! <br />This record has the following recursive categories assigned: '.$rcList.'<br />Recursive categories will not be shown in the category tree and will therefore not be selectable. ';
+	
+				if ($table == 'tt_news') {
+					$recursionMsg .= 'To solve this problem mark these categories in the left select field, click on "edit category" and clear the field "parent category" of the recursive category.';
+				} else {
+					$recursionMsg .= 'To solve this problem you should clear the field "parent category" of the recursive category.';
+				}
 			}
-			if ($table == 'tt_news' && $row['category']) { // find recursive categories in the tt_news db-record
-				$rcList = $this->compareCategoryVals ($treeIds,$row['category']);
-			}
-			// in case of localized records this doesn't work
-			if ($storagePid && $row['pid'] != $storagePid && $table == 'tt_news_cat') { // if a storagePid is defined but the current category is not stored in storagePid
-				$errorMsg[] = '<p style="padding:10px;"><img src="gfx/icon_warning.gif" class="absmiddle" alt="" height="16" width="18"><strong style="color:red;"> Warning:</strong><br />tt_news is configured to display categories only from the "General record storage page" (GRSP). The current category is not located in the GRSP and will so not be displayed. To solve this you should either define a GRSP or disable "Use StoragePid" in the extension manager.</p>';
-			}
-		}
-		if (strlen($rcList)) {
-			$recursionMsg = 'RECURSIVE CATEGORIES DETECTED!! <br />This record has the following recursive categories assigned: '.$rcList.'<br />Recursive categories will not be shown in the category tree and will therefore not be selectable. ';
+			if ($recursionMsg) $errorMsg[] = '<table class="warningbox" border="0" cellpadding="0" cellspacing="0"><tbody><tr><td><img src="gfx/icon_fatalerror.gif" class="absmiddle" alt="" height="16" width="18">'.$recursionMsg.'</td></tr></tbody></table>';
 
-			if ($table == 'tt_news') {
-				$recursionMsg .= 'To solve this problem mark these categories in the left select field, click on "edit category" and clear the field "parent category" of the recursive category.';
-			} else {
-				$recursionMsg .= 'To solve this problem you should clear the field "parent category" of the recursive category.';
-			}
 		}
-		if ($recursionMsg) $errorMsg[] = '<table class="warningbox" border="0" cellpadding="0" cellspacing="0"><tbody><tr><td><img src="gfx/icon_fatalerror.gif" class="absmiddle" alt="" height="16" width="18">'.$recursionMsg.'</td></tr></tbody></table>';
 		return $errorMsg;
 	}
 
@@ -450,6 +490,7 @@ class tx_ttnews_treeview {
 			$rcArr = array();
 			foreach ($recursiveCategories as $key => $cat) {
 				if ($cat[0]) $rcArr[] = $cat[1].' ('.$cat[0].')'; // format result: title (uid)
+				
 			}
 			$rcList = implode($rcArr,', ');
 		}

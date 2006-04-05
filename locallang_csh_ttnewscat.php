@@ -40,7 +40,11 @@ A new parent category for the current category can also be created directly with
 Some categories in the tree are printed in grey and are not selectable: the current category is never selectable, additionally it is possible to define a list of categories that are allowed for a certain BackEnd user group in the TSconfig of this group (f.e.: tt_newsPerms.tt_news_cat.allowedItems = 7,8,9). All categories that are not in this list will not be selectable for members of this group.
 
 <strong>Recursive categories:</strong>
-Sometimes it might happen that some nested categories build an endless loop. Recursive categories will not be shown in the category tree. If the current category is part of such a loop, tt_news detects this and shows an error message (see image) in the category form. To break the endless loop it should be sufficient to empty the field "parent_category" from the current category record. After saving the record the error message should disappear.',
+Sometimes it might happen that some nested categories build an endless loop. Recursive categories will not be shown in the category tree. If the current category is part of such a loop, tt_news detects this and shows an error message (see image) in the category form. To break the endless loop it should be sufficient to empty the field "parent_category" from the current category record. After saving the record the error message should disappear.
+
+The height of the category tree can be configured in the extension manager.
+
+',
 		'_parent_category.image' => 'EXT:tt_news/cshimages/tt_news_cat_recursive_error.png',
 		'parent_category.image_descr' => 'Error message when the current category is part of a loop of recursive categories.',
 		'_parent_category.seeAlso'=>'tt_news:categories,be_groups:TSconfig,be_users',
