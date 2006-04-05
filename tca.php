@@ -1,4 +1,8 @@
 <?php
+/**
+ * $Id$
+ */
+
 	// get extension confArr
 $confArr = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['tt_news']);
 	// switch the use of the "StoragePid"(general record Storage Page) for tt_news categories
