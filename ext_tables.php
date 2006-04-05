@@ -1,4 +1,8 @@
 <?php
+/**
+ * $Id$
+ */
+ 
 if (!defined ('TYPO3_MODE')) 	die ('Access denied.');
 	// get extension configuration
 $confArr = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['tt_news']);
@@ -42,6 +46,7 @@ $TCA['tt_news'] = Array (
 			'1' => t3lib_extMgm::extRelPath($_EXTKEY).'res/tt_news_article.gif',
 			'2' => t3lib_extMgm::extRelPath($_EXTKEY).'res/tt_news_exturl.gif',
 		),
+		'mainpalette' => '10',
 		'thumbnail' => 'image',
 		'iconfile' => t3lib_extMgm::extRelPath($_EXTKEY).'ext_icon.gif',
 		'dynamicConfigFile' => t3lib_extMgm::extPath($_EXTKEY).'tca.php'
@@ -72,6 +77,7 @@ $TCA['tt_news_cat'] = Array (
 			'fe_group' => 'fe_group',
 		),
 		'prependAtCopy' => 'LLL:EXT:lang/locallang_general.php:LGL.prependAtCopy',
+		'mainpalette' => '2,10',
 		'crdate' => 'crdate',
 		'iconfile' => t3lib_extMgm::extRelPath($_EXTKEY).'res/tt_news_cat.gif',
 		'dynamicConfigFile' => t3lib_extMgm::extPath($_EXTKEY).'tca.php'
@@ -91,7 +97,7 @@ t3lib_extMgm::addPlugin(Array('LLL:EXT:tt_news/locallang_tca.php:tt_news', '9'))
 t3lib_extMgm::addStaticFile($_EXTKEY,'static/ts_new/','CSS-based tmpl');
 t3lib_extMgm::addStaticFile($_EXTKEY,'static/css/','default CSS-styles');
 t3lib_extMgm::addStaticFile($_EXTKEY,'static/ts_old/','table-based tmpl');
-t3lib_extMgm::addStaticFile($_EXTKEY,'static/rss_feed/','News-feed (RSS 0.91, RSS 2 , RDF, Atom 0.3, Atom 1.0)');
+t3lib_extMgm::addStaticFile($_EXTKEY,'static/rss_feed/','News-feed (RSS,RDF,ATOM)');
 
 	// allow news and news-category records on normal pages
 t3lib_extMgm::allowTableOnStandardPages('tt_news_cat');
