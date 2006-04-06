@@ -2241,7 +2241,9 @@ class tx_ttnews extends tslib_pibase {
 					}
 					$sPid = ($catSPid?$catSPid:$this->config['singlePid']);
 					$veryLocal_cObj->LOAD_REGISTER(array('newsSinglePid' => $sPid), '');
-					$this->conf['getRelatedCObject.']['10.']['default.']['10.']['typolink.']['parameter'] = $sPid;
+					if (!$this->conf['getRelatedCObject.']['10.']['default.']['10.']['typolink.']['parameter'] || $catSPid) {
+						$this->conf['getRelatedCObject.']['10.']['default.']['10.']['typolink.']['parameter'] = $sPid;
+					}
 				}
 				$lines[] = $veryLocal_cObj->cObjGetSingle($this->conf['getRelatedCObject'], $this->conf['getRelatedCObject.'], 'getRelated');
 			}

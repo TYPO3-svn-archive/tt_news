@@ -13,7 +13,9 @@
 	* fix: corrected building of links on categories in mode "act as category selector".
 	* feature: added support for caching to links on categories in mode "act as category selector".
 	* feature: added stdWrap to categories in XML feeds.
+	* feature: raised the size for images to 10MB.
 	* fix: fixed date conversion from human readable dates to internal vars (pS & pL) (thank goes to Ernesto Baschny for the patch).
+	* fix: fixed a bug bug which caused related news not to be linked, when the singlePid was not configured in constants.
 	* version number is now 2.2.41
 
 2006-03-25	Ingo Renner  <typo3@ingo-renner.com>
