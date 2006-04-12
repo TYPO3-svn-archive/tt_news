@@ -734,7 +734,7 @@ class tx_ttnews extends tslib_pibase {
 				$where = 'AND tt_news.uid=' . $this->tt_news_uid;
 			}
 			if ($excludeUids) {
-				$where = ($where?' AND ':'').'tt_news.uid NOT IN ('.$excludeUids.')';
+				$where = ' AND tt_news.uid NOT IN ('.$excludeUids.')';
 			}
 
 			// build parameter Array for List query
@@ -744,15 +744,6 @@ class tx_ttnews extends tslib_pibase {
 
 			$res = $this->cObj->exec_getQuery('tt_news', $selectConf);
 
-// 		$tmpselectConf = $selectConf;
-// 		$tmpselectConf['selectFields'] = 'tt_news.*';
-// 		$tmpres = $this->cObj->exec_getQuery('tt_news', $tmpselectConf);
-// debug($selectConf,__FUNCTION__);
-// 
-// 		while ($tmprow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($tmpres)) {
-// 			debug($tmprow);
-// 		}
-		
 			if ($res) $row = $GLOBALS['TYPO3_DB']->sql_fetch_row($res);
 			$newsCount = $row[0];
 			// Only do something if the queryresult is not empty
@@ -1387,6 +1378,7 @@ class tx_ttnews extends tslib_pibase {
 			if(is_array($this->categories[$row['uid']])) {
 				$this->catExclusive = implode(array_keys($this->categories[$row['uid']]),',');
 			}
+
 			$this->config['categoryMode'] = 1;
 			$this->theCode = 'LIST';
 			$relNewsByCat = trim($this->displayList($row['uid']));
@@ -1394,6 +1386,7 @@ class tx_ttnews extends tslib_pibase {
 			$this->catExclusive = $tmpcatExclusive;
 
 		}
+
 		$markerArray['###NEWS_RELATEDBYCATEGORY###'] = '';
 		$markerArray['###TEXT_RELATEDBYCATEGORY###'] = '';
 		if ($this->conf['showRelatedNewsByCategory'] && $relNewsByCat) {
@@ -1760,10 +1753,6 @@ class tx_ttnews extends tslib_pibase {
 			}
 		}
 
-//  debug($catlistWhere,'$catlistWhere');
-//   debug($lConf,'$lConf');
-// debug($this->catExclusive,'$this->catExclusive');
-		
 		switch ($mode) {
 			case 'nestedWraps';
 				$orderBy = 'sorting';
@@ -2007,7 +1996,8 @@ class tx_ttnews extends tslib_pibase {
 				}
 			}
 			if ($this->config['catTextMode'] != 0) {
-				$news_category = implode(', ', array_slice($news_category, 0, intval($this->config['maxCatTexts'])));
+				$categoryDivider = $this->local_cObj->stdWrap($this->conf['categoryDivider'], $this->conf['categoryDivider_stdWrap.']);
+				$news_category = implode($categoryDivider, array_slice($news_category, 0, intval($this->config['maxCatTexts'])));
 				if ($this->config['catTextLength']) {
 					// crop the complete category titles if 'catTextLength' value is given
 					$markerArray['###NEWS_CATEGORY###'] = (strlen($news_category) < intval($this->config['catTextLength'])?$news_category:substr($news_category, 0, intval($this->config['catTextLength'])) . '...');
@@ -2359,6 +2349,10 @@ class tx_ttnews extends tslib_pibase {
 		if ($confArr['useStoragePid']) {
 			$storagePid = $GLOBALS['TSFE']->getStorageSiterootPids();
 			$this->SPaddWhere = ' AND tt_news_cat.pid IN (' . $storagePid['_STORAGE_PID'] . ')';
+		}
+
+		if ($this->conf['catExcludeList']) {
+			$this->SPaddWhere .= ' AND tt_news_cat.uid NOT IN ('.$this->conf['catExcludeList'].')';
 		}
 
 		$this->enableCatFields = $this->cObj->enableFields('tt_news_cat');

@@ -127,6 +127,9 @@ plugin.tt_news {
   showRelatedNewsByCategory = {$plugin.tt_news.showRelatedNewsByCategory}
   useSPidFromCategory = {$plugin.tt_news.useSPidFromCategory}
 
+  categoryDivider = ,
+  categoryDivider_stdWrap.noTrimWrap = || |
+
   # setting for the category menu (CATMENU)
   displayCatMenu {
     # catmenu rendermode:

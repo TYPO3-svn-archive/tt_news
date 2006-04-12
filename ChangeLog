@@ -1,4 +1,13 @@
+2005-04-12	Rupert Germann <rupi@gmx.li>
+
+	* fix: added ENGINE=MyISAM to all create table statement in the ext_tables.sql file (fixes table creation problem with mysql 5.1)
+	* fix: showRelatedNewsByCategory works again now. This bug was indroduced when I fixed the search in version 2.2.41.
+	* feature: the hardcoded comma which is added between the category titles in Liste views is configurable now. New TS options: categoryDivider and categoryDivider_stdWrap (thanks to Hauke Haller for sponsoring this).
+	* feature: Now it's possible to exclude category titles (and images) from display in newsrecords. New TS option: catExcludeList (thanks to Hauke Haller for sponsoring this).
+	* version number is now 2.2.42	
+
 2005-04-02	Rupert Germann <rupi@gmx.li>
+
 	* feature: added the possibility to exclude (or include) categories for certain users in BE forms. The list of excluded or included categories is configurable in user/group TSconfig (Thanks to Franz Ripfel for sponsoring this).
 	* feature: added the possibility to exclude (or include) categories in the FrontEnd category menu. Now it is configurable which categories are shown in the catmenu. This configuration can be done in the contentelement or by TS.
 	* feature: Made the maximum height of the category selector in BE forms configurable in the extension configuration.
