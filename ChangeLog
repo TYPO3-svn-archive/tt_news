@@ -1,29 +1,35 @@
 2005-04-12	Rupert Germann <rupi@gmx.li>
 
+	* fix (bug 1383): the pi_base pagebrowser didn't work correct with human readable dates (thanks to Ernesto Baschny for the patch)
+	* fix (bug 1310): function validate field works correct now
+	* fix (bug 2440): substituted all hardcoded quotes in queries with fullQuoteStr()
+	* fix: fixed some problems with the building of the backToList link in SINGLE view
 	* fix: added ENGINE=MyISAM to all create table statement in the ext_tables.sql file (fixes table creation problem with mysql 5.1)
 	* fix: showRelatedNewsByCategory works again now. This bug was indroduced when I fixed the search in version 2.2.41.
+	* fix (bug 3156): related news by category didn't work with dynamically built backlink.
+	* fix (bug 3156 continued): Fixed also a problem where the value of the sViewPointer in the backLink
 	* feature: the hardcoded comma which is added between the category titles in Liste views is configurable now. New TS options: categoryDivider and categoryDivider_stdWrap (thanks to Hauke Haller for sponsoring this).
-	* feature: Now it's possible to exclude category titles (and images) from display in newsrecords. New TS option: catExcludeList (thanks to Hauke Haller for sponsoring this).
-	* version number is now 2.2.42	
+	* feature: Now it's possible to exclude category titles (and category images) from display in newsrecords. New TS option: catExcludeList (thanks to Hauke Haller for sponsoring this).
+	* version number is now 2.2.42.
+	* updated function index in class tx_ttnews
 
 2005-04-02	Rupert Germann <rupi@gmx.li>
 
 	* feature: added the possibility to exclude (or include) categories for certain users in BE forms. The list of excluded or included categories is configurable in user/group TSconfig (Thanks to Franz Ripfel for sponsoring this).
 	* feature: added the possibility to exclude (or include) categories in the FrontEnd category menu. Now it is configurable which categories are shown in the catmenu. This configuration can be done in the contentelement or by TS.
 	* feature: Made the maximum height of the category selector in BE forms configurable in the extension configuration.
-	* feature: added support for nested fe usergroups (requires TYPO3 4.0).
-	* feature: raised number of images in the tt_news db-record to 99 (changed db fieldtype to text).
+	* feature (bug 2369): added support for nested fe usergroups (requires TYPO3 4.0).
+	* feature (bugs 2287,2288): raised number of images in the tt_news db-record to 99 (changed db fieldtype to text).
 	* fix: added support for caching of all pagebrowser links.
-	* fix: the title attribute of links in the list view is localized correctly now.
-	* fix: added support for human readable dates to liks in XML feeds.
-	* fix: corrected wrong building of the query to make the search is work again.
+	* fix (bug 2030): the title attribute of links in the list view is localized correctly now.
+	* fix (bug 2881): added support for human readable dates to liks in XML feeds.
+	* fix: corrected wrong building of the query to make the search work again.
 	* feature: added support for filtering XML feeds by category from GET vars.
 	* feature: now the related news can also be showed in the list or latest view (new TS option: alwaysShowRelated).
-	* fix: corrected building of links on categories in mode "act as category selector".
-	* feature: added support for caching to links on categories in mode "act as category selector".
-	* feature: added stdWrap to categories in XML feeds.
+	* fix (bug 2758): corrected building of links on categories in mode "act as category selector". added support for caching to links on categories in mode "act as category selector".
+	* feature (bug 2671): added stdWrap to categories in XML feeds.
 	* feature: raised the size for images to 10MB.
-	* fix: fixed date conversion from human readable dates to internal vars (pS & pL) (thank goes to Ernesto Baschny for the patch).
+	* fix (bug 2215): fixed date conversion from human readable dates to internal vars (pS & pL) (thank goes to Ernesto Baschny for the patch).
 	* fix: fixed a bug bug which caused related news not to be linked, when the singlePid was not configured in constants.
 	* version number is now 2.2.41
 
@@ -33,7 +39,7 @@
 
 2005-02-18	Rupert Germann <rupi@gmx.li>
 
-	* feature: added support for Workspaces in TYPO3 4.0 (Thanks to netcreators.nl for sponsoring this)
+	* feature (bug 2233): added support for Workspaces in TYPO3 4.0 (Thanks to netcreators.nl for sponsoring this)
 	* fix: changed TYPO3_version and PHP_version in $emconf
 	* updated emconf: version nr is 2.2.40 now
 
@@ -181,7 +187,7 @@
 		- added the non-allowed categories check also to the field "title" to display the "non-allowed categories" message already on the first tab of the resord. before this the message appeared only at the "Category" field.
 		- edited the help template.
 		- fix: when no code at all is given then the help message appears now. (before it appeared only when a wrong code was given) introduced new function displayFEHelp() to the tt_news class.
-		- new feature: the list of fields for the internal search is configurable now: "plugin.tt_news.searchFieldList". Added a new function validateFields to ckeck if the configured search fields are actually existing in the db.
+		- new feature: the list of fields for the internal search is configurable now: "plugin.tt_news.searchFieldList". Added a new function validateFields to check if the configured search fields are actually existing in the db.
 
 2005-05-08	rupertgermann
 	* cvsroot/typo3xdev/tx_ttnews/pi/news_conf1.png 1.3:
