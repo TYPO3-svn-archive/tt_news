@@ -54,7 +54,7 @@ CREATE TABLE tt_news (
   KEY parent (pid),
   KEY t3ver_oid (t3ver_oid,t3ver_wsid)
 
-) ENGINE=MyISAM;
+);
 
 #
 # Table structure for table 'tt_news_cat'
@@ -82,7 +82,7 @@ CREATE TABLE tt_news_cat (
   PRIMARY KEY (uid),
   KEY parent (pid)
 
-) ENGINE=MyISAM;
+);
 
 #
 # Table structure for table 'tt_news_related_mm'
@@ -94,7 +94,7 @@ CREATE TABLE tt_news_related_mm (
   tablenames tinytext NOT NULL,
   KEY uid_local (uid_local),
   KEY uid_foreign (uid_foreign)
-) ENGINE=MyISAM;
+);
 
 #
 # Table structure for table 'tt_news_cat_mm'
@@ -106,4 +106,4 @@ CREATE TABLE tt_news_cat_mm (
   sorting int(11) unsigned DEFAULT '0' NOT NULL,
   KEY uid_local (uid_local),
   KEY uid_foreign (uid_foreign)
-) ENGINE=MyISAM;
+);

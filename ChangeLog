@@ -4,7 +4,6 @@
 	* fix (bug 1310): function validate field works correct now
 	* fix (bug 2440): substituted all hardcoded quotes in queries with fullQuoteStr()
 	* fix: fixed some problems with the building of the backToList link in SINGLE view
-	* fix: added ENGINE=MyISAM to all create table statement in the ext_tables.sql file (fixes table creation problem with mysql 5.1)
 	* fix: showRelatedNewsByCategory works again now. This bug was indroduced when I fixed the search in version 2.2.41.
 	* fix (bug 3156): related news by category didn't work with dynamically built backlink.
 	* fix (bug 3156 continued): Fixed also a problem where the value of the sViewPointer in the backLink
