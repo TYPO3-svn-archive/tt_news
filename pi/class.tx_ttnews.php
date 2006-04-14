@@ -249,6 +249,8 @@ class tx_ttnews extends tslib_pibase {
 		$this->arcExclusive = $arcExclusive?$arcExclusive:$this->conf['archive'];
 
 		$this->config['datetimeDaysToArchive'] = intval($this->conf['datetimeDaysToArchive']);
+		$this->config['datetimeHoursToArchive'] = intval($this->conf['datetimeHoursToArchive']);
+		$this->config['datetimeMinutesToArchive'] = intval($this->conf['datetimeMinutesToArchive']);
 
 		if ($this->conf['useHRDates']) {
 			$this->convertDates();
@@ -731,7 +733,13 @@ class tx_ttnews extends tslib_pibase {
 			// if this is true, we're listing from the archive for the first time (no pS set), to prevent an empty list page we set the pS value to the archive start
 			if (($this->arcExclusive > 0 && !$this->piVars['pS'] && $theCode != 'SEARCH')) {
 				// set pS to time minus archive startdate
-				$this->piVars['pS'] = ($GLOBALS['SIM_EXEC_TIME'] - ($this->config['datetimeDaysToArchive'] * 86400));
+				if ($this->config['datetimeMinutesToArchive']) {
+					$this->piVars['pS'] = ($GLOBALS['SIM_EXEC_TIME'] - ($this->config['datetimeMinutesToArchive'] * 60));
+				} elseif ($this->config['datetimeHoursToArchive']) {
+					$this->piVars['pS'] = ($GLOBALS['SIM_EXEC_TIME'] - ($this->config['datetimeHoursToArchive'] * 3600));
+				} else {
+					$this->piVars['pS'] = ($GLOBALS['SIM_EXEC_TIME'] - ($this->config['datetimeDaysToArchive'] * 86400));
+				}
 			}
 		}
 		if ($this->piVars['pS'] && !$this->piVars['pL']) {
@@ -1176,8 +1184,16 @@ class tx_ttnews extends tslib_pibase {
 						$selectConf['where'] .= ' AND tt_news.archivedate<' . $GLOBALS['SIM_EXEC_TIME'];
 					}
 				}
-				if ($this->config['datetimeDaysToArchive']) {
-					$theTime = $GLOBALS['SIM_EXEC_TIME'] - intval($this->config['datetimeDaysToArchive']) * 3600 * 24;
+				if ($this->config['datetimeMinutesToArchive'] || $this->config['datetimeHoursToArchive'] || $this->config['datetimeDaysToArchive']) {
+					if ($this->config['datetimeMinutesToArchive']) {
+						$theTime = $GLOBALS['SIM_EXEC_TIME'] - intval($this->config['datetimeMinutesToArchive']) * 60;
+					}
+					elseif ($this->config['datetimeHoursToArchive']) {
+						$theTime = $GLOBALS['SIM_EXEC_TIME'] - intval($this->config['datetimeHoursToArchive']) * 3600;
+					}
+							else {
+						$theTime = $GLOBALS['SIM_EXEC_TIME'] - intval($this->config['datetimeDaysToArchive']) * 86400;
+					}
 					if ($this->arcExclusive < 0) {
 						$selectConf['where'] .= ' AND (tt_news.datetime=0 OR tt_news.datetime>' . $theTime . ')';
 

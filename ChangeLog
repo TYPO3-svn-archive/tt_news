@@ -1,5 +1,6 @@
 2006-04-14	Rupert Germann <rupi@gmx.li>
 
+	* feature (1951): finer granularity for automatic archiving: Besides the known datetimeDaysToArchive it's now possible to set datetimeHoursToArchive or datetimeMinutesToArchive to "move" news to the archive after a given timespan has passed.
 	* fix (bug 1497): News category selection impossible if category name contains apostrophe
 	* fix (bug 3259): Broken multibyte characters in category titles
 
