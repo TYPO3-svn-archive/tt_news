@@ -75,7 +75,7 @@ class tx_ttnews_tceFunc_selectTreeView extends t3lib_treeview {
 				return '<a href="#" title="'.$v['description'].'"><span style="color:#999;cursor:default;">'.$title.'</span></a>';
 			} else {
 				$hrefTitle = $v['description'];
-				$aOnClick = 'setFormValueFromBrowseWin(\''.$this->TCEforms_itemFormElName.'\','.$v['uid'].',\''.$title.'\'); return false;';
+				$aOnClick = 'setFormValueFromBrowseWin(\''.$this->TCEforms_itemFormElName.'\','.$v['uid'].',\''.t3lib_div::slashJS($title).'\'); return false;';
 				return '<a href="#" onclick="'.htmlspecialchars($aOnClick).'" title="'.htmlentities($v['description']).'">'.$title.'</a>';
 			}
 		} else {
@@ -339,12 +339,13 @@ class tx_ttnews_treeview {
 				$itemArray = t3lib_div::trimExplode(',',$PA['itemFormElValue'],1);
 				foreach($itemArray as $tk => $tv) {
 					$tvP = explode('|',$tv,2);
-					if (in_array($tvP[0],$removeItems) && !$PA['fieldTSConfig']['disableNoMatchingValueElement'])	{
+					$evalValue = rawurldecode($tvP[0]);
+					if (in_array($evalValue,$removeItems) && !$PA['fieldTSConfig']['disableNoMatchingValueElement'])	{
 						$tvP[1] = rawurlencode($nMV_label);
-					} elseif (isset($PA['fieldTSConfig']['altLabels.'][$tvP[0]])) {
-						$tvP[1] = rawurlencode($this->pObj->sL($PA['fieldTSConfig']['altLabels.'][$tvP[0]]));
+// 					} elseif (isset($PA['fieldTSConfig']['altLabels.'][$evalValue])) {
+// 						$tvP[1] = rawurlencode($this->pObj->sL($PA['fieldTSConfig']['altLabels.'][$evalValue]));
 					} else {
-						$tvP[1] = rawurlencode($this->pObj->sL(rawurldecode($tvP[1])));
+						$tvP[1] = rawurldecode($tvP[1]);
 					}
 					$itemArray[$tk]=implode('|',$tvP);
 				}

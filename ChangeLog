@@ -1,3 +1,8 @@
+2005-04-14	Rupert Germann <rupi@gmx.li>
+
+	* fix (bug 1497): News category selection impossible if category name contains apostrophe
+	* fix (bug 3259): Broken multibyte characters in category titles
+
 2005-04-12	Rupert Germann <rupi@gmx.li>
 
 	* fix (bug 1383): the pi_base pagebrowser didn't work correct with human readable dates (thanks to Ernesto Baschny for the patch)
