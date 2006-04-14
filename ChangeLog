@@ -1,9 +1,9 @@
-2005-04-14	Rupert Germann <rupi@gmx.li>
+2006-04-14	Rupert Germann <rupi@gmx.li>
 
 	* fix (bug 1497): News category selection impossible if category name contains apostrophe
 	* fix (bug 3259): Broken multibyte characters in category titles
 
-2005-04-12	Rupert Germann <rupi@gmx.li>
+2006-04-12	Rupert Germann <rupi@gmx.li>
 
 	* fix (bug 1383): the pi_base pagebrowser didn't work correct with human readable dates (thanks to Ernesto Baschny for the patch)
 	* fix (bug 1310): function validate field works correct now
@@ -17,7 +17,7 @@
 	* version number is now 2.2.42.
 	* updated function index in class tx_ttnews
 
-2005-04-02	Rupert Germann <rupi@gmx.li>
+2006-04-02	Rupert Germann <rupi@gmx.li>
 
 	* feature: added the possibility to exclude (or include) categories for certain users in BE forms. The list of excluded or included categories is configurable in user/group TSconfig (Thanks to Franz Ripfel for sponsoring this).
 	* feature: added the possibility to exclude (or include) categories in the FrontEnd category menu. Now it is configurable which categories are shown in the catmenu. This configuration can be done in the contentelement or by TS.
@@ -41,10 +41,12 @@
 
 	* ADD added support for ATOM 1.0 feeds, category support still missing
 
-2005-02-18	Rupert Germann <rupi@gmx.li>
+2006-02-18	Rupert Germann <rupi@gmx.li>
 
 	* feature (bug 2233): added support for Workspaces in TYPO3 4.0 (Thanks to netcreators.nl for sponsoring this)
 	* fix: changed TYPO3_version and PHP_version in $emconf
+	* fix for function validateFields()
+	* fixed check for not allowed categories
 	* updated emconf: version nr is 2.2.40 now
 
 2005-11-12	Ingo Renner  <typo3@ingo-renner.com>
@@ -56,6 +58,18 @@
 
 	* FIX fixed bug 0001777: Icon for news with "futuretiming" is missing
 
+2005-10-22	Rupert Germann <rupi@gmx.li>
+
+	* fix: fixed bug which displayed a mysql error when a non-admin user did create new news.
+
+2005-10-18	Rupert Germann <rupi@gmx.li>
+
+	* new feature: now its possible to display localized news which doesn't have a translation original in the default language. This behaviour has to be enabled by setting "showNewsWithoutDefaultTranslation=1"
+	* fix for another related news bug which did only appear when als news had the same date. Thanks to Chris mueller who pointed me to this
+	* fix for "related news by category".
+	* fix for "sitelang" in empty rss feeds
+	* fix: now the category tree in localized news plugins is displayed correctly
+
 2005-10-10	Ingo Renner  <typo3@ingo-renner.com>
 
 	* FIX fixed bug 0001313: tt_news rss feeds not rss 2.0 compliant
@@ -65,16 +79,49 @@
 
 	* FIX removed alt attribute in catmenu which is not allowed for anchor tags
 
-2005-05-19	rupertgermann
-	* cvsroot/typo3xdev/tx_ttnews/ext_emconf.php 1.41:
-		- raised version number to 2.2.5
+2005-07-01	Rupert Germann <rupi@gmx.li>
 
-	* cvsroot/typo3xdev/tx_ttnews/locallang.php 1.23:
-	* cvsroot/typo3xdev/tx_ttnews/locallang_csh_ttnews.php 1.12:
-	* cvsroot/typo3xdev/tx_ttnews/locallang_csh_ttnewscat.php 1.6:
-	* cvsroot/typo3xdev/tx_ttnews/locallang_tca.php 1.36:
-	* cvsroot/typo3xdev/tx_ttnews/pi/locallang.php 1.23:
-		- added new language files from TER
+	* again a fix in the getRelated function -> should work now
+
+2005-06-22	Rupert Germann <rupi@gmx.li>
+
+	* fix: related news and related pages are now working correctly
+	* fix: rebuilded the check for related categories of related news. added a new TSvar "checkCategoriesOfRelatedNews"
+	* fix: now the "Single Pid by category" does work also for related news.
+	* fix for bug 1194: News categories not displayed in SINGLE view
+	* and some other small improvements
+
+2005-06-11	Rupert Germann <rupi@gmx.li>
+
+	* fix for bug 1190: the marker ###NEWS_LINK### is not substituted correctly in XML feeds
+
+2005-06-09	Rupert Germann <rupi@gmx.li>
+
+	* fix: removed the alt alttribute from links.
+	* fix: inserted a missing space for the title attribute in links
+	* fix: the register "newsMoreLink" works correct now.
+	* fix: changed the generation of dates in XML feeds (now the day has always 2 digits)
+
+2005-05-27	Rupert Germann <rupi@gmx.li>
+
+	* fix: removed the possibility to configure the sorting of categories in BE -> there was an error in it which caused renaming of category titles with their sorting numbers
+
+2005-05-25	Rupert Germann <rupi@gmx.li>
+
+	* fix: the "type" field was not handled correctly in localizations of news articles with type "internal link" and "external link" -> this works now.
+	* fix: added a check for the "type" of the news record to the "direct preview" feature. Now "direct preview" work only with normal news.
+	* new feature: now it's possible to configure the field by which categories in the BE are ordered. (in web/list and in the right field of all category select fields)
+	* Now all categories in the FrontEnd (catmenu and categories in news records) are ordereds by default by their position in the left field of the category select in news record. This can be changed by setting "catOrderBY" to a field (or a comma separated list of fields).
+	* added the "validateFields()" function to the TS option "catOrderBy".
+	* Tag: version-2-2-0
+
+2005-05-17	Rupert Germann <rupi@gmx.li>
+
+	* fix: removed some references from function calls because they are considered deprecated and causes an error when "allow_call_time_pass_reference" is disabled in php.ini. (allow_call_time_pass_referenc=Off is recommended).
+
+2005-05-19	rupertgermann
+	* raised version number to 2.2.5
+	* added new language files from TER
 
 2005-05-17	rupertgermann
 	* cvsroot/typo3xdev/tx_ttnews/pi/class.tx_ttnews.php 1.101:
