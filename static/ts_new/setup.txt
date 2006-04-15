@@ -163,6 +163,16 @@ plugin.tt_news {
     catmenuLevel4_stdWrap.wrap = <div class="level4">|</div>
   }
 
+  # - - - - - - - - -  catRootline settings  - - - - - - - - - - - #
+  catRootline {
+  	catRootline_stdWrap.wrap = <div class="news-catRootline">|</div>
+
+	# if titles are linked the link points to the page which is configured as category shortcut
+	linkTitles = 1
+	title_stdWrap.wrap =
+	divider = &nbsp;&gt;&nbsp;
+  }
+
   # - - - - - - - - -  Archive settings  - - - - - - - - - - - #
   
   datetimeDaysToArchive = {$plugin.tt_news.datetimeDaysToArchive}

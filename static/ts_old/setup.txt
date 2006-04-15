@@ -130,6 +130,16 @@ plugin.tt_news {
   categoryDivider = ,
   categoryDivider_stdWrap.noTrimWrap = || |
 
+  # settings for the category rootline
+  catRootline {
+  	catRootline_stdWrap.wrap = <div class="news-catRootline">|</div>
+
+	# if titles are linked the link points to the page which is configured as category shortcut
+	linkTitles = 1
+	title_stdWrap.wrap =
+	divider = &nbsp;&gt;&nbsp;
+  }
+
   # setting for the category menu (CATMENU)
   displayCatMenu {
     # catmenu rendermode:

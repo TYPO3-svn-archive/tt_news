@@ -1,12 +1,16 @@
+2006-04-15	Rupert Germann <rupi@gmx.li>
+
+	* feature (3126): new template marker ###NEWS_CATEGORY_ROOTLINE###. This marker will be filled with the titles of the parent categories of the first assigned category in SINGLE view or with the parents of the selected category in LIST view. See manual ("The category rootline") for details.
+
 2006-04-14	Rupert Germann <rupi@gmx.li>
 
-	* feature (1951): finer granularity for automatic archiving: Besides the known datetimeDaysToArchive it's now possible to set datetimeHoursToArchive or datetimeMinutesToArchive to "move" news to the archive after a given timespan has passed.
+	* feature (1951): finer granularity for automatic archiving: Altenatively the known "datetimeDaysToArchive" it's now possible to set "datetimeHoursToArchive" or "datetimeMinutesToArchive" to "move" news to the archive after a given timespan has passed.
 	* fix (bug 1497): News category selection impossible if category name contains apostrophe
 	* fix (bug 3259): Broken multibyte characters in category titles
 
 2006-04-12	Rupert Germann <rupi@gmx.li>
 
-	* fix (bug 1383): the pi_base pagebrowser didn't work correct with human readable dates (thanks to Ernesto Baschny for the patch)
+	* fix (bug 1383): the pi_base pagebrowser didn't work correctly with human readable dates (thanks to Ernesto Baschny for the patch)
 	* fix (bug 1310): function validate field works correct now
 	* fix (bug 2440): substituted all hardcoded quotes in queries with fullQuoteStr()
 	* fix: fixed some problems with the building of the backToList link in SINGLE view
@@ -30,7 +34,7 @@
 	* fix (bug 2881): added support for human readable dates to liks in XML feeds.
 	* fix: corrected wrong building of the query to make the search work again.
 	* feature: added support for filtering XML feeds by category from GET vars.
-	* feature: now the related news can also be showed in the list or latest view (new TS option: alwaysShowRelated).
+	* feature: now the related news can also be showed in the list or latest view (new TS option: "alwaysShowRelated").
 	* fix (bug 2758): corrected building of links on categories in mode "act as category selector". added support for caching to links on categories in mode "act as category selector".
 	* feature (bug 2671): added stdWrap to categories in XML feeds.
 	* feature: raised the size for images to 10MB.
