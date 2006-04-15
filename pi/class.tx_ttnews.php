@@ -43,50 +43,51 @@
  *
  *
  *
- *  104: class tx_ttnews extends tslib_pibase
- *  135:     function main_news($content, $conf)
- *  211:     function init($conf)
- *  356:     function newsArchiveMenu()
- *  506:     function displaySingle()
- *  586:     function displayVersionPreview ()
- *  638:     function displayList($excludeUids = 0)
- *  950:     function getListContent($itemparts, $selectConf, $prefix_display)
- * 1116:     function getSelectConf($where, $noPeriod = 0)
- * 1241:     function generatePageArray()
- * 1261:     function getItemMarkerArray ($row, $textRenderObj = 'displaySingle')
- * 1517:     function insertPagebreaks($text,$firstPageWordCrop)
- * 1567:     function makeMultiPageSView($bodytext,$lConf)
- * 1597:     function makePageBrowser($showResultCount=1,$tableParams='',$pointerName='pointer')
- * 1679:     function getCategories($uid, $getAll=false)
- * 1736:     function getSubCategories($catlist, $cc = 0)
- * 1762:     function displayCatMenu()
- * 1863:     function getCatMenuContent($array_in,$lConf, $l=0)
- * 1915:     function getSubCategoriesForMenu ($catlist, $fields, $addWhere, $cc = 0)
- * 1941:     function getCatMarkerArray($markerArray, $row, $lConf)
- * 2078:     function getImageMarkers($markerArray, $row, $lConf, $textRenderObj)
- * 2141:     function getRelated($uid)
- * 2293:     function userProcess($mConfKey, $passVar)
- * 2308:     function spMarker($subpartMarker)
- * 2326:     function searchWhere($sw)
- * 2337:     function formatStr($str)
- * 2352:     function getLayouts($templateCode, $alternatingLayouts, $marker)
- * 2370:     function initLanguages ()
- * 2387:     function initCategoryVars()
- * 2453:     function checkRecords($recordlist)
- * 2485:     function initTemplate()
- * 2510:     function initPidList ()
- * 2535:     function getXmlHeader()
- * 2636:     function getW3cDate($datetime)
- * 2661:     function main_xmlnewsfeed($content, $conf)
- * 2676:     function getStoriesResult()
- * 2693:     function cleanXML($str)
- * 2707:     function convertDates()
- * 2741:     function getHrDateSingle($tstamp)
- * 2754:     function displayFEHelp()
- * 2775:     function validateFields($fieldlist)
- * 2796:     function getNewsSubpart($myTemplate, $myKey, $row = Array())
+ *  105: class tx_ttnews extends tslib_pibase
+ *  136:     function main_news($content, $conf)
+ *  212:     function init($conf)
+ *  359:     function newsArchiveMenu()
+ *  507:     function displaySingle()
+ *  590:     function displayVersionPreview ()
+ *  643:     function displayList($excludeUids = 0)
+ *  966:     function getListContent($itemparts, $selectConf, $prefix_display)
+ * 1130:     function getSelectConf($where, $noPeriod = 0)
+ * 1265:     function generatePageArray()
+ * 1286:     function getItemMarkerArray ($row, $textRenderObj = 'displaySingle')
+ * 1550:     function insertPagebreaks($text,$firstPageWordCrop)
+ * 1600:     function makeMultiPageSView($bodytext,$lConf)
+ * 1630:     function makePageBrowser($showResultCount=1,$tableParams='',$pointerName='pointer')
+ * 1712:     function getCategories($uid, $getAll=false)
+ * 1783:     function getCategoryPath($categoryArray)
+ * 1840:     function getSubCategories($catlist, $cc = 0)
+ * 1869:     function displayCatMenu()
+ * 1982:     function getCatMenuContent($array_in,$lConf, $l=0)
+ * 2034:     function getSubCategoriesForMenu ($catlist, $fields, $addWhere, $cc = 0)
+ * 2065:     function getCatMarkerArray($markerArray, $row, $lConf)
+ * 2201:     function getImageMarkers($markerArray, $row, $lConf, $textRenderObj)
+ * 2264:     function getRelated($uid)
+ * 2424:     function userProcess($mConfKey, $passVar)
+ * 2439:     function spMarker($subpartMarker)
+ * 2457:     function searchWhere($sw)
+ * 2468:     function formatStr($str)
+ * 2483:     function getLayouts($templateCode, $alternatingLayouts, $marker)
+ * 2501:     function initLanguages ()
+ * 2521:     function initCategoryVars()
+ * 2587:     function checkRecords($recordlist)
+ * 2619:     function initTemplate()
+ * 2644:     function initPidList ()
+ * 2669:     function getXmlHeader()
+ * 2770:     function getW3cDate($datetime)
+ * 2795:     function main_xmlnewsfeed($content, $conf)
+ * 2810:     function getStoriesResult()
+ * 2832:     function cleanXML($str)
+ * 2846:     function convertDates()
+ * 2880:     function getHrDateSingle($tstamp)
+ * 2893:     function displayFEHelp()
+ * 2914:     function validateFields($fieldlist)
+ * 2935:     function getNewsSubpart($myTemplate, $myKey, $row = Array())
  *
- * TOTAL FUNCTIONS: 41
+ * TOTAL FUNCTIONS: 42
  * (This index is automatically created/updated by the extension "extdeveval")
  *
  */
@@ -111,13 +112,13 @@ class tx_ttnews extends tslib_pibase {
 	var $conf; // the TypoScript configuration array
 	var $config; // the processed TypoScript configuration array
 	var $langArr; // the languages found in the tt_news sysfolder
-	var $sys_language_mode; 
+	var $sys_language_mode;
 	var $alternatingLayouts;
 	var $allowCaching;
 	var $catExclusive;
-	var $arcExclusive; 
+	var $arcExclusive;
 	var $searchFieldList = 'short,bodytext,author,keywords,links,imagecaption,title';
-	var $theCode = ''; 
+	var $theCode = '';
 	var $rdfToc = '';
 	var $versioningEnabled = false; // is the extension 'version' loaded
 	var $vPrev = false; // do we display a versioning preview
@@ -559,7 +560,7 @@ class tx_ttnews extends tslib_pibase {
 			}
 			if ($this->conf['displaySingle.']['catOrderBy']) {
 				$this->config['catOrderBy'] = $this->conf['displaySingle.']['catOrderBy'];
-			}			
+			}
 			$markerArray = $this->getItemMarkerArray($row, 'displaySingle');
 			// Substitute
 			$content = $this->cObj->substituteMarkerArrayCached($item, $markerArray, array(), $wrappedSubpartArray);
@@ -830,7 +831,7 @@ class tx_ttnews extends tslib_pibase {
 				$subpartArray['###CONTENT###'] = $this->getListContent($t['item'], $selectConf, $prefix_display);
 
 				$markerArray['###NEWS_CATEGORY_ROOTLINE###'] = '';
-				if($this->piVars['cat'] && !strpos($this->piVars['cat'],',')) {
+				if($this->conf['catRootline.']['showCatRootline'] && $this->piVars['cat'] && !strpos($this->piVars['cat'],',')) {
 					$markerArray['###NEWS_CATEGORY_ROOTLINE###'] = $this->getCategoryPath(array(array('catid' => intval($this->piVars['cat']))));
 				}
 
@@ -985,13 +986,13 @@ class tx_ttnews extends tslib_pibase {
 				// get workspaces Overlay
 				$GLOBALS['TSFE']->sys_page->versionOL('tt_news',$row);
 			}
-			
+
 			$GLOBALS['TSFE']->ATagParams = $pTmp.' title="'.$this->local_cObj->stdWrap(trim(htmlspecialchars($row[$titleField])), $lConf['linkTitleField.']).'"';
 
 			if ($this->conf[$prefix_display.'.']['catOrderBy']) {
 				$this->config['catOrderBy'] = $this->conf[$prefix_display.'.']['catOrderBy'];
 			}
-				
+
 			$this->categories[$row['uid']] = $this->getCategories($row['uid']);
 
 			if ($row['type'] == 1 || $row['type'] == 2) {
@@ -1297,7 +1298,7 @@ class tx_ttnews extends tslib_pibase {
 		}
 
 		$markerArray['###NEWS_CATEGORY_ROOTLINE###'] = '';
-		if ($textRenderObj == 'displaySingle') {
+		if ($this->conf['catRootline.']['showCatRootline'] && $textRenderObj == 'displaySingle') {
 			$markerArray['###NEWS_CATEGORY_ROOTLINE###'] = $this->getCategoryPath($this->categories[$row['uid']]);
 		}
 
@@ -1795,7 +1796,7 @@ class tx_ttnews extends tslib_pibase {
 					'*',
 					'tt_news_cat',
 					'uid='.intval($uid).$this->SPaddWhere.$this->enableCatFields);
-	
+
 				if ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))	{
 					$uid = $row['parent_category'];
 					$theRowArray[] = $row;
@@ -2249,6 +2250,8 @@ class tx_ttnews extends tslib_pibase {
 			$markerArray['###NEWS_IMAGE###'] = '';
 			if ($cc) {
 				$markerArray['###NEWS_IMAGE###'] = $this->local_cObj->wrap(trim($theImgCode), $lConf['imageWrapIfAny']);
+			} else {
+				$markerArray['###NEWS_IMAGE###'] = $this->local_cObj->stdWrap($markerArray['###NEWS_IMAGE###'],$lConf['image.']['noImage_stdWrap.']);
 			}
 		}
 		return $markerArray;

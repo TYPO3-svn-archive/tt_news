@@ -165,6 +165,7 @@ plugin.tt_news {
 
   # - - - - - - - - -  catRootline settings  - - - - - - - - - - - #
   catRootline {
+  	showCatRootline = {$plugin.tt_news.showCatRootline}
   	catRootline_stdWrap.wrap = <div class="news-catRootline">|</div>
 
 	# if titles are linked the link points to the page which is configured as category shortcut
