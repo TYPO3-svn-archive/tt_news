@@ -1,8 +1,12 @@
+2006-04-17	Rupert Germann <rupi@gmx.li>
+
+	* feature (3281): converted all locallang files to XML. Now it's possible to edit them with the llXML extension.
+
 2006-04-15	Rupert Germann <rupi@gmx.li>
 
 	* feature (3126): new template marker ###NEWS_CATEGORY_ROOTLINE###. This marker will be filled with the titles of the parent categories of the first assigned category in SINGLE view or with the parents of the selected category in LIST view. See manual ("The category rootline") for details.
 	* feature: catOrderBy can now be set differently for each contentelement.
-	* feature (1146): added the possibility to render a cObject when a news article has not images attached (image.noImage_stdWrap). See example in manual.
+	* feature (1146): added the possibility to render a cObject when a news article has no images attached (image.noImage_stdWrap). See example in manual.
 	* updated function documentation in class.tx_ttnews
 
 2006-04-14	Rupert Germann <rupi@gmx.li>
