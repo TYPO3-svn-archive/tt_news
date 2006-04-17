@@ -1,6 +1,7 @@
 2006-04-17	Rupert Germann <rupi@gmx.li>
 
 	* feature (3281): converted all locallang files to XML. Now it's possible to edit them with the llXML extension.
+	* version nr: 2.3.0
 
 2006-04-15	Rupert Germann <rupi@gmx.li>
 
