@@ -1,5 +1,9 @@
 2006-04-17	Rupert Germann <rupi@gmx.li>
 
+	* fix: removed reference to locallang.php file in class.tx_ttnews_wizicon.php
+
+2006-04-17	Rupert Germann <rupi@gmx.li>
+
 	* feature (3281): converted all locallang files to XML. Now it's possible to edit them with the llXML extension.
 	* version nr: 2.3.0
 
