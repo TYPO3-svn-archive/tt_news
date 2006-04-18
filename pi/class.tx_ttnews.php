@@ -508,7 +508,6 @@ class tx_ttnews extends tslib_pibase {
 		$singleWhere = 'tt_news.uid=' . intval($this->tt_news_uid);
 		$singleWhere .= ' AND type NOT IN(1,2)' . $this->enableFields; // only real news -> type=0
 
-
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
 			'*',
 			'tt_news',
@@ -966,7 +965,6 @@ class tx_ttnews extends tslib_pibase {
 	function getListContent($itemparts, $selectConf, $prefix_display) {
 		$res = $this->cObj->exec_getQuery('tt_news', $selectConf); //get query for list contents
 
-// debug($selectConf,__FUNCTION__);
 		$itemsOut = '';
 		$itempartsCount = count($itemparts);
 		$pTmp = $GLOBALS['TSFE']->ATagParams;
@@ -1245,6 +1243,24 @@ class tx_ttnews extends tslib_pibase {
 			$selectConf['leftjoin'] = 'tt_news_cat_mm ON tt_news.uid = tt_news_cat_mm.uid_local';
 			$selectConf['where'] .= ' AND (IFNULL(tt_news_cat_mm.uid_foreign,'.$GLOBALS['TYPO3_DB']->fullQuoteStr('nocat', 'tt_news').') ' . ($this->config['categoryMode'] > 0?'':'!') . '='.$GLOBALS['TYPO3_DB']->fullQuoteStr('nocat', 'tt_news').')';
 		}
+
+			// filter Workspaces preview.
+			// Since "enablefields" is ignored in workspace previews it's required to filter out news manually which are not visible in the live version AND the selected workspace.
+		if ($GLOBALS['TSFE']->sys_page->versioningPreview) {
+				// execute the complete query
+			$wsRes = $this->cObj->exec_getQuery('tt_news', $selectConf);
+			$removeUids = array();
+			while ($wsRow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($wsRes)) {
+				$orgUid = $wsRow['uid'];
+				$GLOBALS['TSFE']->sys_page->versionOL('tt_news',$wsRow);
+				if (!$wsRow['uid']) { // if versionOL returns nothing the record is not visible in the selected Workspace 
+					$removeUids[] = $orgUid;
+				}
+			}
+				// add list of not visible uids to the whereclause
+			$selectConf['where'] .= ' AND tt_news.uid NOT IN ('.implode(',',array_unique($removeUids)).')';
+		}
+
 		// function Hook for processing the selectConf array
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tt_news']['selectConfHook'])) {
 			foreach($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tt_news']['selectConfHook'] as $_classRef) {
