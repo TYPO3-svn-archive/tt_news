@@ -25,7 +25,7 @@
 /**
  * Class 'tx_ttnews_tcemain' for the tt_news extension.
  *
- * $Id:
+ * $Id$
  *
  * @author     Rupert Germann <rupi@gmx.li>
  */
