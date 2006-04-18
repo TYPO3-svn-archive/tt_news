@@ -1257,8 +1257,12 @@ class tx_ttnews extends tslib_pibase {
 					$removeUids[] = $orgUid;
 				}
 			}
+			$removeUidList = implode(',',array_unique($removeUids));
+
 				// add list of not visible uids to the whereclause
-			$selectConf['where'] .= ' AND tt_news.uid NOT IN ('.implode(',',array_unique($removeUids)).')';
+			if ($removeUidList) {
+				$selectConf['where'] .= ' AND tt_news.uid NOT IN ('.$removeUidList.')';
+			}
 		}
 
 		// function Hook for processing the selectConf array
