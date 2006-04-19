@@ -60,6 +60,7 @@ if (t3lib_div::int_from_ver(TYPO3_version) >= 4000000) {
 	$TCA['tt_news']['ctrl']['versioning'] = TRUE;
 
 	// disable support for nested fe_groups in TYPO3 versions lower than 4.0
+	t3lib_div::loadTCA('tt_news');
 	$TCA['tt_news']['columns']['fe_group'] = array (
 		'exclude' => 1,
 		'l10n_mode' => 'mergeIfNotBlank',
