@@ -34,9 +34,9 @@
  *
  *
  *
- *   54: class tx_ttnews_wizicon
- *   62:     function proc($wizardItems)
- *   82:     function includeLocalLang()
+ *   55: class tx_ttnews_wizicon
+ *   63:     function proc($wizardItems)
+ *   83:     function includeLocalLang()
  *
  * TOTAL FUNCTIONS: 2
  * (This index is automatically created/updated by the extension "extdeveval")
@@ -50,7 +50,7 @@
 /**
  * Class that adds the wizard icon.
  *
-* @author Rupert Germann <rupi@gmx.li>
+ * @author Rupert Germann <rupi@gmx.li>
  */
 class tx_ttnews_wizicon {
 

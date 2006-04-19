@@ -3,6 +3,7 @@
 *  Copyright notice
 *
 *  (c) 2004 Mathias Bolt Lesniak <mathias@lilio.com>
+*  (c) 2005-2006 Rupert Germann <rupi@gmx.li>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -30,14 +31,15 @@
  * $Id$
  *
  * @author	Mathias Bolt Lesniak <mathias@lilio.com>
+ * @author Rupert Germann <rupi@gmx.li>
  */
 /**
  * [CLASS/FUNCTION INDEX of SCRIPT]
  *
  *
  *
- *   54: class tx_ttnews_itemsProcFunc
- *   61:     function user_insertExtraCodes($config)
+ *   57: class tx_ttnews_itemsProcFunc
+ *   64:     function user_insertExtraCodes($config)
  *
  * TOTAL FUNCTIONS: 1
  * (This index is automatically created/updated by the extension "extdeveval")
@@ -48,6 +50,7 @@
   * 'itemsProcFunc' for the 'tt_news' extension.
   *
   * @author	Mathias Bolt Lesniak <mathias@lilio.com>
+  * @author Rupert Germann <rupi@gmx.li>
   * @package TYPO3
   * @subpackage tt_news
   */

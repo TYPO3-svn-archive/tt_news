@@ -58,7 +58,29 @@ if (t3lib_div::int_from_ver(TYPO3_version) >= 4000000) {
 	$TCA['tt_news']['ctrl']['versioningWS'] = TRUE;
 } else {
 	$TCA['tt_news']['ctrl']['versioning'] = TRUE;
+
+	// disable support for nested fe_groups in TYPO3 versions lower than 4.0
+	$TCA['tt_news']['columns']['fe_group'] = array (
+		'exclude' => 1,
+		'l10n_mode' => 'mergeIfNotBlank',
+		'label' => 'LLL:EXT:lang/locallang_general.php:LGL.fe_group',
+		'config' => Array (
+			'type' => 'select',
+			'items' => Array (
+				Array('', 0),
+				Array('LLL:EXT:lang/locallang_general.php:LGL.hide_at_login', -1),
+				Array('LLL:EXT:lang/locallang_general.php:LGL.any_login', -2),
+				Array('LLL:EXT:lang/locallang_general.php:LGL.usergroups', '--div--')
+			),
+			'foreign_table' => 'fe_groups'
+		)
+	);
+	$TCA['tt_news']['palettes']['1'] = Array('showitem' => 'hidden,starttime,endtime,fe_group');
+	$TCA['tt_news']['ctrl']['mainpalette'] = false;
+
 }
+
+
 
 
 #$category_OrderBy = $confArr['category_OrderBy'];
