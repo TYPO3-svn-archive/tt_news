@@ -873,13 +873,19 @@ class tx_ttnews extends tslib_pibase {
 							$this->internal['showRange'] = $this->conf['pageBrowser.']['showRange'];
 							$this->internal['dontLinkActivePage'] = $this->conf['pageBrowser.']['dontLinkActivePage'];
 
-							$$wrapArrFields = explode(',', 'disabledLinkWrap,inactiveLinkWrap,activeLinkWrap,browseLinksWrap,showResultsWrap,showResultsNumbersWrap,browseBoxWrap');
+							$wrapArrFields = explode(',', 'disabledLinkWrap,inactiveLinkWrap,activeLinkWrap,browseLinksWrap,showResultsWrap,showResultsNumbersWrap,browseBoxWrap');
 							$wrapArr = array();
-							foreach($$wrapArrFields as $key) {
+							foreach($wrapArrFields as $key) {
 								if ($this->conf['pageBrowser.'][$key]) {
 									$wrapArr[$key] = $this->conf['pageBrowser.'][$key];
 								}
 							}
+
+							if ($wrapArr['showResultsNumbersWrap'] && strpos($this->LOCAL_LANG[$this->LLkey]['pi_list_browseresults_displays'],'%s')) {
+							// if the advanced pagebrowser is enabled and the "pi_list_browseresults_displays" label contains %s it will be replaced with the content of the label "pi_list_browseresults_displays_advanced"
+								$this->LOCAL_LANG[$this->LLkey]['pi_list_browseresults_displays'] = $this->LOCAL_LANG[$this->LLkey]['pi_list_browseresults_displays_advanced'];
+							}
+							
 							// if there is a GETvar in the URL that is not in this list, caching will be disabled for the pagebrowser links
 							$this->pi_isOnlyFields = $pointerName.',tt_news,year,month,day,pS,pL,arc,cat';
 							// pi_lowerThan limits the amount of cached pageversions for the list view.
