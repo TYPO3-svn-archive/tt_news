@@ -1,3 +1,16 @@
+2006-04-27	Rupert Germann <rupi@gmx.li>
+
+	* feature: added two new category modes:
+		2 = select only categories which have all the selected categories assigned (AND)
+		-2 = show only categories which have none of the selected categories assigned (OR)
+	* fix: changed the default RTE configuration in tca.php. Now the RTE in tt_news can be configured with the presets from the rteHtmlarea extension configuration.
+	* raised the number of categories which can be selected in the tt_news content element to 99.
+	* removed the option 'oldCatDeselectMode' because it did the same as categoryMode=-1
+
+2006-04-24	Rupert Germann <rupi@gmx.li>
+
+	* fix (bug 3322): fixed a bug that caused a MySQL error concerning the sorting of categories and which appeared when "displaySubCategories" was enabled.
+
 2006-04-21	Rupert Germann <rupi@gmx.li>
 
 	* fix: added the fix for "New or edited news records were not displayed in TYPO3 version below 4.0" to tt_news categories, too.
