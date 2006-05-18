@@ -1,3 +1,9 @@
+2006-05-18	Rupert Germann <rupi@gmx.li>
+
+	* fix for bug 3504: changed the | char which is used to explode links to the ###LINK_ITEM### markers to a random value because it was not possible to render titles with | chars.
+	* new feature (3510): category links in news articles are having the category title as title attribute now.
+	* new feature: added an option to change the ordering of categories in category trees in BE forms to the extension config in EM.
+
 2006-05-09	Rupert Germann <rupi@gmx.li>
 
 	* added italian translation. Thanks to Claudio Strizzolo.

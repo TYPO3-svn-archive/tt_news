@@ -235,9 +235,9 @@ class tx_ttnews_treeview {
 					if ($this->excludeList) {
 						$catlistWhere = ' AND tt_news_cat.uid NOT IN ('.implode(t3lib_div::intExplode(',',$this->excludeList),',').')';
 					}
-
+					$treeOrderBy = $confArr['treeOrderBy']?$confArr['treeOrderBy']:'uid';
 					$treeViewObj->table = $config['foreign_table'];
-					$treeViewObj->init($SPaddWhere.$catlistWhere);
+					$treeViewObj->init($SPaddWhere.$catlistWhere,$treeOrderBy);
 					$treeViewObj->backPath = $this->pObj->backPath;
 					$treeViewObj->parentField = $TCA[$config['foreign_table']]['ctrl']['treeParentField'];
 					$treeViewObj->expandAll = 1;

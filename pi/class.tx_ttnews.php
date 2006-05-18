@@ -975,6 +975,7 @@ class tx_ttnews extends tslib_pibase {
 		$itempartsCount = count($itemparts);
 		$pTmp = $GLOBALS['TSFE']->ATagParams;
 		$cc = 0;
+		$token = md5(microtime());
 		// Getting elements
 		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 
@@ -1024,7 +1025,7 @@ class tx_ttnews extends tslib_pibase {
 						'pL' => null,
 						'arc' => null,
 						);
-					$wrappedSubpartArray['###LINK_ITEM###'] = explode('|', $this->pi_linkTP_keepPIvars('|', $piVarsArray, $this->allowCaching, ($this->conf['dontUseBackPid']?1:0), $singlePid));
+					$wrappedSubpartArray['###LINK_ITEM###'] = explode($token, $this->pi_linkTP_keepPIvars($token, $piVarsArray, $this->allowCaching, ($this->conf['dontUseBackPid']?1:0), $singlePid));
 
 					$this->local_cObj->LOAD_REGISTER(array('newsMoreLink' => $this->pi_linkTP_keepPIvars($this->pi_getLL('more'), $piVarsArray, $this->allowCaching,($this->conf['dontUseBackPid']?1:0), $singlePid)), '');
 				} elseif ($this->conf['useHRDates'] && $this->conf['useHRDatesSingle']) {
@@ -1043,7 +1044,7 @@ class tx_ttnews extends tslib_pibase {
 						'pL' => null,
 						'arc' => null,
 						);
-					$wrappedSubpartArray['###LINK_ITEM###'] = explode('|', $this->pi_linkTP_keepPIvars('|',$piVarsArray, $this->allowCaching, ($this->conf['dontUseBackPid']?1:0), $singlePid));
+					$wrappedSubpartArray['###LINK_ITEM###'] = explode($token, $this->pi_linkTP_keepPIvars($token,$piVarsArray, $this->allowCaching, ($this->conf['dontUseBackPid']?1:0), $singlePid));
 
 					// fill the link string in a register to access it from TS
 					$this->local_cObj->LOAD_REGISTER(array('newsMoreLink' => $this->pi_linkTP_keepPIvars($this->pi_getLL('more'), $piVarsArray, $this->allowCaching, ($this->conf['dontUseBackPid']?1:0), $singlePid)), '');
@@ -1053,7 +1054,7 @@ class tx_ttnews extends tslib_pibase {
 					$this->piVars['day'] = $tmpD;
 
 				} else {
-					$wrappedSubpartArray['###LINK_ITEM###'] = explode('|', $this->pi_linkTP_keepPIvars('|', array('tt_news' => $row['uid'], 'backPid' => ($this->conf['dontUseBackPid']?null:$this->config['backPid'])), $this->allowCaching, ($this->conf['dontUseBackPid']?1:0), $singlePid));
+					$wrappedSubpartArray['###LINK_ITEM###'] = explode($token, $this->pi_linkTP_keepPIvars($token, array('tt_news' => $row['uid'], 'backPid' => ($this->conf['dontUseBackPid']?null:$this->config['backPid'])), $this->allowCaching, ($this->conf['dontUseBackPid']?1:0), $singlePid));
 
 					// fill the link string in a register to access it from TS
 					$this->local_cObj->LOAD_REGISTER(array('newsMoreLink' => $this->pi_linkTP_keepPIvars($this->pi_getLL('more'), array('tt_news' => $row['uid'], 'backPid' => ($this->conf['dontUseBackPid']?null:$this->config['backPid'])), $this->allowCaching, ($this->conf['dontUseBackPid']?1:0), $singlePid)), '');
@@ -1111,7 +1112,7 @@ class tx_ttnews extends tslib_pibase {
 				}
 
 			}
-
+			
 			$layoutNum = $cc % $itempartsCount;
 			// Store the result of template parsing in the Var $itemsOut, use the alternating layouts
 			$itemsOut .= $this->cObj->substituteMarkerArrayCached($itemparts[$layoutNum], $markerArray, array(), $wrappedSubpartArray);
@@ -2159,6 +2160,7 @@ class tx_ttnews extends tslib_pibase {
 		$markerArray['###CATWRAP_B###'] = '';
 		$markerArray['###CATWRAP_E###'] = '';
 
+		$pTmp = $GLOBALS['TSFE']->ATagParams;
 		if (count($this->categories[$row['uid']]) && ($this->config['catImageMode'] || $this->config['catTextMode'])) {
 			// wrap for all categories
 			$cat_stdWrap = t3lib_div::trimExplode('|', $lConf['category_stdWrap.']['wrap']);
@@ -2176,7 +2178,8 @@ class tx_ttnews extends tslib_pibase {
 			foreach ($this->categories[$row['uid']] as $key => $val) {
 				// find categories, wrap them with links and collect them in the array $news_category.
 				$catTitle = htmlspecialchars($this->categories[$row['uid']][$key]['title']);
-				#$catTextLenght += strlen($catTitle);
+				$GLOBALS['TSFE']->ATagParams = $pTmp.' title="'.$catTitle.'"';
+
 				if ($this->config['catTextMode'] == 0) {
 					$markerArray['###NEWS_CATEGORY###'] = '';
 				} elseif ($this->config['catTextMode'] == 1) {
@@ -2273,6 +2276,8 @@ class tx_ttnews extends tslib_pibase {
 				$markerArray['###NEWS_CATEGORY###'] = $xmlCategories;
 			}
 		}
+		$GLOBALS['TSFE']->ATagParams = $pTmp;
+
 		return $markerArray;
 	}
 

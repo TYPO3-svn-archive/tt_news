@@ -38,3 +38,6 @@ categoryTreeWidth =
 
   # cat=basic//80; type=int [3-30]; label= Height of the right category field: Here you can configure the height of the category tree in BackEnd forms (is used for news and news categories).
 categoryTreeHeigth = 5
+
+  # cat=basic//90; type=options[title,uid]; label= Category order in tree: Here you can configure the the ordering of categories in the category tree in BackEnd forms.
+treeOrderBy = uid
