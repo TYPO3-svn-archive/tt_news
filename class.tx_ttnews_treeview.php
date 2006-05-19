@@ -120,7 +120,7 @@ class tx_ttnews_treeview {
 			// Possibly remove some items:
 		$removeItems=t3lib_div::trimExplode(',',$PA['fieldTSConfig']['removeItems'],1);
 
-/** get include/exclude items */
+			// get include/exclude items 
 		$this->excludeList = $GLOBALS['BE_USER']->getTSConfigVal('tt_newsPerms.tt_news_cat.excludeList');
 // 		if ($this->excludeList) {
 // 			$removeItems .= ','.$this->excludeList;
@@ -227,11 +227,6 @@ class tx_ttnews_treeview {
 						$treeViewObj = t3lib_div::makeInstance('tx_ttnews_tceFunc_selectTreeView');
 					}
 
-
-/** exclude some categories */
-
-
-
 					if ($this->excludeList) {
 						$catlistWhere = ' AND tt_news_cat.uid NOT IN ('.implode(t3lib_div::intExplode(',',$this->excludeList),',').')';
 					}
@@ -243,10 +238,6 @@ class tx_ttnews_treeview {
 					$treeViewObj->expandAll = 1;
 					$treeViewObj->expandFirst = 1;
 					$treeViewObj->fieldArray = array('uid','title','description'); // those fields will be filled to the array $treeViewObj->tree
-
-
-/** show only certain categories */
-
 
 					if ($this->includeList) {
 						$treeViewObj->MOUNTS = t3lib_div::intExplode(',',$this->includeList);

@@ -83,3 +83,5 @@ plugin.tt_news {
   showCatRootline = 0
 
 }
+### CVS id ###
+# $Id$

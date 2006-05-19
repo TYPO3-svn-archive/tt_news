@@ -66,3 +66,7 @@ plugin.tt_news {
 
 
 }
+
+
+### CVS id ###
+# $Id$

@@ -33,3 +33,6 @@ plugin.tt_news {
   xmlCaching = 1
   }
 }
+
+### CVS id ###
+# $Id$

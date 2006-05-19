@@ -278,7 +278,7 @@ class tx_ttnews extends tslib_pibase {
 
 		// pid of the page with the single view. the old var PIDitemDisplay is still processed if no other value is found
 		$singlePid = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'PIDitemDisplay', 's_misc');
-		$singlePid = $singlePid?$singlePid:intval($this->conf['singlePid']);
+		$singlePid = $singlePid?$singlePid:intval($this->cObj->stdWrap($this->conf['singlePid'],$this->conf['singlePid.']));
 		$this->config['singlePid'] = $singlePid ? $singlePid:intval($this->conf['PIDitemDisplay']);
 
 		// pid to return to when leaving single view
@@ -986,7 +986,6 @@ class tx_ttnews extends tslib_pibase {
 			if ($GLOBALS['TSFE']->sys_language_content) {
 				$row = $GLOBALS['TSFE']->sys_page->getRecordOverlay('tt_news', $row, $GLOBALS['TSFE']->sys_language_content, $GLOBALS['TSFE']->sys_language_contentOL, '');
 			}
-
 			if ($this->versioningEnabled) {
 				// get workspaces Overlay
 				$GLOBALS['TSFE']->sys_page->versionOL('tt_news',$row);
@@ -1307,7 +1306,9 @@ class tx_ttnews extends tslib_pibase {
 			// Since "enablefields" is ignored in workspace previews it's required to filter out news manually which are not visible in the live version AND the selected workspace.
 		if ($GLOBALS['TSFE']->sys_page->versioningPreview) {
 				// execute the complete query
-			$wsRes = $this->cObj->exec_getQuery('tt_news', $selectConf);
+			$wsSelectconf = $selectConf;
+			$wsSelectconf['selectFields'] = 'uid,pid,tstamp,crdate,deleted,hidden,fe_group,sys_language_uid,l18n_parent,l18n_diffsource,t3ver_oid,t3ver_id,t3ver_label,t3ver_wsid,t3ver_state,t3ver_stage,t3ver_count,t3ver_tstamp,t3_origuid';
+			$wsRes = $this->cObj->exec_getQuery('tt_news', $wsSelectconf);
 			$removeUids = array();
 			while ($wsRow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($wsRes)) {
 				$orgUid = $wsRow['uid'];
