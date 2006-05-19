@@ -3,6 +3,7 @@
 	* fix for bug 3515: fixed a MySQL error in workspace preview of news lists which occured when the list showed only certain categories.
 	* new feature (3415): added stdWrap to the parameter singlePid
 	* added cvs ids to several files
+	* version nr: 2.4.0
 
 2006-05-18	Rupert Germann <rupi@gmx.li>
 
@@ -27,6 +28,7 @@
 2006-04-24	Rupert Germann <rupi@gmx.li>
 
 	* fix (bug 3322): fixed a bug that caused a MySQL error concerning the sorting of categories and which appeared when "displaySubCategories" was enabled.
+	* version nr: 2.3.6
 
 2006-04-21	Rupert Germann <rupi@gmx.li>
 
