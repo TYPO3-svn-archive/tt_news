@@ -360,6 +360,7 @@ plugin.tt_news {
     date_stdWrap.strftime= %d.%m.%y
     time_stdWrap.strftime= %H:%M
     caption_stdWrap.if.directReturn = 0
+    subheader_stdWrap.stripHtml = 1
     subheader_stdWrap.crop = 100 | ... | 1
     subheader_stdWrap.ifEmpty.field = bodytext
     imageCount=1
