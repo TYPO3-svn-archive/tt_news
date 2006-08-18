@@ -1,5 +1,3 @@
-svn test
-
 2006-05-19	Rupert Germann <rupi@gmx.li>
 
 	* fix for bug 3515: fixed a MySQL error in workspace preview of news lists which occured when the list showed only certain categories.
