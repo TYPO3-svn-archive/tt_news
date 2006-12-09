@@ -225,8 +225,8 @@ plugin.tt_news {
   # related news by category
   relatedByCategory_stdWrap.wrap =  <dl class="news-single-related">|</dl>
   relatedByCategoryHeader_stdWrap.wrap = <dt>|</dt>
-  # globalwrap 3 is used to wrap the list items
-  wrap3.wrap = <dd>|</dd>
+  # globalwrap 2 is used to wrap the list items
+  wrap2.wrap = <dd>|</dd>
   
     
   # - - - - - - -   Settings for Related News:  - - - - - - - -  #

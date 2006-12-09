@@ -191,4 +191,53 @@ if (TYPO3_MODE=='BE')	{
 
 }
 
+
+
+
+
+$tempColumns = Array (
+		'tt_news_categorymounts' => Array (
+			'exclude' => 1,
+		#	'l10n_mode' => 'exclude', // the localizalion mode will be handled by the userfunction
+			'label' => 'LLL:EXT:tt_news/locallang_tca.php:tt_news.categorymounts',
+			'config' => Array (
+			
+			
+				'type' => 'select',
+				'form_type' => 'user',
+				'userFunc' => 'tx_ttnews_treeview->displayCategoryTree',
+				'treeView' => 1,
+				'foreign_table' => 'tt_news_cat',
+				#'foreign_table_where' => $fTableWhere.'ORDER BY tt_news_cat.'.$confArr['category_OrderBy'],
+				'size' => 3,
+				'autoSizeMax' => $confArr['categoryTreeHeigth'],
+				'minitems' => 0,
+				'maxitems' => 500,
+// 				'MM' => 'tt_news_cat_mm',
+
+			)
+		),
+// 		'tt_news_cmounts_usesubcats' => Array (
+// 			'exclude' => 1,
+// 			'label' => 'LLL:EXT:tt_news/locallang_tca.php:tt_news.cmounts_usesubcats',
+// 			'config' => Array (
+// 				'type' => 'check'
+// 			)
+// 		),
+);
+
+
+t3lib_div::loadTCA('be_groups');
+t3lib_extMgm::addTCAcolumns('be_groups',$tempColumns,1);
+t3lib_extMgm::addToAllTCAtypes('be_groups','tt_news_categorymounts;;;;1-1-1');
+
+$tempColumns['tt_news_categorymounts']['displayCond'] = 'FIELD:admin:=:0';
+// $tempColumns['tt_news_cmounts_usesubcats']['displayCond'] = 'FIELD:admin:=:0';
+
+
+t3lib_div::loadTCA('be_users');
+t3lib_extMgm::addTCAcolumns('be_users',$tempColumns,1);
+t3lib_extMgm::addToAllTCAtypes('be_users','tt_news_categorymounts;;;;1-1-1');
+
+
 ?>

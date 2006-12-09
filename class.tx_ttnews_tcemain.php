@@ -34,20 +34,21 @@
  *
  *
  *
- *   59: class tx_ttnews_tcemain
- *   72:     function processDatamap_postProcessFieldArray ($status, $table, $id, &$fieldArray, &$pObj)
- *   92:     function processDatamap_preProcessIncomingFieldArray()
- *  106:     function processDatamap_preProcessFieldArray(&$fieldArray, $table, $id, &$pObj)
+ *   60: class tx_ttnews_tcemain
+ *   73:     function processDatamap_postProcessFieldArray ($status, $table, $id, &$fieldArray, &$pObj)
+ *   93:     function processDatamap_preProcessIncomingFieldArray()
+ *  107:     function processDatamap_preProcessFieldArray(&$fieldArray, $table, $id, &$pObj)
  *
  *
- *  162: class tx_ttnews_tcemain_cmdmap
- *  176:     function processCmdmap_preProcess($command, &$table, $id, $value, &$pObj)
+ *  172: class tx_ttnews_tcemain_cmdmap
+ *  186:     function processCmdmap_preProcess($command, &$table, $id, $value, &$pObj)
  *
  * TOTAL FUNCTIONS: 4
  * (This index is automatically created/updated by the extension "extdeveval")
  *
  */
 
+require_once(t3lib_extMgm::extPath('tt_news').'class.tx_ttnews_div.php');;
 
 /**
  * Class being included by TCEmain using a hook
@@ -122,8 +123,12 @@ class tx_ttnews_tcemain {
 
 			}
 // 			debug(t3lib_div::_GP('popViewId_addParams'),__FUNCTION__);
+
+			if (!is_object($divObj)) {
+				$divObj = t3lib_div::makeInstance('tx_ttnews_div');
+			}
 				// check permissions of assigned categories
-			if ($GLOBALS['BE_USER']->getTSConfigVal('options.useListOfAllowedItems') && !$GLOBALS['BE_USER']->isAdmin() && is_int($id)) {
+			if ($divObj->useAllowedCategories() && is_int($id)) {
 
 					// get categories from the tt_news record in db
 				$res = $GLOBALS['TYPO3_DB']->exec_SELECT_mm_query ('tt_news_cat.uid,tt_news_cat_mm.sorting AS mmsorting', 'tt_news', 'tt_news_cat_mm', 'tt_news_cat', ' AND tt_news_cat_mm.uid_local='.(is_int($fieldArray['l18n_parent'])?$fieldArray['l18n_parent']:$id).t3lib_BEfunc::BEenableFields('tt_news_cat'));
@@ -133,7 +138,11 @@ class tx_ttnews_tcemain {
 				}
 				$notAllowedItems = array();
 				if ($categories[0]) { // original record has categories
-					$allowedItemsList=$GLOBALS['BE_USER']->getTSConfigVal('tt_newsPerms.tt_news_cat.allowedItems');
+					if (!$divObj->allowedItemsFromTreeSelector) {
+						$allowedItemsList = $GLOBALS['BE_USER']->getTSConfigVal('tt_newsPerms.tt_news_cat.allowedItems');
+					} else {
+						$allowedItemsList = $divObj->getCategoryTreeIDs();
+					}
 					foreach ($categories as $k) {
 						if(!t3lib_div::inList($allowedItemsList,$k)) {
 							$notAllowedItems[]=$k;
@@ -150,6 +159,7 @@ class tx_ttnews_tcemain {
 			}
 		}
 	}
+
 }
 
 /**
@@ -180,7 +190,12 @@ class tx_ttnews_tcemain_cmdmap {
 				$pObj->log($table,$id,2,0,1,"processCmdmap [editlock]: Attempt to ".$command." a record from table '%s' which is locked by an 'editlock' (= record can only be edited by admins).",1,array($table));
 				$error = true;
 			}
-			if ($GLOBALS['BE_USER']->getTSConfigVal('options.useListOfAllowedItems') && is_int($id)) {
+
+			if (!is_object($divObj)) {
+				$divObj = t3lib_div::makeInstance('tx_ttnews_div');
+			}
+
+			if ($divObj->useAllowedCategories() && is_int($id)) {
 					// get categories from the (untranslated) record in db
 				if ($table == 'tt_news') {
 					$res = $GLOBALS['TYPO3_DB']->exec_SELECT_mm_query ('tt_news_cat.uid,tt_news_cat_mm.sorting AS mmsorting', 'tt_news', 'tt_news_cat_mm', 'tt_news_cat', ' AND tt_news_cat_mm.uid_local='.(is_int($id)?$id:0).t3lib_BEfunc::BEenableFields('tt_news_cat'));
@@ -191,7 +206,11 @@ class tx_ttnews_tcemain_cmdmap {
 					if (!$categories[0]) { // original record has no categories
 						$notAllowedItems = array();
 					} else { // original record has categories
-						$allowedItemsList=$GLOBALS['BE_USER']->getTSConfigVal('tt_newsPerms.tt_news_cat.allowedItems');
+						if (!$divObj->allowedItemsFromTreeSelector) {
+							$allowedItemsList = $GLOBALS['BE_USER']->getTSConfigVal('tt_newsPerms.tt_news_cat.allowedItems');
+						} else {
+							$allowedItemsList = $divObj->getCategoryTreeIDs();
+						}
 						$notAllowedItems = array();
 						foreach ($categories as $k) {
 							if(!t3lib_div::inList($allowedItemsList,$k)) {
