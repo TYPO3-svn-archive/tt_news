@@ -78,6 +78,7 @@
 			<label index="tt_news.pi_flexform.catLinkMode_catshortcut">Acts as link to category shortcuts</label>
 			<label index="tt_news.pi_flexform.catLinkMode_catsel">Acts as a category selector</label>
 			<label index="tt_news.pi_flexform.firstImageIsPreview">Don't display first image in single view (firstImageIsPreview)</label>
+			<label index="tt_news.pi_flexform.forceFirstImageIsPreview">Don't display first image in single view (forceFirstImageIsPreview) even when only one image is available</label>
 			<label index="tt_news.pi_flexform.limit">Limit: max items for LIST and LATEST</label>
 			<label index="tt_news.pi_flexform.listStartId">List StartId: Force LIST or LATEST to start from this item</label>
 			<label index="tt_news.pi_flexform.noPageBrowser">Don't display Pagebrowser in LIST</label>
@@ -206,6 +207,7 @@
 			<label index="tt_news.pi_flexform.catLinkMode_catshortcut">Anzeigen und Link zum Kategorie-Shortcut</label>
 			<label index="tt_news.pi_flexform.catLinkMode_catsel">Anzeigen und Link als Kategorieselektor</label>
 			<label index="tt_news.pi_flexform.firstImageIsPreview">Erstes Bild in Single-Anzeige (Newsdetails) NICHT anzeigen (firstImageIsPreview)</label>
+			<label index="tt_news.pi_flexform.forceFirstImageIsPreview">Erstes Bild in Single-Anzeige (Newsdetails) NICHT anzeigen, auch wenn nur ein Bild vorhanden ist (forceFirstImageIsPreview)</label>
 			<label index="tt_news.pi_flexform.limit">Maximale Anzahl von Beiträgen in LIST (und LATEST, wenn 'latestLimit' nicht gesetzt ist)</label>
 			<label index="tt_news.pi_flexform.listStartId">List StartId: Ansicht für LIST &amp; LATEST ab diesem Eintrag beginnen</label>
 			<label index="tt_news.pi_flexform.noPageBrowser">Pagebrowser verbergen</label>

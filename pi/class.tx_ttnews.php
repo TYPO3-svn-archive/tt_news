@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 1999-2004 Kasper Skårhøj (kasper@typo3.com)
+*  (c) 1999-2004 Kasper Skï¿½rhï¿½j (kasper@typo3.com)
 *  (c) 2004-2006 Rupert Germann (rupi@gmx.li)
 *  All rights reserved
 *
@@ -315,6 +315,8 @@ class tx_ttnews extends tslib_pibase {
 		// if this is set, the first image is handled as preview image, which is only shown in list view
 		$fImgPreview = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'firstImageIsPreview', 's_misc');
 		$this->config['firstImageIsPreview'] = $fImgPreview?$fImgPreview : $this->conf['firstImageIsPreview'];
+		$forcefImgPreview = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'forceFirstImageIsPreview', 's_misc');
+		$this->config['forceFirstImageIsPreview'] = $forcefImgPreview?$fImgPreview : $this->conf['forceFirstImageIsPreview'];
 
 		// List start id
 		$listStartId = intval($this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'listStartId', 's_misc'));
@@ -2366,7 +2368,10 @@ if ($this->conf['excludeAlreadyDisplayedNews']) {
 
 			$cc = 0;
 			// remove first img from the image array in single view if the TSvar firstImageIsPreview is set
-			if (count($imgs) > 1 && $this->config['firstImageIsPreview'] && $textRenderObj == 'displaySingle') {
+			if ((	(count($imgs) > 1 && $this->config['firstImageIsPreview']) 
+					|| 
+					(count($imgs) >= 1 && $this->config['forceFirstImageIsPreview'])
+				) && $textRenderObj == 'displaySingle') {
 				array_shift($imgs);
 				array_shift($imgsCaptions);
 				array_shift($imgsAltTexts);
