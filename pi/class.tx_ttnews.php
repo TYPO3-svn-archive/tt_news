@@ -2,8 +2,8 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 1999-2004 Kasper Skï¿½rhï¿½j (kasper@typo3.com)
-*  (c) 2004-2006 Rupert Germann (rupi@gmx.li)
+*  (c) 1999-2004 Kasper Skårhøj (kasper@typo3.com)
+*  (c) 2004-2007 Rupert Germann (rupi@gmx.li)
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
