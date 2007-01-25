@@ -43,51 +43,56 @@
  *
  *
  *
- *  105: class tx_ttnews extends tslib_pibase
- *  136:     function main_news($content, $conf)
- *  212:     function init($conf)
- *  359:     function newsArchiveMenu()
- *  507:     function displaySingle()
- *  590:     function displayVersionPreview ()
- *  643:     function displayList($excludeUids = 0)
- *  988:     function getListContent($itemparts, $selectConf, $prefix_display)
- * 1153:     function getSelectConf($where, $noPeriod = 0)
- * 1405:     function generatePageArray()
- * 1426:     function getItemMarkerArray ($row, $textRenderObj = 'displaySingle')
- * 1690:     function insertPagebreaks($text,$firstPageWordCrop)
- * 1740:     function makeMultiPageSView($bodytext,$lConf)
- * 1770:     function makePageBrowser($showResultCount=1,$tableParams='',$pointerName='pointer')
- * 1852:     function getCategories($uid, $getAll=false)
- * 1925:     function getCategoryPath($categoryArray)
- * 1982:     function getSubCategories($catlist, $cc = 0)
- * 2011:     function displayCatMenu()
- * 2124:     function getCatMenuContent($array_in,$lConf, $l=0)
- * 2176:     function getSubCategoriesForMenu ($catlist, $fields, $addWhere, $cc = 0)
- * 2207:     function getCatMarkerArray($markerArray, $row, $lConf)
- * 2347:     function getImageMarkers($markerArray, $row, $lConf, $textRenderObj)
- * 2412:     function getRelated($uid)
- * 2572:     function userProcess($mConfKey, $passVar)
- * 2587:     function spMarker($subpartMarker)
- * 2605:     function searchWhere($sw)
- * 2616:     function formatStr($str)
- * 2631:     function getLayouts($templateCode, $alternatingLayouts, $marker)
- * 2649:     function initLanguages ()
- * 2669:     function initCategoryVars()
- * 2739:     function checkRecords($recordlist)
- * 2771:     function initTemplate()
- * 2796:     function initPidList ()
- * 2821:     function getXmlHeader()
- * 2922:     function getW3cDate($datetime)
- * 2947:     function main_xmlnewsfeed($content, $conf)
- * 2962:     function getStoriesResult()
- * 2984:     function cleanXML($str)
- * 2998:     function convertDates()
- * 3032:     function getHrDateSingle($tstamp)
- * 3045:     function displayFEHelp()
- * 3066:     function validateFields($fieldlist)
- * 3087:     function getNewsSubpart($myTemplate, $myKey, $row = Array())
+ *  110: class tx_ttnews extends tslib_pibase
+ *  141:     function main_news($content, $conf)
+ *  217:     function init($conf)
+ *  366:     function newsArchiveMenu()
+ *  516:     function displaySingle()
+ *  599:     function displayVersionPreview ()
+ *  652:     function displayList($excludeUids = 0)
+ *  997:     function getListContent($itemparts, $selectConf, $prefix_display)
+ * 1166:     function getSelectConf($where, $noPeriod = 0)
+ * 1418:     function generatePageArray()
+ * 1439:     function getItemMarkerArray ($row, $textRenderObj = 'displaySingle')
+ * 1703:     function insertPagebreaks($text,$firstPageWordCrop)
+ * 1753:     function makeMultiPageSView($bodytext,$lConf)
+ * 1783:     function makePageBrowser($showResultCount=1,$tableParams='',$pointerName='pointer')
+ * 1865:     function getCategories($uid, $getAll=false)
+ * 1938:     function getCategoryPath($categoryArray)
+ * 1995:     function getSubCategories($catlist, $cc = 0)
+ * 2024:     function displayCatMenu()
+ * 2137:     function getCatMenuContent($array_in,$lConf, $l=0)
+ * 2189:     function getSubCategoriesForMenu ($catlist, $fields, $addWhere, $cc = 0)
+ * 2220:     function getCatMarkerArray($markerArray, $row, $lConf)
+ * 2360:     function getImageMarkers($markerArray, $row, $lConf, $textRenderObj)
+ * 2425:     function getRelated($uid)
+ * 2585:     function userProcess($mConfKey, $passVar)
+ * 2600:     function spMarker($subpartMarker)
+ * 2618:     function searchWhere($sw)
+ * 2629:     function formatStr($str)
+ * 2644:     function getLayouts($templateCode, $alternatingLayouts, $marker)
+ * 2662:     function initLanguages ()
+ * 2682:     function initCategoryVars()
+ * 2752:     function checkRecords($recordlist)
+ * 2784:     function initTemplate()
+ * 2809:     function initPidList ()
+ * 2834:     function getXmlHeader()
+ * 2935:     function getW3cDate($datetime)
+ * 2960:     function main_xmlnewsfeed($content, $conf)
+ * 2975:     function getStoriesResult()
+ * 2997:     function cleanXML($str)
+ * 3011:     function convertDates()
+ * 3045:     function getHrDateSingle($tstamp)
+ * 3058:     function displayFEHelp()
+ * 3079:     function validateFields($fieldlist)
+ * 3100:     function getNewsSubpart($myTemplate, $myKey, $row = Array())
  *
- * TOTAL FUNCTIONS: 42
+ *              SECTION: DB Functions
+ * 3121:     function exec_getQuery($table, $conf)
+ * 3139:     function getQuery($table, $conf, $returnQueryArray=FALSE)
+ * 3221:     function getWhere($table,$conf, $returnQueryArray=FALSE)
+ *
+ * TOTAL FUNCTIONS: 45
  * (This index is automatically created/updated by the extension "extdeveval")
  *
  */
@@ -258,7 +263,9 @@ class tx_ttnews extends tslib_pibase {
 		}
 
 		// list of pages where news records will be taken from
-		$this->initPidList();
+		if (!$this->conf['dontUsePidList']) {
+			$this->initPidList();
+		}
 
 		// itemLinkTarget is only used for categoryLinkMode 3 (catselector) in framesets
 		$this->config['itemLinkTarget'] = trim($this->conf['itemLinkTarget']);
@@ -365,7 +372,7 @@ class tx_ttnews extends tslib_pibase {
 		// Finding maximum and minimum values:
 		$selectConf['selectFields'] = 'max(datetime) as maxval, min(datetime) as minval';
 
-		$res = $this->cObj->exec_getQuery('tt_news', $selectConf);
+		$res = $this->exec_getQuery('tt_news', $selectConf);
 
 		$row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
 		if ($row['minval'] || $row['maxval']) {
@@ -410,7 +417,7 @@ class tx_ttnews extends tslib_pibase {
 				$selectConf['selectFields'] = 'count(distinct(uid))';
 				$selectConf['where'] = $selectConf2['where'] . ' AND datetime>=' . $periodInfo['start'] . ' AND datetime<' . $periodInfo['stop'];
 
-				$res = $this->cObj->exec_getQuery('tt_news', $selectConf);
+				$res = $this->exec_getQuery('tt_news', $selectConf);
 
 				$row = $GLOBALS['TYPO3_DB']->sql_fetch_row($res);
 				$periodInfo['count'] = $row[0];
@@ -439,11 +446,13 @@ class tx_ttnews extends tslib_pibase {
 				// Print Item Title
 				$wrappedSubpartArray = array();
 
-				if ($this->config['catSelection'] && $this->config['amenuWithCatSelector']) {
-					// use the catSelection from GPvars only if 'amenuWithCatSelector' is given.
-					$amenuLinkCat = $this->config['catSelection'];
-				} else {
-					$amenuLinkCat = $this->catExclusive;
+				if (!$this->conf['disableCategoriesInAmenuLinks']) {
+					if ($this->config['catSelection'] && $this->config['amenuWithCatSelector']) {
+						// use the catSelection from GPvars only if 'amenuWithCatSelector' is given.
+						$amenuLinkCat = $this->config['catSelection'];
+					} else {
+						$amenuLinkCat = $this->catExclusive;
+					}
 				}
 
 				if ($this->conf['useHRDates']) {
@@ -768,7 +777,7 @@ $GLOBALS['TSFE']->displayedNews[]=$row['uid'];
 			// performing query to count all news (we need to know it for browsing):
 			$selectConf['selectFields'] = 'COUNT(DISTINCT(tt_news.uid))'; //count(*)
 
-			$res = $this->cObj->exec_getQuery('tt_news', $selectConf);
+			$res = $this->exec_getQuery('tt_news', $selectConf);
 
 			if ($res) $row = $GLOBALS['TYPO3_DB']->sql_fetch_row($res);
 			$newsCount = $row[0];
@@ -988,7 +997,7 @@ $GLOBALS['TSFE']->displayedNews[]=$row['uid'];
 	 * @return	string		$itemsOut: itemlist as htmlcode
 	 */
 	function getListContent($itemparts, $selectConf, $prefix_display) {
-		$res = $this->cObj->exec_getQuery('tt_news', $selectConf); //get query for list contents
+		$res = $this->exec_getQuery('tt_news', $selectConf); //get query for list contents
 
 		$itemsOut = '';
 		$itempartsCount = count($itemparts);
@@ -1089,7 +1098,11 @@ $GLOBALS['TSFE']->displayedNews[]=$row['uid'];
 			// XML
 			if ($this->theCode == 'XML') {
 				if ($row['type'] == 1 || $row['type'] == 2) {
-					$rssUrl = ($row['type'] == 1 ? $this->config['siteUrl'] .$this->pi_getPageLink($row['page'], ''):substr($row['ext_url'], 0, strpos($row['ext_url'], ' '))) ;
+					if ($row['type'] == 2) {
+						$exturl = trim(strpos($row['ext_url'],'http://')?$row['ext_url']:'http://'.$row['ext_url']);
+						$exturl = (strpos($exturl,' ')?substr($exturl, 0, strpos($exturl, ' ')):$exturl);
+					}
+					$rssUrl = ($row['type'] == 1 ? $this->config['siteUrl'] .$this->pi_getPageLink($row['page'], ''):$exturl);
 				} else {
 					if ($this->conf['useHRDates'] && !$this->conf['useHRDatesSingle']) {
 						$piVarsArray = array(
@@ -1163,7 +1176,7 @@ $GLOBALS['TSFE']->displayedNews[]=$row['uid'];
 			// sys_language_mode == 'strict': If a certain language is requested, select only news-records from the default language which have a translation. The translated articles will be overlayed later in the list or single function.
 
 
-			$tmpres = $this->cObj->exec_getQuery('tt_news', array(
+			$tmpres = $this->exec_getQuery('tt_news', array(
 				'selectFields' => 'tt_news.l18n_parent',
 				'where' => 'tt_news.sys_language_uid = '.$GLOBALS['TSFE']->sys_language_content.$this->enableFields,
 				'pidInList' => $this->pid_list));
@@ -1273,7 +1286,7 @@ $GLOBALS['TSFE']->displayedNews[]=$row['uid'];
 		// if categoryMode is 'show items AND' it's required to check if the records in the result do actually have the same number of categories as in $this->catExclusive
 		if ($this->catExclusive && $this->config['categoryMode'] == 2) {
 			$tmpCatExclusive = $this->catExclusive  /*$this->actuallySelectedCategories*/;
-			$res = $this->cObj->exec_getQuery('tt_news', $selectConf);
+			$res = $this->exec_getQuery('tt_news', $selectConf);
 
 			$results = array();
 			$resultsCount = array();
@@ -1315,7 +1328,7 @@ $GLOBALS['TSFE']->displayedNews[]=$row['uid'];
 
 		// if categoryMode is 'don't show items OR' we check if each found record does not have any of the deselected categories assigned
 		if ($this->catExclusive && $this->config['categoryMode'] == -2) {
-			$res = $this->cObj->exec_getQuery('tt_news', $selectConf);
+			$res = $this->exec_getQuery('tt_news', $selectConf);
 
 			$results = array();
 			$resultsCount = array();
@@ -1348,7 +1361,7 @@ $GLOBALS['TSFE']->displayedNews[]=$row['uid'];
 				// execute the complete query
 			$wsSelectconf = $selectConf;
 			$wsSelectconf['selectFields'] = 'uid,pid,tstamp,crdate,deleted,hidden,fe_group,sys_language_uid,l18n_parent,l18n_diffsource,t3ver_oid,t3ver_id,t3ver_label,t3ver_wsid,t3ver_state,t3ver_stage,t3ver_count,t3ver_tstamp,t3_origuid';
-			$wsRes = $this->cObj->exec_getQuery('tt_news', $wsSelectconf);
+			$wsRes = $this->exec_getQuery('tt_news', $wsSelectconf);
 			$removeUids = array();
 			while ($wsRow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($wsRes)) {
 				$orgUid = $wsRow['uid'];
@@ -2863,7 +2876,7 @@ if ($this->conf['excludeAlreadyDisplayedNews']) {
 		// select only normal news (type=0) for the RSS feed. You can override this with other types with the TS-var 'xmlNewsTypes'
 		$selectConf['selectFields'] = 'max(datetime) as maxval';
 
-		$res = $this->cObj->exec_getQuery('tt_news', $selectConf);
+		$res = $this->exec_getQuery('tt_news', $selectConf);
 
 
 		$row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
@@ -3092,6 +3105,211 @@ if ($this->conf['excludeAlreadyDisplayedNews']) {
 	function getNewsSubpart($myTemplate, $myKey, $row = Array()) {
 		return ($this->cObj->getSubpart($myTemplate, $myKey));
 	}
+
+	/*********************************************
+	 *
+	 * DB Functions
+	 * The following two functions are copied from class tslib_content to make it possible to get a query without 'pidInList'
+	 *
+	 **********************************************/
+
+
+	/**
+	 * Executes a SELECT query for records from $table and with conditions based on the configuration in the $conf array
+	 * This function is preferred over ->getQuery() if you just need to create and then execute a query.
+	 *
+	 * @param	string		The table name
+	 * @param	array		The TypoScript configuration properties
+	 * @return	mixed		A SQL result pointer
+	 * @see getQuery()
+	 */
+	function exec_getQuery($table, $conf)	{
+		$queryParts = $this->getQuery($table, $conf, TRUE);
+// 		debug($queryParts,'$queryParts');
+
+		return $GLOBALS['TYPO3_DB']->exec_SELECT_queryArray($queryParts);
+	}
+
+	/**
+	 * Creates and returns a SELECT query for records from $table and with conditions based on the configuration in the $conf array
+	 * Implements the "select" function in TypoScript
+	 *
+	 * @param	string		See ->exec_getQuery()
+	 * @param	array		See ->exec_getQuery()
+	 * @param	boolean		If set, the function will return the query not as a string but array with the various parts. RECOMMENDED!
+	 * @return	mixed		A SELECT query if $returnQueryArray is false, otherwise the SELECT query in an array as parts.
+	 * @access private
+	 * @see CONTENT(), numRows()
+	 */
+	function getQuery($table, $conf, $returnQueryArray=FALSE)	{
+
+			// Construct WHERE clause:
+		if (!$this->conf['dontUsePidList']) {
+			$conf['pidInList'] = trim($this->cObj->stdWrap($conf['pidInList'],$conf['pidInList.']));
+			if (!strcmp($conf['pidInList'],''))	{
+				$conf['pidInList'] = 'this';
+			}
+		}
+
+		$queryParts = $this->getWhere($table,$conf,TRUE);
+
+			// Fields:
+		$queryParts['SELECT'] = $conf['selectFields'] ? $conf['selectFields'] : '*';
+
+			// Setting LIMIT:
+		if ($conf['max'] || $conf['begin']) {
+			$error=0;
+
+				// Finding the total number of records, if used:
+			if (strstr(strtolower($conf['begin'].$conf['max']),'total'))	{
+				$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', $table, $queryParts['WHERE'], $queryParts['GROUPBY']);
+				if ($error = $GLOBALS['TYPO3_DB']->sql_error())	{
+					$GLOBALS['TT']->setTSlogMessage($error);
+				} else {
+					$total = $GLOBALS['TYPO3_DB']->sql_num_rows($res);
+					$conf['max'] = eregi_replace('total', (string)$total, $conf['max']);
+					$conf['begin'] = eregi_replace('total', (string)$total, $conf['begin']);
+				}
+			}
+			if (!$error)	{
+				$conf['begin'] = t3lib_div::intInRange(ceil($this->cObj->calc($conf['begin'])),0);
+				$conf['max'] = t3lib_div::intInRange(ceil($this->cObj->calc($conf['max'])),0);
+				if ($conf['begin'] && !$conf['max'])	{
+					$conf['max'] = 100000;
+				}
+
+				if ($conf['begin'] && $conf['max'])	{
+					$queryParts['LIMIT'] = $conf['begin'].','.$conf['max'];
+				} elseif (!$conf['begin'] && $conf['max'])	{
+					$queryParts['LIMIT'] = $conf['max'];
+				}
+			}
+		}
+
+		if (!$error)	{
+
+				// Setting up tablejoins:
+			$joinPart='';
+			if ($conf['join'])	{
+				$joinPart = 'JOIN ' .trim($conf['join']);
+			} elseif ($conf['leftjoin'])	{
+				$joinPart = 'LEFT OUTER JOIN ' .trim($conf['leftjoin']);
+			} elseif ($conf['rightjoin'])	{
+				$joinPart = 'RIGHT OUTER JOIN ' .trim($conf['rightjoin']);
+			}
+
+				// Compile and return query:
+			$queryParts['FROM'] = trim($table.' '.$joinPart);
+			$query = $GLOBALS['TYPO3_DB']->SELECTquery(
+						$queryParts['SELECT'],
+						$queryParts['FROM'],
+						$queryParts['WHERE'],
+						$queryParts['GROUPBY'],
+						$queryParts['ORDERBY'],
+						$queryParts['LIMIT']
+					);
+			return $returnQueryArray ? $queryParts : $query;
+		}
+	}
+
+	/**
+	 * Helper function for getQuery(), creating the WHERE clause of the SELECT query
+	 *
+	 * @param	string		The table name
+	 * @param	array		The TypoScript configuration properties
+	 * @param	boolean		If set, the function will return the query not as a string but array with the various parts. RECOMMENDED!
+	 * @return	mixed		A WHERE clause based on the relevant parts of the TypoScript properties for a "select" function in TypoScript, see link. If $returnQueryArray is false the where clause is returned as a string with WHERE, GROUP BY and ORDER BY parts, otherwise as an array with these parts.
+	 * @access private
+	 * @link http://typo3.org/doc.0.html?&tx_extrepmgm_pi1[extUid]=270&tx_extrepmgm_pi1[tocEl]=318&cHash=a98cb4e7e6
+	 * @see getQuery()
+	 */
+	function getWhere($table,$conf, $returnQueryArray=FALSE)	{
+		global $TCA;
+
+			// Init:
+		$query = '';
+		$pid_uid_flag=0;
+		$queryParts = array(
+			'SELECT' => '',
+			'FROM' => '',
+			'WHERE' => '',
+			'GROUPBY' => '',
+			'ORDERBY' => '',
+			'LIMIT' => ''
+		);
+
+		if (trim($conf['uidInList']))	{
+			$listArr = t3lib_div::intExplode(',',str_replace('this',$GLOBALS['TSFE']->contentPid,$conf['uidInList']));  // str_replace instead of ereg_replace 020800
+			if (count($listArr)==1)	{
+				$query.=' AND '.$table.'.uid='.intval($listArr[0]);
+			} else {
+				$query.=' AND '.$table.'.uid IN ('.implode(',',$GLOBALS['TYPO3_DB']->cleanIntArray($listArr)).')';
+			}
+			$pid_uid_flag++;
+		}
+		if (trim($conf['pidInList']))	{
+			$listArr = t3lib_div::intExplode(',',str_replace('this',$GLOBALS['TSFE']->contentPid,$conf['pidInList']));	// str_replace instead of ereg_replace 020800
+				// removes all pages which are not visible for the user!
+			$listArr = $this->cObj->checkPidArray($listArr);
+			if (count($listArr))	{
+				$query.=' AND '.$table.'.pid IN ('.implode(',',$GLOBALS['TYPO3_DB']->cleanIntArray($listArr)).')';
+				$pid_uid_flag++;
+			} else {
+				$pid_uid_flag=0;		// If not uid and not pid then uid is set to 0 - which results in nothing!!
+			}
+		}
+// 		if (!$pid_uid_flag)	{		// If not uid and not pid then uid is set to 0 - which results in nothing!!
+// 			$query.=' AND '.$table.'.uid=0';
+// 		}
+		if ($where = trim($conf['where']))	{
+			$query.=' AND '.$where;
+		}
+
+		if ($conf['languageField'])	{
+			if ($GLOBALS['TSFE']->sys_language_contentOL && $TCA[$table] && $TCA[$table]['ctrl']['languageField'] && $TCA[$table]['ctrl']['transOrigPointerField'])	{
+					// Sys language content is set to zero/-1 - and it is expected that whatever routine processes the output will OVERLAY the records with localized versions!
+				$sys_language_content = '0,-1';
+			} else {
+				$sys_language_content = intval($GLOBALS['TSFE']->sys_language_content);
+			}
+			$query.=' AND '.$conf['languageField'].' IN ('.$sys_language_content.')';
+		}
+
+		$andWhere = trim($this->cObj->stdWrap($conf['andWhere'],$conf['andWhere.']));
+		if ($andWhere)	{
+			$query.=' AND '.$andWhere;
+		}
+
+			// enablefields
+		if ($table=='pages')	{
+			$query.=' '.$GLOBALS['TSFE']->sys_page->where_hid_del.
+						$GLOBALS['TSFE']->sys_page->where_groupAccess;
+		} else {
+			$query.=$this->cObj->enableFields($table);
+		}
+
+			// MAKE WHERE:
+		if ($query)	{
+			$queryParts['WHERE'] = trim(substr($query,4));	// Stripping of " AND"...
+			$query = 'WHERE '.$queryParts['WHERE'];
+		}
+
+			// GROUP BY
+		if (trim($conf['groupBy']))	{
+			$queryParts['GROUPBY'] = trim($conf['groupBy']);
+			$query.=' GROUP BY '.$queryParts['GROUPBY'];
+		}
+
+			// ORDER BY
+		if (trim($conf['orderBy']))	{
+			$queryParts['ORDERBY'] = trim($conf['orderBy']);
+			$query.=' ORDER BY '.$queryParts['ORDERBY'];
+		}
+
+			// Return result:
+		return $returnQueryArray ? $queryParts : $query;
+	}
+
 }
 
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_news/pi/class.tx_ttnews.php']) {
