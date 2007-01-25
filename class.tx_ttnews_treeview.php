@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2006 Rupert Germann <rupi@gmx.li>
+*  (c) 2005-2007 Rupert Germann <rupi@gmx.li>
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -146,24 +146,40 @@ class tx_ttnews_treeview {
 
 	function displayCategoryTree(&$PA, &$fobj) {
 		$this->PA = &$PA;
-		$this->fobj = &$fobj;
+// 		$this->fobj = &$fobj;
 		$this->table = $this->PA['table'];
 		$this->field = $this->PA['field'];
 		$this->row = $this->PA['row'];
 		$this->pObj = &$this->PA['pObj'];
 
+		$content = '';
 		if (t3lib_extMgm::isLoaded('xajax')) {
 			$this->useXajax = TRUE;
 		}
+
+/**
+FIXME !!!
+temporary fix: disable xajax in the category tree for tt_news records in TYPO3 versions below 4.1 when rtehtmlarea is enabled
+--> this is needed because xajax collides with rtehtmlarea and prevents rtehtmlarea from loading
+*/
+// debug($GLOBALS['BE_USER']->uc);
+if (t3lib_div::int_from_ver(TYPO3_version) < 4001000 && $this->table == 'tt_news' && !$GLOBALS['BE_USER']->uc['moduleData']['xMOD_alt_doc.php']['disableRTE'] && t3lib_extMgm::isLoaded('rtehtmlarea')) {
+	$this->useXajax = false;
+}
+
+
 		if ($this->useXajax) {
 			require_once (t3lib_extMgm::extPath('xajax') . 'class.tx_xajax.php');
 			$this->xajax = t3lib_div::makeInstance('tx_xajax');
 			$this->xajax->setWrapperPrefix('tx_ttnews_');
 			$this->xajax->registerFunction(array('sendResponse',&$this,'sendResponse'));
-			$this->fobj->additionalCode_pre[] = $this->xajax->getJavascript('../'.t3lib_extMgm::siteRelPath('xajax'));
+// 			$fobj->additionalCode_pre['tt_news_xajax'] = $this->xajax->getJavascript('../'.t3lib_extMgm::siteRelPath('xajax'));
+			$content .= $this->xajax->getJavascript('../'.t3lib_extMgm::siteRelPath('xajax'));
+			
 			$this->xajax->processRequests();
 		}
 
+// 		debug($fobj->additionalCode_pre);
 
 
 		if ($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['tt_news']) { // get tt_news extConf array
@@ -172,7 +188,8 @@ class tx_ttnews_treeview {
 		if (!is_object($this->divObj)) {
 			$this->divObj = t3lib_div::makeInstance('tx_ttnews_div');
 		}
-		return $this->renderCategoryFields();
+		$content .= $this->renderCategoryFields();
+		return $content;
 
 	}
 
@@ -277,7 +294,7 @@ class tx_ttnews_treeview {
 		$treeViewObj->parentField = $GLOBALS['TCA'][$config['foreign_table']]['ctrl']['treeParentField'];
 		$treeViewObj->expandAll = ($this->useXajax?($cmd == 'show'?1:0):1);
 		$treeViewObj->expandFirst = ($this->useXajax?0:1);
-		$treeViewObj->fieldArray = array('uid','title','description'); // those fields will be filled to the array $treeViewObj->tree
+		$treeViewObj->fieldArray = array('uid','title','description','hidden','starttime','endtime','fe_group'); // those fields will be filled to the array $treeViewObj->tree
 		$treeViewObj->useXajax = $this->useXajax;
 
 
@@ -399,7 +416,7 @@ class tx_ttnews_treeview {
 	 */
 	function renderCategoryFields()    {
 		$PA = &$this->PA;
-		$fobj = &$this->fobj;
+// 		$fobj = &$this->fobj;
 
 		$table = $PA['table'];
 		$field = $PA['field'];
@@ -663,81 +680,6 @@ class tx_ttnews_treeview {
 		return $itemArr;
 	}
 
-	/**
-	 * detects recursive categories and returns an error message if recursive categories where found
-	 *
-	 * @param	array		$PA: the paramter array
-	 * @param	array		$row: the current row
-	 * @param	array		$table: current table
-	 * @param	integer		$storagePid: the StoragePid (pid of the category folder)
-	 * @param	array		$treeIds: array with the ids of the categories in the tree
-	 * @return	array		error messages
-	 */
-	function findRecursiveCategories ($PA,$row,$table,$storagePid,$treeIds) {
-		$errorMsg = array();
-		if (!$this->excludeList && !$this->includeList) {
-			if ($table == 'tt_content' && $row['CType']=='list' && $row['list_type']==9) { // = tt_content element which inserts plugin tt_news
-				$cfgArr = t3lib_div::xml2array($row['pi_flexform']);
-				if (is_array($cfgArr) && is_array($cfgArr['data']['sDEF']['lDEF']) && $cfgArr['data']['sDEF']['lDEF']['categorySelection']) {
-					$rcList = $this->compareCategoryVals ($treeIds,$cfgArr['data']['sDEF']['lDEF']['categorySelection']['vDEF']);
-				}
-			} elseif ($table == 'tt_news_cat' || $table == 'tt_news') {
-				if ($table == 'tt_news_cat' && $row['pid'] == $storagePid && intval($row['uid']) && !in_array($row['uid'],$treeIds))	{ // if the selected category is not empty and not in the array of tree-uids it seems to be part of a chain of recursive categories
-					$recursionMsg = 'RECURSIVE CATEGORIES DETECTED!! <br />This record is part of a chain of recursive categories. The affected categories will not be displayed in the category tree.  You should remove the parent category of this record to prevent this.';
-
-				}
-				if ($table == 'tt_news' && $row['category']) { // find recursive categories in the tt_news db-record
-					$rcList = $this->compareCategoryVals ($treeIds,$row['category']);
-				}
-				// in case of localized records this doesn't work
-				if ($storagePid && $row['pid'] != $storagePid && $table == 'tt_news_cat') { // if a storagePid is defined but the current category is not stored in storagePid
-					$errorMsg[] = '<p style="padding:10px;"><img src="gfx/icon_warning.gif" class="absmiddle" alt="" height="16" width="18"><strong style="color:red;"> Warning:</strong><br />tt_news is configured to display categories only from the "General record storage page" (GRSP). The current category is not located in the GRSP and will so not be displayed. To solve this you should either define a GRSP or disable "Use StoragePid" in the extension manager.</p>';
-				}
-			}
-			if (strlen($rcList)) {
-				$recursionMsg = 'RECURSIVE CATEGORIES DETECTED!! <br />This record has the following recursive categories assigned: '.$rcList.'<br />Recursive categories will not be shown in the category tree and will therefore not be selectable. ';
-
-				if ($table == 'tt_news') {
-					$recursionMsg .= 'To solve this problem mark these categories in the left select field, click on "edit category" and clear the field "parent category" of the recursive category.';
-				} else {
-					$recursionMsg .= 'To solve this problem you should clear the field "parent category" of the recursive category.';
-				}
-			}
-			if ($recursionMsg) $errorMsg[] = '<table class="warningbox" border="0" cellpadding="0" cellspacing="0"><tbody><tr><td><img src="gfx/icon_fatalerror.gif" class="absmiddle" alt="" height="16" width="18">'.$recursionMsg.'</td></tr></tbody></table>';
-
-		}
-		return $errorMsg;
-	}
-
-	/**
-	 * This function compares the selected categories ($catString) with the categories from the category tree ($treeIds).
-	 * If there are categories selected that are not present in the array $treeIds it assumes that those categories are
-	 * parts of a chain of recursive categories returns their uids.
-	 *
-	 * @param	array		$treeIds: array with the ids of the categories in the tree
-	 * @param	string		$catString: the selected categories in a string (format: uid|title,uid|title,...)
-	 * @return	string		list of recursive categories
-	 */
-	function compareCategoryVals ($treeIds,$catString) {
-		$recursiveCategories = array();
-		$showncats = implode($treeIds,','); // the displayed categories (tree)
-		$catvals = explode(',',$catString); // categories of the current record (left field)
-		foreach ($catvals as $k) {
-			$c = explode('|',$k);
-			if(!t3lib_div::inList($showncats,$c[0])) {
-				$recursiveCategories[]=$c;
-			}
-		}
-		if ($recursiveCategories[0])  {
-			$rcArr = array();
-			foreach ($recursiveCategories as $key => $cat) {
-				if ($cat[0]) $rcArr[] = $cat[1].' ('.$cat[0].')'; // format result: title (uid)
-
-			}
-			$rcList = implode($rcArr,', ');
-		}
-		return $rcList;
-	}
 
 	/**
 	 * This functions displays the title field of a news record and checks if the record has categories assigned that are not allowed for the current BE user.
@@ -747,7 +689,7 @@ class tx_ttnews_treeview {
 	 * @param	object		$fobj: Reference to the parent object
 	 * @return	string		the HTML code for the field and the error message
 	 */
-	function displayTypeFieldCheckCategories(&$PA, $fobj)    {
+	function displayTypeFieldCheckCategories(&$PA, &$fobj)    {
 		$table = $PA['table'];
 		$field = $PA['field'];
 		$row = $PA['row'];
