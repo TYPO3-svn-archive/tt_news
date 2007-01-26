@@ -90,6 +90,13 @@ class tx_ttnewscatmanager_modfunc1 extends t3lib_extobjbase {
 		}
 		$this->pObj->doc->JScode = '';
 		if ($this->useXajax) {
+			global $TYPO3_CONF_VARS;
+			if ($TYPO3_CONF_VARS['BE']['forceCharset']) {
+				define ('XAJAX_DEFAULT_CHAR_ENCODING', $TYPO3_CONF_VARS['BE']['forceCharset']);
+			} else {
+				define ('XAJAX_DEFAULT_CHAR_ENCODING', 'iso-8859-15');
+			}
+
 			require_once (t3lib_extMgm::extPath('xajax') . 'class.tx_xajax.php');
 			$this->xajax = t3lib_div::makeInstance('tx_xajax');
 			$this->xajax->setWrapperPrefix('tx_ttnews_');
@@ -194,6 +201,9 @@ class tx_ttnewscatmanager_modfunc1 extends t3lib_extobjbase {
 		if (!is_object($this->divObj)) {
 			$this->divObj = t3lib_div::makeInstance('tx_ttnews_div');
 		}
+
+
+		
 		$objResponse = new tx_xajax_response();
 
 		$this->debug = array();

@@ -1,3 +1,7 @@
+2007-01-26	Rupert Germann <rupi@gmx.li>
+
+	* fix: the ajax category tree works correctly with different charsets now.
+
 2007-01-25	Rupert Germann <rupi@gmx.li>
 
 	* new feature: "don't use pid_list". In sites with huge pagetrees where it is needed to have the news not in a few sysfolders but in the complete pagetree the check for the pid_list in tt_news can be a big performance eater because thousands of pages have to be checked for visibility and added to the sql query. From now on it is possible to disable the use of the parameters "pid_list" and "recursive" when the TS var "plugin.tt_news.dontUsePidList = 1" is set. Thank goes to Franz Ripfel for sponsoring this feature.

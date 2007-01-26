@@ -169,6 +169,13 @@ if (t3lib_div::int_from_ver(TYPO3_version) < 4001000 && $this->table == 'tt_news
 
 
 		if ($this->useXajax) {
+			global $TYPO3_CONF_VARS;
+			if ($TYPO3_CONF_VARS['BE']['forceCharset']) {
+				define ('XAJAX_DEFAULT_CHAR_ENCODING', $TYPO3_CONF_VARS['BE']['forceCharset']);
+			} else {
+				define ('XAJAX_DEFAULT_CHAR_ENCODING', 'iso-8859-15');
+			}
+					
 			require_once (t3lib_extMgm::extPath('xajax') . 'class.tx_xajax.php');
 			$this->xajax = t3lib_div::makeInstance('tx_xajax');
 			$this->xajax->setWrapperPrefix('tx_ttnews_');
