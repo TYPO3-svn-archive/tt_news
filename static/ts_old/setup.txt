@@ -266,6 +266,7 @@ plugin.tt_news {
         10.field = title
         10.typolink.parameter = {$plugin.tt_news.singlePid}
         10.typolink.additionalParams.data=register:newsAddParams
+        10.typolink.useCacheHash = 1
         10.wrap = |
         20 < plugin.tt_news.tmp.20
      }

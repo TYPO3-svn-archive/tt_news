@@ -2547,7 +2547,7 @@ if ($this->conf['excludeAlreadyDisplayedNews']) {
 							$paramArray[$tmp[0]] = $val;
 						}
 
-						$excludeList = 'id,tx_ttnews[tt_news],tx_ttnews[backPid],L,tx_ttnews['.$this->config['singleViewPointerName'].']';
+						$excludeList = 'id,cHash,tx_ttnews[tt_news],tx_ttnews[backPid],L,tx_ttnews['.$this->config['singleViewPointerName'].']';
 						while (list($key, $val) = each($paramArray)) {
 							if (!$val || ($excludeList && t3lib_div::inList($excludeList, $key))) {
 								unset($paramArray[$key]);
