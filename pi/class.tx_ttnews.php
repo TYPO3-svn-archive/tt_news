@@ -2201,7 +2201,7 @@ if ($this->conf['excludeAlreadyDisplayedNews']) {
 
 		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 			$cc++;
-			if ($cc > 50) {
+			if ($cc > 10000) {
 				$GLOBALS['TT']->setTSlogMessage('tt_news: one or more recursive categories where found');
 				return $pcatArr;
 			}

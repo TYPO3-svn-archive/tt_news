@@ -395,7 +395,7 @@ if (t3lib_div::int_from_ver(TYPO3_version) < 4001000 && $this->table == 'tt_news
 				$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
 					'parent_category',
 					'tt_news_cat',
-					'uid='.intval($uid).$SPaddWhere.' AND NOT deleted');
+					'uid='.intval($uid).$SPaddWhere.' AND deleted=0');
 
 				if ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))	{
 					$uid = $row['parent_category'];
@@ -663,7 +663,7 @@ if (t3lib_div::int_from_ver(TYPO3_version) < 4001000 && $this->table == 'tt_news
 		$itemArr = array();
 		if ($allowedItemsList) {
 				// get all categories
-			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', $fTable, '1=1' .$SPaddWhere. ' AND NOT deleted');
+			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', $fTable, '1=1' .$SPaddWhere. ' AND deleted=0');
 			while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 				if(!t3lib_div::inList($allowedItemsList,$row['uid'])) { // remove all allowed categories from the category result
 					$itemArr[]=$row['uid'];

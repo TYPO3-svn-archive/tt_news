@@ -1,3 +1,8 @@
+2007-02-15	Rupert Germann <rupi@gmx.li>
+
+	* fixed a small bug in function getSubCategoriesForMenu which caused tt_news to display only 50 subcategories-
+	* updated the manual with the new features
+
 2007-02-09	Rupert Germann <rupi@gmx.li>
 
 	* fix for bug 4948: in TYPO3 4.1 a cHash error occured when links to related news were clicked (thx to Oliver Hader).
