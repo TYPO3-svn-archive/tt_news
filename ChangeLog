@@ -1,3 +1,8 @@
+2007-02-18	Ingo Renner <typo3@ingo-renner.com>
+
+	* new feature: list view can select news for a certain day only now - to play nice with TIMTAB (bug #2941)
+	* new feature: RSS 2.0 feeds deliver files attached to news records as <enclosure>s (feature request #4950)
+	
 2007-02-15	Rupert Germann <rupi@gmx.li>
 
 	* fixed a small bug in function getSubCategoriesForMenu which caused tt_news to display only 50 subcategories-
@@ -6,7 +11,7 @@
 2007-02-09	Rupert Germann <rupi@gmx.li>
 
 	* fix for bug 4948: in TYPO3 4.1 a cHash error occured when links to related news were clicked (thx to Oliver Hader).
-	* fix: added a condition to ext_tables.php which disables the "tt_news category manager" module in TYPO versions below 4.0 (reason: the drag and drop code isn't present in this versions)
+	* fix: added a condition to ext_tables.php which disables the "tt_news category manager" module in TYPO versions below 4.0 (reason: the drag and drop code isn't present in these versions)
 
 2007-01-26	Rupert Germann <rupi@gmx.li>
 

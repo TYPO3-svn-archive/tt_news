@@ -4,6 +4,7 @@
 *
 *  (c) 1999-2004 Kasper Skårhøj (kasper@typo3.com)
 *  (c) 2004-2007 Rupert Germann (rupi@gmx.li)
+*  (c) 2004-2007 Ingo Renner (typo3@ingo-renner.com)  
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -98,6 +99,7 @@
  */
 
 require_once (PATH_t3lib . 'class.t3lib_xml.php');
+require_once (PATH_t3lib . 'class.t3lib_htmlmail.php');
 require_once (PATH_tslib . 'class.tslib_pibase.php');
 
 /**
@@ -456,7 +458,7 @@ class tx_ttnews extends tslib_pibase {
 				}
 
 				if ($this->conf['useHRDates']) {
-					$year = date('Y',$pArr['start']);
+					$year  = date('Y',$pArr['start']);
 					$month = date('m',$pArr['start']);
 					if ($arcMode == 'year') {
 						$archLinkArr = $this->pi_linkTP_keepPIvars('|', array('cat' => ($amenuLinkCat?$amenuLinkCat:null), 'year' => $year), $this->allowCaching, 1, ($archiveLink?$archiveLink:$GLOBALS['TSFE']->id));
@@ -776,7 +778,6 @@ $GLOBALS['TSFE']->displayedNews[]=$row['uid'];
 			$selectConf = $this->getSelectConf($where, $noPeriod);
 			// performing query to count all news (we need to know it for browsing):
 			$selectConf['selectFields'] = 'COUNT(DISTINCT(tt_news.uid))'; //count(*)
-
 			$res = $this->exec_getQuery('tt_news', $selectConf);
 
 			if ($res) $row = $GLOBALS['TYPO3_DB']->sql_fetch_row($res);
@@ -1212,7 +1213,13 @@ $GLOBALS['TSFE']->displayedNews[]=$row['uid'];
 			if (!$noPeriod && intval($this->piVars['pS'])) {
 				$selectConf['where'] .= ' AND tt_news.datetime>=' . intval($this->piVars['pS']);
 				if (intval($this->piVars['pL'])) {
-					$selectConf['where'] .= ' AND tt_news.datetime<' . (intval($this->piVars['pS']) + intval($this->piVars['pL']));
+					$pL = intval($this->piVars['pL']);
+						//selecting news for a certain day only
+					if(intval($this->piVars['day'])) {
+						$pL = 86400; // = 24h, as pS always starts at the beginning of a day (00:00:00)
+					}
+
+					$selectConf['where'] .= ' AND tt_news.datetime<' . (intval($this->piVars['pS']) + $pL);
 				}
 			}
 		}
@@ -1573,16 +1580,35 @@ if ($this->conf['excludeAlreadyDisplayedNews']) {
 		// filelinks
 		$markerArray['###TEXT_FILES###'] = '';
 		$markerArray['###FILE_LINK###'] = '';
+		$markerArray['###NEWS_RSS2_ENCLOSURES###'] = '';
 		if ($row['news_files']) {
 			$files_stdWrap = t3lib_div::trimExplode('|', $this->conf['newsFiles_stdWrap.']['wrap']);
 			$markerArray['###TEXT_FILES###'] = $files_stdWrap[0].$this->local_cObj->stdWrap($this->pi_getLL('textFiles'), $this->conf['newsFilesHeader_stdWrap.']);
 			$fileArr = explode(',', $row['news_files']);
 			$files = '';
+			$rss2Enclousres = '';
 			while (list(, $val) = each($fileArr)) {
 				// fills the marker ###FILE_LINK### with the links to the atached files
 				$filelinks .= $this->local_cObj->filelink($val, $this->conf['newsFiles.']) ;
+				
+					// <enclosure> support for RSS 2.0
+				if($this->theCode == 'XML') {
+					$path    = trim($this->conf['newsFiles.']['path']);
+					$theFile = $path.$val;
+					
+					if (@is_file($theFile))	{
+						$fileURL      = $this->config['siteUrl'].$theFile;
+						$fileSize     = filesize($theFile);
+						$fileMimeType = t3lib_htmlmail::getMimeType($fileURL);
+						
+						$rss2Enclousres .= '<enclosure url="'.$fileURL.'" ';
+						$rss2Enclousres .= 'length ="'.$fileSize.'" ';
+						$rss2Enclousres .= 'type="'.$fileMimeType.'" />'."\n\t\t\t";
+					}
+				}				
 			}
 			$markerArray['###FILE_LINK###'] = $filelinks.$files_stdWrap[1];
+			$markerArray['###NEWS_RSS2_ENCLOSURES###'] = trim($rss2Enclousres);
 		}
 
 		// show news with the same categories in SINGLE view
@@ -3015,7 +3041,7 @@ if ($this->conf['excludeAlreadyDisplayedNews']) {
 	 */
 	function convertDates() {
 		//readable archivedates
- 		 if ($this->piVars['year'] || $this->piVars['month']) {
+ 		if ($this->piVars['year'] || $this->piVars['month']) {
 			$this->arcExclusive = 1;
 		}
 		if (!$this->piVars['year'] && $this->piVars['pS']) {
@@ -3024,10 +3050,15 @@ if ($this->conf['excludeAlreadyDisplayedNews']) {
 		if (!$this->piVars['month'] && $this->piVars['pS']) {
 			$this->piVars['month'] = date('m',$this->piVars['pS']);
 		}
-		if ($this->piVars['year'] || $this->piVars['month']) {
-		$mon = ($this->piVars['month']?$this->piVars['month']:1);
-		$this->piVars['pS'] = mktime (0, 0, 0, $mon, 1, $this->piVars['year']);
-		switch ($this->config['archiveMode']) {
+		if (!$this->piVars['day'] && $this->piVars['pS']) {
+			$this->piVars['day'] = date('j',$this->piVars['pS']);
+		}
+		if ($this->piVars['year'] || $this->piVars['month'] || $this->piVars['day']) {
+			$mon = ($this->piVars['month'] ? $this->piVars['month'] : 1);
+			$day = ($this->piVars['day']   ? $this->piVars['day']   : 1);
+			
+			$this->piVars['pS'] = mktime (0, 0, 0, $mon, $day, $this->piVars['year']);
+			switch ($this->config['archiveMode']) {
 				case 'month':
 					$this->piVars['pL'] = mktime (0, 0, 0, $mon+1, 1, $this->piVars['year'])-$this->piVars['pS']-1;
 				break;
@@ -3037,7 +3068,7 @@ if ($this->conf['excludeAlreadyDisplayedNews']) {
 				case 'year':
 					$this->piVars['pL'] = mktime (0, 0, 0, 1, 1, $this->piVars['year']+1)-$this->piVars['pS']-1;
 				break;
-			}
+			}			
 		}
 	}
 
