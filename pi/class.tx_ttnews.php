@@ -314,10 +314,13 @@ class tx_ttnews extends tslib_pibase {
 		$orderBy = $orderBy?$orderBy:$orderByTS;
 		$this->config['orderBy'] = $orderBy;
 
-		if ($orderBy && !$orderByTS) {
-			// orderBy is set from FF
+		if ($orderBy) {
 			$ascDesc = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'ascDesc', 'sDEF');
 			$this->config['ascDesc'] = $ascDesc;
+			if ($this->config['ascDesc']) {
+				// remove ASC/DESC from 'orderBy' if it is already set from TS
+				$this->config['orderBy'] = preg_replace('/( DESC| ASC)\b/i','',$this->config['orderBy']);
+			}
 		}
 		$this->config['groupBy'] = trim($this->conf['listGroupBy']);
 

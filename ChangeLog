@@ -1,3 +1,7 @@
+2007-02-20	Rupert Germann <rupi@gmx.li>
+
+	* fixed a small bug which caused asc/desc from Flexform to be ignored if a value for 'listOrderBy' was present in TS. Thx to Ernesto for the hint.
+
 2007-02-19	Ingo Renner <typo3@ingo-renner.com>
 
 	* new feature: RSS 2.0 feeds displaying full length news records now, credits Michael Feinbier
