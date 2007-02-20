@@ -1,3 +1,7 @@
+2007-02-19	Ingo Renner <typo3@ingo-renner.com>
+
+	* new feature: RSS 2.0 feeds displaying full length news records now, credits Michael Feinbier
+
 2007-02-18	Ingo Renner <typo3@ingo-renner.com>
 
 	* new feature: list view can select news for a certain day only now - to play nice with TIMTAB (bug #2941)
