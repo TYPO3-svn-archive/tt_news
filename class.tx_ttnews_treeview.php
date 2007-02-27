@@ -36,24 +36,22 @@
  *
  *
  *
- *   68: class tx_ttnews_tceFunc_selectTreeView extends t3lib_treeview
- *   80:     function wrapTitle($title,$v)
- *  103:     function getTitleStyles($v)
- *  125:     function PM_ATagWrap($icon,$cmd,$bMark='')
+ *   66: class tx_ttnews_tceFunc_selectTreeView extends t3lib_treeview
+ *   78:     function wrapTitle($title,$v)
+ *  101:     function getTitleStyles($v)
+ *  123:     function PM_ATagWrap($icon,$cmd,$bMark='')
  *
  *
- *  144: class tx_ttnews_treeview
- *  147:     function displayCategoryTree(&$PA, &$fobj)
- *  185:     function sendResponse($cmd)
- *  233:     function renderCatTree($cmd='')
- *  363:     function getCatRootline ($selectedItems,$SPaddWhere)
- *  400:     function renderCategoryFields()
- *  632:     function getNotAllowedItems(&$PA,$SPaddWhere,$allowedItemsList=false)
- *  676:     function findRecursiveCategories ($PA,$row,$table,$storagePid,$treeIds)
- *  721:     function compareCategoryVals ($treeIds,$catString)
- *  750:     function displayTypeFieldCheckCategories(&$PA, $fobj)
+ *  142: class tx_ttnews_treeview
+ *  145:     function displayCategoryTree(&$PA, &$fobj)
+ *  207:     function sendResponse($cmd)
+ *  255:     function renderCatTree($cmd='')
+ *  385:     function getCatRootline ($selectedItems,$SPaddWhere)
+ *  422:     function renderCategoryFields()
+ *  654:     function getNotAllowedItems(&$PA,$SPaddWhere,$allowedItemsList=false)
+ *  697:     function displayTypeFieldCheckCategories(&$PA, &$fobj)
  *
- * TOTAL FUNCTIONS: 12
+ * TOTAL FUNCTIONS: 10
  * (This index is automatically created/updated by the extension "extdeveval")
  *
  */
@@ -175,14 +173,14 @@ if (t3lib_div::int_from_ver(TYPO3_version) < 4001000 && $this->table == 'tt_news
 			} else {
 				define ('XAJAX_DEFAULT_CHAR_ENCODING', 'iso-8859-15');
 			}
-					
+
 			require_once (t3lib_extMgm::extPath('xajax') . 'class.tx_xajax.php');
 			$this->xajax = t3lib_div::makeInstance('tx_xajax');
 			$this->xajax->setWrapperPrefix('tx_ttnews_');
 			$this->xajax->registerFunction(array('sendResponse',&$this,'sendResponse'));
 // 			$fobj->additionalCode_pre['tt_news_xajax'] = $this->xajax->getJavascript('../'.t3lib_extMgm::siteRelPath('xajax'));
 			$content .= $this->xajax->getJavascript('../'.t3lib_extMgm::siteRelPath('xajax'));
-			
+
 			$this->xajax->processRequests();
 		}
 

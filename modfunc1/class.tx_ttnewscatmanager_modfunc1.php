@@ -34,16 +34,16 @@
  *
  *   64: class tx_ttnewscatmanager_modfunc1 extends t3lib_extobjbase
  *   73:     function main()
- *  167:     function renderCatTree($cmd='')
- *  226:     function sendResponse($cmd)
+ *  141:     function renderCatTree($cmd='')
+ *  197:     function sendResponse($cmd)
  *
  *
- *  273: class tx_ttnewscatmanager_treeView extends t3lib_treeview
- *  285:     function wrapTitle($title,$v)
- *  319:     function makeControl($table,$row)
- *  388:     function includeLocalLang()
- *  404:     function PM_ATagWrap($icon,$cmd,$bMark='')
- *  424:     function wrapIcon($icon,&$row)
+ *  242: class tx_ttnewscatmanager_treeView extends t3lib_treeview
+ *  254:     function wrapTitle($title,$v)
+ *  285:     function makeControl($table,$row)
+ *  347:     function includeLocalLang()
+ *  363:     function PM_ATagWrap($icon,$cmd,$bMark='')
+ *  383:     function wrapIcon($icon,&$row)
  *
  * TOTAL FUNCTIONS: 8
  * (This index is automatically created/updated by the extension "extdeveval")
@@ -160,10 +160,10 @@ class tx_ttnewscatmanager_modfunc1 extends t3lib_extobjbase {
 		$treeViewObj->parentField = 'parent_category';
 
 
-		
+
 		$treeViewObj->expandAll = ($this->useXajax?($cmd == 'show'?1:0):1);
 		$treeViewObj->expandFirst = ($this->useXajax?0:1);
-		
+
 		$treeViewObj->fieldArray = array('uid','title','description','hidden','starttime','endtime','fe_group'); // those fields will be filled to the array $treeViewObj->tree
 		$treeViewObj->useXajax = $this->useXajax;
 
@@ -203,7 +203,7 @@ class tx_ttnewscatmanager_modfunc1 extends t3lib_extobjbase {
 		}
 
 
-		
+
 		$objResponse = new tx_xajax_response();
 
 		$this->debug = array();
@@ -300,7 +300,7 @@ class tx_ttnewscatmanager_treeView extends t3lib_treeview {
 					'<img'.t3lib_iconWorks::skinImg($this->backPath,'gfx/edit2'.(!$TCA[$table]['ctrl']['readOnly']?'':'_d').'.gif','width="11" height="12"').' title="'.$LANG->getLLL('edit',$this->LL).'" alt="" />'.
 					'</a>';
 		}
-			
+
 
 // 			// "Info": (All records)
 // 		$cells[]='<a href="#" onclick="'.htmlspecialchars('top.launchView(\''.$table.'\', \''.$row['uid'].'\'); return false;').'">'.
@@ -332,7 +332,7 @@ class tx_ttnewscatmanager_treeView extends t3lib_treeview {
 // 					'<img'.t3lib_iconWorks::skinImg($this->backPath,'gfx/garbage.gif','width="11" height="12"').' title="'.$LANG->getLLL('delete',$this->LL).'" alt="" />'.
 // 					'</a>';
 // 		}
-		
+
 
 		return '
 											<!-- CONTROL PANEL: '.$table.':'.$row['uid'].' -->

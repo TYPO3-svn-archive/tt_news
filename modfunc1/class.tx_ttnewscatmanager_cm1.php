@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2004-2006 Rupert Germann <rupi@gmx.li>
+*  (c) 2004-2007 Rupert Germann <rupi@gmx.li>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -26,14 +26,17 @@
  *
  *
  *
- *   52: class tx_ttnewscatmanager_cm1
- *   86:     function DB_edit($table,$uid,&$backRef)
- *  107:     function DB_new($table,$uid,&$backRef)
- *  132:     function dragDrop_moveCategory($srcUid,$dstUid,&$backRef)
- *  156:     function dragDrop_copyCategory($srcUid,$dstUid,&$backRef)
- *  177:     function includeLocalLang()
+ *   55: class tx_ttnewscatmanager_cm1
+ *   93:     function DB_edit($table,$uid)
+ *  114:     function DB_new($table,$uid)
+ *  140:     function DB_hideUnhide($table,$rec,$hideField)
+ *  155:     function DB_changeFlag($table, $rec, $flagField, $title, $name)
+ *  179:     function DB_delete($table,$uid,$elInfo)
+ *  207:     function dragDrop_moveCategory($srcUid,$dstUid)
+ *  228:     function dragDrop_copyCategory($srcUid,$dstUid)
+ *  249:     function includeLocalLang()
  *
- * TOTAL FUNCTIONS: 5
+ * TOTAL FUNCTIONS: 8
  * (This index is automatically created/updated by the extension "extdeveval")
  *
  */

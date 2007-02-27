@@ -34,16 +34,19 @@
  *
  *
  *
- *   60: class tx_ttnews_tcemain
- *   73:     function processDatamap_postProcessFieldArray ($status, $table, $id, &$fieldArray, &$pObj)
- *   93:     function processDatamap_preProcessIncomingFieldArray()
- *  107:     function processDatamap_preProcessFieldArray(&$fieldArray, $table, $id, &$pObj)
+ *   63: class tx_ttnews_tcemain
+ *   76:     function processDatamap_postProcessFieldArray ($status, $table, $id, &$fieldArray, &$pObj)
+ *   96:     function processDatamap_preProcessIncomingFieldArray()
+ *  107:     function getSubCategories($catlist, $cc = 0)
+ *  138:     function processDatamap_preProcessFieldArray(&$fieldArray, $table, $id, &$pObj)
  *
  *
- *  172: class tx_ttnews_tcemain_cmdmap
- *  186:     function processCmdmap_preProcess($command, &$table, $id, $value, &$pObj)
+ *  219: class tx_ttnews_tcemain_cmdmap
+ *  233:     function processCmdmap_preProcess($command, &$table, &$id, &$value, &$pObj)
+ *  291:     function processCmdmap_postProcess($command, $table, $srcId, $destId, &$pObj)
+ *  338:     function int_recordTreeInfo($CPtable, $srcId, $counter, $rootID, $table, &$pObj)
  *
- * TOTAL FUNCTIONS: 4
+ * TOTAL FUNCTIONS: 7
  * (This index is automatically created/updated by the extension "extdeveval")
  *
  */
@@ -274,7 +277,17 @@ class tx_ttnews_tcemain_cmdmap {
 			}
 		}
 	}
-	
+
+	/**
+	 * [Describe function...]
+	 *
+	 * @param	[type]		$command: ...
+	 * @param	[type]		$table: ...
+	 * @param	[type]		$srcId: ...
+	 * @param	[type]		$destId: ...
+	 * @param	[type]		$pObj: ...
+	 * @return	[type]		...
+	 */
 	function processCmdmap_postProcess($command, $table, $srcId, $destId, &$pObj) {
 
 			// copy records recursively from Drag&Drop in the category manager
@@ -308,9 +321,20 @@ class tx_ttnews_tcemain_cmdmap {
 					break;
 				}
 			}
-		}		
+		}
 	}
 
+	/**
+	 * [Describe function...]
+	 *
+	 * @param	[type]		$CPtable: ...
+	 * @param	[type]		$srcId: ...
+	 * @param	[type]		$counter: ...
+	 * @param	[type]		$rootID: ...
+	 * @param	[type]		$table: ...
+	 * @param	[type]		$pObj: ...
+	 * @return	[type]		...
+	 */
 	function int_recordTreeInfo($CPtable, $srcId, $counter, $rootID, $table, &$pObj)	{
 		if ($counter)	{
 			$addW =  !$pObj->admin ? ' AND '.$pObj->BE_USER->getPagePermsClause($pObj->pMap['show']) : '';
@@ -326,7 +350,7 @@ class tx_ttnews_tcemain_cmdmap {
 		}
 		return $CPtable;
 	}
-	
+
 }
 
 

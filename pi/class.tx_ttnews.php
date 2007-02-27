@@ -4,7 +4,6 @@
 *
 *  (c) 1999-2004 Kasper Skårhøj (kasper@typo3.com)
 *  (c) 2004-2007 Rupert Germann (rupi@gmx.li)
-*  (c) 2004-2007 Ingo Renner (typo3@ingo-renner.com)  
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -38,60 +37,61 @@
 * @See TSref: 			http://typo3.org/documentation/document-library/references/doc_core_tsref/current/
 *
 * @author Rupert Germann <rupi@gmx.li>
+* @co-author Ingo Renner <typo3@ingo-renner.com>
 */
 /**
  * [CLASS/FUNCTION INDEX of SCRIPT]
  *
  *
  *
- *  110: class tx_ttnews extends tslib_pibase
- *  141:     function main_news($content, $conf)
- *  217:     function init($conf)
- *  366:     function newsArchiveMenu()
- *  516:     function displaySingle()
- *  599:     function displayVersionPreview ()
- *  652:     function displayList($excludeUids = 0)
- *  997:     function getListContent($itemparts, $selectConf, $prefix_display)
- * 1166:     function getSelectConf($where, $noPeriod = 0)
- * 1418:     function generatePageArray()
- * 1439:     function getItemMarkerArray ($row, $textRenderObj = 'displaySingle')
- * 1703:     function insertPagebreaks($text,$firstPageWordCrop)
- * 1753:     function makeMultiPageSView($bodytext,$lConf)
- * 1783:     function makePageBrowser($showResultCount=1,$tableParams='',$pointerName='pointer')
- * 1865:     function getCategories($uid, $getAll=false)
- * 1938:     function getCategoryPath($categoryArray)
- * 1995:     function getSubCategories($catlist, $cc = 0)
- * 2024:     function displayCatMenu()
- * 2137:     function getCatMenuContent($array_in,$lConf, $l=0)
- * 2189:     function getSubCategoriesForMenu ($catlist, $fields, $addWhere, $cc = 0)
- * 2220:     function getCatMarkerArray($markerArray, $row, $lConf)
- * 2360:     function getImageMarkers($markerArray, $row, $lConf, $textRenderObj)
- * 2425:     function getRelated($uid)
- * 2585:     function userProcess($mConfKey, $passVar)
- * 2600:     function spMarker($subpartMarker)
- * 2618:     function searchWhere($sw)
- * 2629:     function formatStr($str)
- * 2644:     function getLayouts($templateCode, $alternatingLayouts, $marker)
- * 2662:     function initLanguages ()
- * 2682:     function initCategoryVars()
- * 2752:     function checkRecords($recordlist)
- * 2784:     function initTemplate()
- * 2809:     function initPidList ()
- * 2834:     function getXmlHeader()
- * 2935:     function getW3cDate($datetime)
- * 2960:     function main_xmlnewsfeed($content, $conf)
- * 2975:     function getStoriesResult()
- * 2997:     function cleanXML($str)
- * 3011:     function convertDates()
- * 3045:     function getHrDateSingle($tstamp)
- * 3058:     function displayFEHelp()
- * 3079:     function validateFields($fieldlist)
- * 3100:     function getNewsSubpart($myTemplate, $myKey, $row = Array())
+ *  112: class tx_ttnews extends tslib_pibase
+ *  143:     function main_news($content, $conf)
+ *  219:     function init($conf)
+ *  373:     function newsArchiveMenu()
+ *  523:     function displaySingle()
+ *  606:     function displayVersionPreview ()
+ *  659:     function displayList($excludeUids = 0)
+ * 1003:     function getListContent($itemparts, $selectConf, $prefix_display)
+ * 1172:     function getSelectConf($where, $noPeriod = 0)
+ * 1419:     function generatePageArray()
+ * 1440:     function getItemMarkerArray ($row, $textRenderObj = 'displaySingle')
+ * 1723:     function insertPagebreaks($text,$firstPageWordCrop)
+ * 1773:     function makeMultiPageSView($bodytext,$lConf)
+ * 1803:     function makePageBrowser($showResultCount=1,$tableParams='',$pointerName='pointer')
+ * 1885:     function getCategories($uid, $getAll=false)
+ * 1958:     function getCategoryPath($categoryArray)
+ * 2015:     function getSubCategories($catlist, $cc = 0)
+ * 2044:     function displayCatMenu()
+ * 2157:     function getCatMenuContent($array_in,$lConf, $l=0)
+ * 2209:     function getSubCategoriesForMenu ($catlist, $fields, $addWhere, $cc = 0)
+ * 2240:     function getCatMarkerArray($markerArray, $row, $lConf)
+ * 2380:     function getImageMarkers($markerArray, $row, $lConf, $textRenderObj)
+ * 2448:     function getRelated($uid)
+ * 2608:     function userProcess($mConfKey, $passVar)
+ * 2623:     function spMarker($subpartMarker)
+ * 2641:     function searchWhere($sw)
+ * 2652:     function formatStr($str)
+ * 2667:     function getLayouts($templateCode, $alternatingLayouts, $marker)
+ * 2685:     function initLanguages ()
+ * 2705:     function initCategoryVars()
+ * 2775:     function checkRecords($recordlist)
+ * 2807:     function initTemplate()
+ * 2832:     function initPidList ()
+ * 2857:     function getXmlHeader()
+ * 2958:     function getW3cDate($datetime)
+ * 2983:     function main_xmlnewsfeed($content, $conf)
+ * 2998:     function getStoriesResult()
+ * 3020:     function cleanXML($str)
+ * 3034:     function convertDates()
+ * 3073:     function getHrDateSingle($tstamp)
+ * 3086:     function displayFEHelp()
+ * 3107:     function validateFields($fieldlist)
+ * 3128:     function getNewsSubpart($myTemplate, $myKey, $row = Array())
  *
  *              SECTION: DB Functions
- * 3121:     function exec_getQuery($table, $conf)
- * 3139:     function getQuery($table, $conf, $returnQueryArray=FALSE)
- * 3221:     function getWhere($table,$conf, $returnQueryArray=FALSE)
+ * 3149:     function exec_getQuery($table, $conf)
+ * 3167:     function getQuery($table, $conf, $returnQueryArray=FALSE)
+ * 3249:     function getWhere($table,$conf, $returnQueryArray=FALSE)
  *
  * TOTAL FUNCTIONS: 45
  * (This index is automatically created/updated by the extension "extdeveval")
@@ -541,7 +541,7 @@ class tx_ttnews extends tslib_pibase {
 			// fix pid for record from workspace
 			$GLOBALS['TSFE']->sys_page->fixVersioningPid('tt_news',$row);
 		}
-$GLOBALS['TSFE']->displayedNews[]=$row['uid'];
+		$GLOBALS['TSFE']->displayedNews[]=$row['uid'];
 
 		if (is_array($row) && ($row['pid'] > 0 || $this->vPrev)) { // never display versions of a news record (having pid=-1) for normal website users
 				// Get the subpart code
@@ -1011,7 +1011,7 @@ $GLOBALS['TSFE']->displayedNews[]=$row['uid'];
 		// Getting elements
 		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 
-$GLOBALS['TSFE']->displayedNews[]=$row['uid'];
+			$GLOBALS['TSFE']->displayedNews[]=$row['uid'];
 
 			$wrappedSubpartArray = array();
 			$lConf = $this->conf[$prefix_display.'.'];
@@ -1309,23 +1309,12 @@ $GLOBALS['TSFE']->displayedNews[]=$row['uid'];
 
 			$catCount = count(explode(',',$tmpCatExclusive));
 
-// debug ($resultsCount,'$resultsCount');
-//
-// debug ($this->catExclusive,'catExclusive');
-// debug ($this->actuallySelectedCategories,'actuallySelectedCategories');
-//
-// debug ($catCount,'$catCount');
-// debug ($actualCatCount,'$actualCatCount');
-// debug ($catRange,'$catRange');
-
-
 			$cleanedResultsCount = array();
 			foreach ($resultsCount as $uid => $hits) {
 				if ($hits == $catCount) {
 					$cleanedResultsCount[] = $uid;
 				}
 			}
-// debug ($cleanedResultsCount,'$cleanedResultsCount');
 
 
 			$matchlist = implode(',',$cleanedResultsCount);
@@ -1389,16 +1378,16 @@ $GLOBALS['TSFE']->displayedNews[]=$row['uid'];
 		}
 
 
-if ($this->conf['excludeAlreadyDisplayedNews']) {
-	if (!is_array($GLOBALS['TSFE']->displayedNews)) {
-		$GLOBALS['TSFE']->displayedNews = array();
-	} else {
-		$excludeUids = implode(',',$GLOBALS['TSFE']->displayedNews);
-		if ($excludeUids) {
-			$selectConf['where'] .= ' AND tt_news.uid NOT IN ('.$GLOBALS['TYPO3_DB']->cleanIntList($excludeUids).')';
+		if ($this->conf['excludeAlreadyDisplayedNews']) {
+			if (!is_array($GLOBALS['TSFE']->displayedNews)) {
+				$GLOBALS['TSFE']->displayedNews = array();
+			} else {
+				$excludeUids = implode(',',$GLOBALS['TSFE']->displayedNews);
+				if ($excludeUids) {
+					$selectConf['where'] .= ' AND tt_news.uid NOT IN ('.$GLOBALS['TYPO3_DB']->cleanIntList($excludeUids).')';
+				}
+			}
 		}
-	}
-}
 
 
 
@@ -1593,22 +1582,22 @@ if ($this->conf['excludeAlreadyDisplayedNews']) {
 			while (list(, $val) = each($fileArr)) {
 				// fills the marker ###FILE_LINK### with the links to the atached files
 				$filelinks .= $this->local_cObj->filelink($val, $this->conf['newsFiles.']) ;
-				
+
 					// <enclosure> support for RSS 2.0
 				if($this->theCode == 'XML') {
 					$path    = trim($this->conf['newsFiles.']['path']);
 					$theFile = $path.$val;
-					
+
 					if (@is_file($theFile))	{
 						$fileURL      = $this->config['siteUrl'].$theFile;
 						$fileSize     = filesize($theFile);
 						$fileMimeType = t3lib_htmlmail::getMimeType($fileURL);
-						
+
 						$rss2Enclousres .= '<enclosure url="'.$fileURL.'" ';
 						$rss2Enclousres .= 'length ="'.$fileSize.'" ';
 						$rss2Enclousres .= 'type="'.$fileMimeType.'" />'."\n\t\t\t";
 					}
-				}				
+				}
 			}
 			$markerArray['###FILE_LINK###'] = $filelinks.$files_stdWrap[1];
 			$markerArray['###NEWS_RSS2_ENCLOSURES###'] = trim($rss2Enclousres);
@@ -2410,8 +2399,8 @@ if ($this->conf['excludeAlreadyDisplayedNews']) {
 
 			$cc = 0;
 			// remove first img from the image array in single view if the TSvar firstImageIsPreview is set
-			if ((	(count($imgs) > 1 && $this->config['firstImageIsPreview']) 
-					|| 
+			if ((	(count($imgs) > 1 && $this->config['firstImageIsPreview'])
+					||
 					(count($imgs) >= 1 && $this->config['forceFirstImageIsPreview'])
 				) && $textRenderObj == 'displaySingle') {
 				array_shift($imgs);
@@ -3059,7 +3048,7 @@ if ($this->conf['excludeAlreadyDisplayedNews']) {
 		if ($this->piVars['year'] || $this->piVars['month'] || $this->piVars['day']) {
 			$mon = ($this->piVars['month'] ? $this->piVars['month'] : 1);
 			$day = ($this->piVars['day']   ? $this->piVars['day']   : 1);
-			
+
 			$this->piVars['pS'] = mktime (0, 0, 0, $mon, $day, $this->piVars['year']);
 			switch ($this->config['archiveMode']) {
 				case 'month':
@@ -3071,7 +3060,7 @@ if ($this->conf['excludeAlreadyDisplayedNews']) {
 				case 'year':
 					$this->piVars['pL'] = mktime (0, 0, 0, 1, 1, $this->piVars['year']+1)-$this->piVars['pS']-1;
 				break;
-			}			
+			}
 		}
 	}
 
@@ -3143,7 +3132,7 @@ if ($this->conf['excludeAlreadyDisplayedNews']) {
 	/*********************************************
 	 *
 	 * DB Functions
-	 * The following two functions are copied from class tslib_content to make it possible to get a query without 'pidInList'
+	 * The following functions are copied from class tslib_content to make it possible to get a query without 'pidInList'
 	 *
 	 **********************************************/
 
