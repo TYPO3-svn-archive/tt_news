@@ -1,5 +1,9 @@
 2008-01-08	Dmitry Dulepov <dmitry@typo3.org>
 
+	* Fixed CSS layout problem with tt_news_remplate_v2.html on FireFox
+
+2008-01-08	Dmitry Dulepov <dmitry@typo3.org>
+
 	* Added section about tt_news add-ons to the manual
 
 2007-02-28	Rupert Germann <rupi@gmx.li>
