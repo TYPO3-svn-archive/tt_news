@@ -2,6 +2,7 @@
 
 	* Fixed bug #7485: Function menu in module Web > Info does not redirect anymore when selecting tt_news category manager
 	* Fixed bug #6881: Division by zero
+	* Fixed bug #6671: XClassing of class.tx_ttnews_catmenu.php does not work
 
 2008-01-28	Dmitry Dulepov <dmitry@typo3.org>
 

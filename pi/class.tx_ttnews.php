@@ -98,9 +98,10 @@
  *
  */
 
-require_once (PATH_t3lib . 'class.t3lib_xml.php');
-require_once (PATH_t3lib . 'class.t3lib_htmlmail.php');
-require_once (PATH_tslib . 'class.tslib_pibase.php');
+require_once(PATH_t3lib . 'class.t3lib_xml.php');
+require_once(PATH_t3lib . 'class.t3lib_htmlmail.php');
+require_once(PATH_tslib . 'class.tslib_pibase.php');
+require_once(t3lib_extMgm::extPath('tt_news') . 'class.tx_ttnews_catmenu.php');
 
 /**
  * Plugin 'news' for the 'tt_news' extension.
@@ -2073,7 +2074,7 @@ class tx_ttnews extends tslib_pibase {
 			$cleanedCategoryMounts = array();
 
 			if ($tmpres) {
-				while ($tmprow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($tmpres)) {
+				while (($tmprow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($tmpres))) {
 					if (!t3lib_div::inList($categoryMounts,$tmprow['parent_category'])) {
 						$dontStartFromRootRecord = true;
 						$cleanedCategoryMounts[] = $tmprow['uid'];
@@ -2099,7 +2100,7 @@ class tx_ttnews extends tslib_pibase {
 
 				$cArr = array();
 				$cArr[] = $this->local_cObj->stdWrap($this->pi_getLL('catmenuHeader','Select a category:'),$lConf['catmenuHeader_stdWrap.']);
-				while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
+				while (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))) {
 					$cArr[] = $row;
 					$subcats = $this->getSubCategoriesForMenu($row['uid'],$fields,$catlistWhere);
 					if (count($subcats))	{
@@ -2110,9 +2111,7 @@ class tx_ttnews extends tslib_pibase {
 			break;
 			case 'tree':
 
-				include_once(t3lib_extMgm::extPath('tt_news').'class.tx_ttnews_catmenu.php');
 				$treeViewObj = t3lib_div::makeInstance('tx_ttnews_catmenu');
-
 				$treeViewObj->table = 'tt_news_cat';
 				$treeViewObj->init($this->SPaddWhere.$this->enableCatFields.$catlistWhere, $this->config['catOrderBy']);
 				$treeViewObj->backPath = TYPO3_mainDir;
