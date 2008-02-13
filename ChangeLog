@@ -1,6 +1,7 @@
 2008-13-28	Dmitry Dulepov <dmitry@typo3.org>
 
 	* Fixed bug #7485: Function menu in module Web > Info does not redirect anymore when selecting tt_news category manager
+	* Fixed bug #6881: Division by zero
 
 2008-01-28	Dmitry Dulepov <dmitry@typo3.org>
 

@@ -1150,7 +1150,7 @@ class tx_ttnews extends tslib_pibase {
 
 			}
 
-			$layoutNum = $cc % $itempartsCount;
+			$layoutNum = ($itempartsCount ? 0 : ($cc % $itempartsCount));
 			// Store the result of template parsing in the Var $itemsOut, use the alternating layouts
 			$itemsOut .= $this->cObj->substituteMarkerArrayCached($itemparts[$layoutNum], $markerArray, array(), $wrappedSubpartArray);
 			$cc++;
@@ -1193,8 +1193,6 @@ class tx_ttnews extends tslib_pibase {
 
 			$strStrictUids = implode(',', $strictUids);
 			$selectConf['where'] .= '(tt_news.uid IN (' . ($strStrictUids?$strStrictUids:0) . ') OR tt_news.sys_language_uid=-1)'; // sys_language_uid=-1 = [all languages]
-
-
 
 		} else {
 			// sys_language_mode != 'strict': If a certain language is requested, select only news-records in the default language. The translated articles (if they exist) will be overlayed later in the list or single function.
@@ -1331,14 +1329,14 @@ class tx_ttnews extends tslib_pibase {
 
 			$results = array();
 			$resultsCount = array();
-			while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
+			while (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))) {
 				$results[$row['uid']] = $row['uid'];
 			}
 			array_unique($results);
 
-			foreach ($results as $k => $uid) {
-				 $currentCats = $this->getCategories($uid);
-				foreach ($currentCats as $catid => $v) {
+			foreach ($results as $uid) {
+				$currentCats = $this->getCategories($uid);
+				foreach (array_keys($currentCats) as $catid) {
 					if (t3lib_div::inList($this->catExclusive,$catid)) {
 						unset($results[$uid]);
 						break; // break after one deselected category was found
