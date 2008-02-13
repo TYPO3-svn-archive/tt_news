@@ -1,3 +1,7 @@
+2008-13-28	Dmitry Dulepov <dmitry@typo3.org>
+
+	* Fixed bug #7485: Function menu in module Web > Info does not redirect anymore when selecting tt_news category manager
+
 2008-01-28	Dmitry Dulepov <dmitry@typo3.org>
 
 	* Fixed CSS layout problem with tt_news_remplate_v2.html on FireFox

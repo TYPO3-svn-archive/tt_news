@@ -88,7 +88,6 @@ class tx_ttnewscatmanager_modfunc1 extends t3lib_extobjbase {
 		if (t3lib_extMgm::isLoaded('xajax')) {
 			$this->useXajax = TRUE;
 		}
-		$this->pObj->doc->JScode = '';
 		if ($this->useXajax) {
 			global $TYPO3_CONF_VARS;
 			if ($TYPO3_CONF_VARS['BE']['forceCharset']) {
