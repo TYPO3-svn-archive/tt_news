@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 1999-2004 Kasper Skårhøj (kasper@typo3.com)
+*  (c) 1999-2004 Kasper Skï¿½rhï¿½j (kasper@typo3.com)
 *  (c) 2004-2007 Rupert Germann (rupi@gmx.li)
 *  All rights reserved
 *
@@ -111,13 +111,11 @@ require_once(t3lib_extMgm::extPath('tt_news') . 'class.tx_ttnews_catmenu.php');
  * @subpackage tt_news
  */
 class tx_ttnews extends tslib_pibase {
-	var $cObj; // The backReference to the mother cObj object set at call time
 	// Default plugin variables:
 	var $prefixId = 'tx_ttnews'; // Same as class name
 	var $scriptRelPath = 'pi/class.tx_ttnews.php'; // Path to this script relative to the extension dir.
 	var $extKey = 'tt_news'; // The extension key.
 	var $tt_news_uid; // the uid of the current news record in SINGLE view
-	var $conf; // the TypoScript configuration array
 	var $config; // the processed TypoScript configuration array
 	var $langArr; // the languages found in the tt_news sysfolder
 	var $sys_language_mode;
@@ -664,79 +662,90 @@ class tx_ttnews extends tslib_pibase {
 		$content = '';
 		switch ($theCode) {
 			case 'LATEST':
-			$prefix_display = 'displayLatest';
-			$templateName = 'TEMPLATE_LATEST';
-			if (!$this->conf['displayArchivedInLatest']) {
-				// if this is set, latest will do the same as list
-				$this->arcExclusive = -1; // Only latest, non archive news
-			}
-			$this->config['limit'] = $this->config['latestLimit'];
-			break;
+				$prefix_display = 'displayLatest';
+				$templateName = 'TEMPLATE_LATEST';
+				if (!$this->conf['displayArchivedInLatest']) {
+					// if this is set, latest will do the same as list
+					$this->arcExclusive = -1; // Only latest, non archive news
+				}
+				$this->config['limit'] = $this->config['latestLimit'];
+				break;
 
 			case 'LIST':
-			$prefix_display = 'displayList';
-			$templateName = 'TEMPLATE_LIST';
-			break;
+				$prefix_display = 'displayList';
+				$templateName = 'TEMPLATE_LIST';
+				break;
 
 			case 'SEARCH':
-			$prefix_display = 'displayList';
-			$templateName = 'TEMPLATE_LIST';
+				$prefix_display = 'displayList';
+				$templateName = 'TEMPLATE_LIST';
 
-			$formURL = $this->pi_linkTP_keepPIvars_url(array('pointer' => null, 'cat' => null), 0, 1, $this->config['searchPid']) ;
-			// Get search subpart
-			$t['search'] = $this->getNewsSubpart($this->templateCode, $this->spMarker('###TEMPLATE_SEARCH###'));
-			// Substitute markers for the searchform
-			$out = $t['search'];
+				// Make markers for the searchform
+				$searchMarkers = array(
+					'###FORM_URL###' => $this->pi_linkTP_keepPIvars_url(array('pointer' => null, 'cat' => null), 0, 1, $this->config['searchPid']),
+					'###SWORDS###' => htmlspecialchars($this->piVars['swords']),
+					'###SEARCH_BUTTON###' => $this->pi_getLL('searchButtonLabel'),
+				);
 
-			$out = $this->cObj->substituteMarker($out, '###FORM_URL###', $formURL);
-			$out = $this->cObj->substituteMarker($out, '###SWORDS###', htmlspecialchars($this->piVars['swords']));
-			$out = $this->cObj->substituteMarker($out, '###SEARCH_BUTTON###', $this->pi_getLL('searchButtonLabel'));
-			// Add to content
-			$content .= $out;
-			// do the search and add the result to the $where string
-			if ($this->piVars['swords']) {
-				$where = $this->searchWhere(trim($this->piVars['swords']));
-				$theCode = 'SEARCH';
-			} else {
-				$where = ($this->conf['emptySearchAtStart']?'AND 1=0':''); // display an empty list, if 'emptySearchAtStart' is set.
-			}
-			break;
+				// Hook for any additional form fields
+				if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tt_news']['additionalFormSearchFields'])) {
+					foreach($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tt_news']['additionalFormSearchFields'] as $_classRef) {
+						$_procObj = & t3lib_div::getUserObj($_classRef);
+						$searchMarkers = $_procObj->additionalFormSearchFields($this, $searchMarkers);
+					}
+				}
+
+				// Add to content
+				$searchSub = $this->getNewsSubpart($this->templateCode, $this->spMarker('###TEMPLATE_SEARCH###'));
+				$content .= $this->cObj->substituteMarkerArray($searchSub, $searchMarkers);
+				unset($searchSub);
+				unset($searchMarkers);
+
+				// do the search and add the result to the $where string
+				if ($this->piVars['swords']) {
+					$where = $this->searchWhere(trim($this->piVars['swords']));
+					$theCode = 'SEARCH';
+				} else {
+					$where = ($this->conf['emptySearchAtStart']?'AND 1=0':''); // display an empty list, if 'emptySearchAtStart' is set.
+				}
+				break;
+
 			// xml news export
 			case 'XML':
-			$prefix_display = 'displayXML';
-			// $this->arcExclusive = -1; // Only latest, non archive news
-			$this->allowCaching = $this->conf['displayXML.']['xmlCaching'];
-			$this->config['limit'] = $this->conf['displayXML.']['xmlLimit']?$this->conf['displayXML.']['xmlLimit']:
-			$this->config['limit'];
+				$prefix_display = 'displayXML';
+				// $this->arcExclusive = -1; // Only latest, non archive news
+				$this->allowCaching = $this->conf['displayXML.']['xmlCaching'];
+				$this->config['limit'] = $this->conf['displayXML.']['xmlLimit']?$this->conf['displayXML.']['xmlLimit']:
+				$this->config['limit'];
 
-			switch ($this->conf['displayXML.']['xmlFormat']) {
-				case 'rss091':
-				$templateName = 'TEMPLATE_RSS091';
-				$this->templateCode = $this->cObj->fileResource($this->conf['displayXML.']['rss091_tmplFile']);
+				switch ($this->conf['displayXML.']['xmlFormat']) {
+					case 'rss091':
+					$templateName = 'TEMPLATE_RSS091';
+					$this->templateCode = $this->cObj->fileResource($this->conf['displayXML.']['rss091_tmplFile']);
+					break;
+
+					case 'rss2':
+					$templateName = 'TEMPLATE_RSS2';
+					$this->templateCode = $this->cObj->fileResource($this->conf['displayXML.']['rss2_tmplFile']);
+					break;
+
+					case 'rdf':
+					$templateName = 'TEMPLATE_RDF';
+					$this->templateCode = $this->cObj->fileResource($this->conf['displayXML.']['rdf_tmplFile']);
+					break;
+
+					case 'atom03':
+					$templateName = 'TEMPLATE_ATOM03';
+					$this->templateCode = $this->cObj->fileResource($this->conf['displayXML.']['atom03_tmplFile']);
+					break;
+
+					case 'atom1':
+					$templateName = 'TEMPLATE_ATOM1';
+					$this->templateCode = $this->cObj->fileResource($this->conf['displayXML.']['atom1_tmplFile']);
+					break;
+
+				}
 				break;
-
-				case 'rss2':
-				$templateName = 'TEMPLATE_RSS2';
-				$this->templateCode = $this->cObj->fileResource($this->conf['displayXML.']['rss2_tmplFile']);
-				break;
-
-				case 'rdf':
-				$templateName = 'TEMPLATE_RDF';
-				$this->templateCode = $this->cObj->fileResource($this->conf['displayXML.']['rdf_tmplFile']);
-				break;
-
-				case 'atom03':
-				$templateName = 'TEMPLATE_ATOM03';
-				$this->templateCode = $this->cObj->fileResource($this->conf['displayXML.']['atom03_tmplFile']);
-				break;
-
-				case 'atom1':
-				$templateName = 'TEMPLATE_ATOM1';
-				$this->templateCode = $this->cObj->fileResource($this->conf['displayXML.']['atom1_tmplFile']);
-				break;
-
-			}
-			break;
 		}
 		// process extra codes from $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']
 		$userCodes = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tt_news']['what_to_display'];
@@ -782,11 +791,13 @@ class tx_ttnews extends tslib_pibase {
 			$selectConf = $this->getSelectConf($where, $noPeriod);
 			// performing query to count all news (we need to know it for browsing):
 			$selectConf['selectFields'] = 'COUNT(DISTINCT(tt_news.uid))'; //count(*)
-			$res = $this->exec_getQuery('tt_news', $selectConf);
+			$newsCount = 0;
+			if (($res = $this->exec_getQuery('tt_news', $selectConf))) {
+				list($newsCount) = $GLOBALS['TYPO3_DB']->sql_fetch_row($res);
+				$GLOBALS['TYPO3_DB']->sql_free_result($res);
+			}
 
-			if ($res) $row = $GLOBALS['TYPO3_DB']->sql_fetch_row($res);
-			$newsCount = $row[0];
-			// Only do something if the queryresult is not empty
+			// Only do something if the query result is not empty
 			if ($newsCount > 0) {
 				// Init Templateparts: $t['total'] is complete template subpart (TEMPLATE_LATEST f.e.)
 				// $t['item'] is an array with the alternative subparts (NEWS, NEWS_1, NEWS_2 ...)
@@ -2637,6 +2648,12 @@ class tx_ttnews extends tslib_pibase {
 	 */
 	function searchWhere($sw) {
 		$where = $this->cObj->searchWhere($sw, $this->searchFieldList, 'tt_news');
+		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tt_news']['searchWhere'])) {
+			foreach($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tt_news']['searchWhere'] as $_classRef) {
+				$_procObj = & t3lib_div::getUserObj($_classRef);
+				$where = $_procObj->searchWhere($this, $sw, $where);
+			}
+		}
 		return $where;
 	}
 

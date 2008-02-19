@@ -1,4 +1,9 @@
-2008-13-28	Dmitry Dulepov <dmitry@typo3.org>
+2008-02-19	Dmitry Dulepov <dmitry@typo3.org>
+
+	* Added search hooks
+	* Extension version is manually set to 2.5.1
+
+2008-02-13	Dmitry Dulepov <dmitry@typo3.org>
 
 	* Fixed bug #7485: Function menu in module Web > Info does not redirect anymore when selecting tt_news category manager
 	* Fixed bug #6881: Division by zero
