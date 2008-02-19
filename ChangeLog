@@ -2,6 +2,7 @@
 
 	* Added search hooks
 	* Extension version is manually set to 2.5.1
+	* Added 4.2-compatible way to show plugin info in Page module
 
 2008-02-13	Dmitry Dulepov <dmitry@typo3.org>
 
