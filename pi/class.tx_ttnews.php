@@ -790,7 +790,7 @@ class tx_ttnews extends tslib_pibase {
 			// build parameter Array for List query
 			$selectConf = $this->getSelectConf($where, $noPeriod);
 			// performing query to count all news (we need to know it for browsing):
-			$selectConf['selectFields'] = 'COUNT(DISTINCT(tt_news.uid))'; //count(*)
+			$selectConf['selectFields'] = 'COUNT(DISTINCT(tt_news.uid))';
 			$newsCount = 0;
 			if (($res = $this->exec_getQuery('tt_news', $selectConf))) {
 				list($newsCount) = $GLOBALS['TYPO3_DB']->sql_fetch_row($res);
@@ -1162,7 +1162,7 @@ class tx_ttnews extends tslib_pibase {
 
 			}
 
-			$layoutNum = ($itempartsCount ? 0 : ($cc % $itempartsCount));
+			$layoutNum = ($itempartsCount == 0 ? 0 : ($cc % $itempartsCount));
 			// Store the result of template parsing in the Var $itemsOut, use the alternating layouts
 			$itemsOut .= $this->cObj->substituteMarkerArrayCached($itemparts[$layoutNum], $markerArray, array(), $wrappedSubpartArray);
 			$cc++;
@@ -2832,9 +2832,6 @@ class tx_ttnews extends tslib_pibase {
 		$globalMarkerArray['###GC3###'] = $this->cObj->stdWrap($this->conf['color3'], $this->conf['color3.']);
 		$globalMarkerArray['###GC4###'] = $this->cObj->stdWrap($this->conf['color4'], $this->conf['color4.']);
 		$this->templateCode = $this->cObj->substituteMarkerArray($this->templateCode, $globalMarkerArray);
-
-
-
 	}
 
 	/**
