@@ -223,6 +223,10 @@ class tx_ttnews extends tslib_pibase {
 		$this->enableFields = $this->cObj->enableFields('tt_news');
 		$this->tt_news_uid = intval($this->piVars['tt_news']); // Get the submitted uid of a news (if any)
 
+		if (!isset($this->conf['compatVersion']) || !preg_match('/^\d+\.\d+\.\d+$/', $this->conf['compatVersion'])) {
+			$this->conf['compatVersion'] = $this->getCurrentVersion();
+		}
+
 		if (t3lib_extMgm::isLoaded('version')) {
 			$this->versioningEnabled = true;
 		}
@@ -374,7 +378,7 @@ class tx_ttnews extends tslib_pibase {
 		$this->arcExclusive = 1;
 		$selectConf = $this->getSelectConf('', 1);
 		// Finding maximum and minimum values:
-		$selectConf['selectFields'] = 'max(datetime) as maxval, min(datetime) as minval';
+		$selectConf['selectFields'] = 'max(tt_news.datetime) as maxval, min(tt_news.datetime) as minval';
 
 		$res = $this->exec_getQuery('tt_news', $selectConf);
 
@@ -418,8 +422,8 @@ class tx_ttnews extends tslib_pibase {
 				$periodInfo['HRstop'] = date('d-m-Y', $periodInfo['stop']);
 				$periodInfo['quarter'] = floor(date('m', $dateArr[$k]) / 3) + 1;
 				// execute a query to count the archive periods
-				$selectConf['selectFields'] = 'count(distinct(uid))';
-				$selectConf['where'] = $selectConf2['where'] . ' AND datetime>=' . $periodInfo['start'] . ' AND datetime<' . $periodInfo['stop'];
+				$selectConf['selectFields'] = 'count(distinct(tt_news.uid))';
+				$selectConf['where'] = $selectConf2['where'] . ' AND tt_news.datetime>=' . $periodInfo['start'] . ' AND tt_news.datetime<' . $periodInfo['stop'];
 
 				$res = $this->exec_getQuery('tt_news', $selectConf);
 
@@ -810,7 +814,7 @@ class tx_ttnews extends tslib_pibase {
 				if ($this->config['groupBy']) {
 					$selectConf['groupBy'] = $this->config['groupBy'];
 				} else {
-					$selectConf['groupBy'] = 'tt_news.uid';
+//					$selectConf['groupBy'] = 'tt_news.uid';
 				}
 
 				if ($this->config['orderBy']) {
@@ -1240,14 +1244,24 @@ class tx_ttnews extends tslib_pibase {
 		if ($this->arcExclusive) {
 			if ($this->conf['enableArchiveDate'] && $this->config['datetimeDaysToArchive'] && $this->arcExclusive > 0) {
 				$theTime = $GLOBALS['SIM_EXEC_TIME'] - intval($this->config['datetimeDaysToArchive']) * 3600 * 24;
-				$selectConf['where'] .= ' AND (tt_news.archivedate<'.$GLOBALS['SIM_EXEC_TIME'].' OR tt_news.datetime<'.$theTime.')';
+				if (version_compare($this->conf['compatVersion'], '2.5.0') <= 0) {
+					$selectConf['where'] .= ' AND (tt_news.archivedate<'.$GLOBALS['SIM_EXEC_TIME'].' OR tt_news.datetime<'.$theTime.')';
+				}
+				else {
+					$selectConf['where'] .= ' AND ((tt_news.archivedate > 0 AND tt_news.archivedate<'.$GLOBALS['SIM_EXEC_TIME'].') OR tt_news.datetime<'.$theTime.')';
+				}
 			} else {
 				if ($this->conf['enableArchiveDate']) {
 					if ($this->arcExclusive < 0) {
 						// show archived
 						$selectConf['where'] .= ' AND (tt_news.archivedate=0 OR tt_news.archivedate>' . $GLOBALS['SIM_EXEC_TIME'] . ')';
 					} elseif ($this->arcExclusive > 0) {
-						$selectConf['where'] .= ' AND tt_news.archivedate<' . $GLOBALS['SIM_EXEC_TIME'];
+						if (version_compare($this->conf['compatVersion'], '2.5.0') <= 0) {
+							$selectConf['where'] .= ' AND tt_news.archivedate<' . $GLOBALS['SIM_EXEC_TIME'];
+						}
+						else {
+							$selectConf['where'] .= ' AND tt_news.archivedate>0 AND tt_news.archivedate<' . $GLOBALS['SIM_EXEC_TIME'];
+						}
 					}
 				}
 				if ($this->config['datetimeMinutesToArchive'] || $this->config['datetimeHoursToArchive'] || $this->config['datetimeDaysToArchive']) {
@@ -3342,6 +3356,17 @@ class tx_ttnews extends tslib_pibase {
 
 			// Return result:
 		return $returnQueryArray ? $queryParts : $query;
+	}
+
+	/**
+	 * Obtains current extension version (for use with compatVersion)
+	 *
+	 * @return	string	Extension version (for example, '2.5.1')
+	 */
+	function getCurrentVersion() {
+		$_EXTKEY = $this->extKey;
+		require_once(t3lib_extMgm::extPath($this->extKey, 'ext_emconf.php'));
+		return $EM_CONF[$_EXTKEY]['version'];
 	}
 
 }
