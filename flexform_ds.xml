@@ -132,7 +132,7 @@
 						<numIndex index="2" type="array">
 							<numIndex index="0">LLL:EXT:tt_news/locallang_tca.xml:tt_news.pi_flexform.category_selection_showSelectedAND</numIndex>
 							<numIndex index="1">2</numIndex>
-						</numIndex>						
+						</numIndex>
 						<numIndex index="3" type="array">
 							<numIndex index="0">LLL:EXT:tt_news/locallang_tca.xml:tt_news.pi_flexform.category_selection_DontShowSelected</numIndex>
 							<numIndex index="1">-1</numIndex>
@@ -286,6 +286,27 @@
 		<el>
 		<template_file>
 			<TCEforms>
+				<label>LLL:EXT:tt_news/locallang_tca.xml:tt_news.pi_flexform.template_file_ref</label>
+				<config>
+					<type>input</type>
+					<eval>trim,tx_ttnews_templateeval</eval>
+					<default>EXT:tt_news/pi/tt_news_v2_template.html</default>
+					<wizards type="array">
+						<_PADDING>2</_PADDING>
+						<link type="array">
+							<type>popup</type>
+							<title>Link</title>
+							<icon>link_popup.gif</icon>
+							<script>browse_links.php?mode=wizard&amp;act=file</script>
+							<params type="array">
+								<blindLinkOptions>page,url,mail,spec</blindLinkOptions>
+								<allowedExtensions>htm,html,tmpl,tpl</allowedExtensions>
+							</params>
+							<JSopenParams>height=300,width=500,status=0,menubar=0,scrollbars=1</JSopenParams>
+						</link>
+					</wizards>
+				</config>
+<!-- pre-2.5.2 version
 				<label>LLL:EXT:tt_news/locallang_tca.xml:tt_news.pi_flexform.template_file</label>
 				<config>
 					<type>group</type>
@@ -297,9 +318,10 @@
 					<size>1</size>
 					<selectedListStyle>Width:180px</selectedListStyle>
 				</config>
+-->
 			</TCEforms>
 		</template_file>
-			<imageMaxWidth>
+		<imageMaxWidth>
 				<TCEforms>
 				<label>LLL:EXT:tt_news/locallang_tca.xml:tt_news.pi_flexform.imageMaxWidth</label>
 				<config>

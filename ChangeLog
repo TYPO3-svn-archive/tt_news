@@ -1,8 +1,10 @@
+2008-02-29	Dmitry Dulepov <dmitry@typo3.org>
 
 	* Fixed bug #7181: tt_news and MySQL 5+
 	* Fixed bug #3914: datetimeDaysToArchive does not work with empty archivedate
 	* Fixed bug #3730: bug in archive view
 	* Fixed bug #3677: Ambiguous sql field selection in newsArchiveMenu()
+	* Fixed bug #6119: ttnews uses database/cahed version of selected template
 
 2008-02-19	Dmitry Dulepov <dmitry@typo3.org>
 
