@@ -1,3 +1,7 @@
+2008-03-03	Dmitry Dulepov <dmitry@typo3.org>
+
+	* Added setting to require categories
+
 2008-02-29	Dmitry Dulepov <dmitry@typo3.org>
 
 	* Fixed bug #7181: tt_news and MySQL 5+
@@ -1198,7 +1202,7 @@
 		- moved ALL TS_setup- and TS_contstants-files to the new folder "static/". this folder holds 3 subfolders for 2 different TS-setups:
 		  setup 1: TS settings for the "classic" table-based template (with fonts, globalWraps, globalColors ....)
 		  setup 2: consists of two subparts: the TS settings for the new CSS-based (XHMTL valid) template and the css styles for this template
-		    which can be included seperately as css_default_style from the third static ext-(TS)template.
+			which can be included seperately as css_default_style from the third static ext-(TS)template.
 		- added two new template markers that build a wrap for the additional data in the single view (###ADDINFO_WRAP_B### ###ADDINFO_WRAP_E###).
 		   this wrap is only inserted if there is at least one of the elements: related, files or links present.
 		- added new template markers for a wrap for all categories ( ###CATWRAP_B### and  ###CATWRAP_E### )

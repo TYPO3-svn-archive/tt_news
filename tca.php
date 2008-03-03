@@ -292,7 +292,6 @@ $TCA['tt_news'] = Array (
 				'rows' => '3'
 			)
 		),
-
 		'category' => Array (
 			'exclude' => 1,
 		#	'l10n_mode' => 'exclude', // the localizalion mode will be handled by the userfunction
@@ -306,7 +305,7 @@ $TCA['tt_news'] = Array (
 				#'foreign_table_where' => $fTableWhere.'ORDER BY tt_news_cat.'.$confArr['category_OrderBy'],
 				'size' => 3,
 				'autoSizeMax' => $confArr['categoryTreeHeigth'],
-				'minitems' => 0,
+				'minitems' => $confArr['requireCategories'] ? 1 : 0,
 				'maxitems' => 500,
 				'MM' => 'tt_news_cat_mm',
 				'wizards' => Array(
