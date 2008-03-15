@@ -2,8 +2,6 @@
 2008-03-15	Rupert Germann <rupi@gmx.li>
 
 	* Fixed bug 5103: fix for the nonvisible categories in selectors when "General record storage page" was used. (re-introduced the file: flexform_ds_no_sPID.xml)
-	* added "softref" parsing to the field bodytext
-	* fix: prevent link targets from being changed in localized records (Thanks to Stefan Galinski)
 	* fix: the string 'http://' in external urls (type=2) is now detected correctly
 	* added the layout Fixes from Dmitry to the example CSS file (THANK YOU Dmitry for helping out!!)
 
@@ -38,6 +36,20 @@
 2008-01-08	Dmitry Dulepov <dmitry@typo3.org>
 
 	* Added section about tt_news add-ons to the manual
+
+2007-10-31	Rupert Germann <rupi@gmx.li>
+
+	* fix: prevent link targets from being changed in localized records (Thanks to Stefan Galinski)
+
+2007-08-16	Rupert Germann <rupi@gmx.li>
+
+	* added "softref" parsing to the field bodytext
+
+2007-05-20	Rupert Germann <rupi@gmx.li>
+
+	* fix for bug 4445: tt_news displayed non clickable links for relations to news without translations in sys_language_mode "strict".
+	* fix: removed hardcoded space between preAuthor and author and added a stdWrap for preAuthor: preAuthor_stdWrap
+	* fix: added a line that unsets the piVar "month" when the archive works in mode "yearly"
 
 2007-02-28	Rupert Germann <rupi@gmx.li>
 

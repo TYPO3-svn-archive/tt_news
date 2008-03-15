@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 1999-2004 Kasper Sk�rh�j (kasper@typo3.com)
+*  (c) 1999-2004 Kasper Skårhøj (kasper@typo3.com)
 *  (c) 2004-2007 Rupert Germann (rupi@gmx.li)
 *  All rights reserved
 *
@@ -1509,7 +1509,7 @@ class tx_ttnews extends tslib_pibase {
 
 		$markerArray['###NEWS_TITLE###'] = $this->local_cObj->stdWrap($row['title'], $lConf['title_stdWrap.']);
 
-		$newsAuthor = $this->local_cObj->stdWrap($row['author']?$this->pi_getLL('preAuthor').' '.$row['author']:'', $lConf['author_stdWrap.']);
+		$newsAuthor = $this->local_cObj->stdWrap($row['author']?$this->local_cObj->stdWrap($this->pi_getLL('preAuthor'), $lConf['preAuthor_stdWrap.']).$row['author']:'', $lConf['author_stdWrap.']);
 		$markerArray['###NEWS_AUTHOR###'] = $this->formatStr($newsAuthor);
 		$markerArray['###NEWS_EMAIL###'] = $this->local_cObj->stdWrap($row['author_email'], $lConf['email_stdWrap.']);
 		$markerArray['###NEWS_DATE###'] = $this->local_cObj->stdWrap($row['datetime'], $lConf['date_stdWrap.']);
@@ -2583,10 +2583,12 @@ class tx_ttnews extends tslib_pibase {
 				if ($GLOBALS['TSFE']->sys_language_content && $row['tablenames']!='pages') {
 					$OLmode = ($this->sys_language_mode == 'strict' ? 'hideNonTranslated' : '');
 					$row = $GLOBALS['TSFE']->sys_page->getRecordOverlay('tt_news', $row, $GLOBALS['TSFE']->sys_language_content, $OLmode);
+					if (!is_array($row)) continue;
 				}
 				$veryLocal_cObj->start($row, 'tt_news');
+
 				if ($row['type']!=1 && $row['type']!=2) { // only normal news
-					$queryString = explode('&', t3lib_div::implodeArrayForUrl('', $GLOBALS['_GET'])) ;
+					$queryString = explode('&', t3lib_div::implodeArrayForUrl('', t3lib_div::_GET())) ;
 
 					if ($queryString) {
 						while (list(, $val) = each($queryString)) {
@@ -3099,6 +3101,7 @@ class tx_ttnews extends tslib_pibase {
 				break;
 				case 'year':
 					$this->piVars['pL'] = mktime (0, 0, 0, 1, 1, $this->piVars['year']+1)-$this->piVars['pS']-1;
+					unset($this->piVars['month']);
 				break;
 			}
 		}

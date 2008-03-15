@@ -313,6 +313,8 @@ plugin.tt_news {
     subheader_stdWrap.wrap = <strong><em>|</em></strong>
 	author_stdWrap.case = upper
     author_stdWrap.typolink.parameter.field = author_email
+    preAuthor_stdWrap.noTrimWrap = || |
+
     links_stdWrap.wrap = | <br />
 
     linksHeader_stdWrap.wrap = <strong>|</strong>
@@ -389,6 +391,7 @@ plugin.tt_news {
     subheader_stdWrap.crop = 300 | ...
     subheader_stdWrap.ifEmpty.field = bodytext
     author_stdWrap.wrap =
+    preAuthor_stdWrap.noTrimWrap = || |
     imageCount = 1
     imageWrapIfAny =
     imgAltTextField = imagecaption
