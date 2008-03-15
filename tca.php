@@ -116,6 +116,7 @@ $TCA['tt_news'] = Array (
 				'type' => 'text',
 				'cols' => '48',
 				'rows' => '5',
+				'softref' => 'typolink_tag,images,email[subst],url',
 				'wizards' => Array(
 					'_PADDING' => 4,
 					'RTE' => Array(

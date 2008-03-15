@@ -157,8 +157,12 @@ t3lib_extMgm::allowTableOnStandardPages('tt_news');
 	// add the tt_news record to the insert records content element
 t3lib_extMgm::addToInsertRecords('tt_news');
 
-	// add tt_news flexform to tt_content
-t3lib_extMgm::addPiFlexFormValue(9, 'FILE:EXT:tt_news/flexform_ds.xml');
+	// switch the XML files for the FlexForm depending on if "use StoragePid"(general record Storage Page) is set or not.
+if ($confArr['useStoragePid']) {
+	t3lib_extMgm::addPiFlexFormValue(9, 'FILE:EXT:tt_news/flexform_ds.xml');
+} else {
+	t3lib_extMgm::addPiFlexFormValue(9, 'FILE:EXT:tt_news/flexform_ds_no_sPID.xml');
+}
 
 	// sets the transformation mode for the RTE to "ts_css" if the extension css_styled_content is installed (default is: "ts")
 if (t3lib_extMgm::isLoaded('css_styled_content')) {

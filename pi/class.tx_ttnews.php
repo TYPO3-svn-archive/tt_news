@@ -1034,8 +1034,15 @@ class tx_ttnews extends tslib_pibase {
 			$titleField = $lConf['linkTitleField']?$lConf['linkTitleField']:'';
 
 			if ($GLOBALS['TSFE']->sys_language_content) {
+				// prevent link targets from being changed in localized records
+				$tmpPage = $row['page'];
+				$tmpExtURL = $row['ext_url'];
 				$row = $GLOBALS['TSFE']->sys_page->getRecordOverlay('tt_news', $row, $GLOBALS['TSFE']->sys_language_content, $GLOBALS['TSFE']->sys_language_contentOL, '');
+				$row['page'] = $tmpPage;
+				$row['ext_url'] = $tmpExtURL;
 			}
+
+			
 			if ($this->versioningEnabled) {
 				// get workspaces Overlay
 				$GLOBALS['TSFE']->sys_page->versionOL('tt_news',$row);
@@ -1119,7 +1126,7 @@ class tx_ttnews extends tslib_pibase {
 			if ($this->theCode == 'XML') {
 				if ($row['type'] == 1 || $row['type'] == 2) {
 					if ($row['type'] == 2) {
-						$exturl = trim(strpos($row['ext_url'],'http://')?$row['ext_url']:'http://'.$row['ext_url']);
+						$exturl = trim(strpos($row['ext_url'],'http://')!==FALSE?$row['ext_url']:'http://'.$row['ext_url']);
 						$exturl = (strpos($exturl,' ')?substr($exturl, 0, strpos($exturl, ' ')):$exturl);
 					}
 					$rssUrl = ($row['type'] == 1 ? $this->config['siteUrl'] .$this->pi_getPageLink($row['page'], ''):$exturl);

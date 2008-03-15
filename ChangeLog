@@ -1,3 +1,12 @@
+
+2008-03-15	Rupert Germann <rupi@gmx.li>
+
+	* Fixed bug 5103: fix for the nonvisible categories in selectors when "General record storage page" was used. (re-introduced the file: flexform_ds_no_sPID.xml)
+	* added "softref" parsing to the field bodytext
+	* fix: prevent link targets from being changed in localized records (Thanks to Stefan Galinski)
+	* fix: the string 'http://' in external urls (type=2) is now detected correctly
+	* added the layout Fixes from Dmitry to the example CSS file (THANK YOU Dmitry for helping out!!)
+
 2008-03-03	Dmitry Dulepov <dmitry@typo3.org>
 
 	* Added setting to require categories
