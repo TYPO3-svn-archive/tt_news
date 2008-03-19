@@ -234,14 +234,18 @@ t3lib_extMgm::addToAllTCAtypes('be_users','tt_news_categorymounts;;;;1-1-1');
 
 
 
-if (TYPO3_MODE=='BE')	{
+if (TYPO3_MODE == 'BE')	{
 	if (t3lib_div::int_from_ver(TYPO3_version) >= 4000000) {
-		t3lib_extMgm::insertModuleFunction(
-			'web_info',
-			'tx_ttnewscatmanager_modfunc1',
-			t3lib_extMgm::extPath($_EXTKEY).'modfunc1/class.tx_ttnewscatmanager_modfunc1.php',
-			'LLL:EXT:tt_news/modfunc1/locallang.xml:moduleFunction.tx_ttnews_modfunc1'
-		);
+		if (t3lib_div::int_from_ver(TYPO3_version) < 4002000) {
+			t3lib_extMgm::insertModuleFunction(
+				'web_info',
+				'tx_ttnewscatmanager_modfunc1',
+				t3lib_extMgm::extPath($_EXTKEY).'modfunc1/class.tx_ttnewscatmanager_modfunc1.php',
+				'LLL:EXT:tt_news/modfunc1/locallang.xml:moduleFunction.tx_ttnews_modfunc1'
+			);
+		} else {
+			t3lib_extMgm::addModule('web','txttnewsM1','',t3lib_extMgm::extPath($_EXTKEY).'mod1/');
+		}
 
 		$GLOBALS['TBE_MODULES_EXT']['xMOD_alt_clickmenu']['extendCMclasses'][]=array(
 			'name' => 'tx_ttnewscatmanager_cm1',

@@ -1,59 +1,134 @@
 <?php
 /***************************************************************
-*  Copyright notice
-*
-*  (c) 2005-2007 Rupert Germann <rupi@gmx.li>
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*  A copy is found in the textfile GPL.txt and important notices to the license
-*  from the author is found in LICENSE.txt distributed with these scripts.
-*
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
+ *  Copyright notice
+ *
+ *  (c) 2005-2008 Rupert Germann <rupi@gmx.li>
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *  A copy is found in the textfile GPL.txt and important notices to the license
+ *  from the author is found in LICENSE.txt distributed with these scripts.
+ *
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 /**
-* class.tx_ttnews_catmenu.php
-*
-* renders the CATMENU content element - extends class t3lib_treeview to change some methods.
-*
-* $Id$
-*
-* @author Rupert Germann <rupi@gmx.li>
-*/
+ * class.tx_ttnews_catmenu.php
+ *
+ * renders the tt_news CATMENU content element - inspired by class.webpagetree.php which renders the pagetree in the TYPO3 BackEnd
+ *
+ * $Id$
+ *
+ * @author Rupert Germann <rupi@gmx.li>
+ */
 /**
  * [CLASS/FUNCTION INDEX of SCRIPT]
  *
  *
  *
- *   56: class tx_ttnews_catmenu extends t3lib_treeview
- *   68:     function wrapTitle($title,$v)
- *  108:     function getBrowsableTree()
- *  180:     function getTree($uid, $depth=999, $depthData='',$blankLineCode='')
- *  256:     function printTree($treeArr='')
- *  282:     function getRootIcon($rec)
- *  302:     function getIcon($row)
- *  344:     function PMicon($row,$a,$c,$nextCount,$exp)
+ *   65: class tx_ttnews_catmenu
+ *   77:     function init(&$pObj)
+ *  105:     function ajaxExpandCollapse(&$params, &$ajaxObj)
  *
- * TOTAL FUNCTIONS: 7
+ *
+ *  129: class tx_ttnews_FEtreeview extends t3lib_treeview
+ *  141:     function wrapTitle($title,$v)
+ *  194:     function getBrowsableTree()
+ *  265:     function getTree($uid, $depth=999, $blankLineCode='', $subCSSclass='')
+ *  363:     function printTree($treeArr = '')
+ *  473:     function getRootIcon($rec)
+ *  493:     function getIcon($row)
+ *  535:     function PMicon($row,$a,$c,$nextCount,$exp)
+ *  557:     function PMiconATagWrap($icon, $cmd, $isExpand = true)
+ *  582:     function initializePositionSaving()
+ *  617:     function savePosition()
+ *  633:     function getTitleStr($row,$titleLen=30)
+ *
+ * TOTAL FUNCTIONS: 13
  * (This index is automatically created/updated by the extension "extdeveval")
  *
  */
-require_once(PATH_t3lib.'class.t3lib_treeview.php');
+require_once(t3lib_extMgm::extPath('tt_news').'lib/class.tx_ttnews_categorytree.php');
 
-class tx_ttnews_catmenu extends t3lib_treeview {
+class tx_ttnews_catmenu {
+	var $titleLen = 60;
+	var $treeObj;
+	var $mode = false;
+
+
+	/**
+	 * [Describe function...]
+	 *
+	 * @param	[type]		$$pObj: ...
+	 * @return	[type]		...
+	 */
+	function init(&$pObj) {
+		$lConf = $pObj->conf['displayCatMenu.'];
+		$this->treeObj = t3lib_div::makeInstance('tx_ttnews_FEtreeview');
+		$this->treeObj->tt_news_obj = &$pObj;
+		$this->treeObj->table = 'tt_news_cat';
+		$this->treeObj->init($pObj->SPaddWhere.$pObj->enableCatFields.$pObj->catlistWhere, $pObj->config['catOrderBy']);
+		$this->treeObj->backPath = TYPO3_mainDir;
+		$this->treeObj->parentField = 'parent_category';
+		$this->treeObj->thisScript = 'index.php?eID=tt_news';
+		$this->treeObj->cObjUid = intval($pObj->cObj->data['uid']);
+		$this->treeObj->fieldArray = array('uid','title','title_lang_ol','description','image'); // those fields will be filled to the array $this->treeObj->tree
+		$this->treeObj->ext_IconMode = '1'; // no context menu on icons
+
+		$expandable = $lConf['expandable'];
+		$mode = $lConf['mode']?$lConf['mode']:'tree';
+		if ($mode == 'ajaxtree') {
+			$expandable = true;
+			$this->treeObj->useAjax = true;
+		}
+
+		$this->treeObj->expandAll = $lConf['expandAll'];
+		$this->treeObj->expandable = $expandable;
+		$this->treeObj->expandFirst = $lConf['expandFirst'];
+		$this->treeObj->titleLen = $this->titleLen;
+
+		$this->treeObj->title = 'Select a category:';
+//		$this->treeObj->title = $pObj->pi_getLL('catmenuHeader');
+
+//debug();
+	}
+
+	/**
+	 * [Describe function...]
+	 *
+	 * @param	[type]		$$params: ...
+	 * @param	[type]		$ajaxObj: ...
+	 * @return	[type]		...
+	 */
+	function ajaxExpandCollapse(&$params, &$ajaxObj) {
+		$this->init($params['tt_newsObj']);
+		$this->treeObj->FE_USER = &$params['feUserObj'];
+		$tree = $this->treeObj->getBrowsableTree();
+		if (!$this->treeObj->ajaxStatus) {
+			$ajaxObj->setError($tree);
+		} else	{
+			$ajaxObj->addContent('tree', $tree);
+		}
+	}
+}
+
+/**
+ * [Describe function...]
+ *
+ */
+class tx_ttnews_FEtreeview extends tx_ttnews_categorytree {
 
 	var $TCEforms_itemFormElName='';
 	var $TCEforms_nonSelectableItemsArray=array();
@@ -67,8 +142,14 @@ class tx_ttnews_catmenu extends t3lib_treeview {
 	 */
 	function wrapTitle($title,$v)	{
 		$newsConf = &$this->tt_news_obj->conf;
-		$newsConfig = &$this->tt_news_obj->config;
-		$catSelLinkParams = ($newsConf['catSelectorTargetPid']?($newsConfig['itemLinkTarget']?$newsConf['catSelectorTargetPid'].' '.$newsConfig['itemLinkTarget']:$newsConf['catSelectorTargetPid']):$GLOBALS['TSFE']->id);
+		if ($newsConf['catSelectorTargetPid']) {
+			$catSelLinkParams = $newsConf['catSelectorTargetPid'];
+			if ($newsConf['itemLinkTarget']) {
+				$catSelLinkParams .= ' '.$newsConf['itemLinkTarget'];
+			}
+		} else {
+			$catSelLinkParams = $GLOBALS['TSFE']->id;
+		}
 
 		if($v['uid']>0) {
 			if ($GLOBALS['TSFE']->sys_language_content && $v['uid']) {
@@ -87,9 +168,13 @@ class tx_ttnews_catmenu extends t3lib_treeview {
 					'cat' => $v['uid'],
 					'year' => ($piVars['year']?$piVars['year']:null),
 					'month' => ($piVars['month']?$piVars['month']:null)
-					), $this->tt_news_obj->allowCaching, ($newsConf['dontUseBackPid']?1:0), $catSelLinkParams);
+				), $this->tt_news_obj->allowCaching, ($newsConf['dontUseBackPid']?1:0), $catSelLinkParams);
 			} else {
-				$link = $this->tt_news_obj->pi_linkTP_keepPIvars($title, array('cat' => $v['uid'], 'backPid' => null, 'pointer' => null), $this->tt_news_obj->allowCaching, ($newsConf['dontUseBackPid']?1:0), $catSelLinkParams);
+				$link = $this->tt_news_obj->pi_linkTP_keepPIvars($title, array(
+					'cat' => $v['uid'],
+					'backPid' => null,
+					'pointer' => null
+				), $this->tt_news_obj->allowCaching, ($newsConf['dontUseBackPid']?1:0), $catSelLinkParams);
 			}
 			$GLOBALS['TSFE']->ATagParams = $pTmp;
 			return $link ;
@@ -99,180 +184,11 @@ class tx_ttnews_catmenu extends t3lib_treeview {
 		}
 	}
 
-	/**
-	 * Will create and return the HTML code for a browsable tree
-	 * Is based on the mounts found in the internal array ->MOUNTS (set in the constructor)
-	 *
-	 * @return	string		HTML code for the browsable tree
-	 */
-	function getBrowsableTree()	{
-
-			// Get stored tree structure AND updating it if needed according to incoming PM GET var.
-		$this->initializePositionSaving();
-
-			// Init done:
-		$titleLen=intval($this->BE_USER->uc['titleLen']);
-		$treeArr=array();
-
-			// Traverse mounts:
-		$cc = 0;
-// 			debug($this->MOUNTS,'$this->MOUNTS '.__FUNCTION__.' '.__CLASS__);
-		foreach($this->MOUNTS as $idx => $uid)	{
-
-				// Set first:
-			$this->bank=$idx;
-			$isOpen = $this->stored[$idx][$uid] || $this->expandFirst;
-
-				// Save ids while resetting everything else.
-			$curIds = $this->ids;
-			$this->reset();
-			$this->ids = $curIds;
-
-				// Preparing rootRec for the mount
-			if ($uid)	{
-				if($cc) { // don't accumulate $firstHtml if we're listing multiple MOUNTS
-					$firstHtml = '';
-				}
-				$cc++;
-				$rootRec = $this->getRecord($uid);
-				$firstHtml.=$this->getIcon($rootRec);
-			} else {
-					// Artificial record for the tree root, id=0
-				$rootRec = $this->getRootRecord($uid);
-				$firstHtml.=$this->getRootIcon($rootRec);
-			}
-
-// 			debug($firstHtml,'$firstHtml bank:'.$idx.' '.__FUNCTION__.' '.__CLASS__);
-
-			if (is_array($rootRec))	{
-					// Add the root of the mount to ->tree
-				$this->tree[]=array('HTML'=>$firstHtml,'row'=>$rootRec,'bank'=>$this->bank);
-
-					// If the mount is expanded, go down:
-				if ($isOpen)	{
-						// Set depth:
-							$depthD = '';
-					if ($this->addSelfId)	$this->ids[] = $uid;
-					$this->getTree($uid,999,$depthD);
-				}
-
-					// Add tree:
-				$treeArr=array_merge($treeArr,$this->tree);
-			}
-
-		}
-// 					debug($treeArr,'$treeArr '.__FUNCTION__.' '.__CLASS__);
-
-		return $this->printTree($treeArr);
-	}
 
 
 
-	/**
-	 * Fetches the data for the tree
-	 *
-	 * @param	integer		item id for which to select subitems (parent id)
-	 * @param	integer		Max depth (recursivity limit)
-	 * @param	string		HTML-code prefix for recursive calls.
-	 * @param	string		? (internal)
-	 * @return	integer		The count of items on the level
-	 */
-	function getTree($uid, $depth=999, $depthData='',$blankLineCode='')	{
 
-			// Buffer for id hierarchy is reset:
-		$this->buffer_idH=array();
-			// Init vars
-		$depth=intval($depth);
-		$HTML='';
-		$a=0;
 
-		$res = $this->getDataInit($uid);
-		$c = $this->getDataCount($res);
-		$crazyRecursionLimiter = 999;
-
-			// Traverse the records:
-		while ($crazyRecursionLimiter>0 && $row = $this->getDataNext($res))	{
-			$a++;
-			$crazyRecursionLimiter--;
-
-			$newID =$row['uid'];
-			$this->tree[]=array();		// Reserve space.
-			end($this->tree);
-			$treeKey = key($this->tree);	// Get the key for this space
-			$LN = ($a==$c)?'blank':'line';
-
-				// If records should be accumulated, do so
-			if ($this->setRecs)	{
-				$this->recs[$row['uid']] = $row;
-			}
-
-				// Accumulate the id of the element in the internal arrays
-			$this->ids[]=$idH[$row['uid']]['uid']=$row['uid'];
-			$this->ids_hierarchy[$depth][]=$row['uid'];
-
-				// Make a recursive call to the next level
-			if ($depth>1 && $this->expandNext($newID) && !$row['php_tree_stop'])	{
-
-				$theIcon = $depthData.'<img'.t3lib_iconWorks::skinImg($this->backPath,'gfx/ol/'.$LN.'.gif','width="18" height="16"').' alt="" />';
-				$nextCount=$this->getTree(
-						$newID,
-						$depth-1,
-						$this->makeHTML?$theIcon:'',
-						$blankLineCode.','.$LN
-					);
-				if (count($this->buffer_idH))	$idH[$row['uid']]['subrow']=$this->buffer_idH;
-				$exp=1;	// Set "did expand" flag
-			} else {
-				$nextCount=$this->getCount($newID);
-				$exp=0;	// Clear "did expand" flag
-			}
-
-				// Set HTML-icons, if any:
-			if ($this->makeHTML)	{
-				$HTML = $depthData.$this->PMicon($row,$a,$c,$nextCount,$exp);
-				$HTML.=$this->wrapStop($this->getIcon($row),$row);
-			}
-
-				// Finally, add the row/HTML content to the ->tree array in the reserved key.
-			$this->tree[$treeKey] = Array(
-				'row'=>$row,
-				'HTML'=>$HTML,
-				'invertedDepth'=>$depth,
-				'blankLineCode'=>$blankLineCode,
-				'bank' => $this->bank
-			);
-		}
-		$this->getDataFree($res);
-		$this->buffer_idH=$idH;
-		return $c;
-	}
-
-	/**
-	 * Compiles the HTML code for displaying the structure found inside the ->tree array
-	 *
-	 * @param	array		"tree-array" - if blank string, the internal ->tree array is used.
-	 * @return	string		The HTML code for the tree
-	 */
-	function printTree($treeArr='')	{
-
-		$lConf = &$this->tt_news_obj->conf['displayCatMenu.'];
-		$titleLen=intval($this->BE_USER->uc['titleLen']);
-		if (!is_array($treeArr))	$treeArr=$this->tree;
-		$out='
-
-		';
-		foreach($treeArr as $k => $v)	{
-			$idAttr = htmlspecialchars($this->domIdPrefix.$this->getId($v['row']).'_'.$v['bank']);
-			if ($v['row']['uid']) {
-				if (!$lConf['catmenuItem_NO_stdWrap.']) { $lConf['catmenuItem_NO_stdWrap.']['wrap'] = '<div>|</div>'; }
-				if (!$lConf['catmenuItem_ACT_stdWrap.']) { $lConf['catmenuItem_ACT_stdWrap.']['wrap'] = '<div style="font-weight:bold;">|</div>'; }
-				$out.= $this->tt_news_obj->local_cObj->stdWrap($v['HTML'].$this->wrapTitle($this->getTitleStr($v['row'],$titleLen),$v['row'],$v['bank']), $lConf['catmenuItem_'.($this->tt_news_obj->piVars['cat']==$v['row']['uid']?'ACT':'NO').'_stdWrap.']);
-			} else { // root item
-				$out.= $this->tt_news_obj->local_cObj->stdWrap($v['HTML'].$this->wrapTitle($this->getTitleStr($v['row'],$titleLen),$v['row'],$v['bank']), $lConf['catmenuHeader_stdWrap.']);
-			}
-		}
-		return $out;
-	}
 	/**
 	 * Returns the root icon for a tree/mountpoint (defaults to the globe)
 	 *
@@ -308,15 +224,15 @@ class tx_ttnews_catmenu extends t3lib_treeview {
 			switch($catIconMode) {
 				case 1: // icon from cat db-record
 					if($row['image']) {
-					$iconConf['image.']['file'] = 'uploads/pics/'.$row['image'];
+						$iconConf['image.']['file'] = 'uploads/pics/'.$row['image'];
 					}
-				break;
+					break;
 				case 2: // own icons
 					$iconConf['image.']['file'] = $lConf['catmenuIconPath'].$lConf['catmenuIconFile'];
-				break;
+					break;
 				case -1: // no icons
 					$iconConf['image.']['file'] = '';
-				break;
+					break;
 			}
 			if ($iconConf['image.']['file']) {
 				$iconConf['image.']['file.'] = $lConf['catmenuIconFile.'];
@@ -329,33 +245,118 @@ class tx_ttnews_catmenu extends t3lib_treeview {
 		return $this->wrapIcon($icon,$row);
 	}
 
+
+
+
+
 	/**
-	 * Generate the plus/minus icon for the browsable tree.
+	 * Wrap the plus/minus icon in a link
 	 *
-	 * @param	array		record for the entry
-	 * @param	integer		The current entry number
-	 * @param	integer		The total number of entries. If equal to $a, a "bottom" element is returned.
-	 * @param	integer		The number of sub-elements to the current element.
-	 * @param	boolean		The element was expanded to render subelements if this flag is set.
-	 * @return	string		Image tag with the plus/minus icon.
+	 * @param	string		HTML string to wrap, probably an image tag.
+	 * @param	string		Command for 'PM' get var
+	 * @param	[type]		$isExpand: ...
+	 * @return	string		Link-wrapped input string
 	 * @access private
-	 * @see t3lib_pageTree::PMicon()
 	 */
-	function PMicon($row,$a,$c,$nextCount,$exp)	{
-		$PM = /*$nextCount ? ($exp?'minus':'plus') : */'join';
-		$BTM = ($a==$c)?'bottom':'';
-		$lConf = &$this->tt_news_obj->conf['displayCatMenu.'];
-		if ($lConf['catmenuIconPath'] && $lConf['catmenuIconMode'] == 2)  {
-			$iconConf['image.']['file'] = $lConf['catmenuIconPath'].$PM.$BTM.'.gif';
-			$icon = $GLOBALS['TSFE']->cObj->IMAGE($iconConf['image.']);
+	function PMiconATagWrap($icon, $cmd, $isExpand = true,$uid=0)	{
+		if ($this->thisScript && $this->expandable) {
+			$newsConf = &$this->tt_news_obj->conf;
+			if ($newsConf['catSelectorTargetPid']) {
+				$catSelLinkParams = $newsConf['catSelectorTargetPid'];
+//				if ($newsConf['itemLinkTarget']) {
+//					$catSelLinkParams .= ' '.$newsConf['itemLinkTarget'];
+//				}
+			} else {
+				$catSelLinkParams = $GLOBALS['TSFE']->id;
+			}
+			if ($this->useAjax) {
+				// activate dynamic ajax-based tree
+				$js = htmlspecialchars('categoryTree.load(\''.$cmd.'\', '.intval($isExpand).', this, \''.rawurlencode($catSelLinkParams).'\','.$this->cObjUid.');');
+				return '<a class="pm" onclick="'.$js.'">'.$icon.'</a>';				
+			} else {
+//			
+//				$bMark=($this->bank.'_'.$uid);	
+//				if ($bMark)	{
+//					$anchor = '#'.$bMark;
+//					$name=' name="'.$bMark.'"';
+//				}
+//				debug(t3lib_div::getIndpEnv('TYPO3_SITE_SCRIPT'));
+				
+				$aUrl = $this->tt_news_obj->pi_linkTP_keepPIvars_url(array(), $this->tt_news_obj->allowCaching, 0, $catSelLinkParams).'&PM='.$cmd.$anchor;
+				return '<a class="pm" href="'.htmlspecialchars($aUrl).'"'.$name.'>'.$icon.'</a>';
+
+			}
+
+		} else {
+			return $icon;
 		}
-		 else {
-			$icon = '<img'.t3lib_iconWorks::skinImg($this->backPath,'gfx/ol/'.$PM.$BTM.'.gif','width="18" height="16"').' alt="" />';
-		}
-		return $icon;
 	}
+
+	/**
+	 * [Describe function...]
+	 *
+	 * @return	[type]		...
+	 */
+	function initializePositionSaving()	{
+		// Get stored tree structure:
+		if ($this->FE_USER->user) { // a user is logged in
+			$this->stored = unserialize($this->FE_USER->uc['tt_news'][$this->treeName]);
+		} else {
+			$this->stored = unserialize($_COOKIE[$this->treeName]);
+		}
+		if (!is_array($this->stored)) { $this->stored = array(); }
+//		debug($this->stored);
+
+		// PM action
+		// (If an plus/minus icon has been clicked, the PM GET var is sent and we must update the stored positions in the tree):
+		$PM = explode('_',t3lib_div::_GP('PM'));	// 0: mount key, 1: set/clear boolean, 2: item ID (cannot contain "_"), 3: treeName
+//		debug($PM,'$PM');
+
+		if (count($PM)==4 && $PM[3]==$this->treeName)	{
+			if (isset($this->MOUNTS[$PM[0]]))	{
+				if ($PM[1])	{	// set
+					$this->stored[$PM[0]][$PM[2]]=1;
+					$this->savePosition();
+				} else {	// clear
+					unset($this->stored[$PM[0]][$PM[2]]);
+					$this->savePosition();
+				}
+			}
+		}
+	}
+
+	/**
+	 * Saves the content of ->stored (keeps track of expanded positions in the tree)
+	 * $this->treeName will be used as key for BE_USER->uc[] to store it in
+	 *
+	 * @return	void
+	 * @access private
+	 */
+	function savePosition()	{
+		if ($this->FE_USER->user) {
+			$this->FE_USER->uc['tt_news'][$this->treeName] = serialize($this->stored);
+			$this->FE_USER->writeUC();
+		} else {
+			setcookie($this->treeName, serialize($this->stored));
+		}
+	}
+
+	/**
+	 * [Describe function...]
+	 *
+	 * @param	[type]		$row: ...
+	 * @param	[type]		$titleLen: ...
+	 * @return	[type]		...
+	 */
+	function getTitleStr($row,$titleLen=30)	{
+		$title = htmlspecialchars(t3lib_div::fixed_lgd_cs($row['title'],$titleLen));
+
+		return $title;
+	}
+
+
 }
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_news/class.tx_ttnews_catmenu.php'])    {
-    include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_news/class.tx_ttnews_catmenu.php']);
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_news/class.tx_ttnews_catmenu.php']);
 }
 ?>

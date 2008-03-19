@@ -26,4 +26,9 @@ $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/class.tx_cms_layout.php'][
 // Fix for template file name created with older versions
 $TYPO3_CONF_VARS['SC_OPTIONS']['tce']['formevals']['tx_ttnews_templateeval'] = 'EXT:tt_news/class.tx_ttnews_templateeval.php';
 
+
+// register index script which receives ajax calls
+$TYPO3_CONF_VARS['FE']['eID_include']['tt_news'] = 'EXT:tt_news/pi/fe_index.php';
+$TYPO3_CONF_VARS['BE']['AJAX']['tx_ttnews_catmenu::expandCollapse'] = t3lib_extMgm::extPath('tt_news').'mod1/index.php:tx_ttnews_module1->ajaxExpandCollapse';
+ 
 ?>

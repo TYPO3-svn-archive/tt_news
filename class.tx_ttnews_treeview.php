@@ -23,7 +23,7 @@
 ***************************************************************/
 /**
  * This function displays a selector with nested categories.
- * The original code is borrowed from the extension "Digital Asset Management" (tx_dam) author: René Fritz <r.fritz@colorcube.de>
+ * The original code is borrowed from the extension "Digital Asset Management" (tx_dam) author: RenÃ© Fritz <r.fritz@colorcube.de>
  *
  * $Id$
  *
@@ -167,9 +167,8 @@ if (t3lib_div::int_from_ver(TYPO3_version) < 4001000 && $this->table == 'tt_news
 
 
 		if ($this->useXajax) {
-			global $TYPO3_CONF_VARS;
-			if ($TYPO3_CONF_VARS['BE']['forceCharset']) {
-				define ('XAJAX_DEFAULT_CHAR_ENCODING', $TYPO3_CONF_VARS['BE']['forceCharset']);
+			if ($GLOBALS['TYPO3_CONF_VARS']['BE']['forceCharset']) {
+				define ('XAJAX_DEFAULT_CHAR_ENCODING', $GLOBALS['TYPO3_CONF_VARS']['BE']['forceCharset']);
 			} else {
 				define ('XAJAX_DEFAULT_CHAR_ENCODING', 'iso-8859-15');
 			}
@@ -179,8 +178,8 @@ if (t3lib_div::int_from_ver(TYPO3_version) < 4001000 && $this->table == 'tt_news
 			$this->xajax->setWrapperPrefix('tx_ttnews_');
 			$this->xajax->registerFunction(array('sendResponse',&$this,'sendResponse'));
 // 			$fobj->additionalCode_pre['tt_news_xajax'] = $this->xajax->getJavascript('../'.t3lib_extMgm::siteRelPath('xajax'));
-			$content .= $this->xajax->getJavascript('../'.t3lib_extMgm::siteRelPath('xajax'));
-
+			
+			$content .= $this->xajax->getJavascript((TYPO3_MODE == 'BE' ? '../' : '').t3lib_extMgm::siteRelPath('xajax'));
 			$this->xajax->processRequests();
 		}
 

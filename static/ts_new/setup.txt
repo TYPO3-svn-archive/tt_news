@@ -19,8 +19,11 @@ plugin.tt_news {
   
   # page to get the newsitems from -> "Starting point"
   pid_list = {$plugin.tt_news.pid_list}
+  dontUsePidList = 0
+  
+  excludeAlreadyDisplayedNews = 0
 
-  # page for the Single view  (changed in version 1.6.0 - PIDitemDisplay don't work anymore)
+  # page for the Single view
   singlePid = {$plugin.tt_news.singlePid}
 
   # page id for the archive link in "LATEST" template
@@ -113,10 +116,18 @@ plugin.tt_news {
 
   # setting for the category menu (CATMENU)
   displayCatMenu {
+
     # catmenu rendermode:
     # nestedWraps = make a catmenu with nested wraps
-    # tree = use TYPO3 class treeview to build the catmenu
-    mode = tree
+    # tree = use TYPO3 class treeview to build an expandable menu
+    # ajaxtree = expandable menu with ajax (requires TYPO3 >= 4.2)
+    
+    mode = ajaxtree
+    expandable = 1
+    expandAll = 0
+    expandFirst = 0
+    
+    
     catmenu_stdWrap.wrap = <div class="news-catmenu">|</div>
     catmenuHeader_stdWrap.wrap = <p class="news-catmenu-header">|</p>
 
@@ -139,7 +150,7 @@ plugin.tt_news {
     }
 
     # disables the "root" icon of the category tree if set
-    catmenuNoRootIcon = 1
+    catmenuNoRootIcon = 0
 
     insertDescrAsTitle = 1
 

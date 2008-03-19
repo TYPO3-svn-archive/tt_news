@@ -56,7 +56,7 @@ class tx_ttnewscatmanager_cm1 {
 	function main(&$backRef,$menuItems,$table,$srcId)	{
 		$this->includeLocalLang();
 		$this->backRef = &$backRef;
-
+//print_r( array($GLOBALS['BACK_PATH']));
 		if ($table == 'dragDrop_tt_news_cat' && $srcId) {
 			$this->backRef->backPath = '../../../';
 			$menuItems['moveinto']=$this->dragDrop_moveCategory($srcId,intval(t3lib_div::_GP('dstId')));
@@ -65,7 +65,7 @@ class tx_ttnewscatmanager_cm1 {
 
 		if ($table == 'tt_news_cat_CM' && $srcId) {
 			$table = 'tt_news_cat';
-			$this->backRef->backPath = '../../../';
+			$this->backRef->backPath = '../../../../typo3/';
 			$rec = t3lib_BEfunc::getRecordWSOL($table,$srcId);
 
 			$menuItems = array();
