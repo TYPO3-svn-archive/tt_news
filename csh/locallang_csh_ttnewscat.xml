@@ -62,7 +62,7 @@ The category titles/images can act as shortcut to a page or as &quot;category se
 
 &lt;strong&gt;Example:&lt;/strong&gt;
 if you have a website with 3 languages (en,de,fr) it's required to write the category title for the default language in the field &quot;title&quot;. The titles for german an french are written to the field &quot;title language overlays&quot; like shown in the image below.</label>
-            <label index="_title_lang_ol.image">EXT:tt_news/cshimages/tt_news_cat_title_lang_ol.png</label>
+            <label index="_title_lang_ol.image">EXT:tt_news/csh/tt_news_cat_title_lang_ol.png</label>
             <label index="title_lang_ol.image_descr">the order of the overlay titles has to be the same as the order of your system languages.
 In this example: en=0, german=1, french=2 </label>
             <label index="_title_lang_ol.seeAlso">tt_news_cat:title</label>
@@ -77,7 +77,7 @@ Sometimes it might happen that some nested categories build an endless loop. Rec
 The height of the category tree can be configured in the extension manager.
 
 </label>
-            <label index="_parent_category.image">EXT:tt_news/cshimages/tt_news_cat_recursive_error.png</label>
+            <label index="_parent_category.image">EXT:tt_news/csh/tt_news_cat_recursive_error.png</label>
             <label index="parent_category.image_descr">Error message when the current category is part of a loop of recursive categories.</label>
             <label index="_parent_category.seeAlso">tt_news:categories,be_groups:TSconfig,be_users</label>
             <label index="hidden.description">Use this to temporarily exclude this tt_news category from display and all news which are member of this category.</label>

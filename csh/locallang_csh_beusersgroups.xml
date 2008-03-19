@@ -13,7 +13,7 @@
 			<label index="tt_news_categorymounts.description">Here you can assign categories to the current news record (if this record is no translation of another record).</label>
 			<label index="tt_news_categorymounts.details">You can assign categories to news records that are not translations of</label>
 			<label index="_tt_news_categorymounts.seeAlso">tt_news_cat:parent_category,section &quot;Categories&quot; from tt_news manual | http://typo3.org/documentation/document-library/tt_news/</label>
-			<label index="_tt_news_categorymounts.image">EXT:tt_news/cshimages/tt_news_categoy.png,EXT:tt_news/cshimages/tt_news_categoy_msg.png</label>
+			<label index="_tt_news_categorymounts.image">EXT:tt_news/csh/tt_news_categoy.png,EXT:tt_news/csh/tt_news_categoy_msg.png</label>
 			<label index="tt_news_categorymounts.image_descr">the field &quot;Category&quot; in the tt_news db-record.
 		If a BE-user opens a record that has non-allowed categories assigned this message will be displayed.</label>
 		</languageKey>
