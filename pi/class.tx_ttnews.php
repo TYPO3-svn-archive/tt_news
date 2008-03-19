@@ -152,7 +152,7 @@ class tx_ttnews extends tslib_pibase {
 			'SINGLE' => '*',
 
 		);
-
+	var $errors = array();
 
 	var $debugTimes = false;
 
@@ -179,7 +179,6 @@ class tx_ttnews extends tslib_pibase {
 	 */
 	function main_news($content, $conf) {
 
-
 if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 
 
@@ -187,7 +186,8 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 		$this->local_cObj = t3lib_div::makeInstance('tslib_cObj'); // Local cObj.
 
 if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
-			$this->init($conf);
+
+		$this->init($conf);
 
 if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 
@@ -200,13 +200,21 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 		$codes = t3lib_div::trimExplode(',', $this->config['code']?$this->config['code']:$this->conf['defaultCode'], 1);
 		if (!count($codes)) { // no code at all
 			$codes = array();
-			$noCode = true;
+//			$noCode = true;
+			$this->errors[] = 'No code given';
 		}
 
 
+				
 if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 
-
+		if (count($this->errors)) {
+			if (count($this->errors) >= 2) {
+				$msg = '--> Did you include the static TypoScript template (\'News settings\') for tt_news?';
+			}
+			return '<div style="border:2px solid red; padding:10px; margin:10px;">
+					<strong>plugin.tt_news ERROR:</strong><br />'.implode('<br /> ',$this->errors).'<br />'.$msg.'</div>';
+		}
 
 		while (list(, $theCode) = each($codes)) {
 			$theCode = (string)strtoupper(trim($theCode));
@@ -263,6 +271,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 				break;
 			}
 		}
+
 		if ($noCode) {
 			$content .= $this->displayFEHelp();
 		}
@@ -366,9 +375,10 @@ if ($this->debugTimes) {
 
 		// pid of the page with the single view. the old var PIDitemDisplay is still processed if no other value is found
 		$singlePid = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'PIDitemDisplay', 's_misc');
-		$singlePid = $singlePid?$singlePid:intval($this->cObj->stdWrap($this->conf['singlePid'],$this->conf['singlePid.']));
-		$this->config['singlePid'] = $singlePid ? $singlePid:intval($this->conf['PIDitemDisplay']);
-
+		$this->config['singlePid'] = $singlePid?$singlePid:intval($this->cObj->stdWrap($this->conf['singlePid'],$this->conf['singlePid.']));
+		if (!$this->config['singlePid']) {
+			$this->errors[] = 'No singlePid defined';
+		}	
 		// pid to return to when leaving single view
 		$backPid = intval($this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'backPid', 's_misc'));
 		$backPid = $backPid?$backPid:intval($this->conf['backPid']);
@@ -3493,6 +3503,9 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 		else {
 			$this->templateCode = $this->cObj->fileResource($this->conf['templateFile']);
 		}
+		if (!($this->templateCode = $this->cObj->substituteMarkerArray($this->templateCode, $globalMarkerArray))) {
+			$this->errors[] = 'No HTML template defined';
+		}		
 		$splitMark = md5(microtime(true));
 		$globalMarkerArray = array();
 		list($globalMarkerArray['###GW1B###'], $globalMarkerArray['###GW1E###']) = explode($splitMark, $this->cObj->stdWrap($splitMark, $this->conf['wrap1.']));
@@ -3502,7 +3515,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 		$globalMarkerArray['###GC2###'] = $this->cObj->stdWrap($this->conf['color2'], $this->conf['color2.']);
 		$globalMarkerArray['###GC3###'] = $this->cObj->stdWrap($this->conf['color3'], $this->conf['color3.']);
 		$globalMarkerArray['###GC4###'] = $this->cObj->stdWrap($this->conf['color4'], $this->conf['color4.']);
-		$this->templateCode = $this->cObj->substituteMarkerArray($this->templateCode, $globalMarkerArray);
+
 	}
 
 	/**
@@ -3525,6 +3538,9 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 		// extend the pid_list by recursive levels
 		$this->pid_list = $this->pi_getPidList($pid_list, $recursive);
 		$this->pid_list = $this->pid_list?$this->pid_list:0;
+		if(!$this->pid_list) {			
+			$this->errors[] = 'No pid_list defined';
+		}
 		// generate array of page titles
 		$this->generatePageArray();
 	}

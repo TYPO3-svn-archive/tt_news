@@ -42,7 +42,7 @@ categorySelectedWidth =
 categoryTreeWidth =
 
   # cat=basic/dims/80; type=int [3-30]; label= Max height for category trees: Here you can configure the maximum height of category trees in BackEnd forms. If you have xajax enabled for the expandable category tree, set this value to 30 because the height of the tree field will then be adapted to the tree height automatically.
-categoryTreeHeigth = 5
+categoryTreeHeigth = 15
 
 
 

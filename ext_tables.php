@@ -145,11 +145,20 @@ $TCA['tt_content']['types']['list']['subtypes_addlist'][9]='pi_flexform';
 	// add tt_news to the "insert plugin" content element (list_type = 9)
 t3lib_extMgm::addPlugin(Array('LLL:EXT:tt_news/locallang_tca.php:tt_news', '9'));
 
+t3lib_extMgm::addTypoScriptSetup('
+  includeLibs.ts_news = EXT:tt_news/pi/class.tx_ttnews.php
+  
+  plugin.tt_news = USER
+  plugin.tt_news {
+    userFunc = tx_ttnews->main_news
+  }
+');
+
 	// initialize static extension templates
-t3lib_extMgm::addStaticFile($_EXTKEY,'static/ts_new/','CSS-based tmpl');
-t3lib_extMgm::addStaticFile($_EXTKEY,'static/css/','default CSS-styles');
-t3lib_extMgm::addStaticFile($_EXTKEY,'static/ts_old/','table-based tmpl');
-t3lib_extMgm::addStaticFile($_EXTKEY,'static/rss_feed/','News-feed (RSS,RDF,ATOM)');
+t3lib_extMgm::addStaticFile($_EXTKEY,'static/ts_new/','News settings');
+t3lib_extMgm::addStaticFile($_EXTKEY,'static/css/','News CSS-styles');
+//t3lib_extMgm::addStaticFile($_EXTKEY,'static/ts_old/','table-based tmpl');
+t3lib_extMgm::addStaticFile($_EXTKEY,'static/rss_feed/','News feeds (RSS,RDF,ATOM)');
 
 	// allow news and news-category records on normal pages
 t3lib_extMgm::allowTableOnStandardPages('tt_news_cat');
@@ -167,9 +176,11 @@ if ($confArr['useStoragePid']) {
 	// sets the transformation mode for the RTE to "ts_css" if the extension css_styled_content is installed (default is: "ts")
 if (t3lib_extMgm::isLoaded('css_styled_content')) {
 	t3lib_extMgm::addPageTSConfig('
-# RTE mode in table "tt_news"
-RTE.config.tt_news.bodytext.proc.overruleMode=ts_css');
+	# RTE mode in table "tt_news"
+	RTE.config.tt_news.bodytext.proc.overruleMode=ts_css');
 }
+
+
 
 	// initalize "context sensitive help" (csh)
 t3lib_extMgm::addLLrefForTCAdescr('tt_news','EXT:tt_news/csh/locallang_csh_ttnews.php');

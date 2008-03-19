@@ -85,7 +85,7 @@ $TSFE->getConfigArray();
 
 
 require_once(t3lib_extMgm::extPath('tt_news').'pi/class.tx_ttnews.php');
-require_once(t3lib_extMgm::extPath('tt_news').'lib/class.tx_ttnews_catmenu.php');
+//require_once(t3lib_extMgm::extPath('tt_news').'lib/class.tx_ttnews_catmenu.php');
 require_once(t3lib_extMgm::extPath('tt_news').'lib/class.tx_ttnews_typo3ajax.php');
 
 // finding the script path from the variable
@@ -113,7 +113,7 @@ $tt_newsObj->initCatmenuEnv($tt_newsObj->conf['displayCatMenu.']);
 $ajaxParams['tt_newsObj'] = &$tt_newsObj;
 $ajaxParams['feUserObj'] = &$TSFE->fe_user;
 
-$ajaxScript = t3lib_extMgm::extPath('tt_news').'class.tx_ttnews_catmenu.php:tx_ttnews_catmenu->ajaxExpandCollapse';
+$ajaxScript = t3lib_extMgm::extPath('tt_news').'lib/class.tx_ttnews_catmenu.php:tx_ttnews_catmenu->ajaxExpandCollapse';
 
 
 // evaluating the arguments and calling the AJAX method/function

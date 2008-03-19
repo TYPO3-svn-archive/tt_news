@@ -70,7 +70,7 @@ TEXT_CAT_LATEST - the same in a shorter form for the LATEST element (eg: 'cat:')
 BACK_TO_LIST - link back to list-view in single-view template
 ARCHIVE_EMPTY_MSG - no items in archive
 SEARCH_EMPTY_MSG - message for empty search results
-TEXT_NEWS_AGE - text inserted before the age of the news item 
+TEXT_NEWS_AGE - text inserted before the age of the news item
 
 
 <em>Wrapped Subparts:</em>
@@ -99,27 +99,23 @@ LINK_NEXT - used in the pagebrowser
 
 
 <!-- ###TEMPLATE_LATEST### begin
-	This is the template for the latest news, typically displayed on a frontpage 
+	This is the template for the latest news, typically displayed on a frontpage
 -->
 <div class="news-latest-container">
-	<h2>###LATEST_HEADER###</h2>
 	<!-- ###CONTENT### begin
-		  This is the part of the template substituted with the list of news: 
+		This is the part of the template substituted with the list of news:
 	-->
-		<!-- ###NEWS### begin 
-			Template for a single item 
+		<!-- ###NEWS### begin
+			Template for a single item
 		-->
-			  <div class="news-latest-item">
-
-				<span class="news-latest-date"><!--###LINK_ITEM###-->###NEWS_DATE### ###NEWS_TIME###<!--###LINK_ITEM###--></span>
-				<h3><!--###LINK_ITEM###-->###NEWS_TITLE###<!--###LINK_ITEM###--></h3>
+			<div class="news-latest-item">
+				<span class="news-latest-date">###NEWS_DATE### ###NEWS_TIME###</span>
+				<h2><!--###LINK_ITEM###-->###NEWS_TITLE###<!--###LINK_ITEM###--></h2>
 				<!--###LINK_ITEM###-->###NEWS_IMAGE###<!--###LINK_ITEM###-->
-				###NEWS_SUBHEADER###<hr class="clearer" />
-				###CATWRAP_B### ###TEXT_CAT_LATEST### ###NEWS_CATEGORY### ###NEWS_CATEGORY_IMAGE### ###CATWRAP_E### 
-                <div class="news-latest-morelink"><!--###LINK_ITEM###-->###MORE###<!--###LINK_ITEM###--></div>
-			  </div>
-
-		<!-- ###NEWS### end-->		
+				<!--###LINK_ITEM###-->###NEWS_SUBHEADER###<!--###LINK_ITEM###--><hr class="clearer" />
+				###CATWRAP_B### ###TEXT_CAT_LATEST### ###NEWS_CATEGORY### ###NEWS_CATEGORY_IMAGE### ###CATWRAP_E###
+			</div>
+		<!-- ###NEWS### end-->
 	<!-- ###CONTENT###  end -->
 <div class="news-latest-gotoarchive"><!--###LINK_ARCHIVE###-->###GOTOARCHIVE###<!--###LINK_ARCHIVE###--></div>
 </div>
@@ -151,19 +147,17 @@ LINK_NEXT - used in the pagebrowser
 <div class="news-list-container">
 ###NEWS_CATEGORY_ROOTLINE###
 	<!-- ###CONTENT### begin
-		  This is the part of the template substituted with the list of news: 
+		  This is the part of the template substituted with the list of news:
 	-->
 		<!-- ###NEWS### begin
-			Template for a single item 
+			Template for a single item
 		-->
-			<div class="news-list-item">				
-			  <h3>
-<span class="news-list-date">###NEWS_DATE###</span>
-<!--###LINK_ITEM###-->###NEWS_TITLE###<!--###LINK_ITEM###--></h3>
+			<div class="news-list-item">
+			  <span class="news-list-date">###NEWS_DATE###</span>
+			  <h2><!--###LINK_ITEM###-->###NEWS_TITLE###<!--###LINK_ITEM###--></h2>
 			  <!--###LINK_ITEM###-->###NEWS_IMAGE###<!--###LINK_ITEM###-->
 			 ###NEWS_SUBHEADER###
 			###CATWRAP_B### ###TEXT_CAT### ###NEWS_CATEGORY### ###NEWS_CATEGORY_IMAGE### ###CATWRAP_E###
-			<div class="news-list-morelink"><!--###LINK_ITEM###-->###MORE###<!--###LINK_ITEM###--></div>
 
 <hr class="clearer" /></div>
 		<!-- ###NEWS### end-->
@@ -198,33 +192,33 @@ LINK_NEXT - used in the pagebrowser
 <div class="news-single-item">
 ###NEWS_CATEGORY_ROOTLINE###
 	<div class="news-single-timedata">###NEWS_DATE### ###NEWS_TIME### ###TEXT_NEWS_AGE### ###NEWS_AGE###</div>
-		<h2>###NEWS_TITLE###</h2>
+		<h1>###NEWS_TITLE###</h1>
 		###CATWRAP_B### ###TEXT_CAT### ###NEWS_CATEGORY### ###NEWS_CATEGORY_IMAGE### ###CATWRAP_E###
 		###NEWS_AUTHOR###
 		###NEWS_SUBHEADER###
-		###NEWS_IMAGE### 
+		###NEWS_IMAGE###
 		###NEWS_CONTENT###
 		<hr class="clearer" />
 			###ADDINFO_WRAP_B###
-						  
+
 				  	###TEXT_RELATED###
 				 	###NEWS_RELATED###
-			
+
 					###TEXT_FILES###
-				 	###FILE_LINK###				  
-				
+				 	###FILE_LINK###
+
 					###TEXT_LINKS###
 					###NEWS_LINKS###
-			
+
 					###TEXT_RELATEDBYCATEGORY###
 					###NEWS_RELATEDBYCATEGORY###
 
 			###ADDINFO_WRAP_E###
 			###NEWS_SINGLE_PAGEBROWSER###
-	<div class="news-single-backlink">	
+	<div class="news-single-backlink">
 	<!--###LINK_ITEM###-->###BACK_TO_LIST###<!--###LINK_ITEM###-->
 	</div>
-</div>		
+</div>
 <!-- ###TEMPLATE_SINGLE### end -->
 
 
@@ -254,25 +248,25 @@ LINK_NEXT - used in the pagebrowser
 
 <div class="news-single-item">
 			<div class="news-single-timedata">###NEWS_DATE### ###NEWS_TIME### ###TEXT_NEWS_AGE### ###NEWS_AGE###</div>
-			<h2>###NEWS_TITLE###</h2>
+			<h1>###NEWS_TITLE###</h1>
 			###CATWRAP_B### ###TEXT_CAT### ###NEWS_CATEGORY### ###NEWS_CATEGORY_IMAGE### ###CATWRAP_E###
-			###NEWS_AUTHOR###		
-			
-			
-			
+			###NEWS_AUTHOR###
+
+
+
 			###NEWS_SUBHEADER###
-			
-			###NEWS_IMAGE### 
+
+			###NEWS_IMAGE###
 			###NEWS_CONTENT###
 
 						###ADDINFO_WRAP_B###
-						  
+
 				  	###TEXT_RELATED###
 				 	###NEWS_RELATED###
-			
+
 					###TEXT_FILES###
-				 	###FILE_LINK###				  
-				
+				 	###FILE_LINK###
+
 					###TEXT_LINKS###
 					###NEWS_LINKS###
 
@@ -281,9 +275,9 @@ LINK_NEXT - used in the pagebrowser
 			###ADDINFO_WRAP_E###
 ###COMMENTS###
 ###NEWS_SINGLE_PAGEBROWSER###
-<div class="news-single-backlink">	
+<div class="news-single-backlink">
 <!--###LINK_ITEM###-->###BACK_TO_LIST###<!--###LINK_ITEM###-->
-</div>			</div>		
+</div>			</div>
 <!-- ###TEMPLATE_SINGLE_RECORDINSERT### end --><br /><hr />
 <br />
 <br />
@@ -302,17 +296,17 @@ LINK_NEXT - used in the pagebrowser
 			<h2>###NEWS_TITLE###</h2>
 			###CATWRAP_B### ###TEXT_CAT### ###NEWS_CATEGORY### ###NEWS_CATEGORY_IMAGE### ###CATWRAP_E###
 			###NEWS_AUTHOR###
-			
-			
-			
+
+
+
 			###NEWS_SUBHEADER###
-			
-			###NEWS_IMAGE### 
+
+			###NEWS_IMAGE###
 			###NEWS_CONTENT###
 
-<div class="news-single-backlink">	
+<div class="news-single-backlink">
 <!--###LINK_ITEM###-->###BACK_TO_LIST###<!--###LINK_ITEM###-->
-</div>			</div>		
+</div>			</div>
 <!-- ###TEMPLATE_SINGLE_FORUM### end -->
 
 
@@ -339,10 +333,9 @@ LINK_NEXT - used in the pagebrowser
 <br />
 <br />
 <!-- ###TEMPLATE_ARCHIVE### begin
-	Subpart for the news archive menu 
+	Subpart for the news archive menu
  -->
 <div class="news-amenu-container">
-	<h2>###ARCHIVE_HEADER###</h2>
 	<ul>
 	<!-- ###CONTENT### begin -->
 		<!-- ###MENUITEM### begin -->
@@ -370,10 +363,9 @@ LINK_NEXT - used in the pagebrowser
 	Shown if the archive has no items!
 -->
 <div class="news-amenu-container">
-		<h2>###ARCHIVE_HEADER###</h2>
 	    <ul>
 		<li>###ARCHIVE_EMPTY_MSG###</li>
-		</ul>		
+		</ul>
 </div>
 <!-- ###TEMPLATE_ARCHIVE_NOITEMS### end -->
 
@@ -410,9 +402,9 @@ LINK_NEXT - used in the pagebrowser
 <h3>
   this is shown if the search result is empty </h3>
   <br />
-     
+
 <!-- ###TEMPLATE_SEARCH_EMPTY### begin -->
-<div class="news-search-emptyMsg">###SEARCH_EMPTY_MSG###</div> 
+<div class="news-search-emptyMsg">###SEARCH_EMPTY_MSG###</div>
 <!-- ###TEMPLATE_SEARCH_EMPTY### end -->
 
 <br /><br />
@@ -425,20 +417,20 @@ LINK_NEXT - used in the pagebrowser
 <!-- ###TEMPLATE_HEADER_LIST### begin -->
 
 	<!-- ###CONTENT### begin
-		  This is the part of the template substituted with the list of news: 
+		  This is the part of the template substituted with the list of news:
 	-->
-		<!-- ###NEWS### begin 
-			Template for a single item 
+		<!-- ###NEWS### begin
+			Template for a single item
 		-->
 			<div class="news-header-list-container">
 					<div class="news-header-list-title"> <!--###LINK_ITEM###-->###NEWS_TITLE###<!--###LINK_ITEM###--></div>
 					<div class="news-header-list-time"> ###NEWS_TIME###</div>
 					<div class="news-header-list-categories">###TEXT_CAT_LATEST### ###NEWS_CATEGORY### ###NEWS_CATEGORY_IMAGE###</div>
-					
+
 			</div>
 
 		<!-- ###NEWS### end-->
-		
+
 	<!-- ###CONTENT###  end -->
  ###BROWSE_LINKS###
 
@@ -452,10 +444,10 @@ LINK_NEXT - used in the pagebrowser
 <br />
 <!-- ###TEMPLATE_CAT_RELATED### begin -->
 	<!-- ###CONTENT### begin
-		  This is the part of the template substituted with the list of news: 
+		  This is the part of the template substituted with the list of news:
 	-->
 		<!-- ###NEWS### begin
-			Template for a single item 
+			Template for a single item
 		-->
 		###GW2B###<!--###LINK_ITEM###-->###NEWS_TITLE###<!--###LINK_ITEM###--> ###NEWS_TIME### ###GW2E###
 		<!-- ###NEWS### end-->
