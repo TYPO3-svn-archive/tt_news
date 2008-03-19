@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2004-2007 Rupert Germann <rupi@gmx.li>
+*  (c) 2004-2008 Rupert Germann <rupi@gmx.li>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -247,15 +247,15 @@ class tx_ttnewscatmanager_cm1 {
 	 * @return	[type]		...
 	 */
 	function includeLocalLang()	{
-		$llFile = t3lib_extMgm::extPath('tt_news').'modfunc1/locallang.xml';
+		$llFile = t3lib_extMgm::extPath('tt_news').'cm1/locallang.xml';
 		$this->LL = t3lib_div::readLLXMLfile($llFile, $GLOBALS['LANG']->lang);
 	}
 }
 
 
 
-if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/tt_news/modfunc1/class.tx_ttnewscatmanager_cm1.php"])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/tt_news/modfunc1/class.tx_ttnewscatmanager_cm1.php"]);
+if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/tt_news/cm1/class.tx_ttnewscatmanager_cm1.php"])	{
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/tt_news/cm1/class.tx_ttnewscatmanager_cm1.php"]);
 }
 
 ?>

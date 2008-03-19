@@ -3,7 +3,7 @@
 *  Copyright notice
 *
 *  (c) 2004 Mathias Bolt Lesniak <mathias@lilio.com>
-*  (c) 2005-2007 Rupert Germann <rupi@gmx.li>
+*  (c) 2005-2008 Rupert Germann <rupi@gmx.li>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -69,7 +69,7 @@ class tx_ttnews_itemsProcFunc {
 	}
 
 }
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_news/class.tx_ttnews_itemsProcFunc.php']) {
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_news/class.tx_ttnews_itemsProcFunc.php']);
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_news/lib/class.tx_ttnews_itemsProcFunc.php']) {
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_news/lib/class.tx_ttnews_itemsProcFunc.php']);
 }
 ?>

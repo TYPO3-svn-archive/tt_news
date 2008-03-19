@@ -2,10 +2,10 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2004-2007 Rupert Germann <rupi@gmx.li>
+*  (c) 2004-2008 Rupert Germann <rupi@gmx.li>
 *  All rights reserved
 *
-*  This script is part of the Typo3 project. The Typo3 project is
+*  This script is part of the TYPO3 project. The TYPO3 project is
 *  free software; you can redistribute it and/or modify
 *  it under the terms of the GNU General Public License as published by
 *  the Free Software Foundation; either version 2 of the License, or
@@ -13,6 +13,9 @@
 *
 *  The GNU General Public License can be found at
 *  http://www.gnu.org/copyleft/gpl.html.
+*  A copy is found in the textfile GPL.txt and important notices to the license
+*  from the author is found in LICENSE.txt distributed with these scripts.
+*
 *
 *  This script is distributed in the hope that it will be useful,
 *  but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -37,6 +40,7 @@
  */
 
 
+require_once(t3lib_extMgm::extPath('tt_news').'lib/class.tx_ttnews_treeview.php');;
 
 /**
  * Class for updating tt_news content elements and category relations.
@@ -136,7 +140,6 @@ class tx_ttnews_div {
 	 */
 	function getCategoryTreeIDs() {
 
-		require_once(t3lib_extMgm::extPath('tt_news').'class.tx_ttnews_treeview.php');;
 
 		global $TCA,$BE_USER;
 
@@ -183,7 +186,7 @@ class tx_ttnews_div {
 	}
 }
 
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_news/class.tx_ttnews_div.php']) {
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_news/class.tx_ttnews_div.php']);
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_news/lib/class.tx_ttnews_div.php']) {
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_news/lib/class.tx_ttnews_div.php']);
 }
 ?>

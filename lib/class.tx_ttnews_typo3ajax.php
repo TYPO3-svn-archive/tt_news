@@ -244,4 +244,7 @@ class tx_ttnews_typo3ajax {
 		}
 	}
 }
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_news/lib/class.tx_ttnews_typo3ajax.php'])    {
+    include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_news/lib/class.tx_ttnews_typo3ajax.php']);
+}
 ?>

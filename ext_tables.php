@@ -249,7 +249,7 @@ if (TYPO3_MODE == 'BE')	{
 
 		$GLOBALS['TBE_MODULES_EXT']['xMOD_alt_clickmenu']['extendCMclasses'][]=array(
 			'name' => 'tx_ttnewscatmanager_cm1',
-			'path' => t3lib_extMgm::extPath($_EXTKEY).'modfunc1/class.tx_ttnewscatmanager_cm1.php'
+			'path' => t3lib_extMgm::extPath($_EXTKEY).'cm1/class.tx_ttnewscatmanager_cm1.php'
 		);
 	}
 		// Adds a tt_news wizard icon to the content element wizard.
