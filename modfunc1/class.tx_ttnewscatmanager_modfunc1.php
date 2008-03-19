@@ -52,7 +52,7 @@
 
 require_once(PATH_t3lib.'class.t3lib_extobjbase.php');
 require_once(PATH_t3lib.'class.t3lib_treeview.php');
-require_once(t3lib_extMgm::extPath('tt_news').'class.tx_ttnews_div.php');
+require_once(t3lib_extMgm::extPath('tt_news').'lib/class.tx_ttnews_div.php');
 
 /**
  * Module extension (addition to function menu) 'category manager' for the 'tt_news' extension.

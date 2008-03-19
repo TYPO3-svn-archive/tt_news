@@ -85,7 +85,7 @@ $TSFE->getConfigArray();
 
 
 require_once(t3lib_extMgm::extPath('tt_news').'pi/class.tx_ttnews.php');
-require_once(t3lib_extMgm::extPath('tt_news').'class.tx_ttnews_catmenu.php');
+require_once(t3lib_extMgm::extPath('tt_news').'lib/class.tx_ttnews_catmenu.php');
 require_once(t3lib_extMgm::extPath('tt_news').'lib/class.tx_ttnews_typo3ajax.php');
 
 // finding the script path from the variable

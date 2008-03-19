@@ -48,7 +48,7 @@ require_once(PATH_t3lib.'class.t3lib_scbase.php');
 $GLOBALS['BE_USER']->modAccess($MCONF,1);	// This checks permissions and exits if the users has no permission for entry.
 	// DEFAULT initialization of a module [END]
 
-require_once(t3lib_extMgm::extPath('tt_news').'class.tx_ttnews_div.php');
+require_once(t3lib_extMgm::extPath('tt_news').'lib/class.tx_ttnews_div.php');
 require_once(t3lib_extMgm::extPath('tt_news').'lib/class.tx_ttnews_categorytree.php');
 
 /**
@@ -128,7 +128,7 @@ class tx_ttnews_module1 extends t3lib_SCbase {
 				');
 			
 			$this->doc->JScodeLibArray[] = '
-				<script src="'.$GLOBALS['BACK_PATH'].t3lib_extMgm::extRelPath('tt_news').'lib/categoryTree.js" type="text/javascript"></script>';
+				<script src="'.$GLOBALS['BACK_PATH'].t3lib_extMgm::extRelPath('tt_news').'js/beCategoryTree.js" type="text/javascript"></script>';
 			
 			$this->doc->getDragDropCode('tt_news_cat');
 			$this->doc->getContextMenuCode();

@@ -1350,7 +1350,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 				if ($mode == 'ajaxtree') {
 					$GLOBALS['TSFE']->additionalHeaderData['tt_news_categorytree'] = '
 						<script type="text/javascript" src="typo3/contrib/prototype/prototype.js"></script>
-						<script type="text/javascript" src="'.t3lib_extMgm::siteRelPath('tt_news').'pi/tt_news_catmenu.js"></script>
+						<script type="text/javascript" src="'.t3lib_extMgm::siteRelPath('tt_news').'js/tt_news_catmenu.js"></script>
 					';
 									
 				}

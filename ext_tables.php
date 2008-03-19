@@ -177,11 +177,11 @@ t3lib_extMgm::addLLrefForTCAdescr('tt_news_cat','EXT:tt_news/locallang_csh_ttnew
 t3lib_extMgm::addLLrefForTCAdescr('xEXT_tt_news','EXT:tt_news/locallang_csh_manual.xml');
 
 	// adds processing for extra "codes" that have been added to the "what to display" selector in the content element by other extensions
-include_once(t3lib_extMgm::extPath($_EXTKEY).'class.tx_ttnews_itemsProcFunc.php');
+include_once(t3lib_extMgm::extPath($_EXTKEY).'lib/class.tx_ttnews_itemsProcFunc.php');
 	// class for displaying the category tree in BE forms.
-include_once(t3lib_extMgm::extPath($_EXTKEY).'class.tx_ttnews_treeview.php');
+include_once(t3lib_extMgm::extPath($_EXTKEY).'lib/class.tx_ttnews_treeview.php');
 	// class that uses hooks in class.t3lib_tcemain.php (processDatamapClass and processCmdmapClass) to prevent not allowed "commands" (copy,delete,...) for a certain BE usergroup
-include_once(t3lib_extMgm::extPath($_EXTKEY).'class.tx_ttnews_tcemain.php');
+include_once(t3lib_extMgm::extPath($_EXTKEY).'lib/class.tx_ttnews_tcemain.php');
 
 
 
