@@ -177,6 +177,7 @@ class tx_ttnews_module1 extends t3lib_SCbase {
 	function ajaxExpandCollapse(&$params, &$ajaxObj) {
 		$this->init();
 		$this->initTreeObj();
+		
 		$tree = $this->treeObj->getBrowsableTree();		
 
 		if (!$this->treeObj->ajaxStatus) {
@@ -214,15 +215,17 @@ class tx_ttnews_module1 extends t3lib_SCbase {
 //		$this->treeObj->backPath = $GLOBALS['BACK_PATH'];
 		$this->treeObj->parentField = 'parent_category';
 		$this->treeObj->thisScript = 'index.php?id='.$this->id;
+		$this->treeObj->returnUrl = t3lib_extMgm::extRelPath('tt_news').'mod1/'.$this->treeObj->thisScript;
+		
 		$this->treeObj->fieldArray = array('uid','title','description','hidden','starttime','endtime','fe_group'); // those fields will be filled to the array $this->treeObj->tree
 		$this->treeObj->calcPerms = $GLOBALS['BE_USER']->calcPerms($pageinfo);
-		$this->treeObj->returnUrl = t3lib_extMgm::extRelPath('tt_news').'mod1/index.php';
 		$this->treeObj->title = $GLOBALS['LANG']->getLL('treeTitle');
 		$this->treeObj->pageID = $this->id;		
 		$this->treeObj->expandAll = $GLOBALS['SOBE']->MOD_SETTINGS['expandAll'];
 		$this->treeObj->expandable = true;
 		$this->treeObj->titleLen = 60;
 		$this->treeObj->useAjax = true;
+		$this->treeObj->showEditIcons = $GLOBALS['BE_USER']->uc['moduleData']['web_txttnewsM1']['showEditIcons'];
 		
 //		$this->treeObj->allowedCategories = false;
 	
@@ -349,12 +352,12 @@ class tx_ttnewscatmanager_treeView extends tx_ttnews_categorytree {
 		if($v['uid']>0) {
 			$hrefTitle = htmlentities('[id='.$v['uid'].'] '.$v['description']);
 			$params='&edit[tt_news_cat]['.$v['uid'].']=edit';
-			$aOnClick = htmlspecialchars(t3lib_BEfunc::editOnClick($params,$this->backPath));
+			$aOnClick = htmlspecialchars(t3lib_BEfunc::editOnClick($params,$this->backPath,$this->returnUrl));
 
 			$out = '<a href="#" onclick="'.$aOnClick.'" title="'.$hrefTitle.'">'.$title.'</a>';
 				// Wrap title in a drag/drop span.
 			$out = '<span class="dragTitle" id="dragTitleID_'.$v['uid'].'">'.$out.'</span>';
-			if ($GLOBALS['SOBE']->MOD_SETTINGS['showEditIcons']) {
+			if ($this->showEditIcons) {
 				$out .= $this->makeControl('tt_news_cat',$v);
 			}
 		} else {
@@ -381,8 +384,9 @@ class tx_ttnewscatmanager_treeView extends tx_ttnews_categorytree {
 			// "Edit" link: ( Only if permissions to edit the page-record of the content of the parent page ($this->id)
 		if ($permsEdit)	{
 			$params='&edit['.$table.']['.$row['uid'].']=edit';
-			$cells[]='<a href="#" onclick="'.htmlspecialchars(t3lib_BEfunc::editOnClick($params,$this->backPath)).'">'.
-					'<img'.t3lib_iconWorks::skinImg($this->backPath,'gfx/edit2'.(!$TCA[$table]['ctrl']['readOnly']?'':'_d').'.gif','width="11" height="12"').' title="'.$LANG->getLLL('edit',$this->LL).'" alt="" />'.
+			$cells[]='<a href="#" onclick="'.htmlspecialchars(t3lib_BEfunc::editOnClick($params,$this->backPath,$this->returnUrl)).'">'.
+					'<img'.t3lib_iconWorks::skinImg($this->backPath,'gfx/edit2'.(!$TCA[$table]['ctrl']['readOnly']?'':'_d').'.gif',
+						'width="11" height="12"').' title="'.$LANG->getLLL('edit',$this->LL).'" alt="" />'.
 					'</a>';
 		}
 
@@ -393,16 +397,19 @@ class tx_ttnewscatmanager_treeView extends tx_ttnews_categorytree {
 
 			// "Hide/Unhide" links:
 		$hiddenField = $TCA[$table]['ctrl']['enablecolumns']['disabled'];
-		if ($permsEdit && $hiddenField && $TCA[$table]['columns'][$hiddenField] && (!$TCA[$table]['columns'][$hiddenField]['exclude'] || $GLOBALS['BE_USER']->check('non_exclude_fields',$table.':'.$hiddenField)))	{
+		if ($permsEdit && $hiddenField && $TCA[$table]['columns'][$hiddenField] && 
+				(!$TCA[$table]['columns'][$hiddenField]['exclude'] || $GLOBALS['BE_USER']->check('non_exclude_fields',$table.':'.$hiddenField)))	{
 			if ($row[$hiddenField])	{
 				$params='&data['.$table.']['.$row['uid'].']['.$hiddenField.']=0';
-				$cells[]='<a href="#" onclick="'.htmlspecialchars('return jumpToUrl(\''.$SOBE->doc->issueCommand($params,$this->returnUrl).'\');').'">'.
-						'<img'.t3lib_iconWorks::skinImg($this->backPath,'gfx/button_unhide.gif','width="11" height="10"').' title="'.$LANG->getLLL('unHide',$this->LL).'" alt="" />'.
+				$cells[]='<a href="#" onclick="'.htmlspecialchars('return jumpToUrl(\''.$this->issueCommand($params,$this->returnUrl).'\');').'">'.
+						'<img'.t3lib_iconWorks::skinImg($this->backPath,'gfx/button_unhide.gif',
+							'width="11" height="10"').' title="'.$LANG->getLLL('unHide',$this->LL).'" alt="" />'.
 						'</a>';
 			} else {
 				$params='&data['.$table.']['.$row['uid'].']['.$hiddenField.']=1';
-				$cells[]='<a href="#" onclick="'.htmlspecialchars('return jumpToUrl(\''.$SOBE->doc->issueCommand($params,$this->returnUrl).'\');').'">'.
-						'<img'.t3lib_iconWorks::skinImg($this->backPath,'gfx/button_hide.gif','width="11" height="10"').' title="'.$LANG->getLLL('hide',$this->LL).'" alt="" />'.
+				$cells[]='<a href="#" onclick="'.htmlspecialchars('return jumpToUrl(\''.$this->issueCommand($params,$this->returnUrl).'\');').'">'.
+						'<img'.t3lib_iconWorks::skinImg($this->backPath,'gfx/button_hide.gif',
+							'width="11" height="10"').' title="'.$LANG->getLLL('hide',$this->LL).'" alt="" />'.
 						'</a>';
 			}
 		}
@@ -423,7 +430,14 @@ class tx_ttnewscatmanager_treeView extends tx_ttnews_categorytree {
 				<span style="padding:0 0 0 7px;">'.implode('',$cells).'</span>';
 	}
 
-
+	function issueCommand($params,$rUrl='')	{
+		$rUrl = $rUrl ? $rUrl : t3lib_div::getIndpEnv('REQUEST_URI');
+		return $this->backPath.'tce_db.php?'.
+				$params.
+				'&redirect='.($rUrl==-1?"'+T3_THIS_LOCATION+'":rawurlencode($rUrl)).
+				'&vC='.rawurlencode($GLOBALS['BE_USER']->veriCode()).
+				'&prErr=1&uPT=1';
+	}
 
 
 

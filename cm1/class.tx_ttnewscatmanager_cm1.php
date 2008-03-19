@@ -46,8 +46,8 @@
 /**
  * Additional items for the clickmenu.
  *
- * $Id: class.ext_update.php 3023 2006-04-19 12:10:14Z rupertgermann $
- *
+ * $Id: index.php 8655 2008-03-19 17:24:12Z rupertgermann $
+ * 
  * @author  Rupert Germann <rupi@gmx.li>
  * @package TYPO3
  * @subpackage tt_news
