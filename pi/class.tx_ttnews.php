@@ -115,7 +115,7 @@
 require_once(PATH_t3lib . 'class.t3lib_xml.php');
 require_once(PATH_t3lib . 'class.t3lib_htmlmail.php');
 require_once(PATH_tslib . 'class.tslib_pibase.php');
-require_once(t3lib_extMgm::extPath('tt_news') . 'class.tx_ttnews_catmenu.php');
+require_once(t3lib_extMgm::extPath('tt_news') . 'lib/class.tx_ttnews_catmenu.php');
 
 /**
  * Plugin 'news' for the 'tt_news' extension.
