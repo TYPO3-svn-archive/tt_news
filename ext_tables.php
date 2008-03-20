@@ -155,10 +155,10 @@ t3lib_extMgm::addTypoScriptSetup('
 ');
 
 	// initialize static extension templates
-t3lib_extMgm::addStaticFile($_EXTKEY,'static/ts_new/','News settings');
-t3lib_extMgm::addStaticFile($_EXTKEY,'static/css/','News CSS-styles');
-//t3lib_extMgm::addStaticFile($_EXTKEY,'static/ts_old/','table-based tmpl');
-t3lib_extMgm::addStaticFile($_EXTKEY,'static/rss_feed/','News feeds (RSS,RDF,ATOM)');
+t3lib_extMgm::addStaticFile($_EXTKEY,'pi/static/ts_new/','News settings');
+t3lib_extMgm::addStaticFile($_EXTKEY,'pi/static/css/','News CSS-styles');
+//t3lib_extMgm::addStaticFile($_EXTKEY,'pi/static/ts_old/','table-based tmpl');
+t3lib_extMgm::addStaticFile($_EXTKEY,'pi/static/rss_feed/','News feeds (RSS,RDF,ATOM)');
 
 	// allow news and news-category records on normal pages
 t3lib_extMgm::allowTableOnStandardPages('tt_news_cat');

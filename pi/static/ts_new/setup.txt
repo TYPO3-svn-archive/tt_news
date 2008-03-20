@@ -19,9 +19,15 @@ plugin.tt_news {
   
   # page to get the newsitems from -> "Starting point"
   pid_list = {$plugin.tt_news.pid_list}
+  
   dontUsePidList = 0
   
-  excludeAlreadyDisplayedNews = 0
+
+  usePiBasePagebrowser = 1
+  excludeAlreadyDisplayedNews = 1
+  
+  
+
 
   # page for the Single view
   singlePid = {$plugin.tt_news.singlePid}
@@ -30,12 +36,15 @@ plugin.tt_news {
   archiveTypoLink.parameter = {$plugin.tt_news.archiveTypoLink.parameter}
 
   recursive = 2
-  code.field = select_key
+  code = 
   allowCaching = {$plugin.tt_news.allowCaching}
   limit = {$plugin.tt_news.limit}
   latestLimit = {$plugin.tt_news.latestLimit}
   backPid = {$plugin.tt_news.backPid} 
-
+  
+  # don't add pluginvars to the singleview link 
+  dontUseBackPid = 1
+  
   # Search
   searchPid =
   emptySearchAtStart = 1
@@ -60,7 +69,7 @@ plugin.tt_news {
   }
 
   # Pagebrowser settings
-  usePiBasePagebrowser = 0
+  usePiBasePagebrowser = 1
   pageBrowser {
     maxPages = 7
     showResultCount = 1
@@ -72,14 +81,18 @@ plugin.tt_news {
     showFirstLast = 1
     pagefloat = center
     showRange = 1
-    disabledLinkWrap = <span style="color:#bbb;">|</span>
-    inactiveLinkWrap = |
-    activeLinkWrap = <strong>|</strong>
-    LinksWrap =|
-    showResultsWrap = |<br />
-    showResultsNumbersWrap = 
-    browseBoxWrap =  
-    browseLinksWrap = |
+    
+
+  showResultsNumbersWrap = |
+  browseBoxWrap = <div class="browseBoxWrap">|</div>
+  showResultsWrap = <div class="showResultsWrap">|</div>
+  browseLinksWrap = <div class="browseLinksWrap">|</div>
+  disabledLinkWrap = <span class="disabledLinkWrap">|</span>
+  inactiveLinkWrap = <span class="inactiveLinkWrap">|</span>
+  activeLinkWrap = <span class="activeLinkWrap">|</span>
+  activeLinkWrap.stdWrap.wrap = <span class="activeLinkWrap">|</span>  
+
+    
   }
 
   # Display language labels and/or flags
@@ -95,14 +108,12 @@ plugin.tt_news {
   maxCatImages = 10
   maxCatTexts = 10
 
-  # category modes:
-  # 0 = don't care about category selections
-  # 1 = display selected categories
-  # -1 = display deselected categories
   categoryMode = 0
 
   catImageMaxWidth = 25
   catImageMaxHeight = 25
+
+  ignoreUseSubcategoriesForAndSelection = 1
 
   useSubCategories = {$plugin.tt_news.useSubCategories}
   displaySubCategories = {$plugin.tt_news.displaySubCategories}
@@ -122,7 +133,7 @@ plugin.tt_news {
     # tree = use TYPO3 class treeview to build an expandable menu
     # ajaxtree = expandable menu with ajax (requires TYPO3 >= 4.2)
     
-    mode = ajaxtree
+    mode = {$plugin.tt_news.displayCatMenu.mode}
     expandable = 1
     expandAll = 0
     expandFirst = 0
@@ -188,7 +199,7 @@ plugin.tt_news {
   # - - - - - - - - -  Archive settings  - - - - - - - - - - - #
   
   datetimeDaysToArchive = {$plugin.tt_news.datetimeDaysToArchive}
-  enableArchiveDate = 1
+  enableArchiveDate = {$plugin.tt_news.enableArchiveDate}
   pageTypoLink.parameter.current = 1
 
   reverseAMenu = 1
@@ -329,6 +340,7 @@ plugin.tt_news {
     author_stdWrap.typolink.parameter.field = author_email
     author_stdWrap.wrap = <p class="news-single-author">|</p>
     preAuthor_stdWrap.noTrimWrap = || |
+    author_stdWrap.required = 1
 	
     addInfo_stdWrap.wrap = <div class="news-single-additional-info"> | </div>
 
@@ -410,6 +422,15 @@ plugin.tt_news {
     subheader_stdWrap.stripHtml = 1
     subheader_stdWrap.crop = 230 | ... | 1
     subheader_stdWrap.ifEmpty.field = bodytext
+
+	subheader_stdWrap {
+	  append = TEXT
+	  append.data = register:newsMoreLink
+	  append.wrap = <span class="news-list-morelink">|</span>
+	  append.if.isTrue.field = bodytext
+	}  
+
+    
     author_stdWrap.wrap =
     preAuthor_stdWrap.noTrimWrap = || |
     imageCount=1
@@ -433,6 +454,15 @@ plugin.tt_news {
   _LOCAL_LANG.de {
     # more = [weiterlesen...]
   }
+  
+  
+  
+
+  
+  
+  
+  
+  
 }
 
 
