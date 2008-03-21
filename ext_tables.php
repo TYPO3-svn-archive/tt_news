@@ -9,7 +9,7 @@ $confArr = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['tt_news'])
 
 $TCA['tt_news'] = Array (
 	'ctrl' => Array (
-		'title' => 'LLL:EXT:tt_news/locallang_tca.php:tt_news',
+		'title' => 'LLL:EXT:tt_news/locallang_tca.xml:tt_news',
 		'label' => $confArr['label'],
 		'label_alt' => $confArr['label_alt'].($confArr['label_alt2']?','.$confArr['label_alt2']:''),
 		'label_alt_force' => $confArr['label_alt_force'],
@@ -61,7 +61,7 @@ $TCA['tt_news'] = Array (
 #$category_OrderBy = $confArr['category_OrderBy'];
 $TCA['tt_news_cat'] = Array (
 	'ctrl' => Array (
-		'title' => 'LLL:EXT:tt_news/locallang_tca.php:tt_news_cat',
+		'title' => 'LLL:EXT:tt_news/locallang_tca.xml:tt_news_cat',
 		'label' => 'title',
 		'tstamp' => 'tstamp',
 		'delete' => 'deleted',
@@ -143,7 +143,7 @@ $TCA['tt_content']['types']['list']['subtypes_excludelist'][9]='layout,select_ke
 	// add FlexForm field to tt_content
 $TCA['tt_content']['types']['list']['subtypes_addlist'][9]='pi_flexform';
 	// add tt_news to the "insert plugin" content element (list_type = 9)
-t3lib_extMgm::addPlugin(Array('LLL:EXT:tt_news/locallang_tca.php:tt_news', '9'));
+t3lib_extMgm::addPlugin(Array('LLL:EXT:tt_news/locallang_tca.xml:tt_news', '9'));
 
 t3lib_extMgm::addTypoScriptSetup('
   includeLibs.ts_news = EXT:tt_news/pi/class.tx_ttnews.php
@@ -190,8 +190,9 @@ t3lib_extMgm::addLLrefForTCAdescr('xEXT_tt_news','EXT:tt_news/csh/locallang_csh_
 	// adds processing for extra "codes" that have been added to the "what to display" selector in the content element by other extensions
 include_once(t3lib_extMgm::extPath($_EXTKEY).'lib/class.tx_ttnews_itemsProcFunc.php');
 	// class for displaying the category tree in BE forms.
-include_once(t3lib_extMgm::extPath($_EXTKEY).'lib/class.tx_ttnews_treeview.php');
-	// class that uses hooks in class.t3lib_tcemain.php (processDatamapClass and processCmdmapClass) to prevent not allowed "commands" (copy,delete,...) for a certain BE usergroup
+include_once(t3lib_extMgm::extPath($_EXTKEY).'lib/class.tx_ttnews_TCAform_selectTree.php');
+	// class that uses hooks in class.t3lib_tcemain.php (processDatamapClass and processCmdmapClass) to prevent 
+	// not allowed "commands" (copy,delete,...) for a certain BE usergroup
 include_once(t3lib_extMgm::extPath($_EXTKEY).'lib/class.tx_ttnews_tcemain.php');
 
 
@@ -203,13 +204,13 @@ $tempColumns = Array (
 		'tt_news_categorymounts' => Array (
 			'exclude' => 1,
 		#	'l10n_mode' => 'exclude', // the localizalion mode will be handled by the userfunction
-			'label' => 'LLL:EXT:tt_news/locallang_tca.php:tt_news.categorymounts',
+			'label' => 'LLL:EXT:tt_news/locallang_tca.xml:tt_news.categorymounts',
 			'config' => Array (
 			
 			
 				'type' => 'select',
 				'form_type' => 'user',
-				'userFunc' => 'tx_ttnews_treeview->displayCategoryTree',
+				'userFunc' => 'tx_ttnews_TCAform_selectTree->renderCategoryFields',
 				'treeView' => 1,
 				'foreign_table' => 'tt_news_cat',
 				#'foreign_table_where' => $fTableWhere.'ORDER BY tt_news_cat.'.$confArr['category_OrderBy'],
@@ -223,7 +224,7 @@ $tempColumns = Array (
 		),
 // 		'tt_news_cmounts_usesubcats' => Array (
 // 			'exclude' => 1,
-// 			'label' => 'LLL:EXT:tt_news/locallang_tca.php:tt_news.cmounts_usesubcats',
+// 			'label' => 'LLL:EXT:tt_news/locallang_tca.xml:tt_news.cmounts_usesubcats',
 // 			'config' => Array (
 // 				'type' => 'check'
 // 			)

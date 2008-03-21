@@ -75,6 +75,7 @@ class tx_ttnews_module1 extends t3lib_SCbase {
 		$this->confArr = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['tt_news']);
 	}
 
+	
 	/**
 	 * Adds items to the ->MOD_MENU array. Used for the function menu selector.
 	 *
@@ -206,7 +207,6 @@ class tx_ttnews_module1 extends t3lib_SCbase {
 		$this->treeObj->init($SPaddWhere,$treeOrderBy);
 		
 		if (!is_object($this->doc)) {
-//			$this->treeObj->doc = &t3lib_div::makeInstance('bigDoc');
 			$pageinfo = t3lib_BEfunc::readPageAccess($this->id,$this->perms_clause);
 		} 
 //		else {

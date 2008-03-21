@@ -26,30 +26,31 @@
  *
  * @author	Benjamin Mack
  * 
- * modified for the tt_news FE category menu (catmenu) by Rupert Germann <rupi@gmx.li>
+ * modified for the tt_news category menu by Rupert Germann <rupi@gmx.li>
  *
  * $Id$
  *
  */
  
-var categoryTree = {
-	thisScript: 'index.php?eID=tt_news',
-	ajaxID: 'tx_ttnews_catmenu::expandCollapse',
+var tceFormsCategoryTree = {
+	thisScript: 'ajax.php',
+	ajaxID: 'tceFormsCategoryTree::expandCollapse',
 	frameSetModule: null,
-	activateDragDrop: false,
+	activateDragDrop: true,
 	highlightClass: 'active',
 //	recID: 0,
 
 	// reloads a part of the page tree (useful when "expand" / "collapse")
-	load: function(params, isExpand, obj, pid, cObjUid) {
+	load: function(params, isExpand, obj, tceFormsTable, recID) {
 			// fallback if AJAX is not possible (e.g. IE < 6)
 		if (typeof Ajax.getTransport() != 'object') {
-			window.location.href = this.thisScript + '?id=' + pid + '&PM=' + params;
+			window.location.href = this.thisScript + '?ajaxID=' + this.ajaxID + '&PM=' + params;
 			return;
 		}
 
 		// immediately collapse the subtree and change the plus to a minus when collapsing
 		// without waiting for the response
+		// alert(obj.inspect());
 		if (!isExpand) {
 			var ul = obj.parentNode.getElementsByTagName('ul')[0];
 			obj.parentNode.removeChild(ul); // no remove() directly because of IE 5.5
@@ -64,11 +65,12 @@ var categoryTree = {
 		}
 
 		new Ajax.Request(this.thisScript, {
-			parameters: 'ajaxID=' + this.ajaxID + '&PM=' + params + '&id=' + pid + '&cObjUid=' + cObjUid,
+			//method: 'get',
+			parameters: 'ajaxID=' + this.ajaxID + '&PM=' + params + '&tceFormsTable=' + tceFormsTable + '&recID=' + recID,
 			onComplete: function(xhr) {
 				// the parent node needs to be overwritten, not the object
 				$(obj.parentNode).replace(xhr.responseText);
-				//this.registerDragDropHandlers();
+				this.registerDragDropHandlers();
 				//this.reSelectActiveItem();
 				//filter($('_livesearch').value);
 			}.bind(this),
@@ -85,7 +87,23 @@ var categoryTree = {
 		// randNum is useful so pagetree does not get cached in browser cache when refreshing
 		var search = window.location.search.replace(/&randNum=\d+/, '');
 		window.location.search = search+'&randNum=' + r.getTime();
-	}
+	},
+	
+	// attaches the events to the elements needed for the drag and drop (for the titles and the icons)
+	registerDragDropHandlers: function() {
+		if (!this.activateDragDrop) return;
+		this._registerDragDropHandlers('dragTitle');
+		this._registerDragDropHandlers('dragIcon');
+	},
+
+	_registerDragDropHandlers: function(className) {
+		var elements = Selector.findChildElements($('tree'), ['.'+className]); // using Selector because document.getElementsByClassName() doesn't seem to work on Konqueror
+		for (var i = 0; i < elements.length; i++) {
+			Event.observe(elements[i], 'mousedown', function(event) { DragDrop.dragElement(event); }, true);
+			Event.observe(elements[i], 'dragstart', function(event) { DragDrop.dragElement(event); }, false);
+			Event.observe(elements[i], 'mouseup',   function(event) { DragDrop.dropElement(event); }, false);
+		}
+	},	
 
 };
 

@@ -61,7 +61,7 @@
  */
 
 require_once(PATH_t3lib.'class.t3lib_treeview.php');
-require_once(t3lib_extMgm::extPath('tt_news').'lib/class.tx_ttnews_div.php');
+//require_once(t3lib_extMgm::extPath('tt_news').'lib/class.tx_ttnews_div.php');
 
 /**
  * extend class t3lib_treeview to change function wrapTitle().
@@ -83,7 +83,7 @@ class tx_ttnews_categorytree extends t3lib_treeview {
 		$this->initializePositionSaving();
 
 		// Init done:
-		$titleLen = $this->titleLen;
+//		$titleLen = $this->titleLen;
 		$treeArr = array();
 
 		//debug($this->allowedCategories,'allowedCategories');
@@ -285,7 +285,7 @@ class tx_ttnews_categorytree extends t3lib_treeview {
 		// so we know how many we have to close when all children are done rendering
 		$closeDepth = array();
 
-		foreach($treeArr as $k => $v)	{
+		foreach($treeArr as $v)	{
 			$classAttr = $v['row']['_CSSCLASS'];
 			$uid	   = $v['row']['uid'];
 			$idAttr	= htmlspecialchars($this->domIdPrefix.$this->getId($v['row']).'_'.$v['bank']);
@@ -377,7 +377,7 @@ class tx_ttnews_categorytree extends t3lib_treeview {
 
 		if ($nextCount) {
 			$cmd = $this->bank.'_'.($exp?'0_':'1_').$row['uid'].'_'.$this->treeName;
-			$icon = $this->PMiconATagWrap($icon,$cmd,!$exp,$row['uid']);
+			$icon = $this->PMiconATagWrap($icon,$cmd,!$exp);
 		}
 		return $icon;
 	}

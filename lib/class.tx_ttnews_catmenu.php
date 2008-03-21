@@ -258,7 +258,7 @@ class tx_ttnews_FEtreeview extends tx_ttnews_categorytree {
 	 * @return	string		Link-wrapped input string
 	 * @access private
 	 */
-	function PMiconATagWrap($icon, $cmd, $isExpand = true,$uid=0)	{
+	function PMiconATagWrap($icon, $cmd, $isExpand = true)	{
 		if ($this->thisScript && $this->expandable) {
 			$newsConf = &$this->tt_news_obj->conf;
 			if ($newsConf['catSelectorTargetPid']) {
@@ -280,6 +280,8 @@ class tx_ttnews_FEtreeview extends tx_ttnews_categorytree {
 //					$anchor = '#'.$bMark;
 //					$name=' name="'.$bMark.'"';
 //				}
+				$anchor = '';
+				$name = '';
 //				debug(t3lib_div::getIndpEnv('TYPO3_SITE_SCRIPT'));
 				
 				$aUrl = $this->tt_news_obj->pi_linkTP_keepPIvars_url(array(), $this->tt_news_obj->allowCaching, 0, $catSelLinkParams).'&PM='.$cmd.$anchor;

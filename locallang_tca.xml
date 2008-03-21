@@ -17,7 +17,7 @@
 			<label index="tt_news.datetime">Date/Time:</label>
 			<label index="tt_news.archivedate">Archive date:</label>
 			<label index="tt_news.no_auto_pb">No automatic pagebreaks for this record</label>
-			<label index="tt_news.createNewCategory">create new category</label>
+			<label index="tt_news.manageCategories">Open tt_news category manager</label>
 			<label index="tt_news.editCategory">edit category</label>
 			<label index="tt_news.editDefLangVersion">edit default language version of this article</label>
 			<label index="tt_news.imagealttext">Image alttext</label>

@@ -87,15 +87,16 @@ class ext_update {
 			return $returnthis;
 		} elseif($count_cat OR $count_flex) {
 			if ($count_cat) {
-				while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res_cat)) {
+				while (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res_cat))) {
 
-					$res2 = $GLOBALS['TYPO3_DB']->exec_INSERTquery ('tt_news_cat_mm', array('uid_local' => $row['uid'], 'uid_foreign' => $row['category'], 'sorting' => 1));
+					$GLOBALS['TYPO3_DB']->exec_INSERTquery ('tt_news_cat_mm', array('uid_local' => $row['uid'], 'uid_foreign' => $row['category'], 'sorting' => 1));
 
 				}
 				$returndoupdate = $count_cat.' ROW(s) inserted.<br><br>';
 			}
 			if ($count_flex) {
-				while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res_flex)) {
+				$categories_to_display = '';
+				while (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res_flex))) {
 
 					$codes = t3lib_div::trimExplode(',', $row['select_key'], 1);
 					if (!count($codes)) $codes = array('');
@@ -108,7 +109,7 @@ class ext_update {
 						}
 						$categories_to_display .= ($categories_to_display?';'.$cat:$cat);
 					}
-					if (!$selection_mode)$selection_mode = (!$categories_to_display?0:1);
+					if (!$selection_mode) $selection_mode = (!$categories_to_display?0:1);
 						if ($categories_to_display) {
 						$categories_to_display = t3lib_div::trimExplode(';', $categories_to_display, 1);
 						$categories_to_display = array_unique($categories_to_display);
@@ -152,7 +153,7 @@ class ext_update {
 						</T3FlexForms>');
 					$updateRecord = array();
 					$updateRecord['pi_flexform'] = $xml;
-					$res = $GLOBALS['TYPO3_DB']->exec_UPDATEquery('tt_content', 'uid='.intval($row['uid']), $updateRecord);
+					$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tt_content', 'uid='.intval($row['uid']), $updateRecord);
 					unset($what_to_display, $categories_to_display, $archive, $selection_mode, $theCode, $cat);
 				}
 				$returndoupdate .= $count_flex.' ROW(s) updated.<br><br>';
@@ -169,7 +170,7 @@ class ext_update {
 	 * @return	boolean
 	 */
 	function access($what = 'all') {
-		if ($what = 'all') {
+		if ($what == 'all') {
 			if(is_object($GLOBALS['TYPO3_DB'])) {
 				if (in_array('tt_news_cat_mm', $GLOBALS['TYPO3_DB']->admin_get_tables ())) {
 					$testres = $GLOBALS['TYPO3_DB']->exec_SELECTquery ('*', 'tt_news_cat_mm', '1=1');
@@ -188,6 +189,7 @@ class ext_update {
 				}
 			}
 		}
+		return FALSE;
 	}
 
 

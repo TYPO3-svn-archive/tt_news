@@ -64,9 +64,9 @@ if (empty($ajaxID)) {
 	$ajaxObj->setError('Registered backend function for ajaxID "'.$ajaxID.'" was not found.');
 } else {
 	$ret = t3lib_div::callUserFunction($ajaxScript, $ajaxParams, $ajaxObj, false, true);
-//	if ($ret === false) {
-//		$ajaxObj->setError('Registered backend function for ajaxID "'.$ajaxID.'" was not found.');
-//	}
+	if ($ret === false) {
+		$ajaxObj->setError('Registered backend function for ajaxID "'.$ajaxID.'" was not found.');
+	}
 }
 
 

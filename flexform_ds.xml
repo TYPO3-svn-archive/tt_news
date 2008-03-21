@@ -153,7 +153,7 @@
 				<config>
 					<type>select</type>
 					<form_type>user</form_type>
-					<userFunc>tx_ttnews_treeview->displayCategoryTree</userFunc>
+					<userFunc>tx_ttnews_TCAform_selectTree->renderCategoryFields</userFunc>
 					<treeView>1</treeView>
 					<foreign_table>tt_news_cat</foreign_table>
 					<foreign_table_where>AND tt_news_cat.pid=###STORAGE_PID### ORDER BY tt_news_cat.sorting</foreign_table_where>

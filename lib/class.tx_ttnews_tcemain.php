@@ -76,7 +76,7 @@ class tx_ttnews_tcemain {
 	 * @return	void
 	 * @access public
 	 */
-	function processDatamap_postProcessFieldArray ($status, $table, $id, &$fieldArray, &$pObj) {
+	function processDatamap_postProcessFieldArray ($status, $table, $id, &$fieldArray) {
 		if (($table == 'tt_news' || $table == 'tt_news_cat') && t3lib_div::int_from_ver(TYPO3_version) < 4000000) {
 			if ($status == 'new') {
 				if (!strcmp($fieldArray['fe_group'],'')) {
@@ -174,10 +174,9 @@ class tx_ttnews_tcemain {
 			}
 // 			debug(t3lib_div::_GP('popViewId_addParams'),__FUNCTION__);
 
-			if (!is_object($divObj)) {
-				$divObj = t3lib_div::makeInstance('tx_ttnews_div');
-			}
-				// check permissions of assigned categories
+			$divObj = t3lib_div::makeInstance('tx_ttnews_div');
+
+			// check permissions of assigned categories
 			if ($divObj->useAllowedCategories() && is_int($id)) {
 
 					// get categories from the tt_news record in db
@@ -313,12 +312,12 @@ class tx_ttnews_tcemain_cmdmap {
 		}
 			// delete records recursively from Context Menu in the category manager
 		if ($table == 'tt_news_cat' && $command == 'DDdelete') {
-			$pObj->deleteRecord($table,$srcId, $noRecordCheck=FALSE);
+			$pObj->deleteRecord($table,$srcId, FALSE);
 			$CPtable = $this->int_recordTreeInfo(array(), $srcId, 99, $srcId, $table, $pObj);
 
 			foreach($CPtable as $recUid => $p)	{
 				if (isset($recUid))	{
-					$pObj->deleteRecord($table,$recUid, $noRecordCheck=FALSE);
+					$pObj->deleteRecord($table,$recUid,FALSE);
 				} else {
 					$pObj->log($table,$recUid,5,0,1,'Something went wrong during deleting branch');
 					break;

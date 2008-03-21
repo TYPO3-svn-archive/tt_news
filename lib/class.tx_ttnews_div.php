@@ -40,7 +40,7 @@
  */
 
 
-require_once(t3lib_extMgm::extPath('tt_news').'lib/class.tx_ttnews_treeview.php');;
+require_once(t3lib_extMgm::extPath('tt_news').'lib/class.tx_ttnews_categorytree.php');;
 
 /**
  * Class for updating tt_news content elements and category relations.
@@ -64,7 +64,7 @@ class tx_ttnews_div {
 			} else { // no categorymounts set in be_user record - check groups
 				if (is_array($BE_USER->userGroups)) {
 					$cmounts = array();
-					foreach ($BE_USER->userGroups as $gid => $group) {
+					foreach ($BE_USER->userGroups as $group) {
 						if ($group['tt_news_categorymounts']) {
 							$cmounts[] = $group['tt_news_categorymounts'];
 						}
@@ -93,7 +93,7 @@ class tx_ttnews_div {
 		$cmounts = array();
 
 		if (is_array($BE_USER->userGroups)) {
-			foreach ($BE_USER->userGroups as $gid => $group) {
+			foreach ($BE_USER->userGroups as $group) {
 				if ($group['tt_news_categorymounts']) {
 					$cmounts[] = $group['tt_news_categorymounts'];
 				}
@@ -115,7 +115,7 @@ class tx_ttnews_div {
 			$cleanedCategoryMounts = array();
 
 			if ($tmpres) {
-				while ($tmprow = $TYPO3_DB->sql_fetch_assoc($tmpres)) {
+				while (($tmprow = $TYPO3_DB->sql_fetch_assoc($tmpres))) {
 
 					if (!t3lib_div::inList($categoryMounts,$tmprow['parent_category'])) {
 	// 					$dontStartFromRootRecord = true;
@@ -141,7 +141,7 @@ class tx_ttnews_div {
 	function getCategoryTreeIDs() {
 
 
-		global $TCA,$BE_USER;
+		global $BE_USER;
 
 			// get include/exclude items
 		$excludeList = $BE_USER->getTSConfigVal('tt_newsPerms.tt_news_cat.excludeList');
@@ -155,7 +155,7 @@ class tx_ttnews_div {
 			$catlistWhere = ' AND tt_news_cat.uid NOT IN ('.implode(t3lib_div::intExplode(',',$excludeList),',').')';
 		}
 
-		$treeViewObj = t3lib_div::makeInstance('tx_ttnews_tceFunc_selectTreeView');
+		$treeViewObj = t3lib_div::makeInstance('tx_ttnews_categorytree');
 		$treeViewObj->table = 'tt_news_cat';
 		$treeViewObj->init($catlistWhere);
 	// 	$treeViewObj->backPath = $this->pObj->backPath;

@@ -65,7 +65,7 @@ var beCategoryTree = {
 		}
 
 		new Ajax.Request(this.thisScript, {
-			method: 'get',
+		//	method: 'get',
 			parameters: 'ajaxID=' + this.ajaxID + '&PM=' + params + '&id=' + pid,
 			onComplete: function(xhr) {
 				// the parent node needs to be overwritten, not the object
