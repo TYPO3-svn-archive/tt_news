@@ -112,8 +112,6 @@
  *
  */
 
-require_once(PATH_t3lib . 'class.t3lib_xml.php');
-require_once(PATH_t3lib . 'class.t3lib_htmlmail.php');
 require_once(PATH_tslib . 'class.tslib_pibase.php');
 require_once(t3lib_extMgm::extPath('tt_news') . 'lib/class.tx_ttnews_catmenu.php');
 
@@ -3686,41 +3684,6 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 		}
 		return strftime('%Y-%m-%dT%H:%M:%S', $datetime).$offset.':00';
  	}
-
-	/**
-	 * this the old [DEPRECIATED] function for XML news feed.
-	 *
-	 * @param	string		$content : ...
-	 * @param	array		$conf : configuration array from TS
-	 * @return	string		news content as xml string
-	 */
-	function main_xmlnewsfeed($content, $conf) {
-		$className = t3lib_div::makeInstanceClassName('t3lib_xml');
-		$xmlObj = new $className('typo3_xmlnewsfeed');
-		$xmlObj->setRecFields('tt_news', 'title,datetime'); // More fields here...
-		$xmlObj->renderHeader();
-		$xmlObj->renderRecords('tt_news', $this->getStoriesResult());
-		$xmlObj->renderFooter();
-		return $xmlObj->getResult();
-	}
-
-	/**
-	 * returns the db-result for the news-item displayed by the xmlnewsfeed function
-	 *
-	 * @return	pointer		MySQL select result pointer / DBAL object
-	 */
-	function getStoriesResult() {
-
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
-			'*',
-			'tt_news',
-			'pid=' . intval($GLOBALS['TSFE']->id) . $this->cObj->enableFields('tt_news'),
-			'',
-			'datetime DESC');
-
-
-		return $res;
-	}
 
 
 	/**

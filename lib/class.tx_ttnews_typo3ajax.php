@@ -52,7 +52,7 @@ class tx_ttnews_typo3ajax {
 		if($LANG->charSet != $this->charset) {
 			$this->charset = $LANG->charSet;
 		}
-		
+
 		if ($GLOBALS['TSFE']->renderCharset) {
 			$this->charset = $GLOBALS['TSFE']->renderCharset;
 		}
@@ -113,6 +113,7 @@ class tx_ttnews_typo3ajax {
 	/**
 	 * returns the content for the ajax call
 	 *
+	 * @param	[type]		$key: ...
 	 * @return	mixed		the content for a specific key or the whole content
 	 */
 	function getContent($key = '') {

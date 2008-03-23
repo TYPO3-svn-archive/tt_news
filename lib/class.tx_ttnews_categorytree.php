@@ -40,22 +40,14 @@
  *
  *
  *
- *   66: class tx_ttnews_tceFunc_selectTreeView extends t3lib_treeview
- *   78:     function wrapTitle($title,$v)
- *  101:     function getTitleStyles($v)
- *  123:     function PM_ATagWrap($icon,$cmd,$bMark='')
+ *   62: class tx_ttnews_categorytree extends t3lib_treeview
+ *   73:     function getBrowsableTree()
+ *  151:     function getTree($uid, $depth=999, $blankLineCode='', $subCSSclass='')
+ *  246:     function printTree($treeArr = '')
+ *  360:     function PMicon($row,$a,$c,$nextCount,$exp)
+ *  387:     function PMiconATagWrap($icon, $cmd, $isExpand = true)
  *
- *
- *  142: class tx_ttnews_treeview
- *  145:     function displayCategoryTree(&$PA, &$fobj)
- *  207:     function sendResponse($cmd)
- *  255:     function renderCatTree($cmd='')
- *  385:     function getCatRootline ($selectedItems,$SPaddWhere)
- *  422:     function renderCategoryFields()
- *  654:     function getNotAllowedItems(&$PA,$SPaddWhere,$allowedItemsList=false)
- *  697:     function displayTypeFieldCheckCategories(&$PA, &$fobj)
- *
- * TOTAL FUNCTIONS: 10
+ * TOTAL FUNCTIONS: 5
  * (This index is automatically created/updated by the extension "extdeveval")
  *
  */
@@ -298,8 +290,8 @@ class tx_ttnews_categorytree extends t3lib_treeview {
 			}
 
 			// add CSS classes to the list item
-			if($v['hasSub']) { $classAttr .= ($classAttr) ? ' expanded': 'expanded'; }
-			if($v['isLast']) { $classAttr .= ($classAttr) ? ' last'	: 'last';	 }
+			if ($v['hasSub']) { $classAttr .= ($classAttr) ? ' expanded': 'expanded'; }
+			if ($v['isLast']) { $classAttr .= ($classAttr) ? ' last'	: 'last';	 }
 
 			$itemHTML .='
 				<li id="'.$idAttr.'"'.($classAttr ? ' class="'.$classAttr.'"' : '').'>'.
@@ -337,9 +329,9 @@ class tx_ttnews_categorytree extends t3lib_treeview {
 					$ajaxOutput .= $itemHTML;
 				} else {
 					$this->ajaxStatus = true;
-					return $ajaxOutput;	
+					return $ajaxOutput;
 				}
-			}				
+			}
 			$out .= $itemHTML;
 		}
 
@@ -396,7 +388,7 @@ class tx_ttnews_categorytree extends t3lib_treeview {
 		if ($this->thisScript && $this->expandable) {
 
 			// activate dynamic ajax-based tree
-			$js = htmlspecialchars('beCategoryTree.load(\''.$cmd.'\', '.intval($isExpand).', this, \''.intval($this->pageID).'\');');
+			$js = htmlspecialchars('txttnewsM1js.load(\''.$cmd.'\', '.intval($isExpand).', this, \''.intval($this->pageID).'\');');
 			return '<a class="pm" onclick="'.$js.'">'.$icon.'</a>';
 		} else {
 			return $icon;

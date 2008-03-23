@@ -7,18 +7,29 @@
 	<data type="array">
 		<languageKey index="default" type="array">
 			<label index="title">News Admin</label>
-			<label index="function1">News category Manager</label>
+			
+			<label index="title">News Admin</label>
+			<label index="function1">News category manager</label>
+			<label index="function2"></label>
 			
 			<label index="nothingfound">No categories found. PLease select a page with tt_news categories on it.</label>
-
-			<label index="showEditIcons">show edit icons</label>
-			<label index="expandAll">expand all</label>
-			<label index="treeTitle">News categories</label>
+			<label index="showSubcatgories">Show subcatgories</label>
+			<label index="hideSubcatgories">Hide subcatgories</label>
+			
+			<label index="showingAll"> Showing news from all categories.</label>
+			<label index="showOnlyCat"> Showing news from category: </label>
 			
 
-			<label index="moveCategoryinto">move category into</label>
-			<label index="copyCategoryinto">copy category into</label>
-			<label index="copyCategoryafter">copy category after</label>
+			<label index="showEditIcons">Show edit icons in tree</label>
+			<label index="expandAll">Expand all</label>
+			<label index="treeTitle">News categories</label>
+			
+			<label index="resetCatSelection">[reset selection]</label>
+			
+
+			<label index="moveCategoryinto">Move category into</label>
+			<label index="copyCategoryinto">Copy category into</label>
+			<label index="copyCategoryafter">Copy category after</label>
 
 
 			<label index="edit">Edit record</label>

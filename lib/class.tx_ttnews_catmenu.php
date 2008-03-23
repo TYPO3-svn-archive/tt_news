@@ -38,25 +38,21 @@
  *
  *
  *
- *   65: class tx_ttnews_catmenu
- *   77:     function init(&$pObj)
- *  105:     function ajaxExpandCollapse(&$params, &$ajaxObj)
+ *   61: class tx_ttnews_catmenu
+ *   73:     function init(&$pObj)
+ *  111:     function ajaxExpandCollapse(&$params, &$ajaxObj)
  *
  *
- *  129: class tx_ttnews_FEtreeview extends t3lib_treeview
- *  141:     function wrapTitle($title,$v)
- *  194:     function getBrowsableTree()
- *  265:     function getTree($uid, $depth=999, $blankLineCode='', $subCSSclass='')
- *  363:     function printTree($treeArr = '')
- *  473:     function getRootIcon($rec)
- *  493:     function getIcon($row)
- *  535:     function PMicon($row,$a,$c,$nextCount,$exp)
- *  557:     function PMiconATagWrap($icon, $cmd, $isExpand = true)
- *  582:     function initializePositionSaving()
- *  617:     function savePosition()
- *  633:     function getTitleStr($row,$titleLen=30)
+ *  127: class tx_ttnews_FEtreeview extends tx_ttnews_categorytree
+ *  139:     function wrapTitle($title,$v)
+ *  194:     function getRootIcon($rec)
+ *  214:     function getIcon($row)
+ *  257:     function PMiconATagWrap($icon, $cmd, $isExpand = true)
+ *  298:     function initializePositionSaving()
+ *  333:     function savePosition()
+ *  349:     function getTitleStr($row,$titleLen=30)
  *
- * TOTAL FUNCTIONS: 13
+ * TOTAL FUNCTIONS: 9
  * (This index is automatically created/updated by the extension "extdeveval")
  *
  */
@@ -272,10 +268,10 @@ class tx_ttnews_FEtreeview extends tx_ttnews_categorytree {
 			if ($this->useAjax) {
 				// activate dynamic ajax-based tree
 				$js = htmlspecialchars('categoryTree.load(\''.$cmd.'\', '.intval($isExpand).', this, \''.rawurlencode($catSelLinkParams).'\','.$this->cObjUid.');');
-				return '<a class="pm" onclick="'.$js.'">'.$icon.'</a>';				
+				return '<a class="pm" onclick="'.$js.'">'.$icon.'</a>';
 			} else {
-//			
-//				$bMark=($this->bank.'_'.$uid);	
+//
+//				$bMark=($this->bank.'_'.$uid);
 //				if ($bMark)	{
 //					$anchor = '#'.$bMark;
 //					$name=' name="'.$bMark.'"';
@@ -283,7 +279,7 @@ class tx_ttnews_FEtreeview extends tx_ttnews_categorytree {
 				$anchor = '';
 				$name = '';
 //				debug(t3lib_div::getIndpEnv('TYPO3_SITE_SCRIPT'));
-				
+
 				$aUrl = $this->tt_news_obj->pi_linkTP_keepPIvars_url(array(), $this->tt_news_obj->allowCaching, 0, $catSelLinkParams).'&PM='.$cmd.$anchor;
 				return '<a class="pm" href="'.htmlspecialchars($aUrl).'"'.$name.'>'.$icon.'</a>';
 

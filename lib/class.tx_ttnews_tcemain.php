@@ -66,41 +66,6 @@ require_once(t3lib_extMgm::extPath('tt_news').'lib/class.tx_ttnews_div.php');;
 class tx_ttnews_tcemain {
 
 	/**
-	 * This method is called by a hook in the TYPO3 Core Engine (TCEmain) when a record is saved. We use it to fix the value of the field "fe_group" which must not be empty in TYPO3 versions below 4.0.
-	 *
-	 * @param	string		$status: The TCEmain operation status, fx. 'update'
-	 * @param	string		$table: The table TCEmain is currently processing
-	 * @param	string		$id: The records id (if any)
-	 * @param	array		$fieldArray: The field names and their values to be processed (passed by reference)
-	 * @param	object		$pObj: Reference to the parent object (TCEmain)
-	 * @return	void
-	 * @access public
-	 */
-	function processDatamap_postProcessFieldArray ($status, $table, $id, &$fieldArray) {
-		if (($table == 'tt_news' || $table == 'tt_news_cat') && t3lib_div::int_from_ver(TYPO3_version) < 4000000) {
-			if ($status == 'new') {
-				if (!strcmp($fieldArray['fe_group'],'')) {
-					$fieldArray['fe_group'] = '0';
-				}
-			} elseif ($status == 'update') {
-				if (isset($fieldArray['fe_group']) && !strcmp($fieldArray['fe_group'],'')) {
-					$fieldArray['fe_group'] = '0';
-				}
-			}
-		}
-	}
-
-	/**
-	 * this function seems to needed for compatibility with TYPO3 3.7.0.
-	 * In this TYPO3 version tcemain ckecks the existence of the method "processDatamap_preProcessIncomingFieldArray()" but calls "processDatamap_preProcessFieldArray()"
-	 *
-	 * @return	void
-	 */
-	function processDatamap_preProcessIncomingFieldArray() {
-
-	}
-
-	/**
 	 * extends a given list of categories by their subcategories
 	 *
 	 * @param	string		$catlist: list of categories which will be extended by subcategories
@@ -115,7 +80,7 @@ class tx_ttnews_tcemain {
 			'tt_news_cat',
 			'tt_news_cat.parent_category IN ('.$catlist.')'.$this->SPaddWhere.$this->enableCatFields);
 
-		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
+		while (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))) {
 			$cc++;
 			if ($cc > 10000) { // more than 10k subcategories? looks like a recursion
 				return implode(',', $pcatArr);
@@ -178,12 +143,12 @@ class tx_ttnews_tcemain {
 
 			// check permissions of assigned categories
 			if ($divObj->useAllowedCategories() && is_int($id)) {
-
-					// get categories from the tt_news record in db
-				$res = $GLOBALS['TYPO3_DB']->exec_SELECT_mm_query ('tt_news_cat.uid,tt_news_cat_mm.sorting AS mmsorting', 'tt_news', 'tt_news_cat_mm', 'tt_news_cat', ' AND tt_news_cat_mm.uid_local='.(is_int($fieldArray['l18n_parent'])?$fieldArray['l18n_parent']:$id).t3lib_BEfunc::BEenableFields('tt_news_cat'));
 				$categories = array();
-				while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
-					$categories[] = $row['uid'];
+				$recID = (($fieldArray['l18n_parent'] > 0) ? $fieldArray['l18n_parent'] : $id);
+					// get categories from the tt_news record in db
+				$cRes = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid_foreign', 'tt_news_cat_mm', 'uid_local='.$recID);
+				while (($cRow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($cRes))) {
+					$categories[] = $cRow['uid_foreign'];
 				}
 				$notAllowedItems = array();
 				if ($categories[0]) { // original record has categories
@@ -192,6 +157,7 @@ class tx_ttnews_tcemain {
 					} else {
 						$allowedItemsList = $divObj->getCategoryTreeIDs();
 					}
+					
 					foreach ($categories as $k) {
 						if(!t3lib_div::inList($allowedItemsList,$k)) {
 							$notAllowedItems[]=$k;
@@ -232,7 +198,7 @@ class tx_ttnews_tcemain_cmdmap {
 	 * @return	void
 	 * @access public
 	 */
-	function processCmdmap_preProcess($command, &$table, &$id, &$value, &$pObj) {
+	function processCmdmap_preProcess($command, &$table, &$id, $value, &$pObj) {
 
 		if ($table == 'tt_news' && !$GLOBALS['BE_USER']->isAdmin()) {
 			$rec = t3lib_BEfunc::getRecord($table,$id,'editlock'); // get record to check if it has an editlock
@@ -241,16 +207,14 @@ class tx_ttnews_tcemain_cmdmap {
 				$error = true;
 			}
 
-			if (!is_object($divObj)) {
-				$divObj = t3lib_div::makeInstance('tx_ttnews_div');
-			}
+			$divObj = t3lib_div::makeInstance('tx_ttnews_div');
 
 			if ($divObj->useAllowedCategories() && is_int($id)) {
 					// get categories from the (untranslated) record in db
 				if ($table == 'tt_news') {
 					$res = $GLOBALS['TYPO3_DB']->exec_SELECT_mm_query ('tt_news_cat.uid,tt_news_cat_mm.sorting AS mmsorting', 'tt_news', 'tt_news_cat_mm', 'tt_news_cat', ' AND tt_news_cat_mm.uid_local='.(is_int($id)?$id:0).t3lib_BEfunc::BEenableFields('tt_news_cat'));
 					$categories = array();
-					while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
+					while (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))) {
 						$categories[] = $row['uid'];
 					}
 					if (!$categories[0]) { // original record has no categories
@@ -341,7 +305,7 @@ class tx_ttnews_tcemain_cmdmap {
 		if ($counter)	{
 			$addW =  !$pObj->admin ? ' AND '.$pObj->BE_USER->getPagePermsClause($pObj->pMap['show']) : '';
 			$mres = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', $table, 'parent_category='.intval($srcId).$pObj->deleteClause($table).$addW, '', '');
-			while($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($mres))	{
+			while(($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($mres)))	{
 				if ($row['uid']!=$rootID)	{
 					$CPtable[$row['uid']] = $srcId;
 					if ($counter-1)	{	// If the uid is NOT the rootID of the copyaction and if we are supposed to walk further down

@@ -32,25 +32,22 @@
  *
  */
  
-var beCategoryTree = {
+var txttnewsM1js = {
 	thisScript: 'ajax.php',
-	ajaxID: 'tx_ttnews_catmenu::expandCollapse',
-	frameSetModule: null,
 	activateDragDrop: true,
 	highlightClass: 'active',
-//	recID: 0,
 
 	// reloads a part of the page tree (useful when "expand" / "collapse")
 	load: function(params, isExpand, obj, pid) {
+		var ajaxID = 'txttnewsM1::expandCollapse';
 			// fallback if AJAX is not possible (e.g. IE < 6)
-//		if (typeof Ajax.getTransport() != 'object') {
-//			window.location.href = this.thisScript + '?ajaxID=' + this.ajaxID + '&PM=' + params;
-//			return;
-//		}
+		if (typeof Ajax.getTransport() != 'object') {
+			window.location.href = this.thisScript + '?ajaxID=' + ajaxID + '&PM=' + params;
+			return;
+		}
 
 		// immediately collapse the subtree and change the plus to a minus when collapsing
 		// without waiting for the response
-		// alert(obj.inspect());
 		if (!isExpand) {
 			var ul = obj.parentNode.getElementsByTagName('ul')[0];
 			obj.parentNode.removeChild(ul); // no remove() directly because of IE 5.5
@@ -65,13 +62,11 @@ var beCategoryTree = {
 		}
 
 		new Ajax.Request(this.thisScript, {
-		//	method: 'get',
-			parameters: 'ajaxID=' + this.ajaxID + '&PM=' + params + '&id=' + pid,
+			parameters: 'ajaxID=' + ajaxID + '&PM=' + params + '&id=' + pid,
 			onComplete: function(xhr) {
 				// the parent node needs to be overwritten, not the object
 				$(obj.parentNode).replace(xhr.responseText);
 				this.registerDragDropHandlers();
-				//this.reSelectActiveItem();
 				//filter($('_livesearch').value);
 			}.bind(this),
 			onT3Error: function(xhr) {
@@ -80,6 +75,37 @@ var beCategoryTree = {
 			}.bind(this)
 		});
 	},
+
+
+	// reloads the news list
+	loadList: function(category, obj, pid) {
+		var ajaxID = 'txttnewsM1::loadList';
+			// fallback if AJAX is not possible (e.g. IE < 6)
+		if (typeof Ajax.getTransport() != 'object') {
+			window.location.href = this.thisScript + '?ajaxID=' + ajaxID + '&category=' + category;
+			return;
+		}
+
+		new Ajax.Request(this.thisScript, {
+			parameters: 'ajaxID=' + ajaxID + '&category=' + category + '&id=' + pid,
+			onComplete: function(xhr) {
+				$(obj).replace(xhr.responseText);
+				this.highlightActiveItem(category);
+				//filter($('_livesearch').value);
+			}.bind(this),
+			onT3Error: function(xhr) {
+				// if this is not a valid ajax response, the whole page gets refreshed
+				this.refresh();
+			}.bind(this)
+		});
+	},
+	highlightActiveItem: function(category) {
+		var highlightID = 'row' + category + '_0'; 
+		// Remove all items that are already highlighted
+		$$('ul#treeRoot li').invoke('removeClassName', this.highlightClass);
+		// Set the new item
+		if ($(highlightID)) Element.addClassName(highlightID, this.highlightClass);
+	},	
 
 	// does the complete page refresh (previously known as "_refresh_nav()")
 	refresh: function() {
@@ -104,6 +130,8 @@ var beCategoryTree = {
 			Event.observe(elements[i], 'mouseup',   function(event) { DragDrop.dropElement(event); }, false);
 		}
 	},	
+	
+	
 
 };
 

@@ -11,6 +11,16 @@
 	<data type="array">
 		<languageKey index="default" type="array">
 			<label index="tt_news">News</label>
+			<label index="tt_news.tabs.special">Special</label>
+			<label index="tt_news.tabs.media">Media</label>
+			<label index="tt_news.tabs.catAndRels">Categories &amp; Relations</label>
+			<label index="tt_news.tabs.categories">Categories</label>
+			<label index="tt_news.tabs.access">Access</label>
+			<label index="tt_news.tabs.extended">Extended</label>
+		
+			<label index="tt_news.uid">ID</label>
+			<label index="tt_news.tstamp">last change</label>
+			
 			<label index="tt_news.type.I.0">News</label>
 			<label index="tt_news.type.I.1">Link internal Page</label>
 			<label index="tt_news.type.I.2">Link external URL</label>

@@ -40,14 +40,14 @@
  */
 
 
-require_once(t3lib_extMgm::extPath('tt_news').'lib/class.tx_ttnews_categorytree.php');;
+//require_once(t3lib_extMgm::extPath('tt_news').'lib/class.tx_ttnews_categorytree.php');;
 
 /**
- * Class for updating tt_news content elements and category relations.
+ * tt_news misc functions
  *
- * $Id: class.ext_update.php 3023 2006-04-19 12:10:14Z rupertgermann $
+ * $Id: class.tx_ttnews_TCAform_selectTree.php 8670 2008-03-21 15:28:49Z rupertgermann $
  *
- * @author  Rupert Germann <rupi@gmx.li>
+ * @author	Rupert Germann <rupi@gmx.li>
  * @package TYPO3
  * @subpackage tt_news
  */
@@ -88,7 +88,7 @@ class tx_ttnews_div {
 	 * @return	[type]		...
 	 */
 	function getAllowedCategories() {
-		global $BE_USER, $TYPO3_DB;
+		global $BE_USER;
 
 		$cmounts = array();
 
@@ -102,37 +102,73 @@ class tx_ttnews_div {
 		if ($BE_USER->user['tt_news_categorymounts']) {
 			$cmounts[] = $BE_USER->user['tt_news_categorymounts'];
 		}
-			// MOUNTS must only contain the main/parent categories. Therefore it is required to filter out the subcategories from $this->catExclusive or $lConf['includeList']
 		$categoryMounts = implode(',',$cmounts);
+		
 		if ($categoryMounts) {
-			$tmpres = $TYPO3_DB->exec_SELECTquery(
-				'uid,parent_category',
-				'tt_news_cat',
-				'tt_news_cat.uid IN ('.$categoryMounts.')'/*.$this->SPaddWhere.$this->enableCatFields,
-				'',
-				'tt_news_cat.'.$this->config['catOrderBy']*/);
-
-			$cleanedCategoryMounts = array();
-
-			if ($tmpres) {
-				while (($tmprow = $TYPO3_DB->sql_fetch_assoc($tmpres))) {
-
-					if (!t3lib_div::inList($categoryMounts,$tmprow['parent_category'])) {
-	// 					$dontStartFromRootRecord = true;
-						$cleanedCategoryMounts[] = $tmprow['uid'];
-					}
-				}
-			}
-			$cMountList = implode(',',$cleanedCategoryMounts);
+			$subcats = $this->getSubCategories($categoryMounts);
+			$categoryMounts = implode(',', array_unique(explode(',', $categoryMounts.($subcats?','.$subcats:''))));
 		}
-
-// 		 			debug ($cMountList);
-
-		if ($cMountList) {
-			return $cMountList;
-		}
+//		debug($categoryMounts);
+		return $categoryMounts;
+//		if ($categoryMounts) {
+//			$tmpres = $TYPO3_DB->exec_SELECTquery(
+//				'uid,parent_category',
+//				'tt_news_cat',
+//				'tt_news_cat.uid IN ('.$categoryMounts.')'/*.$this->SPaddWhere.$this->enableCatFields,
+//				'',
+//				'tt_news_cat.'.$this->config['catOrderBy']*/);
+//
+//			$cleanedCategoryMounts = array();
+//
+//			if ($tmpres) {
+//				while (($tmprow = $TYPO3_DB->sql_fetch_assoc($tmpres))) {
+//
+//					if (!t3lib_div::inList($categoryMounts,$tmprow['parent_category'])) {
+//	// 					$dontStartFromRootRecord = true;
+//						$cleanedCategoryMounts[] = $tmprow['uid'];
+//					}
+//				}
+//			}
+//			$cMountList = implode(',',$cleanedCategoryMounts);
+//		}
+//
+//// 		 			debug ($cMountList);
+//
+//		if ($cMountList) {
+//			return $cMountList;
+//		}
 	}
+	
+	
+	/**
+	 * extends a given list of categories by their subcategories
+	 *
+	 * @param	string		$catlist: list of categories which will be extended by subcategories
+	 * @param	integer		$cc: counter to detect recursion in nested categories
+	 * @return	string		extended $catlist
+	 */
+	function getSubCategories($catlist, $cc = 0) {
+		$sCatArr = array();
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
+			'uid',
+			'tt_news_cat',
+			'tt_news_cat.parent_category IN ('.$catlist.') AND deleted=0');
 
+		while (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))) {
+			$cc++;
+			if ($cc > 10000) {
+				$GLOBALS['TT']->setTSlogMessage('tt_news: one or more recursive categories where found');
+				return implode(',', $sCatArr);
+			}
+			$subcats = $this->getSubCategories($row['uid'], $cc);
+			$subcats = $subcats?','.$subcats:'';
+			$sCatArr[] = $row['uid'].$subcats;
+		}
+		$catlist = implode(',', $sCatArr);
+		return $catlist;
+	}
+	
+	
 	/**
 	 * [Describe function...]
 	 *
@@ -154,35 +190,42 @@ class tx_ttnews_div {
 		if ($excludeList) {
 			$catlistWhere = ' AND tt_news_cat.uid NOT IN ('.implode(t3lib_div::intExplode(',',$excludeList),',').')';
 		}
-
-		$treeViewObj = t3lib_div::makeInstance('tx_ttnews_categorytree');
-		$treeViewObj->table = 'tt_news_cat';
-		$treeViewObj->init($catlistWhere);
-	// 	$treeViewObj->backPath = $this->pObj->backPath;
-		$treeViewObj->parentField = 'parent_category';
-		$treeViewObj->expandAll = 1;
-		$treeViewObj->expandFirst = 1;
-		$treeViewObj->fieldArray = array('uid','title','description'); // those fields will be filled to the array $treeViewObj->tree
-
 		if ($includeList) {
-			$treeViewObj->MOUNTS = t3lib_div::intExplode(',',$includeList);
+			$catlistWhere = ' AND tt_news_cat.uid IN ('.implode(t3lib_div::intExplode(',',$includeList),',').')';
 		}
-
-		$treeViewObj->TCEforms_selectedItemsArray = array();
-		$treeViewObj->TCEforms_nonSelectableItemsArray = array();
-		$treeViewObj->makeHTML = 0;
-		$treeViewObj->getBrowsableTree();
-
-		if (!is_array($treeViewObj->MOUNTS)) { $treeViewObj->MOUNTS = array(); }
-		if (!is_array($treeViewObj->ids)) { $treeViewObj->ids = array(); }
-		$treeIdArray = array_merge($treeViewObj->MOUNTS,$treeViewObj->ids);
-
-		if (is_array($treeIdArray)) {
-			$treeIDs = implode(',',$treeIdArray);
-
-		}
+		
+		$treeIDs = array();
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'tt_news_cat', '1=1' .$catlistWhere. ' AND deleted=0');
+			while (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))) {
+				$treeIDs[]=$row['uid'];
+			}
+		
+//		$treeViewObj = t3lib_div::makeInstance('tx_ttnews_categorytree');
+//		$treeViewObj->table = 'tt_news_cat';
+//		$treeViewObj->init($catlistWhere);
+//	// 	$treeViewObj->backPath = $this->pObj->backPath;
+//		$treeViewObj->parentField = 'parent_category';
+//		$treeViewObj->expandAll = 1;
+//		$treeViewObj->expandFirst = 1;
+//		$treeViewObj->fieldArray = array('uid','title','description'); // those fields will be filled to the array $treeViewObj->tree
+//
+//
+//
+//		$treeViewObj->TCEforms_selectedItemsArray = array();
+//		$treeViewObj->TCEforms_nonSelectableItemsArray = array();
+//		$treeViewObj->makeHTML = 0;
+//		$treeViewObj->getBrowsableTree();
+//
+////		if (!is_array($treeViewObj->MOUNTS)) { $treeViewObj->MOUNTS = array(); }
+////		if (!is_array($treeViewObj->ids)) { $treeViewObj->ids = array(); }
+//		$treeIdArray = $treeViewObj->ids;
+//
+//		if (is_array($treeIdArray)) {
+//			$treeIDs = implode(',',$treeIdArray);
+//
+//		}
 // 			debug ($treeIDs,'$treeIDs',__FUNCTION__,__CLASS__);
-		return $treeIDs;
+		return implode(',',$treeIDs);
 	}
 }
 
