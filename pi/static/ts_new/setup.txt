@@ -205,6 +205,9 @@ plugin.tt_news {
   reverseAMenu = 1
   archiveMenuNoEmpty = 1
 
+  showYearHeadersInAmenu = 1
+  archiveYear_stdWrap.wrap = <li class="news-amenu-item-year">|</li>
+
   # the Condition in the following COA highlights the active Archive month
   archiveTitleCObject = COA
   archiveTitleCObject {
@@ -467,13 +470,6 @@ plugin.tt_news {
 
 
 
-
-# - - - - - - - - - -  display Archive in yearly periods - - - - - - - - -  #
-
-# include the amenu script
-includeLibs.newsAmenuUserFunc = EXT:tt_news/res/news_amenuUserFunc2.php
-# call user function
-plugin.tt_news.newsAmenuUserFunc = user_processAmenu
 
 
 # - - -  This enables the tt_content.record item to display news items - -  #

@@ -148,15 +148,11 @@ $TCA['tt_news'] = Array (
 				'rows' => '3'
 			)
 		),
-		// the "type" field is misused ;-) to load the userfunction which checks for non-allowed categories in the first "tab" of the tt_news editform
 		'type' => Array (
 			'exclude' => 1,
 			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.type',
 			'config' => Array (
 				'type' => 'select',
-//				'userFunc' => 'tx_ttnews_treeview->displayTypeFieldCheckCategories',
-//				'foreign_table' => 'tt_news_cat',
-//				'foreign_table_where' => $fTableWhere.'ORDER BY tt_news_cat.sorting',
 				'items' => Array (
 					Array('LLL:EXT:tt_news/locallang_tca.xml:tt_news.type.I.0', 0),
 					Array('LLL:EXT:tt_news/locallang_tca.xml:tt_news.type.I.1', 1),
@@ -165,10 +161,6 @@ $TCA['tt_news'] = Array (
 				'default' => 0
 			)
 		),
-		
-		
-		
-		
 		'datetime' => Array (
 			'l10n_mode' => 'mergeIfNotBlank',
 			'exclude' => 1,

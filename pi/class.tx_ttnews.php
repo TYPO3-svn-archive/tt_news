@@ -146,7 +146,8 @@ class tx_ttnews extends tslib_pibase {
 
 	var $displayFields = array(
 			'LIST' => 'title,datetime,image,short,category',
-			'LATEST' => 'title,datetime,image,short',
+			'LATEST' => 'title,datetime,image,short,category',
+			'SEARCH' => 'title,datetime,image,short,category',
 			'SINGLE' => '*',
 
 		);
@@ -210,7 +211,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 			if (count($this->errors) >= 2) {
 				$msg = '--> Did you include the static TypoScript template (\'News settings\') for tt_news?';
 			}
-			return '<div style="border:2px solid red; padding:10px; margin:10px;">
+			return '<div style="border:2px solid red; padding:10px; margin:10px;"><img src="typo3/gfx/icon_warning2.gif" />
 					<strong>plugin.tt_news ERROR:</strong><br />'.implode('<br /> ',$this->errors).'<br />'.$msg.'</div>';
 		}
 
@@ -275,7 +276,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 		}
 
 if ($this->debugTimes) {
-	$this->getParsetime(__FUNCTION__,$getGlobalTime=true);
+	$this->getParsetime(__FUNCTION__,true);
 	debug (
 		array(
 			'CODE' => $codes,
@@ -1197,23 +1198,28 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 			}
 			while ($theDate < $GLOBALS['SIM_EXEC_TIME']);
 
-			reset($dateArr);
+//			reset($dateArr);
 			$periodAccum = array();
 
 			$selectConf2['where'] = $selectConf['where'];
-			while (list($k, $v) = each($dateArr)) {
+		
+			
+			foreach ($dateArr as $k => $v) {
+	
+			
+//			while (list($k, $v) = each($dateArr)) {
 				if (!isset($dateArr[$k + 1])) {
 					break;
 				}
 
 				$periodInfo = array();
-				$periodInfo['start'] = $dateArr[$k];
+				$periodInfo['start'] = $v;
 				$periodInfo['stop'] = $dateArr[$k + 1]-1;
 				$periodInfo['HRstart'] = date('d-m-Y', $periodInfo['start']);
 				$periodInfo['HRstop'] = date('d-m-Y', $periodInfo['stop']);
-				$periodInfo['quarter'] = floor(date('m', $dateArr[$k]) / 3) + 1;
+				$periodInfo['quarter'] = floor(date('m', $v) / 3) + 1;
 				// execute a query to count the archive periods
-				$selectConf['selectFields'] = 'count(distinct(tt_news.uid))';
+				$selectConf['selectFields'] = 'COUNT(DISTINCT(tt_news.uid))';
 				$selectConf['where'] = $selectConf2['where'] . ' AND tt_news.datetime>=' . $periodInfo['start'] . ' AND tt_news.datetime<' . $periodInfo['stop'];
 
 				$res = $this->exec_getQuery('tt_news', $selectConf);
@@ -1241,10 +1247,12 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 			$this->conf['parent.']['addParams'] = $this->conf['archiveTypoLink.']['addParams'];
 			reset($periodAccum);
 			$itemsOutArr = array();
+			$oldyear = 0;
 			while (list(, $pArr) = each($periodAccum)) {
-				// Print Item Title
+				
 				$wrappedSubpartArray = array();
-
+				$markerArray = array();
+				
 				if (!$this->conf['disableCategoriesInAmenuLinks']) {
 					if ($this->config['catSelection'] && $this->config['amenuWithCatSelector']) {
 						// use the catSelection from GPvars only if 'amenuWithCatSelector' is given.
@@ -1253,9 +1261,9 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 						$amenuLinkCat = $this->catExclusive;
 					}
 				}
-
+				
+				$year  = date('Y',$pArr['start']);
 				if ($this->conf['useHRDates']) {
-					$year  = date('Y',$pArr['start']);
 					$month = date('m',$pArr['start']);
 					if ($arcMode == 'year') {
 						$archLinkArr = $this->pi_linkTP_keepPIvars('|', array('cat' => ($amenuLinkCat?$amenuLinkCat:null), 'year' => $year), $this->allowCaching, 1, ($archiveLink?$archiveLink:$GLOBALS['TSFE']->id));
@@ -1267,20 +1275,46 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 					$wrappedSubpartArray['###LINK_ITEM###'] = explode('|', $this->pi_linkTP_keepPIvars('|', array('cat' => ($amenuLinkCat?$amenuLinkCat:null), 'pS' => $pArr['start'], 'pL' => ($pArr['stop'] - $pArr['start']), 'arc' => 1), $this->allowCaching, 1, ($archiveLink?$archiveLink:$GLOBALS['TSFE']->id)));
 				}
 
-				$markerArray = array();
+				$yearTitle = '';
+				if ($this->conf['showYearHeadersInAmenu'] && $arcMode != 'year') {
+					if ($year != $oldyear) { 
+					    if ($pArr['start']<20000) {
+						    $yearTitle = 'no date';
+						} else {
+							$yearTitle = $year;
+						}
+						$oldyear = $year;
+		 			}	
+				}
+				
+		
 				$veryLocal_cObj->start($pArr, '');
+				
+				$markerArray['###ARCHIVE_YEAR###'] = '';
+				if ($yearTitle) {
+					$markerArray['###ARCHIVE_YEAR###'] = $veryLocal_cObj->stdWrap($yearTitle, $this->conf['archiveYear_stdWrap.']);
+				}
+				
+			    
+								
 				$markerArray['###ARCHIVE_TITLE###'] = $veryLocal_cObj->cObjGetSingle($this->conf['archiveTitleCObject'], $this->conf['archiveTitleCObject.'], 'archiveTitle');
 				$markerArray['###ARCHIVE_COUNT###'] = $pArr['count'];
 				$markerArray['###ARCHIVE_ITEMS###'] = $this->pi_getLL('archiveItems');
 
 				// fill the generated data to an array to pass it to a userfuction as a single variable
-				$itemsOutArr[] = array('html' => $this->cObj->substituteMarkerArrayCached($t['item'][($cc % count($t['item']))], $markerArray, array(), $wrappedSubpartArray), 'data' => $pArr);
+				$itemsOutArr[] = array(
+					'html' => $this->cObj->substituteMarkerArrayCached($t['item'][($cc % count($t['item']))], $markerArray, array(), $wrappedSubpartArray), 
+					'data' => $pArr
+				);
 				$cc++;
 			}
 			// Pass to user defined function
 			if ($this->conf['newsAmenuUserFunc']) {
 				$itemsOutArr = $this->userProcess('newsAmenuUserFunc', $itemsOutArr);
 			}
+			
+
+			
 
 			foreach ($itemsOutArr as $itemHtml) {
 				$tmpItemsArr[] = $itemHtml['html'];

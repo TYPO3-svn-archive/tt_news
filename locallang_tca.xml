@@ -18,8 +18,8 @@
 			<label index="tt_news.tabs.access">Access</label>
 			<label index="tt_news.tabs.extended">Extended</label>
 		
-			<label index="tt_news.uid">ID</label>
-			<label index="tt_news.tstamp">last change</label>
+			<label index="tt_news.uid">ID:</label>
+			<label index="tt_news.tstamp">Last change:</label>
 			
 			<label index="tt_news.type.I.0">News</label>
 			<label index="tt_news.type.I.1">Link internal Page</label>
@@ -34,7 +34,7 @@
 			<label index="tt_news.imagetitletext">Image titletext</label>
 			<label index="tt_news.related">Related news:</label>
 			<label index="tt_news.random">Randomize 0rder</label>
-			<label index="tt_news.category">Category</label>
+			<label index="tt_news.category">Category:</label>
 			<label index="tt_news_cat">News category</label>
 			<label index="tt_news_cat.image">Category image</label>
 			<label index="tt_news_cat.createNewParentCategory">create new parent category</label>

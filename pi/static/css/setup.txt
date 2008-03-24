@@ -23,6 +23,7 @@ plugin.tt_news {
 /*-----------------------------------  tt_news LATEST view  -----------------------------------*/
 
 .news-latest-container {
+	padding:10px;
 }
 
 .news-latest-gotoarchive {
@@ -46,7 +47,6 @@ plugin.tt_news {
 
 	margin-bottom:5px;
 	margin-right:5px;
-/* 	border:1px solid #666; */
 	float:left;
 }
 .news-latest-category IMG {
@@ -61,8 +61,8 @@ plugin.tt_news {
 
 
 .news-latest-item > p {
-  margin:0;
-  padding:0;
+	margin:0;
+	padding:0;
 }
 
 
@@ -234,15 +234,13 @@ padding:0;
 	padding-bottom:1px;
 
 }
-.news-amenu-container UL LI A:LINK, .news-amenu-container UL LI A:VISITED {
-/* 	background: transparent url('tt_news_styles_FILES/orangearrow2_no.gif') left center no-repeat; */
-	text-align: left;
+.news-amenu-container UL LI A:LINK, 
+.news-amenu-container UL LI A:VISITED {
 	text-decoration: none;
 	color: #666;
-/* 	padding-left: 12px; */
 }
-.news-amenu-container UL LI A:HOVER, .news-amenu-container UL LI A:ACTIVE {
-/* 	background: transparent url('tt_news_styles_FILES/orangearrow2.gif') left center no-repeat; */
+.news-amenu-container UL LI A:HOVER, 
+.news-amenu-container UL LI A:ACTIVE {
 	color: black;
 }
 .news-amenu-container UL {

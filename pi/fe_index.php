@@ -61,7 +61,7 @@ require_once(PATH_tslib.'class.tslib_feuserauth.php');
 // Make new instance of TSFE
 $temp_TSFEclassName = t3lib_div::makeInstanceClassName('tslib_fe');
 $TSFE = new $temp_TSFEclassName(
-	$TYPO3_CONF_VARS,
+	$GLOBALS['TYPO3_CONF_VARS'],
 	$id,
 	t3lib_div::_GP('type'),
 	t3lib_div::_GP('no_cache'),

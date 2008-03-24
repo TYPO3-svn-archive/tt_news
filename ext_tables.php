@@ -86,7 +86,6 @@ t3lib_extMgm::addPlugin(array('LLL:EXT:tt_news/locallang_tca.xml:tt_news', '9'))
 
 t3lib_extMgm::addTypoScriptSetup('
   includeLibs.ts_news = EXT:tt_news/pi/class.tx_ttnews.php
-  
   plugin.tt_news = USER
   plugin.tt_news {
     userFunc = tx_ttnews->main_news
@@ -188,6 +187,11 @@ if (TYPO3_MODE == 'BE')	{
 	if (t3lib_div::int_from_ver(TYPO3_version) >= 4000000) {
 		if (t3lib_div::int_from_ver(TYPO3_version) >= 4002000) {
 			t3lib_extMgm::addModule('web','txttnewsM1','',t3lib_extMgm::extPath($_EXTKEY).'mod1/');
+			
+			$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['cms']['db_layout']['addTables'][$_EXTKEY][0]['fList'] = 'uid,title,author,category,datetime,archivedate,tstamp';
+			$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['cms']['db_layout']['addTables'][$_EXTKEY][0]['icon'] = TRUE;
+
+
 		} else {
 			/**
 			 * @deprecated
