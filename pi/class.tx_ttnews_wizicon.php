@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 1999-2004 Kasper Sk�rh�j (kasper@typo3.com)
+*  (c) 1999-2004 Kasper Skårhøj (kasperYYYY@typo3.com)
 *  (c) 2004-2008 Rupert Germann (rupi@gmx.li)
 *  All rights reserved
 *
@@ -23,7 +23,7 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 /**
- * Class that adds the wizard icon.
+ * Class that adds an entry to the "create new contentelement" wizard.
  *
  * $Id$
  *

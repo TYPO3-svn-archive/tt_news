@@ -40,7 +40,7 @@
  */
 
 
-//require_once(t3lib_extMgm::extPath('tt_news').'lib/class.tx_ttnews_categorytree.php');;
+
 
 /**
  * tt_news misc functions
@@ -52,9 +52,6 @@
  * @subpackage tt_news
  */
 class tx_ttnews_div {
-
-
-
 	function useAllowedCategories () {
 		global $BE_USER;
 		if (!$BE_USER->isAdmin()) {
@@ -108,35 +105,7 @@ class tx_ttnews_div {
 			$subcats = $this->getSubCategories($categoryMounts);
 			$categoryMounts = implode(',', array_unique(explode(',', $categoryMounts.($subcats?','.$subcats:''))));
 		}
-//		debug($categoryMounts);
 		return $categoryMounts;
-//		if ($categoryMounts) {
-//			$tmpres = $TYPO3_DB->exec_SELECTquery(
-//				'uid,parent_category',
-//				'tt_news_cat',
-//				'tt_news_cat.uid IN ('.$categoryMounts.')'/*.$this->SPaddWhere.$this->enableCatFields,
-//				'',
-//				'tt_news_cat.'.$this->config['catOrderBy']*/);
-//
-//			$cleanedCategoryMounts = array();
-//
-//			if ($tmpres) {
-//				while (($tmprow = $TYPO3_DB->sql_fetch_assoc($tmpres))) {
-//
-//					if (!t3lib_div::inList($categoryMounts,$tmprow['parent_category'])) {
-//	// 					$dontStartFromRootRecord = true;
-//						$cleanedCategoryMounts[] = $tmprow['uid'];
-//					}
-//				}
-//			}
-//			$cMountList = implode(',',$cleanedCategoryMounts);
-//		}
-//
-//// 		 			debug ($cMountList);
-//
-//		if ($cMountList) {
-//			return $cMountList;
-//		}
 	}
 	
 	
@@ -175,11 +144,9 @@ class tx_ttnews_div {
 	 * @return	[type]		...
 	 */
 	function getCategoryTreeIDs() {
-
-
 		global $BE_USER;
 
-			// get include/exclude items
+		// get include/exclude items
 		$excludeList = $BE_USER->getTSConfigVal('tt_newsPerms.tt_news_cat.excludeList');
 		$includeList = $BE_USER->getTSConfigVal('tt_newsPerms.tt_news_cat.includeList');
 		$catmounts = $this->getAllowedCategories();
@@ -196,35 +163,9 @@ class tx_ttnews_div {
 		
 		$treeIDs = array();
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'tt_news_cat', '1=1' .$catlistWhere. ' AND deleted=0');
-			while (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))) {
-				$treeIDs[]=$row['uid'];
-			}
-		
-//		$treeViewObj = t3lib_div::makeInstance('tx_ttnews_categorytree');
-//		$treeViewObj->table = 'tt_news_cat';
-//		$treeViewObj->init($catlistWhere);
-//	// 	$treeViewObj->backPath = $this->pObj->backPath;
-//		$treeViewObj->parentField = 'parent_category';
-//		$treeViewObj->expandAll = 1;
-//		$treeViewObj->expandFirst = 1;
-//		$treeViewObj->fieldArray = array('uid','title','description'); // those fields will be filled to the array $treeViewObj->tree
-//
-//
-//
-//		$treeViewObj->TCEforms_selectedItemsArray = array();
-//		$treeViewObj->TCEforms_nonSelectableItemsArray = array();
-//		$treeViewObj->makeHTML = 0;
-//		$treeViewObj->getBrowsableTree();
-//
-////		if (!is_array($treeViewObj->MOUNTS)) { $treeViewObj->MOUNTS = array(); }
-////		if (!is_array($treeViewObj->ids)) { $treeViewObj->ids = array(); }
-//		$treeIdArray = $treeViewObj->ids;
-//
-//		if (is_array($treeIdArray)) {
-//			$treeIDs = implode(',',$treeIdArray);
-//
-//		}
-// 			debug ($treeIDs,'$treeIDs',__FUNCTION__,__CLASS__);
+		while (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))) {
+			$treeIDs[]=$row['uid'];
+		}
 		return implode(',',$treeIDs);
 	}
 }

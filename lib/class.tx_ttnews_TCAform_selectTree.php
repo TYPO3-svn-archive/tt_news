@@ -73,6 +73,7 @@ class tx_ttnews_TCAform_selectTree {
 	var $selectedItems = array();
 	var $confArr = array();
 	var $PA = array();
+	var $useAjax = FALSE;
 
 	function init(&$PA) {
 		$this->confArr = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['tt_news']);
@@ -120,21 +121,40 @@ class tx_ttnews_TCAform_selectTree {
 	 * @return	string		the HTML code for the field
 	 */
 	function renderCategoryFields(&$PA, &$fobj)    {
-		$fobj->additionalCode_pre[] = '
-			<script src="'.t3lib_extMgm::extRelPath('tt_news').'js/tceformsCategoryTree.js" type="text/javascript"></script>';
+		
+		$this->intT3ver = t3lib_div::int_from_ver(TYPO3_version);
+
+
+		
+		
+		if ($this->intT3ver < 4001000) {
+			// load some additional styles for the BE trees in TYPO3 version lower that 4.1
+			// expand/collapse is disabled
+		
+			$fobj->additionalCode_pre[] = '
+				<link rel="stylesheet" type="text/css" href="'.t3lib_extMgm::extRelPath('tt_news').'compat/tree_styles_for_4.0.css" />';				
+			
+		} else { // enable ajax expand/collapse for TYPO3 versions > 4.1
+			if ($this->intT3ver >= 4002000) {
+				$jsFile = 'js/tceformsCategoryTree.js';
+			} else {
+				$jsFile = 'compat/tceformsCategoryTree_for_4.1.js';
+			}
+			$this->useAjax = TRUE;
+			$fobj->additionalCode_pre[] = '
+				<script src="'.t3lib_extMgm::extRelPath('tt_news').$jsFile.'" type="text/javascript"></script>';			
+			
+		}
+		
+
 
 		$this->init(&$PA);
 
 		$table = $this->table;
 		$field = $this->field;
 		$row = $this->row;
+		$this->recID = $row['uid'];
 		$itemFormElName = $this->PA['itemFormElName'];
-
-
-	
-
-		
-		
 				
 			// it seems TCE has a bug and do not work correctly with '1'
 		$this->fieldConfig['maxitems'] = ($this->fieldConfig['maxitems']==2) ? 1 : $this->fieldConfig['maxitems'];
@@ -142,7 +162,6 @@ class tx_ttnews_TCAform_selectTree {
 			// Getting the selector box items from the system
 		$selItems = $fobj->addSelectOptionsToItemArray($fobj->initItemArray($this->PA['fieldConf']),$this->PA['fieldConf'],$fobj->setTSconfig($table,$row),$field);
 		$selItems = $fobj->addItems($selItems,$this->PA['fieldTSConfig']['addItems.']);
-
 
 			// Possibly remove some items:
 		$removeItems=t3lib_div::trimExplode(',',$this->PA['fieldTSConfig']['removeItems'],1);
@@ -163,9 +182,7 @@ class tx_ttnews_TCAform_selectTree {
 		$minitems = t3lib_div::intInRange($this->fieldConfig['minitems'],0);
 		
 
-		if ($table == 'tt_news') {
-			$this->registerRequiredProperty($fobj,'range', $itemFormElName, array($minitems,$maxitems,'imgName'=>$table.'_'.$row['uid'].'_'.$field));
-		}
+
 		
 		if ($this->fieldConfig['treeView'])	{
 			if ($row['sys_language_uid'] && $row['l18n_parent'] && ($table == 'tt_news' || $table == 'tt_news_cat')) {
@@ -218,6 +235,10 @@ class tx_ttnews_TCAform_selectTree {
 				$item = '<div class="typo3-TCEforms-originalLanguageValue">'.$item.'</div>';
 
 			} else { // build tree selector
+				
+				if ($table == 'tt_news' && $this->intT3ver >= 4001000) {
+					$this->registerRequiredProperty($fobj,'range', $itemFormElName, array($minitems,$maxitems,'imgName'=>$table.'_'.$row['uid'].'_'.$field));
+				}				
 				$item.= '<input type="hidden" name="'.$itemFormElName.'_mul" value="'.($this->fieldConfig['multiple']?1:0).'" />';
 
 				if ($this->fieldConfig['treeView'] AND $this->fieldConfig['foreign_table']) {
@@ -288,7 +309,7 @@ class tx_ttnews_TCAform_selectTree {
 				$item = $fobj->renderWizards(array($item,$altItem),$this->fieldConfig['wizards'],$table,$row,$field,$this->PA,$itemFormElName,array());
 			}
 		}
-		if (($table == 'tt_news' || $table == 'tt_news_cat') && $this->NA_Items) {
+		if (($table == 'tt_news' || $table == 'tt_news_cat') && $this->NA_Items && $this->intT3ver >= 4001000) {
 			$this->registerRequiredProperty(
 					$fobj,
 					'range', 
@@ -376,21 +397,27 @@ class tx_ttnews_TCAform_selectTree {
 	 * @return	[type]		...
 	 */
 	function ajaxExpandCollapse($params, &$ajaxObj) {
-
+		$this->useAjax = TRUE;
 		$this->confArr = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['tt_news']);
 
 		if (!is_object($this->divObj)) {
 			$this->divObj = t3lib_div::makeInstance('tx_ttnews_div');
 		}
-		$this->table = t3lib_div::_GP('tceFormsTable');
-		$recID = intval(t3lib_div::_GP('recID'));
-		$this->row = t3lib_BEfunc::getRecord($this->table,$recID);
-
+		$this->table = trim(t3lib_div::_GP('tceFormsTable'));
+		$this->storagePidFromAjax = intval(t3lib_div::_GP('storagePid'));
+		$this->recID = trim(t3lib_div::_GP('recID')); // not intval() here because it might be a new record
+		if (is_int($this->recID)) {
+			$this->row = t3lib_BEfunc::getRecord($this->table,$this->recID);
+		}
+		
+		// set selected items
 		if ($this->table == 'tt_news') {
 			$this->field = 'category';
-			$cRes = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid_foreign', 'tt_news_cat_mm', 'uid_local='.$recID);
-			while (($cRow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($cRes))) {
-				$this->selectedItems[] = $cRow['uid_foreign'];
+			if (is_array($this->row) && $this->row['pid']) {
+				$cRes = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid_foreign', 'tt_news_cat_mm', 'uid_local='.$this->recID);
+				while (($cRow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($cRes))) {
+					$this->selectedItems[] = $cRow['uid_foreign'];
+				}				
 			}
 		} else {
 			if ($this->table == 'tt_news_cat') {
@@ -400,13 +427,16 @@ class tx_ttnews_TCAform_selectTree {
 			} else { // be_users or be_groups
 				$this->field = 'tt_news_categorymounts';
 			}
-			$this->setSelectedItems($recID);
+			if (is_int($this->recID) && is_array($this->row)) {
+				$this->setSelectedItems($this->recID);
+			}
+			
 		}
 
 		if ($this->table == 'tt_content') {
-			$this->PA['itemFormElName'] = 'data[tt_content]['.$recID.'][pi_flexform][data][sDEF][lDEF][categorySelection][vDEF]';
+			$this->PA['itemFormElName'] = 'data[tt_content]['.$this->recID.'][pi_flexform][data][sDEF][lDEF][categorySelection][vDEF]';
 		} else {
-			$this->PA['itemFormElName'] = 'data['.$this->table.']['.$recID.']['.$this->field.']';
+			$this->PA['itemFormElName'] = 'data['.$this->table.']['.$this->recID.']['.$this->field.']';
 		}
 
 		$tree = $this->renderCatTree();
@@ -432,11 +462,17 @@ class tx_ttnews_TCAform_selectTree {
 // 		$tStart = microtime(true);
 // 		$this->debug['start'] = time();
 
-		if ($this->confArr['useStoragePid'] && ($this->table == 'tt_news' || $this->table == 'tt_news_cat' || $this->table == 'tt_content')) { 
 			// ignore the value of "useStoragePid" if table is be_users or be_groups
-			$TSconfig = t3lib_BEfunc::getTCEFORM_TSconfig($this->table,$this->row);
-			$this->storagePid = $TSconfig['_STORAGE_PID']?$TSconfig['_STORAGE_PID']:0;
+		if ($this->confArr['useStoragePid'] && ($this->table == 'tt_news' || $this->table == 'tt_news_cat' || $this->table == 'tt_content')) { 
+			
+			if ($this->storagePidFromAjax) {
+				$this->storagePid = $this->storagePidFromAjax;
+			} else {
+				$TSconfig = t3lib_BEfunc::getTCEFORM_TSconfig($this->table,$this->row);
+				$this->storagePid = $TSconfig['_STORAGE_PID']?$TSconfig['_STORAGE_PID']:0;			
+			}
 			$SPaddWhere = ' AND tt_news_cat.pid IN (' . $this->storagePid . ')';
+		
 		}
 
 		if ($this->table == 'tt_news' || $this->table == 'tt_news_cat') {
@@ -466,15 +502,22 @@ class tx_ttnews_TCAform_selectTree {
 		$treeViewObj->treeName = $this->table.'_tree';
 		$treeViewObj->table = 'tt_news_cat';
 		$treeViewObj->tceFormsTable = $this->table;
-		$treeViewObj->tceFormsRecID = $this->row['uid'];
+		$treeViewObj->tceFormsRecID = $this->recID;
+		$treeViewObj->storagePid = $this->storagePid;
+		
+		
+//		debug(array($SPaddWhere,$catlistWhere,$treeOrderBy), ' ('.__CLASS__.'::'.__FUNCTION__.')', __LINE__, __FILE__, 3);
+		
+		
 		$treeViewObj->init($SPaddWhere.$catlistWhere,$treeOrderBy);
 		$treeViewObj->backPath = $GLOBALS['BACK_PATH'];
 		$treeViewObj->thisScript = 'class.tx_ttnews_tceformsSelectTree.php';
 		$treeViewObj->fieldArray = array('uid','title','description','hidden','starttime','endtime','fe_group'); // those fields will be filled to the array $treeViewObj->tree
 		$treeViewObj->parentField = 'parent_category';
-		$treeViewObj->expandable = true;
+		$treeViewObj->expandable = $this->useAjax;
+		$treeViewObj->expandAll = !$this->useAjax;
+		$treeViewObj->useAjax = $this->useAjax;
 		$treeViewObj->titleLen = 60;
-		$treeViewObj->useAjax = true;
 		$treeViewObj->ext_IconMode = '1'; // no context menu on icons
 		$treeViewObj->title = $GLOBALS['LANG']->sL($GLOBALS['TCA']['tt_news_cat']['ctrl']['title']);
 		$treeViewObj->TCEforms_itemFormElName = $this->PA['itemFormElName'];
@@ -513,13 +556,7 @@ class tx_ttnews_TCAform_selectTree {
 
 		$this->treeObj_ajaxStatus = $treeViewObj->ajaxStatus;
 
-//		$this->treeItemC = count($treeViewObj->ids);
-// 		if ($cmd == 'show' || $cmd == 'hide') {
-// 			$this->treeItemC++;
-// 		}
-//		$this->treeIDs = $treeViewObj->ids;
 
-// $this->debug['MOUNTS'] = $treeViewObj->MOUNTS;
 
 // 		$tEnd = microtime(true);
 // 		$this->debug['end'] = time();
@@ -674,7 +711,7 @@ class tx_ttnews_tceforms_categorytree extends tx_ttnews_categorytree {
 		if ($this->thisScript && $this->expandable) {
 
 			// activate dynamic ajax-based tree
-			$js = htmlspecialchars('tceFormsCategoryTree.load(\''.$cmd.'\', '.intval($isExpand).', this, \''.$this->tceFormsTable.'\', \''.$this->tceFormsRecID.'\');');
+			$js = htmlspecialchars('tceFormsCategoryTree.load(\''.$cmd.'\', '.intval($isExpand).', this, \''.$this->tceFormsTable.'\', \''.$this->tceFormsRecID.'\', \''.$this->storagePid.'\');');
 			return '<a class="pm" onclick="'.$js.'">'.$icon.'</a>';
 		} else {
 			return $icon;
@@ -682,7 +719,7 @@ class tx_ttnews_tceforms_categorytree extends tx_ttnews_categorytree {
 	}
 }
 
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_news/lib/class.tx_ttnews_tceformsSelectTree.php'])    {
-    include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_news/lib/class.tx_ttnews_tceformsSelectTree.php']);
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_news/lib/class.tx_ttnews_TCAform_selectTree.php'])    {
+    include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_news/lib/class.tx_ttnews_TCAform_selectTree.php']);
 }
 ?>

@@ -445,6 +445,7 @@ class tx_ttnews_module1 extends t3lib_SCbase {
 			$reset = '<a href="'.$this->script.'" id="resetcatselection">'.$LANG->getLL('resetCatSelection').'</a>';
 			$title = '<strong>'.t3lib_BEfunc::getRecordTitle($table,$row).'</strong>';
 			$content = '<div id="newscatsmsg">'.$reset.$LANG->getLL('showOnlyCat').$title.'</div>';
+			
 			if ($this->useSubCategories && ($subCats = t3lib_div::rmFromList($this->category,$this->selectedCategories))) {
 				$scRows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('uid,title',$table,'uid IN ('.$subCats.')');
 				$scTitles = array();

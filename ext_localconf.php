@@ -17,7 +17,7 @@ $GLOBALS ['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['pro
 
 if (t3lib_extMgm::isLoaded('version')) {
 	// If the extension "version" is loaded, this line adds the code VERSION_PREVIEW to the "what_to_display" section in the tt_news content element
-	$TYPO3_CONF_VARS['EXTCONF']['tt_news']['what_to_display'][] = array('VERSION_PREVIEW', 'VERSION_PREVIEW');
+	$TYPO3_CONF_VARS['EXTCONF']['tt_news']['what_to_display'][] = array('LLL:EXT:tt_news/locallang_tca.xml:tt_news.pi_flexform.VERSION_PREVIEW', 'VERSION_PREVIEW');
 }
 
 // Page module hook

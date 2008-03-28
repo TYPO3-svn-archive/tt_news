@@ -12,6 +12,8 @@
 			<label index=".alttitle">Web &gt; News admin module</label>
 			<label index="list_module.alttitle">News admin module</label>
 			<label index="list_module.description">Provides a news list-module and the tt_news category manager</label>
+			
+			
 		</languageKey>
 	</data>
 </T3locallang>

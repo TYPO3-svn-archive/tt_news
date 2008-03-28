@@ -49,13 +49,17 @@ class tx_ttnews_typo3ajax {
 	 */
 	function tx_ttnews_typo3ajax($ajaxId) {
 		global $LANG;
-		if($LANG->charSet != $this->charset) {
-			$this->charset = $LANG->charSet;
+
+		if (TYPO3_MODE == 'FE') {
+			if ($GLOBALS['TSFE']->renderCharset) {
+				$this->charset = $GLOBALS['TSFE']->renderCharset;
+			}			
+		} else {
+			if($LANG->charSet != $this->charset) {
+				$this->charset = $LANG->charSet;
+			}		
 		}
 
-		if ($GLOBALS['TSFE']->renderCharset) {
-			$this->charset = $GLOBALS['TSFE']->renderCharset;
-		}
 
 		$this->ajaxId = $ajaxId;
 	}

@@ -50,6 +50,19 @@
 			<label index="tt_news.pi_flexform.sheet_category">Category Settings</label>
 			<label index="tt_news.pi_flexform.sheet_misc">Other Settings</label>
 			<label index="tt_news.pi_flexform.what_to_display">What to display:</label>
+			
+			<label index="tt_news.pi_flexform.LIST">Standard list view (LIST)</label>
+			<label index="tt_news.pi_flexform.LIST2">Advanced list view with 5 alternating template parts (LIST2)</label>
+			<label index="tt_news.pi_flexform.LIST3">Standard list view with 3 alternating template parts (LIST3)</label>
+			<label index="tt_news.pi_flexform.LATEST">Latest view (LATEST)</label>
+			<label index="tt_news.pi_flexform.SINGLE">Detail view (SINGLE)</label>
+			<label index="tt_news.pi_flexform.HEADER_LIST">Header list without images (HEADER_LIST)</label>
+			<label index="tt_news.pi_flexform.AMENU">Archive menu (AMENU)</label>
+			<label index="tt_news.pi_flexform.SEARCH">Searchform with result list (SEARCH)</label>
+			<label index="tt_news.pi_flexform.CATMENU">Category menu (CATMENU)</label>
+			<label index="tt_news.pi_flexform.VERSION_PREVIEW">Preview of not published versions of news records (VERSION_PREVIEW)</label>
+			
+			
 			<label index="tt_news.pi_flexform.listOrderby">&quot;Order by&quot; this field (LIST &amp; LATEST):</label>
 			<label index="tt_news.pi_flexform.ascDesc">Ascending or Descending (LIST &amp; LATEST):</label>
 			<label index="tt_news.pi_flexform.ascDesc_asc">Ascending</label>

@@ -172,6 +172,148 @@ LINK_NEXT - used in the pagebrowser
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- ###TEMPLATE_LIST2### begin
+	This is the template for the list of news in the archive or news page or search
+-->
+<div class="news-list2-container">
+###NEWS_CATEGORY_ROOTLINE###
+	<!-- ###CONTENT### begin
+		  This is the part of the template substituted with the list of news:
+	-->
+		<!-- ###NEWS### begin -->
+	<div class="list2-subdiv-hdr">
+			<div class="hdr-left">
+			  <span class="news-list-date">###NEWS_DATE###</span>
+			  <h2><!--###LINK_ITEM###-->###NEWS_TITLE###<!--###LINK_ITEM###--></h2>
+			  <!--###LINK_ITEM###-->###NEWS_IMAGE###<!--###LINK_ITEM###-->
+			 ###NEWS_SUBHEADER###
+			###CATWRAP_B### ###TEXT_CAT### ###NEWS_CATEGORY### ###NEWS_CATEGORY_IMAGE### ###CATWRAP_E###
+			</div>
+		<!-- ###NEWS### end-->
+		<!-- ###NEWS_1### begin -->
+			<div class="hdr-right">
+			  <span class="news-list-date">###NEWS_DATE###</span>
+			  <h2><!--###LINK_ITEM###-->###NEWS_TITLE###<!--###LINK_ITEM###--></h2>
+			  <!--###LINK_ITEM###-->###NEWS_IMAGE###<!--###LINK_ITEM###-->
+			 ###NEWS_SUBHEADER###
+			###CATWRAP_B### ###TEXT_CAT### ###NEWS_CATEGORY### ###NEWS_CATEGORY_IMAGE### ###CATWRAP_E###
+			</div>
+	
+	<hr class="clearer" /></div>
+		<!-- ###NEWS_1### end-->
+		<!-- ###NEWS_2### begin -->
+	<div class="list2-subdiv">
+			<div class="sub-left">
+			  <span class="news-list-date">###NEWS_DATE###</span>
+			  <h2><!--###LINK_ITEM###-->###NEWS_TITLE###<!--###LINK_ITEM###--></h2>
+			  <!--###LINK_ITEM###-->###NEWS_IMAGE###<!--###LINK_ITEM###-->
+			 ###NEWS_SUBHEADER###
+			###CATWRAP_B### ###TEXT_CAT### ###NEWS_CATEGORY### ###NEWS_CATEGORY_IMAGE### ###CATWRAP_E###
+			</div>
+		<!-- ###NEWS_2### end-->
+		<!-- ###NEWS_3### begin -->
+			<div class="sub-middle">
+			  <span class="news-list-date">###NEWS_DATE###</span>
+			  <h2><!--###LINK_ITEM###-->###NEWS_TITLE###<!--###LINK_ITEM###--></h2>
+			  <!--###LINK_ITEM###-->###NEWS_IMAGE###<!--###LINK_ITEM###-->
+			 ###NEWS_SUBHEADER###
+			###CATWRAP_B### ###TEXT_CAT### ###NEWS_CATEGORY### ###NEWS_CATEGORY_IMAGE### ###CATWRAP_E###
+			</div>
+		<!-- ###NEWS_3### end-->
+		<!-- ###NEWS_4### begin -->
+			<div class="sub-right">
+			  <span class="news-list-date">###NEWS_DATE###</span>
+			  <h2><!--###LINK_ITEM###-->###NEWS_TITLE###<!--###LINK_ITEM###--></h2>
+			  <!--###LINK_ITEM###-->###NEWS_IMAGE###<!--###LINK_ITEM###-->
+			 ###NEWS_SUBHEADER###
+			###CATWRAP_B### ###TEXT_CAT### ###NEWS_CATEGORY### ###NEWS_CATEGORY_IMAGE### ###CATWRAP_E###
+			</div>
+	</div><hr class="clearer" />
+		<!-- ###NEWS_4### end-->
+	<!-- ###CONTENT###  end -->
+</div>
+<!-- ###TEMPLATE_LIST2### end -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- ###TEMPLATE_LIST3### begin
+	This is the template for the list of news in the archive or news page or search
+-->
+<div class="news-list3-container">
+###NEWS_CATEGORY_ROOTLINE###
+	<!-- ###CONTENT### begin
+		  This is the part of the template substituted with the list of news:
+	-->
+		<!-- ###NEWS### begin -->
+			<div class="news-list3-item">
+			  <span class="news-list-date">###NEWS_DATE###</span>
+			  <h2><!--###LINK_ITEM###-->###NEWS_TITLE###<!--###LINK_ITEM###--></h2>
+			  <!--###LINK_ITEM###-->###NEWS_IMAGE###<!--###LINK_ITEM###-->
+			 ###NEWS_SUBHEADER###
+			###CATWRAP_B### ###TEXT_CAT### ###NEWS_CATEGORY### ###NEWS_CATEGORY_IMAGE### ###CATWRAP_E###
+		<hr class="clearer" /></div>
+		<!-- ###NEWS### end-->
+		<!-- ###NEWS_1### begin -->
+	<div class="list3-subdiv">
+		<div class="list3-left">
+			  <span class="news-list-date">###NEWS_DATE###</span>
+			  <h2><!--###LINK_ITEM###-->###NEWS_TITLE###<!--###LINK_ITEM###--></h2>
+			 ###NEWS_SUBHEADER###
+			###CATWRAP_B### ###TEXT_CAT### ###NEWS_CATEGORY### ###NEWS_CATEGORY_IMAGE### ###CATWRAP_E###
+		</div>
+		<!-- ###NEWS_1### end-->
+		<!-- ###NEWS_2### begin -->
+		<div class="list3-right">
+			  <span class="news-list-date">###NEWS_DATE###</span>
+			  <h2><!--###LINK_ITEM###-->###NEWS_TITLE###<!--###LINK_ITEM###--></h2>
+			 ###NEWS_SUBHEADER###
+			###CATWRAP_B### ###TEXT_CAT### ###NEWS_CATEGORY### ###NEWS_CATEGORY_IMAGE### ###CATWRAP_E###
+		</div>
+	</div><hr class="clearer" />
+		<!-- ###NEWS_2### end-->
+	<!-- ###CONTENT###  end -->
+</div>
+<!-- ###TEMPLATE_LIST3### end -->
+
+
+
+
+
+
+
+
+
+
+
+
+
 <br />
 <br />
 <br />
@@ -191,10 +333,12 @@ LINK_NEXT - used in the pagebrowser
 
 <div class="news-single-item">
 ###NEWS_CATEGORY_ROOTLINE###
-	<div class="news-single-timedata">###NEWS_DATE### ###NEWS_TIME### ###TEXT_NEWS_AGE### ###NEWS_AGE###</div>
-		<h1>###NEWS_TITLE###</h1>
+	<div class="news-single-rightbox">
+		###NEWS_DATE### ###NEWS_TIME### ###TEXT_NEWS_AGE### ###NEWS_AGE###
 		###CATWRAP_B### ###TEXT_CAT### ###NEWS_CATEGORY### ###NEWS_CATEGORY_IMAGE### ###CATWRAP_E###
 		###NEWS_AUTHOR###
+	</div>
+		<h1>###NEWS_TITLE###</h1>
 		###NEWS_SUBHEADER###
 		###NEWS_IMAGE###
 		###NEWS_CONTENT###

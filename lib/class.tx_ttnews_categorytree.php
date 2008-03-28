@@ -78,11 +78,6 @@ class tx_ttnews_categorytree extends t3lib_treeview {
 //		$titleLen = $this->titleLen;
 		$treeArr = array();
 
-		//debug($this->allowedCategories,'allowedCategories');
-//		debug($this->stored,'stored');
-//		debug($GLOBALS['BE_USER']->uc['tt_news']);
-// // debug($this->MOUNTS);
-
 		// Traverse mounts:
 		foreach($this->MOUNTS as $idx => $uid)  {
 
@@ -165,13 +160,7 @@ class tx_ttnews_categorytree extends t3lib_treeview {
 		$allRows = array();
 		while ($crazyRecursionLimiter > 0 && $row = $this->getDataNext($res,$subCSSclass))	{
 			$crazyRecursionLimiter--;
-//			if (is_array($this->allowedCategories)) {
-//				if (in_array($row['uid'],$this->allowedCategories)) {
-//					$allRows[] = $row;
-//				}
-//			} else {
-				$allRows[] = $row;
-//			}
+			$allRows[] = $row;
 		}
 
 		// Traverse the records:
@@ -258,10 +247,12 @@ class tx_ttnews_categorytree extends t3lib_treeview {
 			// -- evaluate AJAX request
 			// IE takes anchor as parameter
 		$PM = t3lib_div::_GP('PM');
-
+		
 		if(($PMpos = strpos($PM, '#')) !== false) { $PM = substr($PM, 0, $PMpos); }
 		$PM = explode('_', $PM);
 		if(is_array($PM) && count($PM)==4  && $this->useAjax) {
+			
+			
 			if($PM[1])	{
 				$expandedPageUid = $PM[2];
 				$ajaxOutput = '';
@@ -335,7 +326,7 @@ class tx_ttnews_categorytree extends t3lib_treeview {
 			$out .= $itemHTML;
 		}
 
-		if($ajaxOutput) {
+		if ($ajaxOutput) {
 			$this->ajaxStatus = true;
 			return $ajaxOutput;
 		}
@@ -386,7 +377,6 @@ class tx_ttnews_categorytree extends t3lib_treeview {
 	 */
 	function PMiconATagWrap($icon, $cmd, $isExpand = true)	{
 		if ($this->thisScript && $this->expandable) {
-
 			// activate dynamic ajax-based tree
 			$js = htmlspecialchars('txttnewsM1js.load(\''.$cmd.'\', '.intval($isExpand).', this, \''.intval($this->pageID).'\');');
 			return '<a class="pm" onclick="'.$js.'">'.$icon.'</a>';

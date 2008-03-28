@@ -114,6 +114,7 @@
 
 require_once(PATH_tslib . 'class.tslib_pibase.php');
 require_once(t3lib_extMgm::extPath('tt_news') . 'lib/class.tx_ttnews_catmenu.php');
+require_once(PATH_t3lib . 'class.t3lib_htmlmail.php');
 
 /**
  * Plugin 'news' for the 'tt_news' extension.
@@ -146,9 +147,13 @@ class tx_ttnews extends tslib_pibase {
 
 	var $displayFields = array(
 			'LIST' => 'title,datetime,image,short,category',
+			'LIST2' => 'title,datetime,image,short,category',
+			'LIST3' => 'title,datetime,image,short,category',
+			'HEADER_LIST' => 'title,datetime,short,category',
 			'LATEST' => 'title,datetime,image,short,category',
 			'SEARCH' => 'title,datetime,image,short,category',
 			'SINGLE' => '*',
+			'VERSION_PREVIEW' => '*',
 
 		);
 	var $errors = array();
@@ -227,6 +232,9 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 				break;
 				case 'LATEST':
 				case 'LIST':
+				case 'LIST2':
+				case 'LIST3':
+				case 'HEADER_LIST':
 				case 'SEARCH':
 				case 'XML':
 				$content .= $this->displayList();
@@ -515,8 +523,11 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 				break;
 
 			case 'LIST':
+			case 'LIST2':
+			case 'LIST3':
+			case 'HEADER_LIST':	
 				$prefix_display = 'displayList';
-				$templateName = 'TEMPLATE_LIST';
+				$templateName = 'TEMPLATE_'.strtoupper($theCode);
 				break;
 
 			case 'SEARCH':
@@ -658,6 +669,8 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 				$t['total'] = $this->getNewsSubpart($this->templateCode, $this->spMarker('###' . $templateName . '###'));
 
 				$t['item'] = $this->getLayouts($t['total'], $this->alternatingLayouts, 'NEWS');
+				
+				
 				// build query for display:
 				$selectConf['selectFields'] = 'DISTINCT(tt_news.uid),tt_news.*';
 				if ($this->config['groupBy']) {
@@ -1059,6 +1072,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 			}
 
 			$layoutNum = ($itempartsCount == 0 ? 0 : ($cc % $itempartsCount));
+
 			// Store the result of template parsing in the Var $itemsOut, use the alternating layouts
 			$itemsOut .= $this->cObj->substituteMarkerArrayCached($itemparts[$layoutNum], $markerArray, array(), $wrappedSubpartArray);
 			$cc++;
@@ -1696,7 +1710,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 			$files_stdWrap = t3lib_div::trimExplode('|', $this->conf['newsFiles_stdWrap.']['wrap']);
 			$markerArray['###TEXT_FILES###'] = $files_stdWrap[0].$this->local_cObj->stdWrap($this->pi_getLL('textFiles'), $this->conf['newsFilesHeader_stdWrap.']);
 			$fileArr = explode(',', $row['news_files']);
-			$files = '';
+			$filelinks = '';
 			$rss2Enclousres = '';
 			while (list(, $val) = each($fileArr)) {
 				// fills the marker ###FILE_LINK### with the links to the atached files
@@ -3535,9 +3549,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 		else {
 			$this->templateCode = $this->cObj->fileResource($this->conf['templateFile']);
 		}
-		if (!($this->templateCode = $this->cObj->substituteMarkerArray($this->templateCode, $globalMarkerArray))) {
-			$this->errors[] = 'No HTML template defined';
-		}		
+	
 		$splitMark = md5(microtime(true));
 		$globalMarkerArray = array();
 		list($globalMarkerArray['###GW1B###'], $globalMarkerArray['###GW1E###']) = explode($splitMark, $this->cObj->stdWrap($splitMark, $this->conf['wrap1.']));
@@ -3547,7 +3559,12 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 		$globalMarkerArray['###GC2###'] = $this->cObj->stdWrap($this->conf['color2'], $this->conf['color2.']);
 		$globalMarkerArray['###GC3###'] = $this->cObj->stdWrap($this->conf['color3'], $this->conf['color3.']);
 		$globalMarkerArray['###GC4###'] = $this->cObj->stdWrap($this->conf['color4'], $this->conf['color4.']);
-
+		
+		
+		
+		if (!($this->templateCode = $this->cObj->substituteMarkerArray($this->templateCode, $globalMarkerArray))) {
+			$this->errors[] = 'No HTML template found';
+		}	
 	}
 
 	/**

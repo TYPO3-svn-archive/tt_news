@@ -33,7 +33,7 @@
  */
  
 var tceFormsCategoryTree = {
-	thisScript: 'ajax.php',
+	thisScript: '../typo3conf/ext/tt_news/compat/be_axax_for_4.1.php',
 	ajaxID: 'tceFormsCategoryTree::expandCollapse',
 	frameSetModule: null,
 	activateDragDrop: true,

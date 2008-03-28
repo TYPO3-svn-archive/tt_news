@@ -1,3 +1,58 @@
+
+
+2008-03-28	Rupert Germann <rupi@gmx.li>
+	* new codes: added 3 more items to the "what to display" list: LIST2, LIST3 and HEADER_LIST (they use all the plugin.tt_news.displayList namespace for configuration)
+	* changed the 2-box selector to a single dropdown menu where only one item can be selected
+		!!! ATTENTION !!! this might break compatibility with some sites where more than one code for one news content element is used
+		IMO using more than one code in the same content element is not recommanded anyway, because mostly you would need more configuration options for smaller groups of news items and not putting them all in one content element where you've f.e. only one image size available.
+	* the "what to display" labels are now localized
+
+	Typoscript changes:
+	* The "general_stdWrap" is now diabled by default: Each single field which needs parsing is conected directly to lib.parseFunc_RTE (f.i.: content_stdWrap.parseFunc < lib.parseFunc_RTE). The class="bodytext" attribute is disabled ba default, too.
+	*
+
+	HTML Template changes:
+	* removed the marker ###MORE### from the default HTML template: The "more" link is now appended directly to the subheader by TS.
+	* Added 2 more LIST templates: LIST2 and LIST3 (using alternating layouts, for a bit more advanced listviews)
+	* modified the single view: introduced a floated div which groups author, categories and date in the right upper corner
+
+	CSS
+	* cleanup: removed almost all colors, borders and fontsizes from the default CSS styles.
+	* added new example styles for the new LIST templates
+
+
+
+2008-03-27	Rupert Germann <rupi@gmx.li>
+	* compatibility: introduced a new folder named compat/ for scripts that are needed to make the tt_news category tree work in older TYPO3 versions.
+	The current state is this:
+
+	TYPO3 4.0.x:
+	* For this version I dropped the support for expandable trees in tceforms
+	* if Xajax is installed the tree in the "tt_news category manager" module (web > info) can be expanded/collapsed
+	* The FE catmenu can be expanded/collapsed but without ajax
+	* The new Module "news admin" is not visible
+
+	TYPO3 4.1.x
+	* all category trees in tceforms and the "catmenu" content element can be expanded/collapsed with internal ajax routines (no xajax required)
+	* if Xajax is installed the tree in the "tt_news category manager" (web > info) can be expanded/collapsed
+	* The new Module "news admin" is not visible
+
+	TYPO3 4.2.x
+	* The new Module "news admin" is visible and replaces the  "tt_news category manager" module in web > info
+	* All category trees in BE and FE have full ajax support (no xajax required)
+
+
+
+2008-03-24	Rupert Germann <rupi@gmx.li>
+	* moved the functionality of the amenuUserFunc script to the tt_news main class.
+	* Grouping the amenu periods by years can be enabled by plugin.tt_news.showYearHeadersInAmenu (default=1).
+	* The year is rendered to the new template marker ###ARCHIVE_YEAR### and it has a stdWrap named "archiveYear_stdWrap"
+	* added the tt_news db fields to ['db_layout']['addTables']. Now the function which renders the tt_news records in the page module could be removed from EXT:cms/class.db_layout.php
+
+
+
+
+
 2008-03-17	Rupert Germann <rupi@gmx.li>
 
 	* fixed the fix for bug #7181: Added "DISTINCT(tt_news.uid),tt_news.*" to the list-query to get rid of the "groupBy tt_news.uid" part of that query.
