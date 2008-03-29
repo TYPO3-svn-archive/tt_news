@@ -34,16 +34,16 @@
  *
  *   64: class tx_ttnewscatmanager_modfunc1 extends t3lib_extobjbase
  *   73:     function main()
- *  141:     function renderCatTree($cmd='')
- *  197:     function sendResponse($cmd)
+ *  135:     function renderCatTree($cmd='')
+ *  191:     function sendResponse($cmd)
  *
  *
- *  242: class tx_ttnewscatmanager_treeView extends t3lib_treeview
- *  254:     function wrapTitle($title,$v)
- *  285:     function makeControl($table,$row)
- *  347:     function includeLocalLang()
- *  363:     function PM_ATagWrap($icon,$cmd,$bMark='')
- *  383:     function wrapIcon($icon,&$row)
+ *  236: class tx_ttnewscatmanager_treeView extends t3lib_treeview
+ *  248:     function wrapTitle($title,$v)
+ *  279:     function makeControl($table,$row)
+ *  341:     function includeLocalLang()
+ *  357:     function PM_ATagWrap($icon,$cmd,$bMark='')
+ *  377:     function wrapIcon($icon,&$row)
  *
  * TOTAL FUNCTIONS: 8
  * (This index is automatically created/updated by the extension "extdeveval")

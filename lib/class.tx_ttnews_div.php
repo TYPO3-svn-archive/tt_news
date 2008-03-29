@@ -29,10 +29,10 @@
  *
  *
  *
- *   50: class tx_ttnews_div
- *   54:     function useAllowedCategories ()
- *   86:     function getAllowedCategories()
- *  137:     function getCategoryTreeIDs()
+ *   54: class tx_ttnews_div
+ *   87:     function getAllowedCategories()
+ *  119:     function getSubCategories($catlist, $cc = 0)
+ *  146:     function getCategoryTreeIDs()
  *
  * TOTAL FUNCTIONS: 3
  * (This index is automatically created/updated by the extension "extdeveval")
@@ -100,15 +100,15 @@ class tx_ttnews_div {
 			$cmounts[] = $BE_USER->user['tt_news_categorymounts'];
 		}
 		$categoryMounts = implode(',',$cmounts);
-		
+
 		if ($categoryMounts) {
 			$subcats = $this->getSubCategories($categoryMounts);
 			$categoryMounts = implode(',', array_unique(explode(',', $categoryMounts.($subcats?','.$subcats:''))));
 		}
 		return $categoryMounts;
 	}
-	
-	
+
+
 	/**
 	 * extends a given list of categories by their subcategories
 	 *
@@ -136,8 +136,8 @@ class tx_ttnews_div {
 		$catlist = implode(',', $sCatArr);
 		return $catlist;
 	}
-	
-	
+
+
 	/**
 	 * [Describe function...]
 	 *
@@ -160,7 +160,7 @@ class tx_ttnews_div {
 		if ($includeList) {
 			$catlistWhere = ' AND tt_news_cat.uid IN ('.implode(t3lib_div::intExplode(',',$includeList),',').')';
 		}
-		
+
 		$treeIDs = array();
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'tt_news_cat', '1=1' .$catlistWhere. ' AND deleted=0');
 		while (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))) {

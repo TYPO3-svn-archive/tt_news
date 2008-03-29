@@ -89,6 +89,7 @@ t3lib_extMgm::addTypoScriptSetup('
   plugin.tt_news = USER
   plugin.tt_news {
     userFunc = tx_ttnews->main_news
+    enableConfigValidation = 1
   }
 ');
 
@@ -217,6 +218,7 @@ if (TYPO3_MODE == 'BE')	{
 	
 }
 
+	// register HTML template for the tt_new BackEnd Module
 $GLOBALS['TBE_STYLES']['htmlTemplates']['mod_ttnews_admin.html'] = t3lib_extMgm::extRelPath('tt_news').'mod1/mod_ttnews_admin.html';
 
 ?>

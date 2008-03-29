@@ -46,68 +46,66 @@
  *
  *
  *
- *  125: class tx_ttnews extends tslib_pibase
- *  178:     function main_news($content, $conf)
- *  291:     function init($conf)
+ *  124: class tx_ttnews extends tslib_pibase
+ *  182:     function main_news($content, $conf)
+ *  304:     function init($conf)
  *
  *              SECTION: Display Functions
- *  486:     function displayList($excludeUids = 0)
- *  870:     function getListContent($itemparts, $selectConf, $prefix_display)
- * 1073:     function displaySingle()
- * 1157:     function displayArchiveMenu()
- * 1310:     function displayCatMenu()
- * 1393:     function displayVersionPreview ()
+ *  500:     function displayList($excludeUids = 0)
+ *  890:     function getListContent($itemparts, $selectConf, $prefix_display)
+ * 1094:     function displaySingle()
+ * 1178:     function displayArchiveMenu()
+ * 1364:     function displayCatMenu()
+ * 1443:     function displayVersionPreview ()
  *
  *              SECTION: Process Markers
- * 1490:     function getItemMarkerArray ($row, $textRenderObj = 'displaySingle')
- * 1818:     function getCatMarkerArray($markerArray, $row, $lConf)
- * 1966:     function getImageMarkers($markerArray, $row, $lConf, $textRenderObj)
- * 2048:     function insertPagebreaks($text,$firstPageWordCrop)
- * 2098:     function makeMultiPageSView($bodytext,$lConf)
- * 2128:     function makePageBrowser($showResultCount=1,$tableParams='',$pointerName='pointer')
- * 2210:     function getCategories($uid, $getAll=false)
- * 2288:     function getCategoryPath($categoryArray)
- * 2383:     function getSubCategories($catlist, $cc = 0)
- * 2417:     function getCatMenuContent($array_in,$lConf, $l=0)
- * 2469:     function getSubCategoriesForMenu ($catlist, $fields, $addWhere, $cc = 0)
- * 2498:     function getRelated($uid)
- * 2666:     function getXmlHeader()
+ * 1540:     function getItemMarkerArray ($row, $textRenderObj = 'displaySingle')
+ * 1868:     function getCatMarkerArray($markerArray, $row, $lConf)
+ * 2016:     function getImageMarkers($markerArray, $row, $lConf, $textRenderObj)
+ * 2098:     function insertPagebreaks($text,$firstPageWordCrop)
+ * 2148:     function makeMultiPageSView($bodytext,$lConf)
+ * 2178:     function makePageBrowser($showResultCount=1,$tableParams='',$pointerName='pointer')
+ * 2260:     function getCategories($uid, $getAll=false)
+ * 2338:     function getCategoryPath($categoryArray)
+ * 2433:     function getSubCategories($catlist, $cc = 0)
+ * 2467:     function getCatMenuContent($array_in,$lConf, $l=0)
+ * 2519:     function getSubCategoriesForMenu ($catlist, $fields, $addWhere, $cc = 0)
+ * 2548:     function getRelated($uid)
+ * 2716:     function getXmlHeader()
  *
  *              SECTION: DB Functions
- * 2794:     function getSelectConf($where, $noPeriod = 0)
- * 3075:     function searchWhere($sw)
- * 3102:     function exec_getQuery($table, $conf)
- * 3120:     function getQuery($table, $conf, $returnQueryArray=FALSE)
- * 3202:     function getWhere($table,$conf, $returnQueryArray=FALSE)
+ * 2844:     function getSelectConf($where, $noPeriod = 0)
+ * 3126:     function searchWhere($sw)
+ * 3153:     function exec_getQuery($table, $conf)
+ * 3171:     function getQuery($table, $conf, $returnQueryArray=FALSE)
+ * 3253:     function getWhere($table,$conf, $returnQueryArray=FALSE)
  *
  *              SECTION: Init Helpers
- * 3316:     function initLanguages ()
- * 3336:     function initCategoryVars()
- * 3405:     function initCatmenuEnv(&$lConf)
- * 3449:     function checkRecords($recordlist)
- * 3481:     function initTemplate()
- * 3511:     function initPidList ()
- * 3535:     function generatePageArray()
+ * 3367:     function initLanguages ()
+ * 3387:     function initCategoryVars()
+ * 3456:     function initCatmenuEnv(&$lConf)
+ * 3504:     function checkRecords($recordlist)
+ * 3536:     function initTemplate()
+ * 3572:     function initPidList ()
+ * 3599:     function generatePageArray()
  *
  *              SECTION: Helper Functions
- * 3570:     function getCurrentVersion()
- * 3582:     function displayFEHelp()
- * 3603:     function validateFields($fieldlist)
- * 3624:     function getNewsSubpart($myTemplate, $myKey, $row = Array())
- * 3634:     function isRenderField($fieldName)
- * 3652:     function getW3cDate($datetime)
- * 3677:     function main_xmlnewsfeed($content, $conf)
- * 3692:     function getStoriesResult()
- * 3714:     function cleanXML($str)
- * 3728:     function convertDates()
- * 3768:     function getHrDateSingle($tstamp)
- * 3788:     function userProcess($mConfKey, $passVar)
- * 3803:     function spMarker($subpartMarker)
- * 3823:     function formatStr($str)
- * 3838:     function getLayouts($templateCode, $alternatingLayouts, $marker)
- * 3858:     function getParsetime($caller='',$getGlobalTime=false)
+ * 3637:     function getCurrentVersion()
+ * 3650:     function displayErrors()
+ * 3664:     function validateFields($fieldlist)
+ * 3685:     function getNewsSubpart($myTemplate, $myKey, $row = Array())
+ * 3695:     function isRenderField($fieldName)
+ * 3713:     function getW3cDate($datetime)
+ * 3740:     function cleanXML($str)
+ * 3754:     function convertDates()
+ * 3796:     function getHrDateSingle($tstamp)
+ * 3816:     function userProcess($mConfKey, $passVar)
+ * 3831:     function spMarker($subpartMarker)
+ * 3851:     function formatStr($str)
+ * 3866:     function getLayouts($templateCode, $alternatingLayouts, $marker)
+ * 3886:     function getParsetime($caller='',$getGlobalTime=false)
  *
- * TOTAL FUNCTIONS: 49
+ * TOTAL FUNCTIONS: 47
  * (This index is automatically created/updated by the extension "extdeveval")
  *
  */
@@ -156,6 +154,7 @@ class tx_ttnews extends tslib_pibase {
 			'VERSION_PREVIEW' => '*',
 
 		);
+		
 	var $errors = array();
 
 	var $debugTimes = false;
@@ -183,17 +182,18 @@ class tx_ttnews extends tslib_pibase {
 	 */
 	function main_news($content, $conf) {
 
-if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
+		if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 
 
 
 		$this->local_cObj = t3lib_div::makeInstance('tslib_cObj'); // Local cObj.
 
-if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
+		if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 
 		$this->init($conf);
 
-if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
+
+		if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 
 		if ($this->conf['displayCurrentRecord']) {
 			$this->config['code'] = $this->conf['defaultCode']?trim($this->conf['defaultCode']):'SINGLE';
@@ -204,32 +204,31 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 		$codes = t3lib_div::trimExplode(',', $this->config['code']?$this->config['code']:$this->conf['defaultCode'], 1);
 		if (!count($codes)) { // no code at all
 			$codes = array();
-//			$noCode = true;
 			$this->errors[] = 'No code given';
 		}
 
 
-				
-if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 
-		if (count($this->errors)) {
-			if (count($this->errors) >= 2) {
-				$msg = '--> Did you include the static TypoScript template (\'News settings\') for tt_news?';
+		if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
+
+		if ($this->conf['enableConfigValidation']) {
+			if (count($this->errors)) {
+				return $this->displayErrors();
 			}
-			return '<div style="border:2px solid red; padding:10px; margin:10px;"><img src="typo3/gfx/icon_warning2.gif" />
-					<strong>plugin.tt_news ERROR:</strong><br />'.implode('<br /> ',$this->errors).'<br />'.$msg.'</div>';
 		}
+
+
 
 		while (list(, $theCode) = each($codes)) {
 			$theCode = (string)strtoupper(trim($theCode));
 			$this->theCode = $theCode;
 			switch ($theCode) {
 				case 'SINGLE':
-				$content .= $this->displaySingle();
-				break;
+					$content .= $this->displaySingle();
+					break;
 				case 'VERSION_PREVIEW':
-				$content .= $this->displayVersionPreview();
-				break;
+					$content .= $this->displayVersionPreview();
+					break;
 				case 'LATEST':
 				case 'LIST':
 				case 'LIST2':
@@ -237,64 +236,57 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 				case 'HEADER_LIST':
 				case 'SEARCH':
 				case 'XML':
-				$content .= $this->displayList();
-				break;
+					$content .= $this->displayList();
+					break;
 				case 'AMENU':
-				$content .= $this->displayArchiveMenu();
-				break;
+					$content .= $this->displayArchiveMenu();
+					break;
 				case 'CATMENU':
-				$content .= $this->displayCatMenu();
-				break;
+					$content .= $this->displayCatMenu();
+					break;
 				default:
-				// Adds hook for processing of extra codes
+					
+					if ($this->debugTimes) { $this->getParsetime(__METHOD__.' extraCodesHook start');	}
 
-	if ($this->debugTimes) { $this->getParsetime(__METHOD__.' extraCodesHook start');	}
-
-				if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tt_news']['extraCodesHook'])) {
-					foreach($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tt_news']['extraCodesHook'] as $_classRef) {
-						$_procObj = & t3lib_div::getUserObj($_classRef);
-						$content .= $_procObj->extraCodesProcessor($this);
+					// hook for processing of extra codes
+					if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tt_news']['extraCodesHook'])) {
+						foreach($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tt_news']['extraCodesHook'] as $_classRef) {
+							$_procObj = & t3lib_div::getUserObj($_classRef);
+							$content .= $_procObj->extraCodesProcessor($this);
+						}
+	
+	
+					} else { // code not known and no hook found to handle it -> displayerror
+						$this->errors[] = 'CODE "'.$theCode.'" not known';
 					}
-
-
-				} else {
-					$langKey = strtoupper($GLOBALS['TSFE']->config['config']['language']);
-					$helpTemplate = $this->cObj->fileResource('EXT:tt_news/pi/news_help.tmpl');
-					// Get language version of the help-template
-					$helpTemplate_lang = '';
-					if ($langKey) {
-						$helpTemplate_lang = $this->getNewsSubpart($helpTemplate, "###TEMPLATE_" . $langKey . '###');
-					}
-					$helpTemplate = $helpTemplate_lang ? $helpTemplate_lang :
-					$this->getNewsSubpart($helpTemplate, '###TEMPLATE_DEFAULT###');
-					// Markers and substitution:
-					$markerArray['###CODE###'] = $this->theCode;
-					$markerArray['###EXTPATH###'] = $GLOBALS['TYPO3_LOADED_EXT']['tt_news']['siteRelPath'];
-					$content .= $this->displayFEHelp();
-				}
-
-	if ($this->debugTimes) { $this->getParsetime(__METHOD__.' extraCodesHook end'); }
-
-				break;
+	
+					if ($this->debugTimes) { $this->getParsetime(__METHOD__.' extraCodesHook end'); }
+	
+					break;
 			}
 		}
 
-		if ($noCode) {
-			$content .= $this->displayFEHelp();
-		}
 
-if ($this->debugTimes) {
-	$this->getParsetime(__FUNCTION__,true);
-	debug (
-		array(
-			'CODE' => $codes,
-			'template' => $this->conf['templateFile'],
-			'pid' => $GLOBALS['TSFE']->id,
-// 			'pid_list' => $this->pid_list,
-// 			'getParsetime' => $this->getParsetime(__FUNCTION__,$getGlobalTime=true)
-		),
-		__METHOD__,__LINE__,__FILE__);
-}
+		// check errors array again 
+		if ($this->conf['enableConfigValidation']) {
+			if (count($this->errors)) {
+				return $this->displayErrors();
+			}
+		}
+		
+
+		if ($this->debugTimes) {
+			$this->getParsetime(__FUNCTION__,true);
+			debug (
+				array(
+					'CODE' => $codes,
+					'template' => $this->conf['templateFile'],
+					'pid' => $GLOBALS['TSFE']->id,
+		// 			'pid_list' => $this->pid_list,
+		// 			'getParsetime' => $this->getParsetime(__FUNCTION__,$getGlobalTime=true)
+				),
+				__METHOD__,__LINE__,__FILE__);
+		}
 
 		return $content;
 	}
@@ -385,7 +377,7 @@ if ($this->debugTimes) {
 		$this->config['singlePid'] = $singlePid?$singlePid:intval($this->cObj->stdWrap($this->conf['singlePid'],$this->conf['singlePid.']));
 		if (!$this->config['singlePid']) {
 			$this->errors[] = 'No singlePid defined';
-		}	
+		}
 		// pid to return to when leaving single view
 		$backPid = intval($this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'backPid', 's_misc'));
 		$backPid = $backPid?$backPid:intval($this->conf['backPid']);
@@ -525,7 +517,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 			case 'LIST':
 			case 'LIST2':
 			case 'LIST3':
-			case 'HEADER_LIST':	
+			case 'HEADER_LIST':
 				$prefix_display = 'displayList';
 				$templateName = 'TEMPLATE_'.strtoupper($theCode);
 				break;
@@ -669,8 +661,9 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 				$t['total'] = $this->getNewsSubpart($this->templateCode, $this->spMarker('###' . $templateName . '###'));
 
 				$t['item'] = $this->getLayouts($t['total'], $this->alternatingLayouts, 'NEWS');
-				
-				
+
+
+
 				// build query for display:
 				$selectConf['selectFields'] = 'DISTINCT(tt_news.uid),tt_news.*';
 				if ($this->config['groupBy']) {
@@ -893,7 +886,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 	 */
 	function getListContent($itemparts, $selectConf, $prefix_display) {
 
-
+		
 
 if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 
@@ -909,7 +902,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 		$token = md5(microtime());
 		// Getting elements
 		while (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))) {
-
+			
 if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 
 			$GLOBALS['TSFE']->displayedNews[]=$row['uid'];
@@ -1071,8 +1064,10 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 
 			}
 
+
 			$layoutNum = ($itempartsCount == 0 ? 0 : ($cc % $itempartsCount));
 
+						
 			// Store the result of template parsing in the Var $itemsOut, use the alternating layouts
 			$itemsOut .= $this->cObj->substituteMarkerArrayCached($itemparts[$layoutNum], $markerArray, array(), $wrappedSubpartArray);
 			$cc++;
@@ -1180,7 +1175,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 	 * @return	string		html code of the archive menu
 	 */
 	function displayArchiveMenu() {
-		
+
 		$this->arcExclusive = 1;
 		$selectConf = $this->getSelectConf('', 1);
 		// Finding maximum and minimum values:
@@ -1216,12 +1211,10 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 			$periodAccum = array();
 
 			$selectConf2['where'] = $selectConf['where'];
-		
-			
+
+
 			foreach ($dateArr as $k => $v) {
-	
-			
-//			while (list($k, $v) = each($dateArr)) {
+
 				if (!isset($dateArr[$k + 1])) {
 					break;
 				}
@@ -1263,10 +1256,10 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 			$itemsOutArr = array();
 			$oldyear = 0;
 			while (list(, $pArr) = each($periodAccum)) {
-				
+
 				$wrappedSubpartArray = array();
 				$markerArray = array();
-				
+
 				if (!$this->conf['disableCategoriesInAmenuLinks']) {
 					if ($this->config['catSelection'] && $this->config['amenuWithCatSelector']) {
 						// use the catSelection from GPvars only if 'amenuWithCatSelector' is given.
@@ -1275,7 +1268,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 						$amenuLinkCat = $this->catExclusive;
 					}
 				}
-				
+
 				$year  = date('Y',$pArr['start']);
 				if ($this->conf['useHRDates']) {
 					$month = date('m',$pArr['start']);
@@ -1291,33 +1284,33 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 
 				$yearTitle = '';
 				if ($this->conf['showYearHeadersInAmenu'] && $arcMode != 'year') {
-					if ($year != $oldyear) { 
+					if ($year != $oldyear) {
 					    if ($pArr['start']<20000) {
 						    $yearTitle = 'no date';
 						} else {
 							$yearTitle = $year;
 						}
 						$oldyear = $year;
-		 			}	
+		 			}
 				}
-				
-		
+
+
 				$veryLocal_cObj->start($pArr, '');
-				
+
 				$markerArray['###ARCHIVE_YEAR###'] = '';
 				if ($yearTitle) {
 					$markerArray['###ARCHIVE_YEAR###'] = $veryLocal_cObj->stdWrap($yearTitle, $this->conf['archiveYear_stdWrap.']);
 				}
-				
-			    
-								
+
+
+
 				$markerArray['###ARCHIVE_TITLE###'] = $veryLocal_cObj->cObjGetSingle($this->conf['archiveTitleCObject'], $this->conf['archiveTitleCObject.'], 'archiveTitle');
 				$markerArray['###ARCHIVE_COUNT###'] = $pArr['count'];
 				$markerArray['###ARCHIVE_ITEMS###'] = $this->pi_getLL('archiveItems');
 
 				// fill the generated data to an array to pass it to a userfuction as a single variable
 				$itemsOutArr[] = array(
-					'html' => $this->cObj->substituteMarkerArrayCached($t['item'][($cc % count($t['item']))], $markerArray, array(), $wrappedSubpartArray), 
+					'html' => $this->cObj->substituteMarkerArrayCached($t['item'][($cc % count($t['item']))], $markerArray, array(), $wrappedSubpartArray),
 					'data' => $pArr
 				);
 				$cc++;
@@ -1326,9 +1319,9 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 			if ($this->conf['newsAmenuUserFunc']) {
 				$itemsOutArr = $this->userProcess('newsAmenuUserFunc', $itemsOutArr);
 			}
-			
 
-			
+
+
 
 			foreach ($itemsOutArr as $itemHtml) {
 				$tmpItemsArr[] = $itemHtml['html'];
@@ -1408,11 +1401,11 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 						<script type="text/javascript" src="typo3/contrib/prototype/prototype.js"></script>
 						<script type="text/javascript" src="'.t3lib_extMgm::siteRelPath('tt_news').'js/tt_news_catmenu.js"></script>
 					';
-									
+
 				}
 				$catTreeObj->init($this);
-				$catTreeObj->treeObj->FE_USER = &$GLOBALS['TSFE']->fe_user;				
-				
+				$catTreeObj->treeObj->FE_USER = &$GLOBALS['TSFE']->fe_user;
+
 				$content = '<div id="ttnews-cat-tree">'.$catTreeObj->treeObj->getBrowsableTree().'</div>';
 			break;
 			default:
@@ -2858,7 +2851,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 		$selectConf['where'] = '';
 
 		if ($this->sys_language_mode == 'strict' && $GLOBALS['TSFE']->sys_language_content) {
-			// sys_language_mode == 'strict': If a certain language is requested, select only news-records from the default 
+			// sys_language_mode == 'strict': If a certain language is requested, select only news-records from the default
 			// language which have a translation. The translated articles will be overlayed later in the list or single function.
 			$tmpres = $this->exec_getQuery('tt_news', array(
 				'selectFields' => 'tt_news.l18n_parent',
@@ -2872,7 +2865,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 			$strStrictUids = implode(',', $strictUids);
 			$selectConf['where'] .= '(tt_news.uid IN (' . ($strStrictUids?$strStrictUids:0) . ') OR tt_news.sys_language_uid=-1)'; // sys_language_uid=-1 = [all languages]
 		} else {
-			// sys_language_mode NOT 'strict': If a certain language is requested, select only news-records in the default language. 
+			// sys_language_mode NOT 'strict': If a certain language is requested, select only news-records in the default language.
 			// The translated articles (if they exist) will be overlayed later in the displayList or displaySingle function.
 			$selectConf['where'] .= 'tt_news.sys_language_uid IN (0,-1)';
 		}
@@ -2951,7 +2944,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 				}
 			}
 		}
-		
+
 
 
 if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
@@ -2999,7 +2992,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 
 				$results = array();
 				$resultsCount = array();
-				while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
+				while (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))) {
 					$results[] = $row['uid'];
 					if (in_array($row['uid'], $results)) {
 						$resultsCount[$row['uid']]++;
@@ -3461,7 +3454,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 		if ($lConf['catOrderBy']) {
 			$this->config['catOrderBy'] = $lConf['catOrderBy'];
 		}
-				
+
 		if ($this->catExclusive) {
 			$this->catlistWhere = ' AND tt_news_cat.uid'.($this->config['categoryMode'] < 0?' NOT':'').' IN ('.$this->catExclusive.')';
 		} else {
@@ -3549,7 +3542,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 		else {
 			$this->templateCode = $this->cObj->fileResource($this->conf['templateFile']);
 		}
-	
+
 		$splitMark = md5(microtime(true));
 		$globalMarkerArray = array();
 		list($globalMarkerArray['###GW1B###'], $globalMarkerArray['###GW1E###']) = explode($splitMark, $this->cObj->stdWrap($splitMark, $this->conf['wrap1.']));
@@ -3559,12 +3552,12 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 		$globalMarkerArray['###GC2###'] = $this->cObj->stdWrap($this->conf['color2'], $this->conf['color2.']);
 		$globalMarkerArray['###GC3###'] = $this->cObj->stdWrap($this->conf['color3'], $this->conf['color3.']);
 		$globalMarkerArray['###GC4###'] = $this->cObj->stdWrap($this->conf['color4'], $this->conf['color4.']);
-		
-		
-		
+
+
+
 		if (!($this->templateCode = $this->cObj->substituteMarkerArray($this->templateCode, $globalMarkerArray))) {
 			$this->errors[] = 'No HTML template found';
-		}	
+		}
 	}
 
 	/**
@@ -3587,7 +3580,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 		// extend the pid_list by recursive levels
 		$this->pid_list = $this->pi_getPidList($pid_list, $recursive);
 		$this->pid_list = $this->pid_list?$this->pid_list:0;
-		if(!$this->pid_list) {			
+		if(!$this->pid_list) {
 			$this->errors[] = 'No pid_list defined';
 		}
 		// generate array of page titles
@@ -3614,6 +3607,9 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 		}
 
 if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
+
+
+
 
 
 	}
@@ -3644,23 +3640,16 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 
 
 	/**
-	 * returns a help message wich will be displayed on the website when no "code" is given or when the given "code" doesn't exist.
+	 * returns an error message if some important settings are missing (template file, singlePid, pidList, code)
 	 *
-	 * @return	string		HTML code for the help message
+	 * @return	string		the error message
 	 */
-	function displayFEHelp() {
-		$langKey = strtoupper($GLOBALS['TSFE']->config['config']['language']);
-		$helpTemplate = $this->cObj->fileResource('EXT:tt_news/pi/news_help.tmpl');
-		// Get language version of the help-template
-		$helpTemplate_lang = '';
-		if ($langKey) {
-			$helpTemplate_lang = $this->getNewsSubpart($helpTemplate, "###TEMPLATE_" . $langKey . '###');
+	function displayErrors() {
+		if (count($this->errors) >= 2) {
+			$msg = '--> Did you include the static TypoScript template (\'News settings\') for tt_news?';
 		}
-		$helpTemplate = $helpTemplate_lang ? $helpTemplate_lang : $this->getNewsSubpart($helpTemplate, '###TEMPLATE_DEFAULT###');
-		// Markers and substitution:
-		$markerArray['###CODE###'] = $this->theCode?$this->theCode:'no CODE given!';
-		$markerArray['###EXTPATH###'] = $GLOBALS['TYPO3_LOADED_EXT']['tt_news']['siteRelPath'];
-		return $this->cObj->substituteMarkerArray($helpTemplate, $markerArray);
+		return '<div style="border:2px solid red; padding:10px; margin:10px;"><img src="typo3/gfx/icon_warning2.gif" />
+				<strong>plugin.tt_news ERROR:</strong><br />'.implode('<br /> ',$this->errors).'<br />'.$msg.'</div>';
 	}
 
 	/**
@@ -3792,6 +3781,8 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 			}
 		}
 	}
+
+
 
 	/**
 	 * converts the datetime of a record into variables you can use in realurl

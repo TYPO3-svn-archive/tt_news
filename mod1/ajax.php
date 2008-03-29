@@ -28,9 +28,9 @@
  * AJAX dispatcher
  * @author	Benjamin Mack <mack@xnos.org>
  * @package	TYPO3
- * 
+ *
  * $Id$
- * 
+ *
  */
 
 $TYPO3_AJAX = true;

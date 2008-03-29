@@ -33,6 +33,15 @@
  */
 /**
  * [CLASS/FUNCTION INDEX of SCRIPT]
+ *
+ *
+ *
+ *   52: class tx_ttnews_templateeval
+ *   59:     function deevaluateFieldValue($params)
+ *
+ * TOTAL FUNCTIONS: 1
+ * (This index is automatically created/updated by the extension "extdeveval")
+ *
  */
 
 /**
@@ -42,11 +51,11 @@
  */
 class tx_ttnews_templateeval {
 	/**
-	 * Hook to show proper template name in BE if entry was created using older tt_news version
-	 *
-	 * @param	array	$params	Params to the hook
-	 * @return	string	Evaluated value
-	 */
+ * Hook to show proper template name in BE if entry was created using older tt_news version
+ *
+ * @param	array		$params	Params to the hook
+ * @return	string		Evaluated value
+ */
 	function deevaluateFieldValue($params) {
 		if (trim($params['value']) != '' && false === strpos($params['value'], '/')) {
 			$params['value'] = 'uploads/tt_news/' . $params['value'];

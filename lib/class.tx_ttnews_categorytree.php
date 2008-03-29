@@ -42,10 +42,10 @@
  *
  *   62: class tx_ttnews_categorytree extends t3lib_treeview
  *   73:     function getBrowsableTree()
- *  151:     function getTree($uid, $depth=999, $blankLineCode='', $subCSSclass='')
- *  246:     function printTree($treeArr = '')
- *  360:     function PMicon($row,$a,$c,$nextCount,$exp)
- *  387:     function PMiconATagWrap($icon, $cmd, $isExpand = true)
+ *  146:     function getTree($uid, $depth=999, $blankLineCode='', $subCSSclass='')
+ *  235:     function printTree($treeArr = '')
+ *  351:     function PMicon($row,$a,$c,$nextCount,$exp)
+ *  378:     function PMiconATagWrap($icon, $cmd, $isExpand = true)
  *
  * TOTAL FUNCTIONS: 5
  * (This index is automatically created/updated by the extension "extdeveval")
@@ -247,12 +247,12 @@ class tx_ttnews_categorytree extends t3lib_treeview {
 			// -- evaluate AJAX request
 			// IE takes anchor as parameter
 		$PM = t3lib_div::_GP('PM');
-		
+
 		if(($PMpos = strpos($PM, '#')) !== false) { $PM = substr($PM, 0, $PMpos); }
 		$PM = explode('_', $PM);
 		if(is_array($PM) && count($PM)==4  && $this->useAjax) {
-			
-			
+
+
 			if($PM[1])	{
 				$expandedPageUid = $PM[2];
 				$ajaxOutput = '';

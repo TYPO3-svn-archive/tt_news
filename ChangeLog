@@ -1,4 +1,8 @@
-
+2008-03-29	Rupert Germann <rupi@gmx.li>
+	* replaced function getFEHelp() by a new function displaErrors() which displayes the collected configuration errors. Moved the help template and its image from pi/ to res/
+	* new parameter: plugin.tt_news.enableConfigValidation (default: enabled). Disable this option, if the config validation makes problems with your site.
+	* removed the listStartID option from the flexforms (obsolete since 'excludeAlreadyDisplayedNews' exists).
+	* updated all function indexes
 
 2008-03-28	Rupert Germann <rupi@gmx.li>
 	* new codes: added 3 more items to the "what to display" list: LIST2, LIST3 and HEADER_LIST (they use all the plugin.tt_news.displayList namespace for configuration)
@@ -41,8 +45,6 @@
 	* The new Module "news admin" is visible and replaces the  "tt_news category manager" module in web > info
 	* All category trees in BE and FE have full ajax support (no xajax required)
 
-
-
 2008-03-24	Rupert Germann <rupi@gmx.li>
 	* moved the functionality of the amenuUserFunc script to the tt_news main class.
 	* Grouping the amenu periods by years can be enabled by plugin.tt_news.showYearHeadersInAmenu (default=1).
@@ -60,7 +62,7 @@
 	other changes:
  	* added more tabs to the tt_news record and enabled tabs in tt_news categories
  	* removed the scrollbar from the tceforms category tree div. The option "max height for the category tree" has been removed too. Now the category menu shows always all expanded categories
- 	* integrated the check for disallowed categories with the new "highlight tabs with required fields" feature from TYPO3 4.2 -> means: a yellow exclamation mark appears in the "categories" tab when there are disallowed categories. (That made it possible to removed the "use type-field to check categories" hack)
+ 	* integrated the check for disallowed categories with the new "highlight tabs with required fields" feature from TYPO3 4.2 -> means: a yellow exclamation mark appears in the "categories" tab when there are disallowed categories. (That made it possible to remove the "use type-field to check categories" hack)
 	* raised the minimum required TYPO3 version to 4.1 - recommanded version is 4.2 (the newadmin module show only in TYPO3 >= version 4.2)
  	* cleaned up the code from many files (f.e. removed checks for non-supported TYPO3 versions)
 
@@ -76,13 +78,22 @@
 	* moved the static/ folder from the tt_news main dir to pi/
 	* cleaned up the html template and css file
 	* removed the "ts_old" static TS template option
-	* changed many TS options to reasonable defaults
 	* moved the main function call for tt_news from the static setup file to default TS Setup. this makes it possible to collect errors in the plugin configuration and display messages when certain TS options are not set.
 	* renamed cshimages/ to csh/ and moved the csh xml-files to this folder
 	* moved clickmenu class to cm1/
 	* moved all classes from the main dir to lib/ (exept ext_update.php)
  	* created a js/ folder and moved js files to this folder
 	* fixed some problem with the redirectUrl after ajax operations in the BE module
+	* changed many TS options to reasonable defaults:
+		* dontUseBackPid: activated by default. Now the links to news singleviews do NOT contain the parameters anymore which are needed to build the dynamic "back to list" link in the singleview. Adding these parameters will cause problems with caching (multiple cache entries of the same singleview page due to different cHashes), indexed_search (multiple search results) and realUrl. If you use this extensions in combination with tt_news - which seems to be the case quite often - leave dontUseBackPid=1 and configure a static backPid.
+		* usePiBasePagebrowser: activated by default. I also improved the wraps for the different parts of the pagebrowser
+		* excludeAlreadyDisplayedNews: activated by default. If there are multiple tt_news plugins on one page, the articles which are diplayed in one plugin are excluded from display in the other plugins.
+		* useSubCategories: activated by default.
+		* ignoreUseSubcategoriesForAndSelection: activated by default. If 'useSubcategories' is enabled and a news plugin is configured to display only news which are members of the selected categories AND their subcategories it's quite unlikely that you'll get some results. Therefore 'useSubcategories' will be ignored for this plugin when categoryMode is set to 2 (AND).
+		* useHRDates: activated by default. Uses 'year' and 'month' as GETvars for the archive period instead of 'pS' and 'pL'.
+		* displayCatMenu.mode: ajaxtree. Enables the new ajax category menu for the CATMENU content element.
+
+
 
 2008-03-19	Rupert Germann <rupi@gmx.li>
 	2.6.0dev

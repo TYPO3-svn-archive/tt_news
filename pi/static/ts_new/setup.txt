@@ -56,6 +56,9 @@ plugin.tt_news {
   substitutePagetitle = 1
 
   useHRDates = {$plugin.tt_news.useHRDates}
+  
+  useHRDatesSingle = 0
+  useHRDatesSingleWithoutDay = 0
 
   
   noNewsToListMsg_stdWrap.wrap = <p>|</p>

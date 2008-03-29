@@ -29,10 +29,10 @@
  *
  *
  *
- *   50: class ext_update
- *   57:     function main()
- *  168:     function access($what = 'all')
- *  197:     function query($updatewhat)
+ *   53: class ext_update
+ *   60:     function main()
+ *  172:     function access($what = 'all')
+ *  202:     function query($updatewhat)
  *
  * TOTAL FUNCTIONS: 3
  * (This index is automatically created/updated by the extension "extdeveval")

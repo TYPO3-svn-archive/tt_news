@@ -39,22 +39,26 @@
  *
  *
  *
- *   71: class tx_ttnews_TCAform_selectTree
- *   77:     function init(&$PA)
- *   97:     function setSelectedItems()
- *  127:     function renderCategoryFields(&$PA, &$fobj)
- *  293:     function ajaxExpandCollapse($params, &$ajaxObj)
- *  345:     function renderCatTree()
- *  450:     function getCatRootline ($SPaddWhere)
- *  484:     function getNotAllowedItems(&$PA,$SPaddWhere,$allowedItemsList=false)
+ *   75: class tx_ttnews_TCAform_selectTree
+ *   82:     function init(&$PA)
+ *  103:     function setDefVals()
+ *  132:     function renderCategoryFields(&$PA, &$fobj)
+ *  342:     function setSelectedItems()
+ *  373:     function registerRequiredProperty(&$fobj, $type, $name, $value)
+ *  393:     function registerNestedElement(&$fobj, $itemName)
+ *  412:     function printError($NACats,$row=array())
+ *  430:     function ajaxExpandCollapse($params, &$ajaxObj)
+ *  491:     function renderCatTree()
+ *  607:     function getCatRootline ($SPaddWhere)
+ *  642:     function getNotAllowedItems($SPaddWhere,$allowedItemsList=false)
  *
  *
- *  531: class tx_ttnews_tceforms_categorytree extends tx_ttnews_categorytree
- *  543:     function wrapTitle($title,$v)
- *  566:     function getTitleStyles($v)
- *  588:     function PMiconATagWrap($icon, $cmd, $isExpand = true)
+ *  684: class tx_ttnews_tceforms_categorytree extends tx_ttnews_categorytree
+ *  696:     function wrapTitle($title,$v)
+ *  719:     function getTitleStyles($v)
+ *  741:     function PMiconATagWrap($icon, $cmd, $isExpand = true)
  *
- * TOTAL FUNCTIONS: 10
+ * TOTAL FUNCTIONS: 14
  * (This index is automatically created/updated by the extension "extdeveval")
  *
  */
@@ -90,7 +94,12 @@ class tx_ttnews_TCAform_selectTree {
 		$this->setDefVals();
 		$this->setSelectedItems();
 	}
-	
+
+	/**
+	 * [Describe function...]
+	 *
+	 * @return	[type]		...
+	 */
 	function setDefVals() {
 		if (!is_int($this->row['uid'])) { // defVals only for new records
 			$defVals = t3lib_div::_GP('defVals');
@@ -103,15 +112,15 @@ class tx_ttnews_TCAform_selectTree {
 				if ($defCat) {
 					$row = t3lib_BEfunc::getRecord('tt_news_cat', $defCat);
 					$title = t3lib_BEfunc::getRecordTitle($this->table,$row);
-				
+
 					$this->PA['itemFormElValue'] = $defCat.'|'.$title;
 					$this->row['category'] = $this->PA['itemFormElValue'];
 				}
 			}
 		}
 	}
-	
-	
+
+
 	/**
 	 * Generation of TCEform elements of the type "select"
 	 * This will render a selector box element, or possibly a special construction with two selector boxes. That depends on configuration.
@@ -121,19 +130,19 @@ class tx_ttnews_TCAform_selectTree {
 	 * @return	string		the HTML code for the field
 	 */
 	function renderCategoryFields(&$PA, &$fobj)    {
-		
+
 		$this->intT3ver = t3lib_div::int_from_ver(TYPO3_version);
 
 
-		
-		
+
+
 		if ($this->intT3ver < 4001000) {
 			// load some additional styles for the BE trees in TYPO3 version lower that 4.1
 			// expand/collapse is disabled
-		
+
 			$fobj->additionalCode_pre[] = '
-				<link rel="stylesheet" type="text/css" href="'.t3lib_extMgm::extRelPath('tt_news').'compat/tree_styles_for_4.0.css" />';				
-			
+				<link rel="stylesheet" type="text/css" href="'.t3lib_extMgm::extRelPath('tt_news').'compat/tree_styles_for_4.0.css" />';
+
 		} else { // enable ajax expand/collapse for TYPO3 versions > 4.1
 			if ($this->intT3ver >= 4002000) {
 				$jsFile = 'js/tceformsCategoryTree.js';
@@ -142,10 +151,10 @@ class tx_ttnews_TCAform_selectTree {
 			}
 			$this->useAjax = TRUE;
 			$fobj->additionalCode_pre[] = '
-				<script src="'.t3lib_extMgm::extRelPath('tt_news').$jsFile.'" type="text/javascript"></script>';			
-			
+				<script src="'.t3lib_extMgm::extRelPath('tt_news').$jsFile.'" type="text/javascript"></script>';
+
 		}
-		
+
 
 
 		$this->init(&$PA);
@@ -155,7 +164,7 @@ class tx_ttnews_TCAform_selectTree {
 		$row = $this->row;
 		$this->recID = $row['uid'];
 		$itemFormElName = $this->PA['itemFormElName'];
-				
+
 			// it seems TCE has a bug and do not work correctly with '1'
 		$this->fieldConfig['maxitems'] = ($this->fieldConfig['maxitems']==2) ? 1 : $this->fieldConfig['maxitems'];
 
@@ -180,10 +189,10 @@ class tx_ttnews_TCAform_selectTree {
 		$maxitems = t3lib_div::intInRange($this->fieldConfig['maxitems'],0);
 		if (!$maxitems)	$maxitems = 1000;
 		$minitems = t3lib_div::intInRange($this->fieldConfig['minitems'],0);
-		
 
 
-		
+
+
 		if ($this->fieldConfig['treeView'])	{
 			if ($row['sys_language_uid'] && $row['l18n_parent'] && ($table == 'tt_news' || $table == 'tt_news_cat')) {
 				// the current record is a translation of another record
@@ -191,35 +200,35 @@ class tx_ttnews_TCAform_selectTree {
 				$categories = array();
 				$NACats = array();
 				$na = false;
-				
+
 				// get categories of the translation original
 				$catres = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
-								'tt_news_cat.uid,tt_news_cat.title', 
-								'tt_news_cat, tt_news_cat_mm', 
+								'tt_news_cat.uid,tt_news_cat.title',
+								'tt_news_cat, tt_news_cat_mm',
 								'tt_news_cat_mm.uid_foreign=tt_news_cat.uid AND tt_news_cat_mm.uid_local='.$row['l18n_parent']);
-				
+
 				$assignedCategories = array();
 				while (($catrow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($catres))) {
 					$assignedCategories[$catrow['uid']] = $catrow['title'];
 				}
-				
+
 				$notAllowedItems = array();
 				if ($this->divObj->useAllowedCategories()) {
 					$allowedCategories = $this->divObj->getAllowedCategories();
-					
+
 					if (($excludeList = $GLOBALS['BE_USER']->getTSConfigVal('tt_newsPerms.tt_news_cat.excludeList'))) {
 						$addWhere = ' AND uid NOT IN ('.$excludeList.')';
 					}
 					$notAllowedItems = $this->getNotAllowedItems($addWhere,$allowedCategories);
 				}
-								
+
 				foreach ($assignedCategories as $cuid => $ctitle) {
 					if(in_array($cuid,$notAllowedItems)) {
 						$categories[$cuid] = $NACats[] = '<p style="padding:0px;color:red;font-weight:bold;">- '.$ctitle.' <span class="typo3-dimmed"><em>['.$cuid.']</em></span></p>';
 						$na = true;
 					} else {
 						$categories[$cuid] = '<p style="padding:0px;">- '.$ctitle.' <span class="typo3-dimmed"><em>['.$cuid.']</em></span></p>';
-					}					
+					}
 				}
 
 				if ($na) {
@@ -235,10 +244,10 @@ class tx_ttnews_TCAform_selectTree {
 				$item = '<div class="typo3-TCEforms-originalLanguageValue">'.$item.'</div>';
 
 			} else { // build tree selector
-				
+
 				if ($table == 'tt_news' && $this->intT3ver >= 4001000) {
 					$this->registerRequiredProperty($fobj,'range', $itemFormElName, array($minitems,$maxitems,'imgName'=>$table.'_'.$row['uid'].'_'.$field));
-				}				
+				}
 				$item.= '<input type="hidden" name="'.$itemFormElName.'_mul" value="'.($this->fieldConfig['multiple']?1:0).'" />';
 
 				if ($this->fieldConfig['treeView'] AND $this->fieldConfig['foreign_table']) {
@@ -312,17 +321,17 @@ class tx_ttnews_TCAform_selectTree {
 		if (($table == 'tt_news' || $table == 'tt_news_cat') && $this->NA_Items && $this->intT3ver >= 4001000) {
 			$this->registerRequiredProperty(
 					$fobj,
-					'range', 
-					'data['.$table.']['.$row['uid'].'][noDisallowedCategories]', 
+					'range',
+					'data['.$table.']['.$row['uid'].'][noDisallowedCategories]',
 					array(1,1,'imgName'=>$table.'_'.$row['uid'].'_noDisallowedCategories'));
 			$item .= '<input type="hidden" name="data['.$table.']['.$row['uid'].'][noDisallowedCategories]" value="'.($this->NA_Items?'':'1').'" />';
-				
-		}		
-		
+
+		}
+
 		return $this->NA_Items.$item;
 	}
 
-	
+
 
 
 	/**
@@ -352,6 +361,15 @@ class tx_ttnews_TCAform_selectTree {
 		}
 	}
 
+	/**
+	 * [Describe function...]
+	 *
+	 * @param	[type]		$$fobj: ...
+	 * @param	[type]		$type: ...
+	 * @param	[type]		$name: ...
+	 * @param	[type]		$value: ...
+	 * @return	[type]		...
+	 */
 	function registerRequiredProperty(&$fobj, $type, $name, $value) {
 		if ($type == 'field' && is_string($value)) {
 			$fobj->requiredFields[$name] = $value;
@@ -364,7 +382,14 @@ class tx_ttnews_TCAform_selectTree {
 			// Set the situation of nesting for the current field:
 		$this->registerNestedElement($fobj,$itemName);
 	}
-	
+
+	/**
+	 * [Describe function...]
+	 *
+	 * @param	[type]		$$fobj: ...
+	 * @param	[type]		$itemName: ...
+	 * @return	[type]		...
+	 */
 	function registerNestedElement(&$fobj, $itemName) {
 		$dynNestedStack = $fobj->getDynNestedStack();
 		$match = array();
@@ -375,9 +400,15 @@ class tx_ttnews_TCAform_selectTree {
 				'level' => $dynNestedStack,
 			);
 		}
-	}		
-	
-	
+	}
+
+	/**
+	 * [Describe function...]
+	 *
+	 * @param	[type]		$NACats: ...
+	 * @param	[type]		$row: ...
+	 * @return	[type]		...
+	 */
 	function printError($NACats,$row=array()) {
 		$msg = '<table class="warningbox" border="0" cellpadding="3" cellspacing="3">
 					<tr><td><div style="padding:10px;"><img src="gfx/icon_fatalerror.gif" class="absmiddle" alt="" height="16" width="18">
@@ -385,7 +416,7 @@ class tx_ttnews_TCAform_selectTree {
 					.' record has the following categories assigned that are not defined in your BE usergroup: '.urldecode(implode($NACats,chr(10))).'
 					</div></td></tr>
 				</table>';
-					
+
 		return $msg;
 	}
 
@@ -409,7 +440,7 @@ class tx_ttnews_TCAform_selectTree {
 		if (is_int($this->recID)) {
 			$this->row = t3lib_BEfunc::getRecord($this->table,$this->recID);
 		}
-		
+
 		// set selected items
 		if ($this->table == 'tt_news') {
 			$this->field = 'category';
@@ -417,7 +448,7 @@ class tx_ttnews_TCAform_selectTree {
 				$cRes = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid_foreign', 'tt_news_cat_mm', 'uid_local='.$this->recID);
 				while (($cRow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($cRes))) {
 					$this->selectedItems[] = $cRow['uid_foreign'];
-				}				
+				}
 			}
 		} else {
 			if ($this->table == 'tt_news_cat') {
@@ -430,7 +461,7 @@ class tx_ttnews_TCAform_selectTree {
 			if (is_int($this->recID) && is_array($this->row)) {
 				$this->setSelectedItems($this->recID);
 			}
-			
+
 		}
 
 		if ($this->table == 'tt_content') {
@@ -463,25 +494,25 @@ class tx_ttnews_TCAform_selectTree {
 // 		$this->debug['start'] = time();
 
 			// ignore the value of "useStoragePid" if table is be_users or be_groups
-		if ($this->confArr['useStoragePid'] && ($this->table == 'tt_news' || $this->table == 'tt_news_cat' || $this->table == 'tt_content')) { 
-			
+		if ($this->confArr['useStoragePid'] && ($this->table == 'tt_news' || $this->table == 'tt_news_cat' || $this->table == 'tt_content')) {
+
 			if ($this->storagePidFromAjax) {
 				$this->storagePid = $this->storagePidFromAjax;
 			} else {
 				$TSconfig = t3lib_BEfunc::getTCEFORM_TSconfig($this->table,$this->row);
-				$this->storagePid = $TSconfig['_STORAGE_PID']?$TSconfig['_STORAGE_PID']:0;			
+				$this->storagePid = $TSconfig['_STORAGE_PID']?$TSconfig['_STORAGE_PID']:0;
 			}
 			$SPaddWhere = ' AND tt_news_cat.pid IN (' . $this->storagePid . ')';
-		
+
 		}
 
 		if ($this->table == 'tt_news' || $this->table == 'tt_news_cat') {
 				// get include/exclude items
 			$excludeList = $GLOBALS['BE_USER']->getTSConfigVal('tt_newsPerms.tt_news_cat.excludeList');
 			$includeList = $GLOBALS['BE_USER']->getTSConfigVal('tt_newsPerms.tt_news_cat.includeList');
-			// get allowed categories from be_users/groups (including subgroups) 
-			if (($catmounts = $this->divObj->getAllowedCategories())) { 
-				// if there are some use them and ignore "includeList" from TSConfig 
+			// get allowed categories from be_users/groups (including subgroups)
+			if (($catmounts = $this->divObj->getAllowedCategories())) {
+				// if there are some use them and ignore "includeList" from TSConfig
 				$includeList = $catmounts;
 			}
 		}
@@ -504,11 +535,11 @@ class tx_ttnews_TCAform_selectTree {
 		$treeViewObj->tceFormsTable = $this->table;
 		$treeViewObj->tceFormsRecID = $this->recID;
 		$treeViewObj->storagePid = $this->storagePid;
-		
-		
+
+
 //		debug(array($SPaddWhere,$catlistWhere,$treeOrderBy), ' ('.__CLASS__.'::'.__FUNCTION__.')', __LINE__, __FILE__, 3);
-		
-		
+
+
 		$treeViewObj->init($SPaddWhere.$catlistWhere,$treeOrderBy);
 		$treeViewObj->backPath = $GLOBALS['BACK_PATH'];
 		$treeViewObj->thisScript = 'class.tx_ttnews_tceformsSelectTree.php';
@@ -529,7 +560,7 @@ class tx_ttnews_TCAform_selectTree {
 		if ($this->divObj->useAllowedCategories() && !$this->divObj->allowedItemsFromTreeSelector) {
 			// 'options.useListOfAllowedItems' is set but not category is selected --> check the 'allowedItems' list
 			$notAllowedItems = $this->getNotAllowedItems($SPaddWhere);
-		}		
+		}
 		if (is_array($notAllowedItems) && $notAllowedItems[0]) {
 			foreach ($notAllowedItems as $k) {
 				$treeViewObj->TCEforms_nonSelectableItemsArray[] = $k;
@@ -599,7 +630,7 @@ class tx_ttnews_TCAform_selectTree {
 	 * This function checks if there are categories selectable that are not allowed for this BE user and if the current record has
 	 * already categories assigned that are not allowed.
 	 * If such categories were found they will be returned and "$this->NA_Items" is filled with an error message.
-	 * The array "$itemArr" which will be returned contains the list of all non-selectable categories. This array will be added 
+	 * The array "$itemArr" which will be returned contains the list of all non-selectable categories. This array will be added
 	 * to "$treeViewObj->TCEforms_nonSelectableItemsArray". If a category is in this array the "select item" link will not be added to it.
 	 *
 	 * @param	array		$PA: the paramter array

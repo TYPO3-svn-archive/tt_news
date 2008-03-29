@@ -47,7 +47,7 @@
  * Additional items for the clickmenu.
  *
  * $Id: index.php 8655 2008-03-19 17:24:12Z rupertgermann $
- * 
+ *
  * @author  Rupert Germann <rupi@gmx.li>
  * @package TYPO3
  * @subpackage tt_news

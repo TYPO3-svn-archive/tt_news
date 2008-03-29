@@ -53,11 +53,11 @@ class tx_ttnews_typo3ajax {
 		if (TYPO3_MODE == 'FE') {
 			if ($GLOBALS['TSFE']->renderCharset) {
 				$this->charset = $GLOBALS['TSFE']->renderCharset;
-			}			
+			}
 		} else {
 			if($LANG->charSet != $this->charset) {
 				$this->charset = $LANG->charSet;
-			}		
+			}
 		}
 
 

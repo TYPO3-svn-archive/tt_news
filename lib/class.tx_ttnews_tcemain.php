@@ -37,19 +37,17 @@
  *
  *
  *
- *   63: class tx_ttnews_tcemain
- *   76:     function processDatamap_postProcessFieldArray ($status, $table, $id, &$fieldArray, &$pObj)
- *   96:     function processDatamap_preProcessIncomingFieldArray()
- *  107:     function getSubCategories($catlist, $cc = 0)
- *  138:     function processDatamap_preProcessFieldArray(&$fieldArray, $table, $id, &$pObj)
+ *   64: class tx_ttnews_tcemain
+ *   73:     function getSubCategories($catlist, $cc = 0)
+ *  104:     function processDatamap_preProcessFieldArray(&$fieldArray, $table, $id, &$pObj)
  *
  *
- *  219: class tx_ttnews_tcemain_cmdmap
- *  233:     function processCmdmap_preProcess($command, &$table, &$id, &$value, &$pObj)
- *  291:     function processCmdmap_postProcess($command, $table, $srcId, $destId, &$pObj)
- *  338:     function int_recordTreeInfo($CPtable, $srcId, $counter, $rootID, $table, &$pObj)
+ *  185: class tx_ttnews_tcemain_cmdmap
+ *  199:     function processCmdmap_preProcess($command, &$table, &$id, $value, &$pObj)
+ *  255:     function processCmdmap_postProcess($command, $table, $srcId, $destId, &$pObj)
+ *  302:     function int_recordTreeInfo($CPtable, $srcId, $counter, $rootID, $table, &$pObj)
  *
- * TOTAL FUNCTIONS: 7
+ * TOTAL FUNCTIONS: 5
  * (This index is automatically created/updated by the extension "extdeveval")
  *
  */
@@ -157,7 +155,7 @@ class tx_ttnews_tcemain {
 					} else {
 						$allowedItemsList = $divObj->getCategoryTreeIDs();
 					}
-					
+
 					foreach ($categories as $k) {
 						if(!t3lib_div::inList($allowedItemsList,$k)) {
 							$notAllowedItems[]=$k;

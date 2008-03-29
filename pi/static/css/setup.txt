@@ -3,19 +3,30 @@
 ##
 
 plugin.tt_news {
+#}
 	_CSS_DEFAULT_STYLE (
 
 
 /*-----------------------------------  clearer  -----------------------------------*/
 /* prevent floated images from overlapping the div-containers they are wrapped in  */
 
-HR.clearer {
-	clear:both;
+.news-latest-container HR.clearer,
+.news-list-container HR.clearer,
+.news-list2-container HR.clearer,
+.news-list3-container HR.clearer
+ {
+	clear:right;
 	height:1px;
 	border:none;
 	padding:0;
 	margin:0;
 }
+
+.news-list2-container HR.clearer,
+.news-list3-container HR.clearer {
+	clear:both;
+}
+
 .news-latest-container HR.clearer {
 	/*clear:left;*/
 }
