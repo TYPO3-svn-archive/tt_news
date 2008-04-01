@@ -1,3 +1,44 @@
+
+2008-04-01	Rupert Germann <rupi@gmx.li>
+
+	* new TS option "plugin.tt_news.renderFields": Contains an array of CODEs and which fields to render in each code (not used for rss feeds: code=XML).
+		If a field is not listed here it is not renderend. The fieldlist can be set to "*" to render all fields.
+		Example: plugin.tt_news.renderFields.SINGLE = *
+		Actually not all fields can be switched off, I added the condition "if (isRenderfield($field))" only to "image,category,short,bodytext,related,links,news_files".
+		Reason for this effort is to prevent tt_news from wasting time with unneeded things like f.e. parsing the complete bodytext through lib.parseFunc when showing latest news where the marker ###NEWS_CONTENT### is not displayed at all.
+
+	* performance improvement: Changed all occurences of SIM_EXEC_TIME to SIM_ACCESS_TIME and added a fallback for older TYPO3 versions since SIM_ACCESS_TIME is new in TYPO3 4.2.
+		Background: by default TYPO3 adds a condition to each sql query which checks if the values for starttime, endtime, hidden, deleted and access allow the display of this record.
+		starttime and endtime are compared to the current time in each query. Since the value for "current time" (SIM_EXEC_TIME) changes each second, mysql has almost no chance to re-use a result from its cache. SIM_ACCESS_TIME changes this behaviour by keeping its value for 60 seconds. If the same information is requested again from mysql during this timeframe the result will be delivered from the mysql cache. THANKS to Martin K. for implementing this in the TYPO3 core!
+
+	* new TS option "plugin.tt_news.ignoreEnableFields": I replaced the calls to tslib_content::enableFields in class tx_ttnews by an internal method which allows to manipulate the "$ignore_array" before calling sys_page::enableFields. By adding starttime and endtime to "ignoreEnableFields" the comparison of these fields with SIM_ACCESS_TIME is completely removed from the query allowing mysql to use its cached results for a longer period than the 60sec of SIM_ACCESS_TIME.
+
+	* added a new function getSingleViewLink(): This method is called to render all links pointing to a singleView (links in list, related news)
+	* new register "newsMoreLink_url": additionally to "newsMoreLink" which contains the complete "more" link, this register contains only the URL of this link (available in displayList/Latest and for related news)
+	* new hook "getSingleViewLinkHook": can be used to manipulate the singleView links
+	* new hook "sViewSelectConfHook": Allows to manipulate the query for the single view.
+
+	* added some missing conditions to prevent calling stdWrap for empty fields to function getItemMarkerArray
+	* fix: links to related news are showing the correct dates now, when useHRDatesSingle is enabled.
+	* moved the some manipulations of the selectConf array from function displayList to function getSelectConf. Allows to alter the groupBy/orderBy part of the query with the selectConfHook.
+	* fix in tcaForm_selectTree: already selected categories don't loose their css class anymore when expanded/collapsed.
+	* better highlighting of parents of selected categories
+	* improvement: the archivemenu distinguishes between 1 item and more than 1 items now. Means: besides the existing language label "archiveItems" there's a new label called "archiveItem" which is displayed if an archive period contains only 1 item.
+
+
+
+2008-03-29	Rupert Germann <rupi@gmx.li>
+  	* fix: news with zero datetime will cause the amenu to search all periods starting from 1970. I added a new TS parameter which disables this by default: ignoreNewsWithoutDatetimeInAmenu = 1
+  	* replaced the call to exec_getQuery in the amenu loop by a direct call the exec_SELECTquery which is noticeable faster.
+  	* improved the overall performance of the amenu by replacing "while(list ...)" by "foreach" where possible and moving some conditions out of loops.
+  	* removed some double checks for pid_list and enablefields from functions getWhere() and getQuery()
+	* added lots of comments and did some "code beautifying" in the TypoScript file ts_new/setup.txt
+	* added a stdWrap for the complete tt_news output: plugin.tt_news.stdWrap
+	* added 2 TS parameters "defLangLabel" and "defLangImage" which configure label and flag image for the default language (L=0)
+	* fix: catSelectorTargetPid was ignored in the settings for the catogory rootline
+
+
+
 2008-03-29	Rupert Germann <rupi@gmx.li>
 	* replaced function getFEHelp() by a new function displaErrors() which displayes the collected configuration errors. Moved the help template and its image from pi/ to res/
 	* new parameter: plugin.tt_news.enableConfigValidation (default: enabled). Disable this option, if the config validation makes problems with your site.
@@ -12,7 +53,7 @@
 	* the "what to display" labels are now localized
 
 	Typoscript changes:
-	* The "general_stdWrap" is now diabled by default: Each single field which needs parsing is conected directly to lib.parseFunc_RTE (f.i.: content_stdWrap.parseFunc < lib.parseFunc_RTE). The class="bodytext" attribute is disabled ba default, too.
+	* The "general_stdWrap" is now disabled by default: Each single field which needs parsing is connected directly to lib.parseFunc_RTE (f.i.: content_stdWrap.parseFunc < lib.parseFunc_RTE). The class="bodytext" attribute is disabled by default, too.
 	*
 
 	HTML Template changes:
@@ -84,7 +125,7 @@
 	* moved all classes from the main dir to lib/ (exept ext_update.php)
  	* created a js/ folder and moved js files to this folder
 	* fixed some problem with the redirectUrl after ajax operations in the BE module
-	* changed many TS options to reasonable defaults:
+	* changed some TS options to reasonable defaults:
 		* dontUseBackPid: activated by default. Now the links to news singleviews do NOT contain the parameters anymore which are needed to build the dynamic "back to list" link in the singleview. Adding these parameters will cause problems with caching (multiple cache entries of the same singleview page due to different cHashes), indexed_search (multiple search results) and realUrl. If you use this extensions in combination with tt_news - which seems to be the case quite often - leave dontUseBackPid=1 and configure a static backPid.
 		* usePiBasePagebrowser: activated by default. I also improved the wraps for the different parts of the pagebrowser
 		* excludeAlreadyDisplayedNews: activated by default. If there are multiple tt_news plugins on one page, the articles which are diplayed in one plugin are excluded from display in the other plugins.

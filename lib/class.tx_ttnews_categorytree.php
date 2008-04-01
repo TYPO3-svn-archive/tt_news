@@ -26,8 +26,7 @@
  ***************************************************************/
 
 /**
- * This function displays a selector with nested categories.
- * The original code is borrowed from the extension "Digital Asset Management" (tx_dam) author: René Fritz <r.fritz@colorcube.de>
+ * generates a tree from tt_news categories.
  *
  * $Id$
  *

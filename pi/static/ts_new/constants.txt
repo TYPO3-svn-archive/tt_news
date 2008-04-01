@@ -17,7 +17,7 @@ plugin.tt_news {
     
 	# cat=plugin.tt_news//10; type=int+; label= datetime Days to Archive: If this is set, elements are automatically in the archive, after the given number of days has passed. Set this to '0' if you want to disable this feature.
   datetimeDaysToArchive = 0
-	# cat=plugin.tt_news//15; type=boolean; label= Enable archivedate: If this not set, the archive-menu selects news by their datetime.
+	# cat=plugin.tt_news//15; type=boolean; label= Enable archivedate: If this is not set, the archive-menu selects news by their datetime.
   enableArchiveDate = 1  
     # cat=plugin.tt_news//20; type=int+; label= List Limit: max items in LIST template.
   limit = 7

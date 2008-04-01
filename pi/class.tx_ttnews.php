@@ -46,66 +46,69 @@
  *
  *
  *
- *  124: class tx_ttnews extends tslib_pibase
- *  182:     function main_news($content, $conf)
- *  304:     function init($conf)
+ *  127: class tx_ttnews extends tslib_pibase
+ *  170:     function main_news($content, $conf)
+ *  266:     function init($conf)
  *
  *              SECTION: Display Functions
- *  500:     function displayList($excludeUids = 0)
- *  890:     function getListContent($itemparts, $selectConf, $prefix_display)
- * 1094:     function displaySingle()
- * 1178:     function displayArchiveMenu()
- * 1364:     function displayCatMenu()
- * 1443:     function displayVersionPreview ()
+ *  471:     function displayList($excludeUids = 0)
+ *  845:     function getListContent($itemparts, $selectConf, $prefix_display)
+ *  968:     function displaySingle()
+ * 1067:     function displayArchiveMenu()
+ * 1270:     function displayCatMenu()
+ * 1349:     function displayVersionPreview ()
  *
  *              SECTION: Process Markers
- * 1540:     function getItemMarkerArray ($row, $textRenderObj = 'displaySingle')
- * 1868:     function getCatMarkerArray($markerArray, $row, $lConf)
- * 2016:     function getImageMarkers($markerArray, $row, $lConf, $textRenderObj)
- * 2098:     function insertPagebreaks($text,$firstPageWordCrop)
- * 2148:     function makeMultiPageSView($bodytext,$lConf)
- * 2178:     function makePageBrowser($showResultCount=1,$tableParams='',$pointerName='pointer')
- * 2260:     function getCategories($uid, $getAll=false)
- * 2338:     function getCategoryPath($categoryArray)
- * 2433:     function getSubCategories($catlist, $cc = 0)
- * 2467:     function getCatMenuContent($array_in,$lConf, $l=0)
- * 2519:     function getSubCategoriesForMenu ($catlist, $fields, $addWhere, $cc = 0)
- * 2548:     function getRelated($uid)
- * 2716:     function getXmlHeader()
+ * 1446:     function getItemMarkerArray ($row, $textRenderObj = 'displaySingle')
+ * 1786:     function getCatMarkerArray($markerArray, $row, $lConf)
+ * 1933:     function getImageMarkers($markerArray, $row, $lConf, $textRenderObj)
+ * 2014:     function getCategories($uid, $getAll=false)
+ * 2090:     function getCategoryPath($categoryArray)
+ * 2185:     function getSubCategories($catlist, $cc = 0)
+ * 2219:     function getCatMenuContent($array_in,$lConf, $l=0)
+ * 2271:     function getSubCategoriesForMenu ($catlist, $fields, $addWhere, $cc = 0)
+ * 2300:     function getRelated($uid)
+ * 2436:     function getRelatedPages($uid)
+ * 2475:     function makeMultiPageSView($bodytext,$lConf)
+ * 2505:     function makePageBrowser($showResultCount=1,$tableParams='',$pointerName='pointer')
+ * 2588:     function getXmlHeader()
  *
  *              SECTION: DB Functions
- * 2844:     function getSelectConf($where, $noPeriod = 0)
- * 3126:     function searchWhere($sw)
- * 3153:     function exec_getQuery($table, $conf)
- * 3171:     function getQuery($table, $conf, $returnQueryArray=FALSE)
- * 3253:     function getWhere($table,$conf, $returnQueryArray=FALSE)
+ * 2716:     function getSelectConf($where, $noPeriod = 0)
+ * 3023:     function searchWhere($sw)
+ * 3050:     function exec_getQuery($table, $conf)
+ * 3061:     function getEnableFields($table)
+ * 3081:     function getQuery($table, $conf, $returnQueryArray=FALSE)
+ * 3163:     function getWhere($table,$conf, $returnQueryArray=FALSE)
  *
  *              SECTION: Init Helpers
- * 3367:     function initLanguages ()
- * 3387:     function initCategoryVars()
- * 3456:     function initCatmenuEnv(&$lConf)
- * 3504:     function checkRecords($recordlist)
- * 3536:     function initTemplate()
- * 3572:     function initPidList ()
- * 3599:     function generatePageArray()
+ * 3278:     function initLanguages ()
+ * 3305:     function initCategoryVars()
+ * 3374:     function initCatmenuEnv(&$lConf)
+ * 3401:     function checkRecords($recordlist)
+ * 3433:     function initTemplate()
+ * 3469:     function initPidList ()
+ * 3496:     function generatePageArray()
  *
  *              SECTION: Helper Functions
- * 3637:     function getCurrentVersion()
- * 3650:     function displayErrors()
- * 3664:     function validateFields($fieldlist)
- * 3685:     function getNewsSubpart($myTemplate, $myKey, $row = Array())
- * 3695:     function isRenderField($fieldName)
- * 3713:     function getW3cDate($datetime)
- * 3740:     function cleanXML($str)
- * 3754:     function convertDates()
- * 3796:     function getHrDateSingle($tstamp)
- * 3816:     function userProcess($mConfKey, $passVar)
- * 3831:     function spMarker($subpartMarker)
- * 3851:     function formatStr($str)
- * 3866:     function getLayouts($templateCode, $alternatingLayouts, $marker)
- * 3886:     function getParsetime($caller='',$getGlobalTime=false)
+ * 3534:     function getCurrentVersion()
+ * 3547:     function displayErrors()
+ * 3561:     function validateFields($fieldlist)
+ * 3582:     function getNewsSubpart($myTemplate, $myKey, $row = Array())
+ * 3592:     function isRenderField($fieldName)
+ * 3610:     function getW3cDate($datetime)
+ * 3637:     function cleanXML($str)
+ * 3651:     function convertDates()
+ * 3693:     function getHrDateSingle($tstamp)
+ * 3713:     function userProcess($mConfKey, $passVar)
+ * 3728:     function spMarker($subpartMarker)
+ * 3748:     function formatStr($str)
+ * 3763:     function getLayouts($templateCode, $alternatingLayouts, $marker)
+ * 3787:     function getSingleViewLink($singlePid, &$row, $piVarsArray, $urlOnly=false)
+ * 3853:     function insertPagebreaks($text,$firstPageWordCrop)
+ * 3904:     function getParsetime($caller='',$getGlobalTime=false)
  *
- * TOTAL FUNCTIONS: 47
+ * TOTAL FUNCTIONS: 50
  * (This index is automatically created/updated by the extension "extdeveval")
  *
  */
@@ -139,36 +142,22 @@ class tx_ttnews extends tslib_pibase {
 	var $rdfToc = '';
 	var $versioningEnabled = false; // is the extension 'version' loaded
 	var $vPrev = false; // do we display a versioning preview
-	var $categories = array(); // Is initialized with the categories of the news system
+	var $categories = array();
 	var $pageArray = array(); // Is initialized with an array of the pages in the pid-list
+	var $pointerName = 'pointer';
+	
+	var $SIM_ACCESS_TIME = 0;
 
 
-	var $displayFields = array(
-			'LIST' => 'title,datetime,image,short,category',
-			'LIST2' => 'title,datetime,image,short,category',
-			'LIST3' => 'title,datetime,image,short,category',
-			'HEADER_LIST' => 'title,datetime,short,category',
-			'LATEST' => 'title,datetime,image,short,category',
-			'SEARCH' => 'title,datetime,image,short,category',
-			'SINGLE' => '*',
-			'VERSION_PREVIEW' => '*',
+	var $renderFields = array();
 
-		);
-		
 	var $errors = array();
 
 	var $debugTimes = false;
 
-	var $start_time = NULL;
-	var $global_start_time = NULL;
+	var $start_time = 0;
+	var $global_start_time = 0;
 	var $start_code_line = 0;
-
-
-
-
-
-
-
 
 
 
@@ -185,15 +174,7 @@ class tx_ttnews extends tslib_pibase {
 		if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 
 
-
-		$this->local_cObj = t3lib_div::makeInstance('tslib_cObj'); // Local cObj.
-
-		if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
-
 		$this->init($conf);
-
-
-		if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 
 		if ($this->conf['displayCurrentRecord']) {
 			$this->config['code'] = $this->conf['defaultCode']?trim($this->conf['defaultCode']):'SINGLE';
@@ -207,16 +188,11 @@ class tx_ttnews extends tslib_pibase {
 			$this->errors[] = 'No code given';
 		}
 
-
-
-		if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
-
 		if ($this->conf['enableConfigValidation']) {
 			if (count($this->errors)) {
 				return $this->displayErrors();
 			}
 		}
-
 
 
 		while (list(, $theCode) = each($codes)) {
@@ -245,7 +221,7 @@ class tx_ttnews extends tslib_pibase {
 					$content .= $this->displayCatMenu();
 					break;
 				default:
-					
+
 					if ($this->debugTimes) { $this->getParsetime(__METHOD__.' extraCodesHook start');	}
 
 					// hook for processing of extra codes
@@ -254,41 +230,32 @@ class tx_ttnews extends tslib_pibase {
 							$_procObj = & t3lib_div::getUserObj($_classRef);
 							$content .= $_procObj->extraCodesProcessor($this);
 						}
-	
-	
 					} else { // code not known and no hook found to handle it -> displayerror
 						$this->errors[] = 'CODE "'.$theCode.'" not known';
 					}
-	
+
 					if ($this->debugTimes) { $this->getParsetime(__METHOD__.' extraCodesHook end'); }
-	
+
 					break;
 			}
 		}
 
 
-		// check errors array again 
+		// check errors array again
 		if ($this->conf['enableConfigValidation']) {
 			if (count($this->errors)) {
 				return $this->displayErrors();
 			}
 		}
-		
+
 
 		if ($this->debugTimes) {
 			$this->getParsetime(__FUNCTION__,true);
-			debug (
-				array(
-					'CODE' => $codes,
-					'template' => $this->conf['templateFile'],
-					'pid' => $GLOBALS['TSFE']->id,
-		// 			'pid_list' => $this->pid_list,
-		// 			'getParsetime' => $this->getParsetime(__FUNCTION__,$getGlobalTime=true)
-				),
-				__METHOD__,__LINE__,__FILE__);
+
 		}
 
-		return $content;
+
+		return $this->cObj->stdWrap($content,$this->conf['stdWrap.']);
 	}
 
 
@@ -304,12 +271,22 @@ class tx_ttnews extends tslib_pibase {
 		$this->pi_loadLL(); // Loading language-labels
 		$this->pi_setPiVarDefaults(); // Set default piVars from TS
 		$this->pi_initPIflexForm(); // Init FlexForm configuration for plugin
-		$this->enableFields = $this->cObj->enableFields('tt_news');
+		
+		$this->SIM_ACCESS_TIME = $GLOBALS['SIM_ACCESS_TIME'];
+		// fallback for TYPO3 < 4.2
+		if (!$this->SIM_ACCESS_TIME) {
+			$simTime = $GLOBALS['SIM_EXEC_TIME'];
+			$this->SIM_ACCESS_TIME = $simTime - ($simTime % 60);
+		}
+		
+		$this->local_cObj = t3lib_div::makeInstance('tslib_cObj'); // Local cObj.
+		$this->enableFields = $this->getEnableFields('tt_news');
 		$this->tt_news_uid = intval($this->piVars['tt_news']); // Get the submitted uid of a news (if any)
 
 		if (!isset($this->conf['compatVersion']) || !preg_match('/^\d+\.\d+\.\d+$/', $this->conf['compatVersion'])) {
 			$this->conf['compatVersion'] = $this->getCurrentVersion();
 		}
+		$this->token = md5(microtime());
 
 		if (t3lib_extMgm::isLoaded('version')) {
 			$this->versioningEnabled = true;
@@ -444,6 +421,13 @@ class tx_ttnews extends tslib_pibase {
 		$this->allowCaching = $this->conf['allowCaching']?1:0;
 		if (!$this->allowCaching) {
 			$GLOBALS['TSFE']->set_no_cache();
+		}
+
+		// init renderFields
+		if (is_array($this->conf['renderFields.'])) {
+			foreach ($this->conf['renderFields.'] as $c => $fList) {
+				$this->renderFields[$c] = $fList;
+			}
 		}
 
 		// get siteUrl for links in rss feeds. the 'dontInsert' option seems to be needed in some configurations depending on the baseUrl setting
@@ -615,18 +599,18 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 
 
 		$noPeriod = 0; // used to call getSelectConf without a period lenght (pL) at the first archive page
-		$pointerName = $this->pointerName = 'pointer';
+
 
 		if (!$this->conf['emptyArchListAtStart']) {
 			// if this is true, we're listing from the archive for the first time (no pS set), to prevent an empty list page we set the pS value to the archive start
 			if (($this->arcExclusive > 0 && !$this->piVars['pS'] && $theCode != 'SEARCH')) {
 				// set pS to time minus archive startdate
 				if ($this->config['datetimeMinutesToArchive']) {
-					$this->piVars['pS'] = ($GLOBALS['SIM_EXEC_TIME'] - ($this->config['datetimeMinutesToArchive'] * 60));
+					$this->piVars['pS'] = ($this->SIM_ACCESS_TIME - ($this->config['datetimeMinutesToArchive'] * 60));
 				} elseif ($this->config['datetimeHoursToArchive']) {
-					$this->piVars['pS'] = ($GLOBALS['SIM_EXEC_TIME'] - ($this->config['datetimeHoursToArchive'] * 3600));
+					$this->piVars['pS'] = ($this->SIM_ACCESS_TIME - ($this->config['datetimeHoursToArchive'] * 3600));
 				} else {
-					$this->piVars['pS'] = ($GLOBALS['SIM_EXEC_TIME'] - ($this->config['datetimeDaysToArchive'] * 86400));
+					$this->piVars['pS'] = ($this->SIM_ACCESS_TIME - ($this->config['datetimeDaysToArchive'] * 86400));
 				}
 			}
 		}
@@ -666,52 +650,30 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 
 				// build query for display:
 				$selectConf['selectFields'] = 'DISTINCT(tt_news.uid),tt_news.*';
-				if ($this->config['groupBy']) {
-					$selectConf['groupBy'] = $this->config['groupBy'];
-				}
-// 				else {
-// 					$selectConf['groupBy'] = 'tt_news.uid';
-// 				}
 
-				if ($this->config['orderBy']) {
-					if (strtoupper($this->config['orderBy']) == 'RANDOM') {
-						$selectConf['orderBy'] = 'RAND()';
-					} else {
-						$selectConf['orderBy'] = $this->config['orderBy'] . ($this->config['ascDesc']?' ' . $this->config['ascDesc']:'');
-					}
-				} else {
-					$selectConf['orderBy'] = 'datetime DESC';
-				}
-
-				// overwrite the groupBy value for categories
-				if (!$this->catExclusive && $selectConf['groupBy'] == 'category') {
-					$selectConf['leftjoin'] = 'tt_news_cat_mm ON tt_news.uid = tt_news_cat_mm.uid_local';
-					$selectConf['groupBy'] = 'tt_news_cat_mm.uid_foreign';
-// 					$selectConf['selectFields'] = 'DISTINCT(tt_news.uid),tt_news.*';
-				}
 				// exclude the LATEST template from changing its content with the pagebrowser. This can be overridden by setting the conf var latestWithPagebrowser
-				if ($theCode != 'LATEST' || $this->conf['latestWithPagebrowser']) {
-					$selectConf['begin'] = $this->piVars[$pointerName] * $this->config['limit'];
+				if ($this->theCode != 'LATEST' || $this->conf['latestWithPagebrowser']) {
+					$selectConf['begin'] = intval($this->piVars[$this->pointerName]) * $this->config['limit'];
 				}
 
-				if (!$this->conf['excludeAlreadyDisplayedNews']) {
-					// exclude news-records shown in LATEST from the LIST template
-					if ($theCode == 'LIST' && $this->conf['excludeLatestFromList'] && !$this->piVars[$pointerName] && !$this->piVars['cat']) {
-						if ($this->config['latestLimit']) {
-							$selectConf['begin'] += $this->config['latestLimit'];
-							$newsCount -= $this->config['latestLimit'];
-						} else {
-							$selectConf['begin'] += $newsCount;
-							// this will clean the display of LIST view when 'latestLimit' is unset because all the news have been shown in LATEST already
-						}
-					}
-
-					// List start ID
-					if (($theCode == 'LIST' || $theCode == 'LATEST') && $this->config['listStartId'] && !$this->piVars[$pointerName] && !$this->piVars['cat']) {
-						$selectConf['begin'] = $this->config['listStartId'];
-					}
-				}
-
+//				if (!$this->conf['excludeAlreadyDisplayedNews']) {
+//					// exclude news-records shown in LATEST from the LIST template
+//					if ($this->theCode == 'LIST' && $this->conf['excludeLatestFromList'] && !$this->piVars[$this->pointerName] && !$this->piVars['cat']) {
+//						if ($this->config['latestLimit']) {
+//							$selectConf['begin'] += $this->config['latestLimit'];
+//							$newsCount -= $this->config['latestLimit'];
+//						} else {
+//							$selectConf['begin'] += $newsCount;
+//							// this will clean the display of LIST view when 'latestLimit' is unset because all the news have been shown in LATEST already
+//						}
+//					}
+//
+//					// List start ID
+//					if (($this->theCode == 'LIST' || $this->theCode == 'LATEST') && $this->config['listStartId'] && !$this->piVars[$this->pointerName] && !$this->piVars['cat']) {
+//						$selectConf['begin'] = $this->config['listStartId'];
+//					}
+//				}
+				$selectConf['max'] = $this->config['limit'];
 
 				// Reset:
 				$subpartArray = array();
@@ -752,28 +714,30 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 				$markerArray['###BROWSE_LINKS###'] = '';
 				// render a pagebrowser if needed
 				if ($newsCount > $this->config['limit'] && !$this->config['noPageBrowser']) {
+					$pbConf = $this->conf['pageBrowser.'];
 					// configure pagebrowser vars
 					$this->internal['res_count'] = $newsCount;
 					$this->internal['results_at_a_time'] = $this->config['limit'];
-					$this->internal['maxPages'] = $this->conf['pageBrowser.']['maxPages'];
+					$this->internal['maxPages'] = $pbConf['maxPages'];
 
-					if (!$this->conf['pageBrowser.']['showPBrowserText']) {
+					if (!$pbConf['showPBrowserText']) {
 						$this->LOCAL_LANG[$this->LLkey]['pi_list_browseresults_page'] = '';
 					}
 					if ($this->conf['userPageBrowserFunc']) {
 						$markerArray = $this->userProcess('userPageBrowserFunc', $markerArray);
 					} else {
+
 						if ($this->conf['usePiBasePagebrowser']) {
-							$this->internal['pagefloat'] = $this->conf['pageBrowser.']['pagefloat'];
-							$this->internal['showFirstLast'] = $this->conf['pageBrowser.']['showFirstLast'];
-							$this->internal['showRange'] = $this->conf['pageBrowser.']['showRange'];
-							$this->internal['dontLinkActivePage'] = $this->conf['pageBrowser.']['dontLinkActivePage'];
+							$this->internal['pagefloat'] = $pbConf['pagefloat'];
+							$this->internal['showFirstLast'] = $pbConf['showFirstLast'];
+							$this->internal['showRange'] = $pbConf['showRange'];
+							$this->internal['dontLinkActivePage'] = $pbConf['dontLinkActivePage'];
 
 							$wrapArrFields = explode(',', 'disabledLinkWrap,inactiveLinkWrap,activeLinkWrap,browseLinksWrap,showResultsWrap,showResultsNumbersWrap,browseBoxWrap');
 							$wrapArr = array();
 							foreach($wrapArrFields as $key) {
-								if ($this->conf['pageBrowser.'][$key]) {
-									$wrapArr[$key] = $this->conf['pageBrowser.'][$key];
+								if ($pbConf[$key]) {
+									$wrapArr[$key] = $pbConf[$key];
 								}
 							}
 
@@ -782,7 +746,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 								$this->LOCAL_LANG[$this->LLkey]['pi_list_browseresults_displays'] = $this->LOCAL_LANG[$this->LLkey]['pi_list_browseresults_displays_advanced'];
 							}
 
-							$this->pi_alwaysPrev = $this->conf['pageBrowser.']['alwaysPrev'];
+							$this->pi_alwaysPrev = $pbConf['alwaysPrev'];
 							if ($this->conf['useHRDates']) {
 								// prevent adding pS & pL to pagebrowser links if useHRDates is enabled
 								$tmpPS = $this->piVars['pS'];
@@ -791,37 +755,42 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 								unset($this->piVars['pL']);
 							}
 
-							// if there is a GETvar in the URL that is not in this list, caching will be disabled for the pagebrowser links
-							$this->pi_isOnlyFields = $pointerName.',tt_news,year,month,day,pS,pL,arc,cat';
+							if ($this->allowCaching) {
+								// if there is a GETvar in the URL that is not in this list, caching will be disabled for the pagebrowser links
 
-							// pi_lowerThan limits the amount of cached pageversions for the list view. Caching will be disabled if one of the vars in $this->pi_isOnlyFields has a value greater than $this->pi_lowerThan
+								$this->pi_isOnlyFields = $this->pointerName.',tt_news,year,month,day,pS,pL,arc,cat';
 
-// 							$this->pi_lowerThan = ceil($this->internal['res_count']/$this->internal['results_at_a_time']);
-							$pi_isOnlyFieldsArr = explode(',',$this->pi_isOnlyFields);
-							$highestVal = 0;
-							foreach ($pi_isOnlyFieldsArr as $k => $v) {
-								if ($this->piVars[$v] > $highestVal) {
-									$highestVal = $this->piVars[$v];
+								// pi_lowerThan limits the amount of cached pageversions for the list view. Caching will be disabled if one of the vars in $this->pi_isOnlyFields has a value greater than $this->pi_lowerThan
+	// 							$this->pi_lowerThan = ceil($this->internal['res_count']/$this->internal['results_at_a_time']);
+
+								$pi_isOnlyFieldsArr = explode(',',$this->pi_isOnlyFields);
+								$highestVal = 0;
+								foreach ($pi_isOnlyFieldsArr as $v) {
+									if ($this->piVars[$v] > $highestVal) {
+										$highestVal = $this->piVars[$v];
+									}
 								}
+								$this->pi_lowerThan = $highestVal+1;
 							}
-							$this->pi_lowerThan = $highestVal+1;
-
-if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 
 							// render pagebrowser
-							$markerArray['###BROWSE_LINKS###'] = $this->pi_list_browseresults($this->conf['pageBrowser.']['showResultCount'], $this->conf['pageBrowser.']['tableParams'],$wrapArr, $pointerName, $this->conf['pageBrowser.']['hscText']);
+							$markerArray['###BROWSE_LINKS###'] = $this->pi_list_browseresults(
+													$pbConf['showResultCount'],
+													$pbConf['tableParams'],
+													$wrapArr,
+													$this->pointerName,
+													$pbConf['hscText']);
+
 							if ($this->conf['useHRDates']) {
 								// restore pS & pL
 								if ($tmpPS) $this->piVars['pS'] = $tmpPS;
 								if ($tmpPL) $this->piVars['pL'] = $tmpPL;
 							}
 						} else {
-							$markerArray['###BROWSE_LINKS###'] = $this->makePageBrowser($this->conf['pageBrowser.']['showResultCount'], $this->conf['pageBrowser.']['tableParams'],$pointerName);
+							$markerArray['###BROWSE_LINKS###'] = $this->makePageBrowser($pbConf['showResultCount'], $pbConf['tableParams'],$this->pointerName);
 						}
 					}
 				}
-
-if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 
 				// Adds hook for processing of extra global markers
 				if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tt_news']['extraGlobalMarkerHook'])) {
@@ -831,7 +800,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 					}
 				}
 				$content .= $this->cObj->substituteMarkerArrayCached($t['total'], $markerArray, $subpartArray, $wrappedSubpartArray);
-			} elseif (strpos($where,'1=0')) {
+			} elseif (strpos($where,'1=0')!==false) {
 				// first view of the search page with the parameter 'emptySearchAtStart' set
 				$markerArray['###SEARCH_EMPTY_MSG###'] = $this->local_cObj->stdWrap($this->pi_getLL('searchEmptyMsg'), $this->conf['searchEmptyMsg_stdWrap.']);
 				$searchEmptyMsg = $this->getNewsSubpart($this->templateCode, $this->spMarker('###TEMPLATE_SEARCH_EMPTY###'));
@@ -863,8 +832,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 				$content .= $t['total'];
 			} elseif ($this->arcExclusive && $this->piVars['pS'] && $GLOBALS['TSFE']->sys_language_content) {
 				// this matches if a user has switched languages within a archive period that contains no items in the desired language
-
-				$content .= $this->local_cObj->stdWrap($this->pi_getLL('noNewsForArchPeriod', 'Sorry, there are no translated news-articles in this Archive period'), $this->conf['noNewsToListMsg_stdWrap.']);
+				$content .= $this->local_cObj->stdWrap($this->pi_getLL('noNewsForArchPeriod'), $this->conf['noNewsToListMsg_stdWrap.']);
 			} else {
 				$content .= $this->local_cObj->stdWrap($this->pi_getLL('noNewsToListMsg'), $this->conf['noNewsToListMsg_stdWrap.']);
 			}
@@ -886,24 +854,29 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 	 */
 	function getListContent($itemparts, $selectConf, $prefix_display) {
 
-		
+
 
 if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
+
+
+
 
 
 		$res = $this->exec_getQuery('tt_news', $selectConf); //get query for list contents
-
-if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 
 		$itemsOut = '';
 		$itempartsCount = count($itemparts);
 		$pTmp = $GLOBALS['TSFE']->ATagParams;
 		$cc = 0;
-		$token = md5(microtime());
+
+		$piVarsArray = array(
+			'backPid' => ($this->conf['dontUseBackPid']?null:$this->config['backPid']),
+			'year' => ($this->conf['dontUseBackPid']?null:($this->piVars['year']?$this->piVars['year']:null)),
+			'month' => ($this->conf['dontUseBackPid']?null:($this->piVars['month']?$this->piVars['month']:null)),
+		);
+
 		// Getting elements
 		while (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))) {
-			
-if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 
 			$GLOBALS['TSFE']->displayedNews[]=$row['uid'];
 
@@ -932,11 +905,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 				$this->config['catOrderBy'] = $this->conf[$prefix_display.'.']['catOrderBy'];
 			}
 
-if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
-
 			$this->categories[$row['uid']] = $this->getCategories($row['uid']);
-
-if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 
 			if ($row['type'] == 1 || $row['type'] == 2) {
 				// News type article or external url
@@ -952,66 +921,12 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 					$catSPid = array_shift($tmpcats[$row['uid']]);
 				}
 				$singlePid = $catSPid['single_pid']?$catSPid['single_pid']:$this->config['singlePid'];
-
-				if ($this->conf['useHRDates'] && !$this->conf['useHRDatesSingle']) {
-					$piVarsArray = array(
-						'tt_news' => $row['uid'],
-						'backPid' => ($this->conf['dontUseBackPid']?null:$this->config['backPid']),
-						'year' => ($this->conf['dontUseBackPid']?null:($this->piVars['year']?$this->piVars['year']:null)),
-						'month' => ($this->conf['dontUseBackPid']?null:($this->piVars['month']?$this->piVars['month']:null)),
-						'pS' => null,
-						'pL' => null,
-						'arc' => null,
-						);
-					$wrappedSubpartArray['###LINK_ITEM###'] = explode($token, $this->pi_linkTP_keepPIvars($token, $piVarsArray, $this->allowCaching, ($this->conf['dontUseBackPid']?1:0), $singlePid));
-
-					$this->local_cObj->LOAD_REGISTER(array('newsMoreLink' => $this->pi_linkTP_keepPIvars($this->pi_getLL('more'), $piVarsArray, $this->allowCaching,($this->conf['dontUseBackPid']?1:0), $singlePid)), '');
-				} elseif ($this->conf['useHRDates'] && $this->conf['useHRDatesSingle']) {
-					$tmpY = $this->piVars['year'];
-					$tmpM = $this->piVars['month'];
-					$tmpD = $this->piVars['day'];
-
-					$this->getHrDateSingle($row['datetime']);
-					$piVarsArray = array(
-						'tt_news' => $row['uid'],
-						'backPid' => ($this->conf['dontUseBackPid']?null:$this->config['backPid']),
-						'year' => $this->piVars['year'],
-						'month' => $this->piVars['month'],
-						'day' => ($this->piVars['day']?$this->piVars['day']:null),
-						'pS' => null,
-						'pL' => null,
-						'arc' => null,
-						);
-					$wrappedSubpartArray['###LINK_ITEM###'] = explode($token, $this->pi_linkTP_keepPIvars($token,$piVarsArray, $this->allowCaching, ($this->conf['dontUseBackPid']?1:0), $singlePid));
-
-					// fill the link string in a register to access it from TS
-					$this->local_cObj->LOAD_REGISTER(array('newsMoreLink' => $this->pi_linkTP_keepPIvars($this->pi_getLL('more'), $piVarsArray, $this->allowCaching, ($this->conf['dontUseBackPid']?1:0), $singlePid)), '');
-
-					$this->piVars['year'] = $tmpY;
-					$this->piVars['month'] = $tmpM;
-					$this->piVars['day'] = $tmpD;
-
-				} else {
-					$wrappedSubpartArray['###LINK_ITEM###'] = explode($token, $this->pi_linkTP_keepPIvars($token, array('tt_news' => $row['uid'], 'backPid' => ($this->conf['dontUseBackPid']?null:$this->config['backPid'])), $this->allowCaching, ($this->conf['dontUseBackPid']?1:0), $singlePid));
-
-					// fill the link string in a register to access it from TS
-					$this->local_cObj->LOAD_REGISTER(array('newsMoreLink' => $this->pi_linkTP_keepPIvars($this->pi_getLL('more'), array('tt_news' => $row['uid'], 'backPid' => ($this->conf['dontUseBackPid']?null:$this->config['backPid'])), $this->allowCaching, ($this->conf['dontUseBackPid']?1:0), $singlePid)), '');
-				}
-
-
+				$wrappedSubpartArray['###LINK_ITEM###'] = $this->getSingleViewLink($singlePid, $row, $piVarsArray);
 			}
-
-
-
-
-if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
-
 
 			// reset ATagParams
 			$GLOBALS['TSFE']->ATagParams = $pTmp;
 			$markerArray = $this->getItemMarkerArray($row, $prefix_display);
-
-if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 
 			// XML
 			if ($this->theCode == 'XML') {
@@ -1022,37 +937,8 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 					}
 					$rssUrl = ($row['type'] == 1 ? $this->config['siteUrl'] .$this->pi_getPageLink($row['page'], ''):$exturl);
 				} else {
-					if ($this->conf['useHRDates'] && !$this->conf['useHRDatesSingle']) {
-						$piVarsArray = array(
-							'tt_news' => $row['uid'],
-							'backPid' => ($this->conf['dontUseBackPid']?null:$this->config['backPid']),
-							'year' => ($this->conf['dontUseBackPid']?null:($this->piVars['year']?$this->piVars['year']:null)),
-							'month' => ($this->conf['dontUseBackPid']?null:($this->piVars['month']?$this->piVars['month']:null)),
-							'pS' => null,
-							'pL' => null,
-							'arc' => null,
-							);
-						$rssUrl = $this->config['siteUrl'] . $this->pi_linkTP_keepPIvars_url($piVarsArray, $this->allowCaching, '', $singlePid);
-					} elseif ($this->conf['useHRDates'] && $this->conf['useHRDatesSingle']) {
-						$tmpY = $this->piVars['year'];
-						$tmpM = $this->piVars['month'];
-						$tmpD = $this->piVars['day'];
+					$rssUrl = $this->config['siteUrl'] . $this->getSingleViewLink($singlePid, $row, $piVarsArray, true);
 
-						$this->getHrDateSingle($row['datetime']);
-						$piVarsArray = array(
-							'tt_news' => $row['uid'],
-							'backPid' => ($this->conf['dontUseBackPid']?null:$this->config['backPid']),
-							'year' => $this->piVars['year'],
-							'month' => $this->piVars['month'],
-							'day' => ($this->piVars['day']?$this->piVars['day']:null),
-							'pS' => null,
-							'pL' => null,
-							'arc' => null,
-							);
-						$rssUrl = $this->config['siteUrl'] . $this->pi_linkTP_keepPIvars_url($piVarsArray, $this->allowCaching, '', $singlePid);
-					} else {
-						$rssUrl = $this->config['siteUrl'] . $this->pi_linkTP_keepPIvars_url(array('tt_news' => $row['uid'], 'backPid' => null), $this->allowCaching, '', $singlePid);
-					}
 				}
 				// replace square brackets [] in links with their URLcodes and replace the &-sign with its ASCII code
 				$rssUrl = preg_replace(array('/\[/', '/\]/', '/&/'), array('%5B', '%5D', '&#38;') , $rssUrl);
@@ -1061,13 +947,10 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 				if($this->conf['displayXML.']['xmlFormat'] == 'rdf') {
 					$this->rdfToc .= "\t\t\t\t".'<rdf:li resource="'.$rssUrl.'" />'."\n";
 				}
-
 			}
-
 
 			$layoutNum = ($itempartsCount == 0 ? 0 : ($cc % $itempartsCount));
 
-						
 			// Store the result of template parsing in the Var $itemsOut, use the alternating layouts
 			$itemsOut .= $this->cObj->substituteMarkerArrayCached($itemparts[$layoutNum], $markerArray, array(), $wrappedSubpartArray);
 			$cc++;
@@ -1085,21 +968,38 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 
 
 
+
+
 	/**
 	 * Displays the "single view" of a news article. Is also used when displaying single news records with the "insert records" content element.
 	 *
 	 * @return	string		html-code for the "single view"
 	 */
 	function displaySingle() {
-		$singleWhere = 'tt_news.uid=' . intval($this->tt_news_uid);
-		$singleWhere .= ' AND type NOT IN(1,2)' . $this->enableFields; // only real news -> type=0
+		$selectConf = array();
+		$selectConf['selectFields'] = '*';
+		$selectConf['fromTable'] = 'tt_news';
+		$selectConf['where'] = 'tt_news.uid=' . intval($this->tt_news_uid);
+		$selectConf['where'] .= ' AND tt_news.type NOT IN(1,2)' . $this->enableFields; // only real news -> type=0
+
+			// function Hook for processing the selectConf array
+		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tt_news']['sViewSelectConfHook'])) {
+			foreach($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tt_news']['sViewSelectConfHook'] as $_classRef) {
+				$_procObj = & t3lib_div::getUserObj($_classRef);
+				$selectConf = $_procObj->processSViewSelectConfHook($this, $selectConf);
+			}
+		}
 
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
-			'*',
-			'tt_news',
-			$singleWhere);
+					$selectConf['selectFields'],
+					$selectConf['fromTable'],
+					$selectConf['where'],
+					$selectConf['groupBy'],
+					$selectConf['orderBy'],
+					$selectConf['limit']);
 
 		$row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
+
 		// get the translated record if the content language is not the default language
 		if ($GLOBALS['TSFE']->sys_language_content) {
 			$OLmode = ($this->sys_language_mode == 'strict'?'hideNonTranslated':'');
@@ -1114,7 +1014,8 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 		$GLOBALS['TSFE']->displayedNews[]=$row['uid'];
 
 		if (is_array($row) && ($row['pid'] > 0 || $this->vPrev)) { // never display versions of a news record (having pid=-1) for normal website users
-				// Get the subpart code
+
+			// Get the subpart code
 			if ($this->conf['displayCurrentRecord']) {
 				$item = trim($this->getNewsSubpart($this->templateCode, $this->spMarker('###TEMPLATE_SINGLE_RECORDINSERT###'), $row));
 			}
@@ -1125,7 +1026,6 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 			$wrappedSubpartArray = array();
 				// build the backToList link
 			if ($this->conf['useHRDates']) {
-				$pointerName = 'pointer';
 				$wrappedSubpartArray['###LINK_ITEM###'] = explode('|', $this->pi_linkTP_keepPIvars('|', array(
 					'tt_news' => null,
 					'backPid' => null,
@@ -1175,21 +1075,28 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 	 * @return	string		html code of the archive menu
 	 */
 	function displayArchiveMenu() {
+if ($this->debugTimes) $this->getParsetime(__METHOD__.' start');
 
 		$this->arcExclusive = 1;
 		$selectConf = $this->getSelectConf('', 1);
 		// Finding maximum and minimum values:
-		$selectConf['selectFields'] = 'max(tt_news.datetime) as maxval, min(tt_news.datetime) as minval';
+		$selectConf['selectFields'] = 'MAX(tt_news.datetime) AS maxval, MIN(tt_news.datetime) AS minval';
+		if ($this->conf['ignoreNewsWithoutDatetimeInAmenu']) {
+			$selectConf['where'] .= ' AND tt_news.datetime > 0';
+		}
 
 		$res = $this->exec_getQuery('tt_news', $selectConf);
 
 		$row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
+		
+		
 		if ($row['minval'] || $row['maxval']) {
 			// if ($row['minval']) {
 			$dateArr = array();
 			$arcMode = $this->config['archiveMode'];
 			$c = 0;
-			do {
+			$theDate = 0;
+			while ($theDate < $this->SIM_ACCESS_TIME) {
 				switch ($arcMode) {
 					case 'month':
 					$theDate = mktime (0, 0, 0, date('m', $row['minval']) + $c, 1, date('Y', $row['minval']));
@@ -1205,16 +1112,14 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 				$c++;
 				if ($c > 1000) break;
 			}
-			while ($theDate < $GLOBALS['SIM_EXEC_TIME']);
 
-//			reset($dateArr);
+if ($this->debugTimes) $this->getParsetime(__METHOD__.' $dateArr');
+
+			$selectConf['where'] .= $this->enableFields;
+			$tmpWhere = $selectConf['where'];
+
 			$periodAccum = array();
-
-			$selectConf2['where'] = $selectConf['where'];
-
-
 			foreach ($dateArr as $k => $v) {
-
 				if (!isset($dateArr[$k + 1])) {
 					break;
 				}
@@ -1225,11 +1130,11 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 				$periodInfo['HRstart'] = date('d-m-Y', $periodInfo['start']);
 				$periodInfo['HRstop'] = date('d-m-Y', $periodInfo['stop']);
 				$periodInfo['quarter'] = floor(date('m', $v) / 3) + 1;
-				// execute a query to count the archive periods
-				$selectConf['selectFields'] = 'COUNT(DISTINCT(tt_news.uid))';
-				$selectConf['where'] = $selectConf2['where'] . ' AND tt_news.datetime>=' . $periodInfo['start'] . ' AND tt_news.datetime<' . $periodInfo['stop'];
 
-				$res = $this->exec_getQuery('tt_news', $selectConf);
+				$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
+							'COUNT(DISTINCT(tt_news.uid))',
+							'tt_news'.($selectConf['leftjoin']?' LEFT JOIN '.$selectConf['leftjoin']:''),
+							$tmpWhere. ' AND tt_news.datetime>=' . $periodInfo['start'] . ' AND tt_news.datetime<' . $periodInfo['stop']);
 
 				$row = $GLOBALS['TYPO3_DB']->sql_fetch_row($res);
 				$periodInfo['count'] = $row[0];
@@ -1238,10 +1143,12 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 					$periodAccum[] = $periodInfo;
 				}
 			}
+if ($this->debugTimes) $this->getParsetime(__METHOD__.' $$periodAccum');
 
 			// get template subpart
 			$t['total'] = $this->getNewsSubpart($this->templateCode, $this->spMarker('###TEMPLATE_ARCHIVE###'));
 			$t['item'] = $this->getLayouts($t['total'], $this->alternatingLayouts, 'MENUITEM');
+			$tCount = count($t['item']);
 			$cc = 0;
 
 			$veryLocal_cObj = t3lib_div::makeInstance('tslib_cObj');
@@ -1251,35 +1158,46 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 			}
 
 			$archiveLink = $this->conf['archiveTypoLink.']['parameter'];
+			$archiveLink = ($archiveLink?$archiveLink:$GLOBALS['TSFE']->id);
+
 			$this->conf['parent.']['addParams'] = $this->conf['archiveTypoLink.']['addParams'];
-			reset($periodAccum);
+			$amenuLinkCat = null;
+			if (!$this->conf['disableCategoriesInAmenuLinks']) {
+				if ($this->config['catSelection'] && $this->config['amenuWithCatSelector']) {
+					// use the catSelection from GPvars only if 'amenuWithCatSelector' is given.
+					$amenuLinkCat = $this->config['catSelection'];
+				} else {
+					$amenuLinkCat = $this->catExclusive;
+				}
+			}
+
 			$itemsOutArr = array();
 			$oldyear = 0;
-			while (list(, $pArr) = each($periodAccum)) {
-
+			$itemsOut = '';
+			foreach ($periodAccum as $pArr) {
 				$wrappedSubpartArray = array();
 				$markerArray = array();
-
-				if (!$this->conf['disableCategoriesInAmenuLinks']) {
-					if ($this->config['catSelection'] && $this->config['amenuWithCatSelector']) {
-						// use the catSelection from GPvars only if 'amenuWithCatSelector' is given.
-						$amenuLinkCat = $this->config['catSelection'];
-					} else {
-						$amenuLinkCat = $this->catExclusive;
-					}
-				}
 
 				$year  = date('Y',$pArr['start']);
 				if ($this->conf['useHRDates']) {
 					$month = date('m',$pArr['start']);
 					if ($arcMode == 'year') {
-						$archLinkArr = $this->pi_linkTP_keepPIvars('|', array('cat' => ($amenuLinkCat?$amenuLinkCat:null), 'year' => $year), $this->allowCaching, 1, ($archiveLink?$archiveLink:$GLOBALS['TSFE']->id));
+						$archLinkArr = $this->pi_linkTP_keepPIvars('|', array(
+							'cat' => $amenuLinkCat,
+							'year' => $year), $this->allowCaching, 1, $archiveLink);
 					} else {
-						$archLinkArr = $this->pi_linkTP_keepPIvars('|', array('cat' => ($amenuLinkCat?$amenuLinkCat:null), 'year' => $year, 'month' => $month), $this->allowCaching, 1, ($archiveLink?$archiveLink:$GLOBALS['TSFE']->id));
+						$archLinkArr = $this->pi_linkTP_keepPIvars('|', array(
+							'cat' => $amenuLinkCat,
+							'year' => $year,
+							'month' => $month), $this->allowCaching, 1, $archiveLink);
 					}
 					$wrappedSubpartArray['###LINK_ITEM###'] = explode('|', $archLinkArr);
 				} else {
-					$wrappedSubpartArray['###LINK_ITEM###'] = explode('|', $this->pi_linkTP_keepPIvars('|', array('cat' => ($amenuLinkCat?$amenuLinkCat:null), 'pS' => $pArr['start'], 'pL' => ($pArr['stop'] - $pArr['start']), 'arc' => 1), $this->allowCaching, 1, ($archiveLink?$archiveLink:$GLOBALS['TSFE']->id)));
+					$wrappedSubpartArray['###LINK_ITEM###'] = explode('|', $this->pi_linkTP_keepPIvars('|', array(
+							'cat' => $amenuLinkCat,
+							'pS' => $pArr['start'],
+							'pL' => ($pArr['stop'] - $pArr['start']),
+							'arc' => 1), $this->allowCaching, 1, $archiveLink));
 				}
 
 				$yearTitle = '';
@@ -1294,7 +1212,6 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 		 			}
 				}
 
-
 				$veryLocal_cObj->start($pArr, '');
 
 				$markerArray['###ARCHIVE_YEAR###'] = '';
@@ -1302,34 +1219,36 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 					$markerArray['###ARCHIVE_YEAR###'] = $veryLocal_cObj->stdWrap($yearTitle, $this->conf['archiveYear_stdWrap.']);
 				}
 
-
-
 				$markerArray['###ARCHIVE_TITLE###'] = $veryLocal_cObj->cObjGetSingle($this->conf['archiveTitleCObject'], $this->conf['archiveTitleCObject.'], 'archiveTitle');
 				$markerArray['###ARCHIVE_COUNT###'] = $pArr['count'];
-				$markerArray['###ARCHIVE_ITEMS###'] = $this->pi_getLL('archiveItems');
+				$markerArray['###ARCHIVE_ITEMS###'] = ($pArr['count']==1?$this->pi_getLL('archiveItem'):$this->pi_getLL('archiveItems'));
+				$layoutNum = ($tCount == 0 ? 0 : ($cc % $tCount));
+				$amenuitem = $this->cObj->substituteMarkerArrayCached($t['item'][$layoutNum], $markerArray, array(), $wrappedSubpartArray);
 
-				// fill the generated data to an array to pass it to a userfuction as a single variable
-				$itemsOutArr[] = array(
-					'html' => $this->cObj->substituteMarkerArrayCached($t['item'][($cc % count($t['item']))], $markerArray, array(), $wrappedSubpartArray),
-					'data' => $pArr
-				);
+				if ($this->conf['newsAmenuUserFunc']) {
+					// fill the generated data to an array to pass it to a userfuction as a single variable
+					$itemsOutArr[] = array(
+						'html' => $amenuitem,
+						'data' => $pArr
+					);
+				} else {
+					$itemsOut .= $amenuitem;
+				}
 				$cc++;
 			}
+
 			// Pass to user defined function
 			if ($this->conf['newsAmenuUserFunc']) {
 				$itemsOutArr = $this->userProcess('newsAmenuUserFunc', $itemsOutArr);
+				foreach ($itemsOutArr as $itemHtml) {
+					$tmpItemsArr[] = $itemHtml['html'];
+				}
+				if (is_array($tmpItemsArr)) {
+					$itemsOut = implode('', $tmpItemsArr);
+				}
 			}
 
 
-
-
-			foreach ($itemsOutArr as $itemHtml) {
-				$tmpItemsArr[] = $itemHtml['html'];
-			}
-
-			if (is_array($tmpItemsArr)) {
-				$itemsOut = implode('', $tmpItemsArr);
-			}
 
 			// Reset:
 			$subpartArray = array();
@@ -1347,7 +1266,9 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 			$content = $this->cObj->substituteMarkerArrayCached($noItemsMsg, $markerArray);
 		}
 
-if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
+if ($this->debugTimes) {
+$this->getParsetime(__METHOD__);
+}
 
 		return $content;
 	}
@@ -1447,7 +1368,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 				if (!is_array($vPrev)) { $vPrev = $piADMCMD; }
 				list($table,$t3ver_oid) = explode(':',key($vPrev));
 				if ($table == 'tt_news') {
-					if ($testrec = $this->pi_getRecord('tt_news', intval($vPrev[key($vPrev)]))) { // check if record exists before doing anything
+					if (($testrec = $this->pi_getRecord('tt_news', intval($vPrev[key($vPrev)])))) { // check if record exists before doing anything
 						if ($testrec['t3ver_oid'] == intval($t3ver_oid) && $testrec['pid']==-1) { // check if requested t3ver_oid is the t3ver_oid of the requested tt_news record, and if the pid of the record is -1 (=non-plublic version)
 							$GLOBALS['TSFE']->set_no_cache(); // version preview will never be cached
 								// make version preview message with a link to the public version of hte record which is previewed
@@ -1545,62 +1466,71 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 		$this->local_cObj->start($row, 'tt_news');
 
 		$markerArray = array();
+
 		// get image markers
+		$markerArray['###NEWS_IMAGE###'] = '';
 		if ($this->isRenderField('image')) {
 			$markerArray = $this->getImageMarkers($markerArray, $row, $lConf, $textRenderObj);
-
 		}
 
-if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
-
+		// get category markers
+		$markerArray['###NEWS_CATEGORY_IMAGE###'] = '';
+		$markerArray['###NEWS_CATEGORY###'] = '';
+		$markerArray['###TEXT_CAT###'] = '';
+		$markerArray['###TEXT_CAT_LATEST###'] = '';
+		$markerArray['###CATWRAP_B###'] = '';
+		$markerArray['###CATWRAP_E###'] = '';
 		$markerArray['###NEWS_CATEGORY_ROOTLINE###'] = '';
-
 		if ($this->isRenderField('category')) {
 			// find categories for the current record
-			if (!is_array($this->categories[$row['uid']])) {
-				$this->categories[$row['uid']] = $this->getCategories($row['uid']);
-			}
+			$this->categories = array();
+			$this->categories[$row['uid']] = $this->getCategories($row['uid']);
 
 			if ($this->conf['catRootline.']['showCatRootline']/* && $textRenderObj == 'displaySingle'*/) {
 				$markerArray['###NEWS_CATEGORY_ROOTLINE###'] = $this->getCategoryPath($this->categories[$row['uid']]);
 			}
-
 			// get markers and links for categories
-
+			$markerArray = $this->getCatMarkerArray($markerArray, $row, $lConf);
 		}
-		$markerArray = $this->getCatMarkerArray($markerArray, $row, $lConf);
-
-if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
-
 
 		$markerArray['###NEWS_UID###'] = $row['uid'];
+
 		// show language label and/or flag
 		$markerArray['###NEWS_LANGUAGE###'] = '';
 		if ($this->conf['showLangLabels']) {
-			$L_uid = $row['sys_language_uid'];
-			$markerArray['###NEWS_LANGUAGE###'] = $this->langArr[$L_uid]['title'];
+			$markerArray['###NEWS_LANGUAGE###'] = $this->langArr[$row['sys_language_uid']]['title'];
 		}
 
-if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
-
-		if ($this->langArr[$L_uid]['flag'] && $this->conf['showFlags']) {
-			$fImgFile = ($this->conf['flagPath']?$this->conf['flagPath']:'media/uploads/flag_') . $this->langArr[$L_uid]['flag'];
+		if ($this->langArr[$row['sys_language_uid']]['flag'] && $this->conf['showFlags']) {
+			$fImgFile = ($this->conf['flagPath']?$this->conf['flagPath']:'media/flags/flag_') . $this->langArr[$row['sys_language_uid']]['flag'];
 			$fImgConf = $this->conf['flagImage.'];
 			$fImgConf['file'] = $fImgFile;
 			$flagImg = $this->local_cObj->IMAGE($fImgConf);
-			// debug ($fImgConf);
 			$markerArray['###NEWS_LANGUAGE###'] .= $flagImg;
 		}
-
-		$markerArray['###NEWS_TITLE###'] = $this->local_cObj->stdWrap($row['title'], $lConf['title_stdWrap.']);
-
-		$newsAuthor = $this->local_cObj->stdWrap($row['author']?$this->local_cObj->stdWrap($this->pi_getLL('preAuthor'), $lConf['preAuthor_stdWrap.']).$row['author']:'', $lConf['author_stdWrap.']);
-		$markerArray['###NEWS_AUTHOR###'] = $this->formatStr($newsAuthor);
-		$markerArray['###NEWS_EMAIL###'] = $this->local_cObj->stdWrap($row['author_email'], $lConf['email_stdWrap.']);
-		$markerArray['###NEWS_DATE###'] = $this->local_cObj->stdWrap($row['datetime'], $lConf['date_stdWrap.']);
-		$markerArray['###NEWS_TIME###'] = $this->local_cObj->stdWrap($row['datetime'], $lConf['time_stdWrap.']);
-		$markerArray['###NEWS_AGE###'] = $this->local_cObj->stdWrap($row['datetime'], $lConf['age_stdWrap.']);
-		$markerArray['###TEXT_NEWS_AGE###'] = $this->local_cObj->stdWrap($this->pi_getLL('textNewsAge'), $lConf['textNewsAge_stdWrap.']);
+		$markerArray['###NEWS_TITLE###'] = '';
+		if ($row['title']) {
+			$markerArray['###NEWS_TITLE###'] = $this->local_cObj->stdWrap($row['title'], $lConf['title_stdWrap.']);
+		}
+		$markerArray['###NEWS_AUTHOR###'] = '';
+		if ($row['author']) {
+			$newsAuthor = $this->local_cObj->stdWrap($row['author']?$this->local_cObj->stdWrap($this->pi_getLL('preAuthor'), $lConf['preAuthor_stdWrap.']).$row['author']:'', $lConf['author_stdWrap.']);
+			$markerArray['###NEWS_AUTHOR###'] = $this->formatStr($newsAuthor);
+		}
+		$markerArray['###NEWS_EMAIL###'] = '';
+		if ($row['author_email']) {
+			$markerArray['###NEWS_EMAIL###'] = $this->local_cObj->stdWrap($row['author_email'], $lConf['email_stdWrap.']);
+		}
+		$markerArray['###NEWS_DATE###'] = '';
+		$markerArray['###NEWS_TIME###'] = '';
+		$markerArray['###NEWS_AGE###'] = '';
+		$markerArray['###TEXT_NEWS_AGE###'] = '';
+		if ($row['datetime']) {
+			$markerArray['###NEWS_DATE###'] = $this->local_cObj->stdWrap($row['datetime'], $lConf['date_stdWrap.']);
+			$markerArray['###NEWS_TIME###'] = $this->local_cObj->stdWrap($row['datetime'], $lConf['time_stdWrap.']);
+			$markerArray['###NEWS_AGE###'] = $this->local_cObj->stdWrap($row['datetime'], $lConf['age_stdWrap.']);
+			$markerArray['###TEXT_NEWS_AGE###'] = $this->local_cObj->stdWrap($this->pi_getLL('textNewsAge'), $lConf['textNewsAge_stdWrap.']);
+		}
 
 if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 
@@ -1608,17 +1538,21 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 			$lConf['subheader_stdWrap.']['crop'] = $this->config['croppingLenght'];
 		}
 		$markerArray['###NEWS_SUBHEADER###'] = '';
-		if (!$this->piVars[$this->config['singleViewPointerName']] || $this->conf['subheaderOnAllSViewPages']) {
-			$markerArray['###NEWS_SUBHEADER###'] = $this->formatStr($this->local_cObj->stdWrap($row['short'], $lConf['subheader_stdWrap.']));
+		if ($this->isRenderField('short')) {
+			if (!$this->piVars[$this->config['singleViewPointerName']] || $this->conf['subheaderOnAllSViewPages']) {
+				$markerArray['###NEWS_SUBHEADER###'] = $this->formatStr($this->local_cObj->stdWrap($row['short'], $lConf['subheader_stdWrap.']));
+			}
 		}
-
-		$markerArray['###NEWS_KEYWORDS###'] = $this->local_cObj->stdWrap($row['keywords'], $lConf['keywords_stdWrap.']);
+		$markerArray['###NEWS_KEYWORDS###'] = '';
+		if ($row['keywords']) {
+			$markerArray['###NEWS_KEYWORDS###'] = $this->local_cObj->stdWrap($row['keywords'], $lConf['keywords_stdWrap.']);
+		}
 
 if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 
 		if (!$this->piVars[$this->config['singleViewPointerName']]) {
 			if ($textRenderObj == 'displaySingle') {
-				// load the keywords the register 'newsKeywords' to access it from TS
+				// load the keywords in the register 'newsKeywords' to access it from TS
 				$this->local_cObj->LOAD_REGISTER(array(
 					'newsKeywords' => $row['keywords'],
 					'newsSubheader' => $row['short']
@@ -1652,6 +1586,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 
 		$markerArray['###MORE###'] = $this->pi_getLL('more');
 		// get title (or its language overlay) of the page where the backLink points to (this is done only in single view)
+		$markerArray['###BACK_TO_LIST###'] = '';
 		if ($this->config['backPid'] && $textRenderObj == 'displaySingle') {
 			if ($GLOBALS['TSFE']->sys_language_content) {
 
@@ -1664,29 +1599,31 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 			} else {
 				$backP = $this->pi_getRecord('pages', $this->config['backPid']);
 			}
+			// generate the string for the backLink. By setting the conf-parameter 'hscBackLink',
+			// you can switch whether the string is parsed through htmlspecialchars() or not.
+			$markerArray['###BACK_TO_LIST###'] = sprintf($this->pi_getLL('backToList', '', $this->conf['hscBackLink']), $backP['title']);
 		}
-		// generate the string for the backLink. By setting the conf-parameter 'hscBackLink',
-		// you can switch whether the string is parsed through htmlspecialchars() or not.
-		$markerArray['###BACK_TO_LIST###'] = sprintf($this->pi_getLL('backToList', '', $this->conf['hscBackLink']), $backP['title']);
+
 		// get related news
-		if ($textRenderObj == 'displaySingle' || $this->conf['alwaysShowRelated']) {
-			$relatedNews = $this->getRelated($row['uid']);
-		}
 		$markerArray['###TEXT_RELATED###'] = '';
 		$markerArray['###NEWS_RELATED###'] = '';
-		if ($relatedNews) {
-			$rel_stdWrap = t3lib_div::trimExplode('|', $this->conf['related_stdWrap.']['wrap']);
-			$markerArray['###TEXT_RELATED###'] = $rel_stdWrap[0].$this->local_cObj->stdWrap($this->pi_getLL('textRelated'), $this->conf['relatedHeader_stdWrap.']);
-
-			$markerArray['###NEWS_RELATED###'] = $relatedNews.$rel_stdWrap[1];
+		if ($this->isRenderField('related')) {
+			$relatedNews = $this->getRelated($row['uid']);
+			if ($relatedNews) {
+				$rel_stdWrap = t3lib_div::trimExplode('|', $this->conf['related_stdWrap.']['wrap']);
+				$markerArray['###TEXT_RELATED###'] = $rel_stdWrap[0].$this->local_cObj->stdWrap($this->pi_getLL('textRelated'), $this->conf['relatedHeader_stdWrap.']);
+				$markerArray['###NEWS_RELATED###'] = $relatedNews.$rel_stdWrap[1];
+			}
 		}
+
+
 
 if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 
 		// Links
 		$markerArray['###TEXT_LINKS###'] = '';
 		$markerArray['###NEWS_LINKS###'] = '';
-		if ($row['links']) {
+		if ($row['links'] && $this->isRenderField('links')) {
 			$links_stdWrap = t3lib_div::trimExplode('|', $lConf['links_stdWrap.']['wrap']);
 			$newsLinks = $this->local_cObj->stdWrap($this->formatStr($row['links']), $lConf['linksItem_stdWrap.']);
 			$markerArray['###TEXT_LINKS###'] = $links_stdWrap[0].$this->local_cObj->stdWrap($this->pi_getLL('textLinks'), $lConf['linksHeader_stdWrap.']);
@@ -1699,7 +1636,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 		$markerArray['###TEXT_FILES###'] = '';
 		$markerArray['###FILE_LINK###'] = '';
 		$markerArray['###NEWS_RSS2_ENCLOSURES###'] = '';
-		if ($row['news_files']) {
+		if ($row['news_files'] && ($this->isRenderField('news_files') || $this->theCode == 'XML')) {
 			$files_stdWrap = t3lib_div::trimExplode('|', $this->conf['newsFiles_stdWrap.']['wrap']);
 			$markerArray['###TEXT_FILES###'] = $files_stdWrap[0].$this->local_cObj->stdWrap($this->pi_getLL('textFiles'), $this->conf['newsFilesHeader_stdWrap.']);
 			$fileArr = explode(',', $row['news_files']);
@@ -1710,7 +1647,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 				$filelinks .= $this->local_cObj->filelink($val, $this->conf['newsFiles.']) ;
 
 					// <enclosure> support for RSS 2.0
-				if($this->theCode == 'XML') {
+				if ($this->theCode == 'XML') {
 					$path    = trim($this->conf['newsFiles.']['path']);
 					$theFile = $path.$val;
 
@@ -1732,6 +1669,8 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 
 		// show news with the same categories in SINGLE view
+		$markerArray['###NEWS_RELATEDBYCATEGORY###'] = '';
+		$markerArray['###TEXT_RELATEDBYCATEGORY###'] = '';
 		if ($textRenderObj == 'displaySingle' && $this->conf['showRelatedNewsByCategory'] && count($this->categories[$row['uid']])) {
 
 			// save some variables which are used to build the backLonk to the list view
@@ -1752,36 +1691,29 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 			$this->theCode = 'LIST';
 			$relNewsByCat = trim($this->displayList($row['uid']));
 
+			if ($relNewsByCat) {
+				$cat_rel_stdWrap = t3lib_div::trimExplode('|', $this->conf['relatedByCategory_stdWrap.']['wrap']);
+				$markerArray['###TEXT_RELATEDBYCATEGORY###'] = $cat_rel_stdWrap[0].$this->local_cObj->stdWrap($this->pi_getLL('textRelatedByCategory'), $this->conf['relatedByCategoryHeader_stdWrap.']);
+				$markerArray['###NEWS_RELATEDBYCATEGORY###'] = $relNewsByCat.$cat_rel_stdWrap[1];
+			}
+
 			// restore variables
 			$this->theCode = $tmpcode;
 			$this->catExclusive = $tmpcatExclusive;
 			$this->piVars['pointer'] = $tmpBrowsePage;
 			$this->piVars['pS'] = $tmpPS;
 			$this->piVars['pL'] = $tmpPL;
-
 		}
 
-if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 
-		$markerArray['###NEWS_RELATEDBYCATEGORY###'] = '';
-		$markerArray['###TEXT_RELATEDBYCATEGORY###'] = '';
-		if ($this->conf['showRelatedNewsByCategory'] && $relNewsByCat) {
-			$cat_rel_stdWrap = t3lib_div::trimExplode('|', $this->conf['relatedByCategory_stdWrap.']['wrap']);
-			$markerArray['###TEXT_RELATEDBYCATEGORY###'] = $cat_rel_stdWrap[0].$this->local_cObj->stdWrap($this->pi_getLL('textRelatedByCategory'), $this->conf['relatedByCategoryHeader_stdWrap.']);
-			$markerArray['###NEWS_RELATEDBYCATEGORY###'] = $relNewsByCat.$cat_rel_stdWrap[1];
-		}
-
-		// the both markers: ###ADDINFO_WRAP_B### and ###ADDINFO_WRAP_E### are only inserted, if there are any files, related news or links
+		// the markers: ###ADDINFO_WRAP_B### and ###ADDINFO_WRAP_E### are only inserted, if there are any files, related news or links
 		$markerArray['###ADDINFO_WRAP_B###'] = '';
 		$markerArray['###ADDINFO_WRAP_E###'] = '';
-		if ($relatedNews || $row['links'] || $row['news_files'] || $relNewsByCat) {
+		if ($relatedNews || $newsLinks || $filelinks || $relNewsByCat) {
 			$addInfo_stdWrap = t3lib_div::trimExplode('|', $lConf['addInfo_stdWrap.']['wrap']);
 			$markerArray['###ADDINFO_WRAP_B###'] = $addInfo_stdWrap[0];
 			$markerArray['###ADDINFO_WRAP_E###'] = $addInfo_stdWrap[1];
 		}
-
-
-if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 
 
 		// Page fields:
@@ -1838,10 +1770,11 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 				$markerArray = $_procObj->extraItemMarkerProcessor($markerArray, $row, $lConf, $this);
 			}
 		}
-		// Pass to user defined function
+		// Pass to userdefined function
 		if ($this->conf['itemMarkerArrayFunc']) {
 			$markerArray = $this->userProcess('itemMarkerArrayFunc', $markerArray);
 		}
+
 if ($this->debugTimes) {$this->getParsetime(__METHOD__.' OUT'); }
 		return $markerArray;
 	}
@@ -1864,18 +1797,6 @@ if ($this->debugTimes) {$this->getParsetime(__METHOD__.' OUT'); }
 	 */
 	function getCatMarkerArray($markerArray, $row, $lConf) {
 
-
-		// clear the category text and image markers if the news item has no categories
-		$markerArray['###NEWS_CATEGORY_IMAGE###'] = '';
-		$markerArray['###NEWS_CATEGORY###'] = '';
-		$markerArray['###TEXT_CAT###'] = '';
-		$markerArray['###TEXT_CAT_LATEST###'] = '';
-		$markerArray['###CATWRAP_B###'] = '';
-		$markerArray['###CATWRAP_E###'] = '';
-
-		if ($this->isRenderField('category')) {
-
-
 			$pTmp = $GLOBALS['TSFE']->ATagParams;
 			if (count($this->categories[$row['uid']]) && ($this->config['catImageMode'] || $this->config['catTextMode'])) {
 				// wrap for all categories
@@ -1891,40 +1812,47 @@ if ($this->debugTimes) {$this->getParsetime(__METHOD__.' OUT'); }
 				$catTextLenght = 0;
 				$wroteRegister = false;
 
-				foreach ($this->categories[$row['uid']] as $key => $val) {
-					// find categories, wrap them with links and collect them in the array $news_category.
-					$catTitle = htmlspecialchars($this->categories[$row['uid']][$key]['title']);
-					$GLOBALS['TSFE']->ATagParams = $pTmp.' title="'.$catTitle.'"';
+				$catSelLinkParams = ($this->conf['catSelectorTargetPid']?($this->conf['itemLinkTarget']?$this->conf['catSelectorTargetPid'].' '.$this->conf['itemLinkTarget']:$this->conf['catSelectorTargetPid']):$GLOBALS['TSFE']->id);
 
+				foreach ($this->categories[$row['uid']] as $val) {
+
+					// find categories, wrap them with links and collect them in the array $news_category.
+					$catTitle = htmlspecialchars($val['title']);
+					$GLOBALS['TSFE']->ATagParams = $pTmp.' title="'.$catTitle.'"';
+					$titleWrap = ($val['parent_category'] > 0?'subCategoryTitleItem_stdWrap.':'categoryTitleItem_stdWrap.');
 					if ($this->config['catTextMode'] == 0) {
 						$markerArray['###NEWS_CATEGORY###'] = '';
 					} elseif ($this->config['catTextMode'] == 1) {
 						// display but don't link
-						$news_category[] = $this->local_cObj->stdWrap($catTitle, $lConf[($this->categories[$row['uid']][$key]['parent_category'] > 0?'subCategoryTitleItem_stdWrap.':'categoryTitleItem_stdWrap.')]);
+						$news_category[] = $this->local_cObj->stdWrap($catTitle, $lConf[$titleWrap]);
 					} elseif ($this->config['catTextMode'] == 2) {
 						// link to category shortcut
-						$news_category[] = $this->local_cObj->stdWrap($this->pi_linkToPage($catTitle, $this->categories[$row['uid']][$key]['shortcut'], $this->categories[$row['uid']][$key]['shortcut_target']), $lConf[($this->categories[$row['uid']][$key]['parent_category'] > 0?'subCategoryTitleItem_stdWrap.':'categoryTitleItem_stdWrap.')]);
+						$news_category[] = $this->local_cObj->stdWrap($this->pi_linkToPage($catTitle, $val['shortcut'], $val['shortcut_target']), $lConf[$titleWrap]);
 					} elseif ($this->config['catTextMode'] == 3) {
 						// act as category selector
-						$catSelLinkParams = ($this->conf['catSelectorTargetPid']?($this->conf['itemLinkTarget']?$this->conf['catSelectorTargetPid'].' '.$this->conf['itemLinkTarget']:$this->conf['catSelectorTargetPid']):$GLOBALS['TSFE']->id);
 
 						if ($this->conf['useHRDates']) {
 							$news_category[] = $this->local_cObj->stdWrap($this->pi_linkTP_keepPIvars($catTitle, array(
-								'cat' => $this->categories[$row['uid']][$key]['catid'],
+								'cat' => $val['catid'],
 								'year' => ($this->piVars['year']?$this->piVars['year']:null),
-								'month' => ($this->piVars['month']?$this->piVars['month']:null), 'backPid' => null, $this->pointerName => null), $this->allowCaching, 0, $catSelLinkParams), $lConf[($this->categories[$row['uid']][$key]['parent_category'] > 0?'subCategoryTitleItem_stdWrap.':'categoryTitleItem_stdWrap.')]);
+								'month' => ($this->piVars['month']?$this->piVars['month']:null),
+								'backPid' => null,
+								$this->pointerName => null), $this->allowCaching, 0, $catSelLinkParams), $lConf[$titleWrap]);
 
 						} else {
-							$news_category[] = $this->local_cObj->stdWrap($this->pi_linkTP_keepPIvars($catTitle, array('cat' => $this->categories[$row['uid']][$key]['catid'], 'backPid' => null, $this->pointerName => null), $this->allowCaching, 0, $catSelLinkParams), $lConf[($this->categories[$row['uid']][$key]['parent_category'] > 0?'subCategoryTitleItem_stdWrap.':'categoryTitleItem_stdWrap.')]);
+							$news_category[] = $this->local_cObj->stdWrap($this->pi_linkTP_keepPIvars($catTitle, array(
+								'cat' => $val['catid'],
+								'backPid' => null,
+								$this->pointerName => null), $this->allowCaching, 0, $catSelLinkParams), $lConf[$titleWrap]);
 						}
 					}
 
 					$catTextLenght += strlen($catTitle);
-					if ($this->config['catImageMode'] == 0 or empty($this->categories[$row['uid']][$key]['image'])) {
+					if ($this->config['catImageMode'] == 0 or empty($val['image'])) {
 						$markerArray['###NEWS_CATEGORY_IMAGE###'] = '';
 					} else {
 						$catPicConf = array();
-						$catPicConf['image.']['file'] = 'uploads/pics/' . $this->categories[$row['uid']][$key]['image'];
+						$catPicConf['image.']['file'] = 'uploads/pics/' . $val['image'];
 						$catPicConf['image.']['file.']['maxW'] = intval($this->config['catImageMaxWidth']);
 						$catPicConf['image.']['file.']['maxH'] = intval($this->config['catImageMaxHeight']);
 						$catPicConf['image.']['stdWrap.']['spaceAfter'] = 0;
@@ -1933,36 +1861,40 @@ if ($this->debugTimes) {$this->getParsetime(__METHOD__.' OUT'); }
 						if ($this->config['catImageMode'] != 1) {
 							if ($this->config['catImageMode'] == 2) {
 								// link to category shortcut
-								$sCpageId = $this->categories[$row['uid']][$key]['shortcut'];
+								$sCpageId = $val['shortcut'];
 								$sCpage = $this->pi_getRecord('pages', $sCpageId); // get the title of the shortcut page
-								$catPicConf['image.']['altText'] = $sCpage['title']?$this->pi_getLL('altTextCatShortcut') . $sCpage['title']:
-								'';
-								$catPicConf['image.']['stdWrap.']['innerWrap'] = $this->pi_linkToPage('|', $this->categories[$row['uid']][$key]['shortcut'], $this->conf['itemLinkTarget']);
+								$catPicConf['image.']['altText'] = $sCpage['title']?$this->pi_getLL('altTextCatShortcut') . $sCpage['title']:'';
+								$catPicConf['image.']['stdWrap.']['innerWrap'] = $this->pi_linkToPage('|', $val['shortcut'], $this->conf['itemLinkTarget']);
 							}
 							if ($this->config['catImageMode'] == 3) {
 								// act as category selector
-								$catSelLinkParams = ($this->conf['catSelectorTargetPid']?($this->conf['itemLinkTarget']?$this->conf['catSelectorTargetPid'].' '.$this->conf['itemLinkTarget']:$this->conf['catSelectorTargetPid']):$GLOBALS['TSFE']->id);
 								$catPicConf['image.']['altText'] = $this->pi_getLL('altTextCatSelector') . $catTitle;
 								if ($this->conf['useHRDates']) {
 									$catPicConf['image.']['stdWrap.']['innerWrap'] = $this->pi_linkTP_keepPIvars('|', array(
-										'cat' => $this->categories[$row['uid']][$key]['catid'],
+										'cat' => $val['catid'],
 										'year' => ($this->piVars['year']?$this->piVars['year']:null),
-										'month' => ($this->piVars['month']?$this->piVars['month']:null), 'backPid' => null, $this->pointerName => null), $this->allowCaching, 0, $catSelLinkParams);
+										'month' => ($this->piVars['month']?$this->piVars['month']:null),
+										'backPid' => null,
+										$this->pointerName => null), $this->allowCaching, 0, $catSelLinkParams);
 								} else {
-									$catPicConf['image.']['stdWrap.']['innerWrap'] = $this->pi_linkTP_keepPIvars('|', array('cat' => $this->categories[$row['uid']][$key]['catid'], 'backPid' => null, $this->pointerName => null), $this->allowCaching, 0, $catSelLinkParams);
-
+									$catPicConf['image.']['stdWrap.']['innerWrap'] = $this->pi_linkTP_keepPIvars('|', array(
+										'cat' => $val['catid'],
+										'backPid' => null,
+										$this->pointerName => null), $this->allowCaching, 0, $catSelLinkParams);
 								}
 							}
 						} else {
-							$catPicConf['image.']['altText'] = $this->categories[$row['uid']][$key]['title'];
+							$catPicConf['image.']['altText'] = $val['title'];
 						}
 
 						// add linked category image to output array
-						$theCatImgCodeArray[] = $this->local_cObj->stdWrap($this->local_cObj->IMAGE($catPicConf['image.']), $lConf[($this->categories[$row['uid']][$key]['parent_category'] > 0?'subCategoryImgItem_stdWrap.':'categoryImgItem_stdWrap.')]);
+						$img = $this->local_cObj->IMAGE($catPicConf['image.']);
+						$swrap = ($val['parent_category'] > 0?'subCategoryImgItem_stdWrap.':'categoryImgItem_stdWrap.');
+						$theCatImgCodeArray[] = $this->local_cObj->stdWrap($img, $lConf[$swrap]);
 					}
 					if (!$wroteRegister) {
 						// Load the uid of the first assigned category to the register 'newsCategoryUid'
-						$this->local_cObj->LOAD_REGISTER(array('newsCategoryUid' => $this->categories[$row['uid']][$key]['catid']), '');
+						$this->local_cObj->LOAD_REGISTER(array('newsCategoryUid' => $val['catid']), '');
 						$wroteRegister = true;
 					}
 				}
@@ -1993,7 +1925,7 @@ if ($this->debugTimes) {$this->getParsetime(__METHOD__.' OUT'); }
 				}
 			}
 			$GLOBALS['TSFE']->ATagParams = $pTmp;
-		}
+
 
 if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 
@@ -2062,7 +1994,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 				$theImgCode .= $this->local_cObj->IMAGE($lConf['image.']) . $this->local_cObj->stdWrap($imgsCaptions[$cc], $lConf['caption_stdWrap.']);
 				$cc++;
 			}
-			$markerArray['###NEWS_IMAGE###'] = '';
+
 			if ($cc) {
 				$markerArray['###NEWS_IMAGE###'] = $this->local_cObj->wrap(trim($theImgCode), $lConf['imageWrapIfAny']);
 			} else {
@@ -2084,55 +2016,465 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 
 
 
+	/**
+	 * gets categories and subcategories for a news record
+	 *
+	 * @param	integer		$uid : uid of the current news record
+	 * @param	[type]		$getAll: ...
+	 * @return	array		$categories: array of found categories
+	 */
+	function getCategories($uid, $getAll=false) {
+
+
+		if (!$this->config['catOrderBy'] || $this->config['catOrderBy'] == 'sorting') {
+			$mmCatOrderBy = 'mmsorting';
+		} else {
+			$mmCatOrderBy = $this->config['catOrderBy'];
+		}
+
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECT_mm_query (
+			'tt_news_cat.*,tt_news_cat_mm.sorting AS mmsorting',
+			'tt_news',
+			'tt_news_cat_mm',
+			'tt_news_cat',
+			' AND tt_news_cat_mm.uid_local='.($uid?$uid:0).$this->SPaddWhere.($getAll?' AND tt_news_cat.deleted=0':$this->enableCatFields),
+			'',
+			$mmCatOrderBy);
+
+		$categories = array();
+		$maincat = 0;
+		while (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))) {
+
+			$maincat .= ','.$row['uid'];
+			$row = array($row);
+			if ($this->conf['displaySubCategories'] && $this->config['useSubCategories']) {
+				$subCategories = array();
+				$subcats = implode(',', array_unique(explode(',', $this->getSubCategories($row[0]['uid']))));
+
+				$subres = $GLOBALS['TYPO3_DB']->exec_SELECTquery (
+					'tt_news_cat.*',
+					'tt_news_cat',
+					'tt_news_cat.uid IN ('.($subcats?$subcats:0).')'.$this->SPaddWhere.$this->enableCatFields,
+					'',
+					'tt_news_cat.'.$this->config['catOrderBy']);
+
+
+				while (($subrow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($subres))) {
+					$subCategories[] = $subrow;
+				}
+				$row = array_merge($row, $subCategories);
+			}
+
+			while (list (, $val) = each ($row)) {
+				$catTitle = '';
+				if ($GLOBALS['TSFE']->sys_language_content) {
+					// find translations of category titles
+					$catTitleArr = t3lib_div::trimExplode('|', $val['title_lang_ol']);
+					$catTitle = $catTitleArr[($GLOBALS['TSFE']->sys_language_content-1)];
+				}
+				$catTitle = $catTitle?$catTitle:$val['title'];
+
+				$categories[$val['uid']] = array(
+				'title' => $catTitle,
+					'image' => $val['image'],
+					'shortcut' => $val['shortcut'],
+					'shortcut_target' => $val['shortcut_target'],
+					'single_pid' => $val['single_pid'],
+					'catid' => $val['uid'],
+					'parent_category' => (!t3lib_div::inList($maincat,$val['uid']) && $this->conf['displaySubCategories']?$val['parent_category']:''),
+					'sorting' => $val['sorting'],
+					'mmsorting' => $val['mmsorting'],
+				);
+			}
+		}
+
+if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
+		return $categories;
+	}
 
 	/**
-	 * inserts pagebreaks after a certain amount of words
+	 * displays a category rootline by extending either the first category of a record or the category
+	 * which is selected by piVars by their parent categories until a category with parent 0 is reached.
 	 *
-	 * @param	string		text which can contain manully inserted 'pageBreakTokens'
-	 * @param	integer		amount of words in the subheader (short). The lenght of the first page will be reduced by that amount of words added to the value of $this->conf['cropWordsFromFirstPage'].
-	 * @return	string		the processed text
+	 * @param	array		$categoryArray: list of categories which will be extended by subcategories
+	 * @return	string		the category rootline
 	 */
-	function insertPagebreaks($text,$firstPageWordCrop) {
-		$paragraphs = explode(chr(10), $text); // get paragraphs
- 		$wtmp = array();
-		$firstPageCrop = $firstPageWordCrop+intval($this->conf['cropWordsFromFirstPage']);
-		$cc = 0; // wordcount
-		$isfirst = true; // first paragraph
-		while (list($k,$p) = each ($paragraphs))	{
-			$words = explode(' ', $p); // get words
-			$pArr = array();
-			$break = false;
-			foreach ($words as $w) {
-			#if (trim($w)=='&nbsp;') debug ($w);
-				if (strpos($w,$this->config['pageBreakToken'])) { // manually inserted pagebreaks
-					$cc = 0;
-					$pArr[] = $w;
-					$isfirst = false;
-				} elseif ($cc >= t3lib_div::intInRange($this->config['maxWordsInSingleView']-($isfirst && !$this->conf['subheaderOnAllSViewPages'] ? $firstPageCrop:0),0,$this->config['maxWordsInSingleView'])) {
-					if (trim($paragraphs[$k+1])=='&nbsp;') unset($paragraphs[$k+1]);
+	function getCategoryPath($categoryArray) {
 
-					if (!$this->conf['useParagraphAsPagebreak'] && substr($w,-1)=='.') { // break at dot
-   					   $pArr[] = $w.$this->config['pageBreakToken'];
-					} else { // break at paragraph
-						$break = true;
-						$pArr[] = $w;
-						#$pArr[] = '<b> '.$cc.' </b>';
-					}
-					$cc = 0;
-					$isfirst = false;
-				} else {
-					$pArr[] = $w;
+
+		if (is_array($categoryArray)) {
+			$pTmp = $GLOBALS['TSFE']->ATagParams;
+			$lConf = $this->conf['catRootline.'];
+			if ($this->conf['catSelectorTargetPid']) {
+				$catSelLinkParams = $this->conf['catSelectorTargetPid'];
+				if ($this->conf['itemLinkTarget']) {
+					$catSelLinkParams .= ' '.$this->conf['itemLinkTarget'];
 				}
-				$cc++;
+			} else {
+				$catSelLinkParams = $GLOBALS['TSFE']->id;
 			}
-			if ($break) { // add break at end of current paragraph
-				array_push ($pArr, $this->config['pageBreakToken']);
+			$mainCategory = array_shift($categoryArray);
+			$uid = $mainCategory['catid'];
+			$loopCheck = 100;
+			$theRowArray = array();
+			$output = array();
+			while ($uid!=0 && $loopCheck>0)	{
+				$loopCheck--;
+				$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
+					'*',
+					'tt_news_cat',
+					'uid='.intval($uid).$this->SPaddWhere.$this->enableCatFields);
+
+				if (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)))	{
+					$uid = $row['parent_category'];
+					$theRowArray[] = $row;
+				} else {
+					break;
+				}
 			}
-			$wtmp[] = implode($pArr,' ');
+			if (is_array($theRowArray))	{
+				krsort($theRowArray);
+				while(list(,$val)=each($theRowArray))	{
+					if ($lConf['linkTitles']) {
+						$GLOBALS['TSFE']->ATagParams = ($pTmp?$pTmp.' ':'').'title="'.$val['title'].'"';
+						if ($this->config['catTextMode'] == 2) {
+							// link to category shortcut
+							$target = ($val['shortcut']?$val['shortcut_target']:'');
+							$pageID = ($val['shortcut']?$val['shortcut']:$catSelLinkParams);
+							$linkedTitle = $this->pi_linkToPage($val['title'], $pageID, $target);
+							$output[] = $this->local_cObj->stdWrap($linkedTitle, $lConf['title_stdWrap.']);
+						} elseif ($this->config['catTextMode'] == 3) {
+							if ($this->conf['useHRDates']) {
+								$output[] = $this->local_cObj->stdWrap($this->pi_linkTP_keepPIvars($val['title'], array(
+									'cat' => $val['uid'],
+									'year' => ($this->piVars['year']?$this->piVars['year']:null),
+									'month' => ($this->piVars['month']?$this->piVars['month']:null),
+									'backPid' => null,
+									'tt_news' => null,
+									$this->pointerName => null),
+								$this->allowCaching, 0, $catSelLinkParams), $lConf['title_stdWrap.']);
+							} else {
+								$output[] = $this->local_cObj->stdWrap($this->pi_linkTP_keepPIvars($val['title'], array(
+									'cat' => $val['uid'],
+									'backPid' => null,
+									'tt_news' => null,
+									$this->pointerName => null),
+								$this->allowCaching, 0, $catSelLinkParams), $lConf['title_stdWrap.']);
+							}
+						}
+					} else {
+						$output[] = $this->local_cObj->stdWrap($val['title'], $lConf['title_stdWrap.']);
+					}
+				}
+			}
+
+			$catRootline = implode($lConf['divider'],$output);
+			if ($catRootline) {
+				$catRootline = $this->local_cObj->stdWrap($catRootline, $lConf['catRootline_stdWrap.']);
+			}
+
+			$GLOBALS['TSFE']->ATagParams = $pTmp;
+
+			return $catRootline;
 		}
-		$processedText = implode($wtmp,chr(10));
-		return $processedText;
+
+
+if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
+
+
 	}
+
+
+
+
+	/**
+	 * extends a given list of categories by their subcategories
+	 *
+	 * @param	string		$catlist: list of categories which will be extended by subcategories
+	 * @param	integer		$cc: counter to detect recursion in nested categories
+	 * @return	string		extended $catlist
+	 */
+	function getSubCategories($catlist, $cc = 0) {
+		$pcatArr = array();
+
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
+			'uid',
+			'tt_news_cat',
+			'tt_news_cat.parent_category IN ('.$catlist.')'.$this->SPaddWhere.$this->enableCatFields);
+
+
+		while (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))) {
+			$cc++;
+			if ($cc > 10000) {
+				$GLOBALS['TT']->setTSlogMessage('tt_news: one or more recursive categories where found');
+				return implode(',', $pcatArr);
+			}
+			$subcats = $this->getSubCategories($row['uid'], $cc);
+			$subcats = $subcats?','.$subcats:'';
+			$pcatArr[] = $row['uid'].$subcats;
+		}
+		$catlist = implode(',', $pcatArr);
+		return $catlist;
+	}
+
+
+
+
+	/**
+	 * This function calls itself recursively to convert the nested category array to HTML
+	 *
+	 * @param	array		$array_in: the nested categories
+	 * @param	array		$lConf: TS configuration
+	 * @param	integer		$l: level counter
+	 * @return	string		HTML for the category menu
+	 */
+	function getCatMenuContent($array_in,$lConf, $l=0) {
+		$titlefield = 'title';
+		if (is_array($array_in))	{
+			$result = '';
+			while (list($key,$val)=each($array_in))	{
+				if ($key == $titlefield||is_array($array_in[$key])) {
+					if ($l) {
+						$catmenuLevel_stdWrap = explode('|||',$this->local_cObj->stdWrap('|||',$lConf['catmenuLevel'.$l.'_stdWrap.']));
+						$result.= $catmenuLevel_stdWrap[0];
+					}
+					if (is_array($array_in[$key]))	{
+						$result.=$this->getCatMenuContent($array_in[$key],$lConf,$l+1);
+					} elseif ($key == $titlefield) {
+						if ($GLOBALS['TSFE']->sys_language_content && $array_in['uid']) {
+							// get translations of category titles
+							$catTitleArr = t3lib_div::trimExplode('|', $array_in['title_lang_ol']);
+							$syslang = $GLOBALS['TSFE']->sys_language_content-1;
+							$val = $catTitleArr[$syslang]?$catTitleArr[$syslang]:$val;
+						}
+						// if (!$title) $title = $val;
+						$catSelLinkParams = ($this->conf['catSelectorTargetPid']?($this->conf['itemLinkTarget']?$this->conf['catSelectorTargetPid'].' '.$this->conf['itemLinkTarget']:$this->conf['catSelectorTargetPid']):$GLOBALS['TSFE']->id);
+						$pTmp = $GLOBALS['TSFE']->ATagParams;
+						if ($this->conf['displayCatMenu.']['insertDescrAsTitle']) {
+							$GLOBALS['TSFE']->ATagParams = ($pTmp?$pTmp.' ':'').'title="'.$array_in['description'].'"';
+						}
+						if ($array_in['uid']) {
+							if ($this->piVars['cat']==$array_in['uid']) {
+								$result.= $this->local_cObj->stdWrap($this->pi_linkTP_keepPIvars($val, array('cat' => $array_in['uid']), $this->allowCaching, 1, $catSelLinkParams),$lConf['catmenuItem_ACT_stdWrap.']);
+							} else {
+								$result.= $this->local_cObj->stdWrap($this->pi_linkTP_keepPIvars($val, array('cat' => $array_in['uid']), $this->allowCaching, 1, $catSelLinkParams),$lConf['catmenuItem_NO_stdWrap.']);
+							}
+						} else {
+							$result.= $this->pi_linkTP_keepPIvars($val, array(), $this->allowCaching, 1, $catSelLinkParams);
+						}
+						$GLOBALS['TSFE']->ATagParams = $pTmp;
+					}
+					if ($l) { $result.= $catmenuLevel_stdWrap[1]; }
+				}
+			}
+		}
+		return $result;
+	}
+
+	/**
+	 * extends a given list of categories by their subcategories. This function returns a nested array with subcategories (the function getSubCategories() return only a commaseparated list of category UIDs)
+	 *
+	 * @param	string		$catlist: list of categories which will be extended by subcategories
+	 * @param	string		$fields: list of fields for the query
+	 * @param	integer		$cc: counter to detect recursion in nested categories
+	 * @param	[type]		$cc: ...
+	 * @return	array		all categories in a nested array
+	 */
+	function getSubCategoriesForMenu ($catlist, $fields, $addWhere, $cc = 0) {
+		$pcatArr = array();
+
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
+			$fields,
+			'tt_news_cat',
+			'tt_news_cat.parent_category IN ('.$catlist.')'.$this->SPaddWhere.$this->enableCatFields,
+			'',
+			'tt_news_cat.'.$this->config['catOrderBy']);
+
+
+		while (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))) {
+			$cc++;
+			if ($cc > 10000) {
+				$GLOBALS['TT']->setTSlogMessage('tt_news: one or more recursive categories where found');
+				return $pcatArr;
+			}
+			$subcats = $this->getSubCategoriesForMenu($row['uid'], $fields, $addWhere, $cc);
+			$pcatArr[] = is_array($subcats)?array_merge($row,$subcats):'';
+		}
+		return $pcatArr;
+	}
+
+	/**
+	 * Find related news records and pages, add links to them and wrap them with stdWraps from TS.
+	 *
+	 * @param	integer		$uid of the current news record
+	 * @return	string		html code for the related news list
+	 */
+	function getRelated($uid) {
+		$lConf = $this->conf['getRelatedCObject.'];
+
+		// get visible categories and their singlePids
+		$catres = $GLOBALS['TYPO3_DB']->exec_SELECTquery (
+			'tt_news_cat.uid,tt_news_cat.single_pid',
+			'tt_news_cat',
+			'1=1'.$this->SPaddWhere.$this->enableCatFields);
+
+		$catTemp = array();
+		$sPidByCat = array();
+		while (($catrow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($catres))) {
+			$sPidByCat[$catrow['uid']] = $catrow['single_pid'];
+			$catTemp[] = $catrow['uid'];
+		}
+		if ($this->conf['checkCategoriesOfRelatedNews']) {
+			$visibleCategories = implode($catTemp,',');
+		}
+
+		if ($this->conf['usePagesRelations']) {
+			$relPages = $this->getRelatedPages($uid);
+		}
+		$select_fields = 'DISTINCT uid, pid, title, short, datetime, archivedate, type, page, ext_url, sys_language_uid, l18n_parent, M.tablenames';
+
+		$where = 'tt_news.uid=M.uid_foreign AND M.uid_local=' . $uid . ' AND M.tablenames!='.$GLOBALS['TYPO3_DB']->fullQuoteStr('pages', 'tt_news_related_mm');
+
+		if ($lConf['groupBy']) {
+			$groupBy = trim($lConf['groupBy']);
+		}
+		if ($lConf['orderBy']) {
+			$orderBy = trim($lConf['orderBy']);
+		}
+
+		if ($this->conf['useBidirectionalRelations']) {
+			$where = '(('.$where.') OR (tt_news.uid=M.uid_local AND M.uid_foreign=' . $uid .' AND M.tablenames!='.$GLOBALS['TYPO3_DB']->fullQuoteStr('pages', 'tt_news_related_mm').'))';
+		}
+
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
+			$select_fields,
+			'tt_news,tt_news_related_mm AS M',
+			$where . $this->enableFields,
+			$groupBy,
+			$orderBy);
+
+
+
+		if ($res) {
+			$relrows = array();
+			while (($relrow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))) {
+				$currentCats = array();
+				if ($this->conf['checkCategoriesOfRelatedNews'] || $this->conf['useSPidFromCategory']) {
+					$currentCats = $this->getCategories($relrow['uid'],true);
+				}
+				if ($this->conf['checkCategoriesOfRelatedNews']) {
+					if (count($currentCats))  { // record has categories
+						foreach ($currentCats as $cUid) {
+							if (t3lib_div::inList($visibleCategories,$cUid['catid'])) { // if the record has at least one visible category assigned it will be shown
+								$relrows[$relrow['uid']] = $relrow;
+							}
+						}
+					} else { // record has NO categories
+						$relrows[$relrow['uid']] = $relrow;
+					}
+				} else {
+					$relrows[$relrow['uid']] = $relrow;
+				}
+
+					// check if there's a single pid for the first category of a news record and add 'sPidByCat' to the $relrows array.
+				if ($this->conf['useSPidFromCategory'] && count($currentCats) && $relrows[$relrow['uid']]) {
+					$firstcat = array_shift($currentCats);
+					if ($firstcat['catid'] && $sPidByCat[$firstcat['catid']]) {
+						$relrows[$relrow['uid']]['sPidByCat'] = $sPidByCat[$firstcat['catid']];
+					}
+				}
+			}
+			if (is_array($relPages[0]) && $this->conf['usePagesRelations']) {
+				$relrows = array_merge_recursive($relPages,$relrows);
+			}
+
+
+			$piVarsArray = array(
+				'backPid' => ($this->conf['dontUseBackPid']?null:$this->config['backPid']),
+				'year' => ($this->conf['dontUseBackPid']?null:($this->piVars['year']?$this->piVars['year']:null)),
+				'month' => ($this->conf['dontUseBackPid']?null:($this->piVars['month']?$this->piVars['month']:null)),
+			);
+
+			$veryLocal_cObj = t3lib_div::makeInstance('tslib_cObj'); // Local cObj.
+			$lines = array();
+			foreach($relrows as $row) {
+				if ($GLOBALS['TSFE']->sys_language_content && $row['tablenames']!='pages') {
+					$OLmode = ($this->sys_language_mode == 'strict' ? 'hideNonTranslated' : '');
+					$row = $GLOBALS['TSFE']->sys_page->getRecordOverlay('tt_news', $row, $GLOBALS['TSFE']->sys_language_content, $OLmode);
+					if (!is_array($row)) continue;
+				}
+				$veryLocal_cObj->start($row, 'tt_news');
+
+				if ($row['type']!=1 && $row['type']!=2) { // only normal news
+					$catSPid = false;
+					if ($row['sPidByCat'] && $this->conf['useSPidFromCategory']) {
+						$catSPid = $row['sPidByCat'];
+					}
+					$sPid = ($catSPid?$catSPid:$this->config['singlePid']);
+
+					$link = $this->getSingleViewLink($sPid, $row, $piVarsArray, true);
+					$linkArr = t3lib_div::explodeUrl2Array($link,true);
+					if (is_array($linkArr) && is_array($linkArr['tx_ttnews'])) {
+						$newsAddParams = t3lib_div::implodeArrayForUrl('tx_ttnews',$linkArr['tx_ttnews']);
+					}
+
+					// load the parameter string into the register 'newsAddParams' to access it from TS
+					$veryLocal_cObj->LOAD_REGISTER(array(
+							'newsAddParams' => $newsAddParams,
+							'newsSinglePid' => $sPid
+					), '');
+
+					if (!$this->conf['getRelatedCObject.']['10.']['default.']['10.']['typolink.']['parameter'] || $catSPid) {
+						$this->conf['getRelatedCObject.']['10.']['default.']['10.']['typolink.']['parameter'] = $sPid;
+					}
+				}
+				$lines[] = $veryLocal_cObj->cObjGetSingle($this->conf['getRelatedCObject'], $this->conf['getRelatedCObject.'], 'getRelated');
+			}
+			return implode('', $lines);
+		}
+
+
+if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
+
+
+	}
+
+	/**
+	 * [Describe function...]
+	 *
+	 * @param	[type]		$uid: ...
+	 * @return	[type]		...
+	 */
+	function getRelatedPages($uid) {
+		$relPages = array();
+
+		$pres = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
+			'uid,title,tstamp,description,subtitle,M.tablenames',
+			'pages,tt_news_related_mm AS M',
+			'pages.uid=M.uid_foreign AND M.uid_local=' . $uid .
+			' AND M.tablenames='.$GLOBALS['TYPO3_DB']->fullQuoteStr('pages', 'tt_news_related_mm').$this->getEnableFields('pages'),
+			'', 'title');
+
+
+		while (($prow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($pres))) {
+			if ($GLOBALS['TSFE']->sys_language_content) {
+				$prow = $GLOBALS['TSFE']->sys_page->getPageOverlay($prow, $GLOBALS['TSFE']->sys_language_content);
+			}
+
+			$relPages[] = array(
+				'title' => $prow['title'],
+				'datetime' => $prow['tstamp'],
+				'archivedate' => 0,
+				'type' => 1,
+				'page' => $prow['uid'],
+				'short' => $prow['subtitle']?$prow['subtitle']:$prow['description'],
+				'tablenames' => $prow['tablenames']
+			);
+		}
+		return $relPages;
+	}
+
+
 
 	/**
 	 * divides the bodytext field of a news single view to pages and returns the part of the bodytext
@@ -2143,7 +2485,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 	 * @return	string		the current bodytext part wrapped with stdWrap
 	 */
 	function makeMultiPageSView($bodytext,$lConf) {
-		$pointerName=$this->config['singleViewPointerName'];
+		$pointerName = $this->config['singleViewPointerName'];
 		$pagenum = $this->piVars[$pointerName]?$this->piVars[$pointerName]:0;
 		$textArr = t3lib_div::trimExplode($this->config['pageBreakToken'],$bodytext,1);
 		$pagecount = count($textArr);
@@ -2246,461 +2588,6 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 
 		return $sTables;
 	}
-
-	/**
-	 * gets categories and subcategories for a news record
-	 *
-	 * @param	integer		$uid : uid of the current news record
-	 * @param	[type]		$getAll: ...
-	 * @return	array		$categories: array of found categories
-	 */
-	function getCategories($uid, $getAll=false) {
-
-
-		if (!$this->config['catOrderBy'] || $this->config['catOrderBy'] == 'sorting') {
-			$mmCatOrderBy = 'mmsorting';
-		} else {
-			$mmCatOrderBy = $this->config['catOrderBy'];
-		}
-
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECT_mm_query (
-			'tt_news_cat.*,tt_news_cat_mm.sorting AS mmsorting',
-			'tt_news',
-			'tt_news_cat_mm',
-			'tt_news_cat',
-			' AND tt_news_cat_mm.uid_local='.($uid?$uid:0).$this->SPaddWhere.($getAll?' AND tt_news_cat.deleted=0':$this->enableCatFields),
-			'',
-			$mmCatOrderBy);
-
-		$categories = array();
-		$maincat = 0;
-		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
-
-			$maincat .= ','.$row['uid'];
-			$row = array($row);
-			if ($this->conf['displaySubCategories'] && $this->config['useSubCategories']) {
-				$subCategories = array();
-				$subcats = implode(',', array_unique(explode(',', $this->getSubCategories($row[0]['uid']))));
-
-				$subres = $GLOBALS['TYPO3_DB']->exec_SELECTquery (
-					'tt_news_cat.*',
-					'tt_news_cat',
-					'tt_news_cat.uid IN ('.($subcats?$subcats:0).')'.$this->SPaddWhere.$this->enableCatFields,
-					'',
-					'tt_news_cat.'.$this->config['catOrderBy']);
-
-
-				while ($subrow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($subres)) {
-					$subCategories[] = $subrow;
-				}
-				$row = array_merge($row, $subCategories);
-			}
-
-			while (list (, $val) = each ($row)) {
-				$catTitle = '';
-				if ($GLOBALS['TSFE']->sys_language_content) {
-					// find translations of category titles
-					$catTitleArr = t3lib_div::trimExplode('|', $val['title_lang_ol']);
-					$catTitle = $catTitleArr[($GLOBALS['TSFE']->sys_language_content-1)];
-				}
-				$catTitle = $catTitle?$catTitle:$val['title'];
-
-				$categories[$val['uid']] = array(
-				'title' => $catTitle,
-					'image' => $val['image'],
-					'shortcut' => $val['shortcut'],
-					'shortcut_target' => $val['shortcut_target'],
-					'single_pid' => $val['single_pid'],
-					'catid' => $val['uid'],
-					'parent_category' => (!t3lib_div::inList($maincat,$val['uid']) && $this->conf['displaySubCategories']?$val['parent_category']:''),
-					'sorting' => $val['sorting'],
-					'mmsorting' => $val['mmsorting'],
-				);
-			}
-		}
-
-if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
-
-
-		return $categories;
-	}
-
-	/**
-	 * displays a category rootline by extending either the first category of a record or the category
-	 * which is selected by piVars by their parent categories until a category with parent 0 is reached.
-	 *
-	 * @param	array		$categoryArray: list of categories which will be extended by subcategories
-	 * @return	string		the category rootline
-	 */
-	function getCategoryPath($categoryArray) {
-
-
-		if (is_array($categoryArray)) {
-			$pTmp = $GLOBALS['TSFE']->ATagParams;
-			$lConf = $this->conf['catRootline.'];
-			if ($newsConf['catSelectorTargetPid']) {
-				$catSelLinkParams = $newsConf['catSelectorTargetPid'];
-				if ($newsConf['itemLinkTarget']) {
-					$catSelLinkParams .= ' '.$newsConf['itemLinkTarget'];
-				}
-			} else {
-				$catSelLinkParams = $GLOBALS['TSFE']->id;
-			}
-			$mainCategory = array_shift($categoryArray);
-			$uid = $mainCategory['catid'];
-			$loopCheck = 100;
-			$theRowArray = array();
-			$output = array();
-			while ($uid!=0 && $loopCheck>0)	{
-				$loopCheck--;
-				$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
-					'*',
-					'tt_news_cat',
-					'uid='.intval($uid).$this->SPaddWhere.$this->enableCatFields);
-
-				if ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))	{
-					$uid = $row['parent_category'];
-					$theRowArray[] = $row;
-				} else {
-					break;
-				}
-			}
-			if (is_array($theRowArray))	{
-				krsort($theRowArray);
-				while(list($key,$val)=each($theRowArray))	{
-					if ($lConf['linkTitles']) {
-						$GLOBALS['TSFE']->ATagParams = ($pTmp?$pTmp.' ':'').'title="'.$val['title'].'"';
-						if ($this->config['catTextMode'] == 2) {
-							// link to category shortcut
-							$target = ($val['shortcut']?$val['shortcut_target']:'');
-							$pageID = ($val['shortcut']?$val['shortcut']:$catSelLinkParams);
-							$linkedTitle = $this->pi_linkToPage($val['title'], $pageID, $target);
-							$output[] = $this->local_cObj->stdWrap($linkedTitle, $lConf['title_stdWrap.']);
-						} elseif ($this->config['catTextMode'] == 3) {
-							if ($this->conf['useHRDates']) {
-								$output[] = $this->local_cObj->stdWrap($this->pi_linkTP_keepPIvars($val['title'], array(
-									'cat' => $val['uid'],
-									'year' => ($this->piVars['year']?$this->piVars['year']:null),
-									'month' => ($this->piVars['month']?$this->piVars['month']:null),
-									'backPid' => null,
-									'tt_news' => null,
-									$this->pointerName => null),
-								$this->allowCaching, 0, $catSelLinkParams), $lConf['title_stdWrap.']);
-							} else {
-								$output[] = $this->local_cObj->stdWrap($this->pi_linkTP_keepPIvars($val['title'], array(
-									'cat' => $val['uid'],
-									'backPid' => null,
-									'tt_news' => null,
-									$this->pointerName => null),
-								$this->allowCaching, 0, $catSelLinkParams), $lConf['title_stdWrap.']);
-							}
-						}
-					} else {
-						$output[] = $this->local_cObj->stdWrap($val['title'], $lConf['title_stdWrap.']);
-					}
-				}
-			}
-
-			$catRootline = implode($lConf['divider'],$output);
-			if ($catRootline) {
-				$catRootline = $this->local_cObj->stdWrap($catRootline, $lConf['catRootline_stdWrap.']);
-			}
-
-			$GLOBALS['TSFE']->ATagParams = $pTmp;
-
-			return $catRootline;
-		}
-
-
-if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
-
-
-	}
-
-
-
-
-	/**
-	 * extends a given list of categories by their subcategories
-	 *
-	 * @param	string		$catlist: list of categories which will be extended by subcategories
-	 * @param	integer		$cc: counter to detect recursion in nested categories
-	 * @return	string		extended $catlist
-	 */
-	function getSubCategories($catlist, $cc = 0) {
-		$pcatArr = array();
-
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
-			'uid',
-			'tt_news_cat',
-			'tt_news_cat.parent_category IN ('.$catlist.')'.$this->SPaddWhere.$this->enableCatFields);
-
-
-		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
-			$cc++;
-			if ($cc > 1000) {
-				$GLOBALS['TT']->setTSlogMessage('tt_news: one or more recursive categories where found');
-				return implode(',', $pcatArr);
-			}
-			$subcats = $this->getSubCategories($row['uid'], $cc);
-			$subcats = $subcats?','.$subcats:'';
-			$pcatArr[] = $row['uid'].$subcats;
-		}
-		$catlist = implode(',', $pcatArr);
-		return $catlist;
-	}
-
-
-
-
-	/**
-	 * This function calls itself recursively to convert the nested category array to HTML
-	 *
-	 * @param	array		$array_in: the nested categories
-	 * @param	array		$lConf: TS configuration
-	 * @param	integer		$l: level counter
-	 * @return	string		HTML for the category menu
-	 */
-	function getCatMenuContent($array_in,$lConf, $l=0) {
-		$titlefield = 'title';
-		if (is_array($array_in))	{
-			$result = '';
-			while (list($key,$val)=each($array_in))	{
-				if ($key == $titlefield||is_array($array_in[$key])) {
-					if ($l) {
-						$catmenuLevel_stdWrap = explode('|||',$this->local_cObj->stdWrap('|||',$lConf['catmenuLevel'.$l.'_stdWrap.']));
-						$result.= $catmenuLevel_stdWrap[0];
-					}
-					if (is_array($array_in[$key]))	{
-						$result.=$this->getCatMenuContent($array_in[$key],$lConf,$l+1);
-					} elseif ($key == $titlefield) {
-						if ($GLOBALS['TSFE']->sys_language_content && $array_in['uid']) {
-							// get translations of category titles
-							$catTitleArr = t3lib_div::trimExplode('|', $array_in['title_lang_ol']);
-							$syslang = $GLOBALS['TSFE']->sys_language_content-1;
-							$val = $catTitleArr[$syslang]?$catTitleArr[$syslang]:$val;
-						}
-						// if (!$title) $title = $val;
-						$catSelLinkParams = ($this->conf['catSelectorTargetPid']?($this->conf['itemLinkTarget']?$this->conf['catSelectorTargetPid'].' '.$this->conf['itemLinkTarget']:$this->conf['catSelectorTargetPid']):$GLOBALS['TSFE']->id);
-						$pTmp = $GLOBALS['TSFE']->ATagParams;
-						if ($this->conf['displayCatMenu.']['insertDescrAsTitle']) {
-							$GLOBALS['TSFE']->ATagParams = ($pTmp?$pTmp.' ':'').'title="'.$array_in['description'].'"';
-						}
-						if ($array_in['uid']) {
-							if ($this->piVars['cat']==$array_in['uid']) {
-								$result.= $this->local_cObj->stdWrap($this->pi_linkTP_keepPIvars($val, array('cat' => $array_in['uid']), $this->allowCaching, 1, $catSelLinkParams),$lConf['catmenuItem_ACT_stdWrap.']);
-							} else {
-								$result.= $this->local_cObj->stdWrap($this->pi_linkTP_keepPIvars($val, array('cat' => $array_in['uid']), $this->allowCaching, 1, $catSelLinkParams),$lConf['catmenuItem_NO_stdWrap.']);
-							}
-						} else {
-							$result.= $this->pi_linkTP_keepPIvars($val, array(), $this->allowCaching, 1, $catSelLinkParams);
-						}
-						$GLOBALS['TSFE']->ATagParams = $pTmp;
-					}
-					if ($l) { $result.= $catmenuLevel_stdWrap[1]; }
-				}
-			}
-		}
-		return $result;
-	}
-
-	/**
-	 * extends a given list of categories by their subcategories. This function returns a nested array with subcategories (the function getSubCategories() return only a commaseparated list of category UIDs)
-	 *
-	 * @param	string		$catlist: list of categories which will be extended by subcategories
-	 * @param	string		$fields: list of fields for the query
-	 * @param	integer		$cc: counter to detect recursion in nested categories
-	 * @param	[type]		$cc: ...
-	 * @return	array		all categories in a nested array
-	 */
-	function getSubCategoriesForMenu ($catlist, $fields, $addWhere, $cc = 0) {
-		$pcatArr = array();
-
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
-			$fields,
-			'tt_news_cat',
-			'tt_news_cat.parent_category IN ('.$catlist.')'.$this->SPaddWhere.$this->enableCatFields,
-			'',
-			'tt_news_cat.'.$this->config['catOrderBy']);
-
-
-		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
-			$cc++;
-			if ($cc > 10000) {
-				$GLOBALS['TT']->setTSlogMessage('tt_news: one or more recursive categories where found');
-				return $pcatArr;
-			}
-			$subcats = $this->getSubCategoriesForMenu($row['uid'], $fields, $addWhere, $cc);
-			$pcatArr[] = is_array($subcats)?array_merge($row,$subcats):'';
-		}
-		return $pcatArr;
-	}
-
-	/**
-	 * Find related news records and pages, add links to them and wrap them with stdWraps from TS.
-	 *
-	 * @param	integer		$uid of the current news record
-	 * @return	string		html code for the related news list
-	 */
-	function getRelated($uid) {
-		$lConf = $this->conf['getRelatedCObject.'];
-		// find visible categories and their singlePids
-
-		$catres = $GLOBALS['TYPO3_DB']->exec_SELECTquery (
-			'tt_news_cat.uid,tt_news_cat.single_pid',
-			'tt_news_cat',
-			'1=1'.$this->SPaddWhere.$this->enableCatFields);
-
-
-		$catTemp = array();
-		$sPidByCat = array();
-		while ($catrow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($catres)) {
-			$sPidByCat[$catrow['uid']] = $catrow['single_pid'];
-			$catTemp[] = $catrow['uid'];
-		}
-		if ($this->conf['checkCategoriesOfRelatedNews']) {
-			$visibleCategories = implode($catTemp,',');
-		}
-
-		if ($this->conf['usePagesRelations']) {
-			$relPages = array();
-
-			$pres = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
-				'uid,title,tstamp,description,subtitle,M.tablenames',
-				'pages,tt_news_related_mm AS M',
-				'pages.uid=M.uid_foreign AND M.uid_local=' . $uid . ' AND M.tablenames='.$GLOBALS['TYPO3_DB']->fullQuoteStr('pages', 'tt_news_related_mm').$this->cObj->enableFields('pages'),
-				'', 'title');
-
-
-			while ($prow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($pres)) {
-				if ($GLOBALS['TSFE']->sys_language_content) {
-					$prow = $GLOBALS['TSFE']->sys_page->getPageOverlay($prow, $GLOBALS['TSFE']->sys_language_content);
-				}
-
-				$relPages[] = array(
-					'title' => $prow['title'],
-					'datetime' => $prow['tstamp'],
-					'archivedate' => 0,
-					'type' => 1,
-					'page' => $prow['uid'],
-					'short' => $prow['subtitle']?$prow['subtitle']:$prow['description'],
-					'tablenames' => $prow['tablenames']
-				);
-			}
-		}
-		$select_fields = 'DISTINCT uid, pid, title, short, datetime, archivedate, type, page, ext_url, sys_language_uid, l18n_parent, M.tablenames';
-
-		$where = 'tt_news.uid=M.uid_foreign AND M.uid_local=' . $uid . ' AND M.tablenames!='.$GLOBALS['TYPO3_DB']->fullQuoteStr('pages', 'tt_news_related_mm');
-
-		if ($lConf['groupBy']) {
-			$groupBy = trim($lConf['groupBy']);
-		}
-		if ($lConf['orderBy']) {
-			$orderBy = trim($lConf['orderBy']);
-		}
-
-		if ($this->conf['useBidirectionalRelations']) {
-			$where = '(('.$where.') OR (tt_news.uid=M.uid_local AND M.uid_foreign=' . $uid .' AND M.tablenames!='.$GLOBALS['TYPO3_DB']->fullQuoteStr('pages', 'tt_news_related_mm').'))';
-		}
-
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
-			$select_fields,
-			'tt_news,tt_news_related_mm AS M',
-			$where . $this->enableFields,
-			$groupBy,
-			$orderBy);
-
-
-
-		if ($res) {
-			$relrows = array();
-			while ($relrow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
-				$currentCats = array();
-				if ($this->conf['checkCategoriesOfRelatedNews'] || $this->conf['useSPidFromCategory']) {
-					$currentCats = $this->getCategories($relrow['uid'],true);
-				}
-				if ($this->conf['checkCategoriesOfRelatedNews']) {
-					if (count($currentCats))  { // record has categories
-						foreach ($currentCats as $cUid) {
-							if (t3lib_div::inList($visibleCategories,$cUid['catid'])) { // if the record has at least one visible category assigned it will be shown
-								$relrows[$relrow['uid']] = $relrow;
-							}
-						}
-					} else { // record has NO categories
-						$relrows[$relrow['uid']] = $relrow;
-					}
-				} else {
-					$relrows[$relrow['uid']] = $relrow;
-				}
-
-					// check if there's a single pid for the first category of a news record and add 'sPidByCat' to the $relrows array.
-				if ($this->conf['useSPidFromCategory'] && count($currentCats) && $relrows[$relrow['uid']]) {
-					$firstcat = array_shift($currentCats);
-					if ($firstcat['catid'] && $sPidByCat[$firstcat['catid']]) {
-						$relrows[$relrow['uid']]['sPidByCat'] = $sPidByCat[$firstcat['catid']];
-					}
-				}
-			}
-			if (is_array($relPages[0]) && $this->conf['usePagesRelations']) {
-				$relrows = array_merge_recursive($relPages,$relrows);
-			}
-
-			$veryLocal_cObj = t3lib_div::makeInstance('tslib_cObj'); // Local cObj.
-			$lines = array();
-			foreach($relrows as $k => $row) {
-				if ($GLOBALS['TSFE']->sys_language_content && $row['tablenames']!='pages') {
-					$OLmode = ($this->sys_language_mode == 'strict' ? 'hideNonTranslated' : '');
-					$row = $GLOBALS['TSFE']->sys_page->getRecordOverlay('tt_news', $row, $GLOBALS['TSFE']->sys_language_content, $OLmode);
-					if (!is_array($row)) continue;
-				}
-				$veryLocal_cObj->start($row, 'tt_news');
-
-				if ($row['type']!=1 && $row['type']!=2) { // only normal news
-					$queryString = explode('&', t3lib_div::implodeArrayForUrl('', t3lib_div::_GET())) ;
-
-					if ($queryString) {
-						while (list(, $val) = each($queryString)) {
-							$tmp = explode('=', $val);
-							$paramArray[$tmp[0]] = $val;
-						}
-
-						$excludeList = 'id,cHash,tx_ttnews[tt_news],tx_ttnews[backPid],L,tx_ttnews['.$this->config['singleViewPointerName'].']';
-						while (list($key, $val) = each($paramArray)) {
-							if (!$val || ($excludeList && t3lib_div::inList($excludeList, $key))) {
-								unset($paramArray[$key]);
-							}
-						}
-						$paramArray['tx_ttnews[tt_news]'] = 'tx_ttnews[tt_news]=' . $row['uid'];
-
-						if (!$this->conf['dontUseBackPid']) {
-							$paramArray['tx_ttnews[backPid]'] = 'tx_ttnews[backPid]=' . $this->config['backPid'];
-						}
-						$newsAddParams = '&' . implode($paramArray, '&');
-						// debug ($newsAddParams);
-					}
-					// load the parameter string into the register 'newsAddParams' to access it from TS
-					$veryLocal_cObj->LOAD_REGISTER(array('newsAddParams' => $newsAddParams), '');
-					$catSPid = false;
-					if ($row['sPidByCat'] && $this->conf['useSPidFromCategory']) {
-						$catSPid = $row['sPidByCat'];
-					}
-					$sPid = ($catSPid?$catSPid:$this->config['singlePid']);
-					$veryLocal_cObj->LOAD_REGISTER(array('newsSinglePid' => $sPid), '');
-					if (!$this->conf['getRelatedCObject.']['10.']['default.']['10.']['typolink.']['parameter'] || $catSPid) {
-						$this->conf['getRelatedCObject.']['10.']['default.']['10.']['typolink.']['parameter'] = $sPid;
-					}
-				}
-				$lines[] = $veryLocal_cObj->cObjGetSingle($this->conf['getRelatedCObject'], $this->conf['getRelatedCObject.'], 'getRelated');
-			}
-			return implode('', $lines);
-		}
-
-
-if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
-
-
-	}
-
 
 
 
@@ -2843,11 +2730,9 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 
 if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 
-
 		// Get news
 		$selectConf = array();
 		$selectConf['pidInList'] = $this->pid_list;
-
 		$selectConf['where'] = '';
 
 		if ($this->sys_language_mode == 'strict' && $GLOBALS['TSFE']->sys_language_content) {
@@ -2859,7 +2744,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 				'pidInList' => $this->pid_list));
 
 			$strictUids = array();
-			while ($tmprow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($tmpres)) {
+			while (($tmprow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($tmpres))) {
 				$strictUids[] = $tmprow['l18n_parent'];
 			}
 			$strStrictUids = implode(',', $strictUids);
@@ -2901,39 +2786,38 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 
 
-
 		if ($this->arcExclusive) {
 			if ($this->conf['enableArchiveDate'] && $this->config['datetimeDaysToArchive'] && $this->arcExclusive > 0) {
-				$theTime = $GLOBALS['SIM_EXEC_TIME'] - intval($this->config['datetimeDaysToArchive']) * 3600 * 24;
+				$theTime = $this->SIM_ACCESS_TIME - intval($this->config['datetimeDaysToArchive']) * 3600 * 24;
 				if (version_compare($this->conf['compatVersion'], '2.5.0') <= 0) {
-					$selectConf['where'] .= ' AND (tt_news.archivedate<'.$GLOBALS['SIM_EXEC_TIME'].' OR tt_news.datetime<'.$theTime.')';
+					$selectConf['where'] .= ' AND (tt_news.archivedate<'.$this->SIM_ACCESS_TIME.' OR tt_news.datetime<'.$theTime.')';
 				}
 				else {
-					$selectConf['where'] .= ' AND ((tt_news.archivedate > 0 AND tt_news.archivedate<'.$GLOBALS['SIM_EXEC_TIME'].') OR tt_news.datetime<'.$theTime.')';
+					$selectConf['where'] .= ' AND ((tt_news.archivedate > 0 AND tt_news.archivedate<'.$this->SIM_ACCESS_TIME.') OR tt_news.datetime<'.$theTime.')';
 				}
 			} else {
 				if ($this->conf['enableArchiveDate']) {
 					if ($this->arcExclusive < 0) {
 						// show archived
-						$selectConf['where'] .= ' AND (tt_news.archivedate=0 OR tt_news.archivedate>' . $GLOBALS['SIM_EXEC_TIME'] . ')';
+						$selectConf['where'] .= ' AND (tt_news.archivedate=0 OR tt_news.archivedate>' . $this->SIM_ACCESS_TIME . ')';
 					} elseif ($this->arcExclusive > 0) {
 						if (version_compare($this->conf['compatVersion'], '2.5.0') <= 0) {
-							$selectConf['where'] .= ' AND tt_news.archivedate<' . $GLOBALS['SIM_EXEC_TIME'];
+							$selectConf['where'] .= ' AND tt_news.archivedate<' . $this->SIM_ACCESS_TIME;
 						}
 						else {
-							$selectConf['where'] .= ' AND tt_news.archivedate>0 AND tt_news.archivedate<' . $GLOBALS['SIM_EXEC_TIME'];
+							$selectConf['where'] .= ' AND tt_news.archivedate>0 AND tt_news.archivedate<' . $this->SIM_ACCESS_TIME;
 						}
 					}
 				}
 				if ($this->config['datetimeMinutesToArchive'] || $this->config['datetimeHoursToArchive'] || $this->config['datetimeDaysToArchive']) {
 					if ($this->config['datetimeMinutesToArchive']) {
-						$theTime = $GLOBALS['SIM_EXEC_TIME'] - intval($this->config['datetimeMinutesToArchive']) * 60;
+						$theTime = $this->SIM_ACCESS_TIME - intval($this->config['datetimeMinutesToArchive']) * 60;
 					}
 					elseif ($this->config['datetimeHoursToArchive']) {
-						$theTime = $GLOBALS['SIM_EXEC_TIME'] - intval($this->config['datetimeHoursToArchive']) * 3600;
+						$theTime = $this->SIM_ACCESS_TIME - intval($this->config['datetimeHoursToArchive']) * 3600;
 					}
 					else {
-						$theTime = $GLOBALS['SIM_EXEC_TIME'] - intval($this->config['datetimeDaysToArchive']) * 86400;
+						$theTime = $this->SIM_ACCESS_TIME - intval($this->config['datetimeDaysToArchive']) * 86400;
 					}
 					if ($this->arcExclusive < 0) {
 						$selectConf['where'] .= ' AND (tt_news.datetime=0 OR tt_news.datetime>' . $theTime . ')';
@@ -2955,7 +2839,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 			if ($this->config['catSelection'] && (
 					($this->theCode == 'LATEST' && $this->conf['latestWithCatSelector']) ||
 					($this->theCode == 'AMENU' && $this->conf['amenuWithCatSelector']) ||
-					($this->theCode == 'LIST' || $this->theCode == 'SEARCH' || $this->theCode == 'XML'))) {
+					(t3lib_div::inList('LIST,LIST2,LIST3,HEADER_LIST,SEARCH,XML',$this->theCode)))) {
 				// force 'select categories' mode if cat is given in GPvars
 				$this->config['categoryMode'] = 1;
 				// override category selection from other news content-elements with selection from catmenu (GPvars)
@@ -3023,15 +2907,14 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 
 				$results = array();
 				$resultsCount = array();
-				while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
+				while (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))) {
 					$results[$row['uid']] = $row['uid'];
 				}
 				array_unique($results);
-
-				foreach ($results as $k => $uid) {
+				foreach ($results as $uid) {
 					$currentCats = $this->getCategories($uid);
-					foreach ($currentCats as $catid => $v) {
-						if (t3lib_div::inList($this->catExclusive,$catid)) {
+					foreach ($currentCats as $v) {
+						if (t3lib_div::inList($this->catExclusive,$v['catid'])) {
 							unset($results[$uid]);
 							break; // break after one deselected category was found
 						}
@@ -3059,7 +2942,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 			$wsSelectconf['selectFields'] = 'uid,pid,tstamp,crdate,deleted,hidden,fe_group,sys_language_uid,l18n_parent,l18n_diffsource,t3ver_oid,t3ver_id,t3ver_label,t3ver_wsid,t3ver_state,t3ver_stage,t3ver_count,t3ver_tstamp,t3_origuid';
 			$wsRes = $this->exec_getQuery('tt_news', $wsSelectconf);
 			$removeUids = array();
-			while ($wsRow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($wsRes)) {
+			while (($wsRow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($wsRes))) {
 				$orgUid = $wsRow['uid'];
 				$GLOBALS['TSFE']->sys_page->versionOL('tt_news',$wsRow);
 				if (!$wsRow['uid']) { // if versionOL returns nothing the record is not visible in the selected Workspace
@@ -3088,7 +2971,32 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 			}
 		}
 
+			if ($this->theCode != 'AMENU') {
+				if ($this->config['groupBy']) {
+					$selectConf['groupBy'] = $this->config['groupBy'];
+				}
+// 				else {
+// 					$selectConf['groupBy'] = 'tt_news.uid';
+// 				}
 
+				if ($this->config['orderBy']) {
+					if (strtoupper($this->config['orderBy']) == 'RANDOM') {
+						$selectConf['orderBy'] = 'RAND()';
+					} else {
+						$selectConf['orderBy'] = $this->config['orderBy'] . ($this->config['ascDesc']?' ' . $this->config['ascDesc']:'');
+					}
+				} else {
+					$selectConf['orderBy'] = 'datetime DESC';
+				}
+
+				// overwrite the groupBy value for categories
+				if (!$this->catExclusive && $selectConf['groupBy'] == 'category') {
+					$selectConf['leftjoin'] = 'tt_news_cat_mm ON tt_news.uid = tt_news_cat_mm.uid_local';
+					$selectConf['groupBy'] = 'tt_news_cat_mm.uid_foreign';
+				}
+
+
+			}
 
 		// function Hook for processing the selectConf array
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tt_news']['selectConfHook'])) {
@@ -3102,7 +3010,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 
 //		debug($this->config['categoryMode'],'categoryMode');
 //		debug($this->catExclusive,'$this->catExclusive');
-//		debug($selectConf,'select_conf');
+//		debug($selectConf,'select_conf '.$this->theCode);
 
 
 if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
@@ -3149,9 +3057,22 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 	 */
 	function exec_getQuery($table, $conf)	{
 		$queryParts = $this->getQuery($table, $conf, TRUE);
-// 		debug($queryParts,'$queryParts');
-
 		return $GLOBALS['TYPO3_DB']->exec_SELECT_queryArray($queryParts);
+	}
+
+	/**
+	 * [Describe function...]
+	 *
+	 * @param	[type]		$table: ...
+	 * @return	[type]		...
+	 */
+	function getEnableFields($table) {
+		if (is_array($this->conf['ignoreEnableFields.'])) {
+			$ignore_array = $this->conf['ignoreEnableFields.'];
+		}
+
+		$show_hidden = ($table=='pages' ? $GLOBALS['TSFE']->showHiddenPage : $GLOBALS['TSFE']->showHiddenRecords);
+		return $GLOBALS['TSFE']->sys_page->enableFields($table,$show_hidden,$ignore_array);
 	}
 
 	/**
@@ -3169,7 +3090,6 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 
 			// Construct WHERE clause:
 		if (!$this->conf['dontUsePidList']) {
-			$conf['pidInList'] = trim($this->cObj->stdWrap($conf['pidInList'],$conf['pidInList.']));
 			if (!strcmp($conf['pidInList'],''))	{
 				$conf['pidInList'] = 'this';
 			}
@@ -3183,21 +3103,8 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 			// Setting LIMIT:
 		if ($conf['max'] || $conf['begin']) {
 			$error=0;
-
-				// Finding the total number of records, if used:
-			if (strstr(strtolower($conf['begin'].$conf['max']),'total'))	{
-				$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', $table, $queryParts['WHERE'], $queryParts['GROUPBY']);
-				if ($error = $GLOBALS['TYPO3_DB']->sql_error())	{
-					$GLOBALS['TT']->setTSlogMessage($error);
-				} else {
-					$total = $GLOBALS['TYPO3_DB']->sql_num_rows($res);
-					$conf['max'] = eregi_replace('total', (string)$total, $conf['max']);
-					$conf['begin'] = eregi_replace('total', (string)$total, $conf['begin']);
-				}
-			}
 			if (!$error)	{
 				$conf['begin'] = t3lib_div::intInRange(ceil($this->cObj->calc($conf['begin'])),0);
-				$conf['max'] = t3lib_div::intInRange(ceil($this->cObj->calc($conf['max'])),0);
 				if ($conf['begin'] && !$conf['max'])	{
 					$conf['max'] = 100000;
 				}
@@ -3211,7 +3118,6 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 		}
 
 		if (!$error)	{
-
 				// Setting up tablejoins:
 			$joinPart='';
 			if ($conf['join'])	{
@@ -3262,30 +3168,17 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 			'LIMIT' => ''
 		);
 
-		if (trim($conf['uidInList']))	{
-			$listArr = t3lib_div::intExplode(',',str_replace('this',$GLOBALS['TSFE']->contentPid,$conf['uidInList']));  // str_replace instead of ereg_replace 020800
-			if (count($listArr)==1)	{
-				$query.=' AND '.$table.'.uid='.intval($listArr[0]);
-			} else {
-				$query.=' AND '.$table.'.uid IN ('.implode(',',$GLOBALS['TYPO3_DB']->cleanIntArray($listArr)).')';
-			}
-			$pid_uid_flag++;
-		}
 		if (trim($conf['pidInList']))	{
 			$listArr = t3lib_div::intExplode(',',str_replace('this',$GLOBALS['TSFE']->contentPid,$conf['pidInList']));	// str_replace instead of ereg_replace 020800
-				// removes all pages which are not visible for the user!
-			$listArr = $this->cObj->checkPidArray($listArr);
 			if (count($listArr))	{
-				$query.=' AND '.$table.'.pid IN ('.implode(',',$GLOBALS['TYPO3_DB']->cleanIntArray($listArr)).')';
+				$query.=' AND '.$table.'.pid IN ('.implode(',',$listArr).')';
 				$pid_uid_flag++;
 			} else {
 				$pid_uid_flag=0;		// If not uid and not pid then uid is set to 0 - which results in nothing!!
 			}
 		}
-// 		if (!$pid_uid_flag)	{		// If not uid and not pid then uid is set to 0 - which results in nothing!!
-// 			$query.=' AND '.$table.'.uid=0';
-// 		}
-		if ($where = trim($conf['where']))	{
+
+		if (($where = trim($conf['where'])))	{
 			$query.=' AND '.$where;
 		}
 
@@ -3299,18 +3192,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 			$query.=' AND '.$conf['languageField'].' IN ('.$sys_language_content.')';
 		}
 
-		$andWhere = trim($this->cObj->stdWrap($conf['andWhere'],$conf['andWhere.']));
-		if ($andWhere)	{
-			$query.=' AND '.$andWhere;
-		}
-
-			// enablefields
-		if ($table=='pages')	{
-			$query.=' '.$GLOBALS['TSFE']->sys_page->where_hid_del.
-						$GLOBALS['TSFE']->sys_page->where_groupAccess;
-		} else {
-			$query.=$this->cObj->enableFields($table);
-		}
+		$query.=$this->enableFields;
 
 			// MAKE WHERE:
 		if ($query)	{
@@ -3362,15 +3244,18 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 	 * @return	void
 	 */
 	function initLanguages () {
-
 		$lres = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
 			'*',
 			'sys_language',
-			'1=1' . $this->cObj->enableFields('sys_language'));
-
+			'1=1' . $this->getEnableFields('sys_language'));
 
 		$this->langArr = array();
-		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($lres)) {
+		$this->langArr[0] = array(
+			'title' => $this->conf['defLangLabel'],
+			'flag' => $this->conf['defLangImage']
+		);
+
+		while (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($lres))) {
 			$this->langArr[$row['uid']] = $row;
 		}
 	}
@@ -3393,7 +3278,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 			$this->SPaddWhere .= ' AND tt_news_cat.uid NOT IN ('.$this->conf['catExcludeList'].')';
 		}
 
-		$this->enableCatFields = $this->cObj->enableFields('tt_news_cat');
+		$this->enableCatFields = $this->getEnableFields('tt_news_cat');
 
 		$useSubCategories = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'useSubCategories', 'sDEF');
 		$this->config['useSubCategories'] = (strcmp($useSubCategories,'') ? $useSubCategories : $this->conf['useSubCategories']);
@@ -3416,9 +3301,6 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 				// get subcategories for selection from getVars
 				$subcats = $this->getSubCategories($this->config['catSelection']);
 				$this->config['catSelection'] = implode(',', array_unique(explode(',', $this->config['catSelection'].($subcats?','.$subcats:''))));
-
-
-
 			}
 		}
 		$catExclusive = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'categorySelection', 'sDEF');
@@ -3465,29 +3347,6 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 				$this->catlistWhere .= ' AND tt_news_cat.uid IN ('.implode(t3lib_div::intExplode(',',$lConf['includeList']),',').')';
 			}
 		}
-//		if ($lConf['includeList'] || $this->catExclusive) {
-//			// MOUNTS (in tree mode) must only contain the main/parent categories. Therefore it is required to filter out the subcategories from $this->catExclusive or $lConf['includeList']
-//			$categoryMounts = ($this->catExclusive?$this->catExclusive:$lConf['includeList']);
-//			$this->allowedCategories = $categoryMounts;
-////			$tmpres = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
-////				'uid,parent_category',
-////				'tt_news_cat',
-////				'tt_news_cat.uid IN ('.$categoryMounts.')'.$this->SPaddWhere.$this->enableCatFields,
-////				'',
-////				'tt_news_cat.'.$this->config['catOrderBy']);
-////
-////			$this->cleanedCategoryMounts = array();
-////
-////			if ($tmpres) {
-////				while (($tmprow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($tmpres))) {
-////					if (!t3lib_div::inList($categoryMounts,$tmprow['parent_category'])) {
-////						$this->dontStartFromRootRecord = true;
-////						$this->cleanedCategoryMounts[] = $tmprow['uid'];
-////					}
-////				}
-////			}
-//		}
-
 	}
 
 
@@ -3553,8 +3412,6 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 		$globalMarkerArray['###GC3###'] = $this->cObj->stdWrap($this->conf['color3'], $this->conf['color3.']);
 		$globalMarkerArray['###GC4###'] = $this->cObj->stdWrap($this->conf['color4'], $this->conf['color4.']);
 
-
-
 		if (!($this->templateCode = $this->cObj->substituteMarkerArray($this->templateCode, $globalMarkerArray))) {
 			$this->errors[] = 'No HTML template found';
 		}
@@ -3602,16 +3459,9 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 			'uid IN (' . $this->pid_list . ')');
 
 		$this->pageArray = array();
-		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
+		while (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))) {
 			$this->pageArray[$row['uid']] = $row;
 		}
-
-if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
-
-
-
-
-
 	}
 
 
@@ -3690,10 +3540,10 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 	 * @return	[type]		...
 	 */
 	function isRenderField($fieldName) {
-		if ($this->displayFields[$this->theCode] == '*') {
+		if ($this->renderFields[$this->theCode] == '*') {
 			return true;
 		}
-		if (t3lib_div::inList($this->displayFields[$this->theCode],$fieldName)) {
+		if (t3lib_div::inList($this->renderFields[$this->theCode],$fieldName)) {
 			return true;
 		}
 	}
@@ -3873,6 +3723,127 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 		return $out;
 	}
 
+
+
+	/**
+	 * [Describe function...]
+	 *
+	 * @param	[type]		$singlePid: ...
+	 * @param	[type]		$row: ...
+	 * @param	[type]		$piVarsArray: ...
+	 * @param	[type]		$urlOnly: ...
+	 * @return	[type]		...
+	 */
+	function getSingleViewLink($singlePid, &$row, $piVarsArray, $urlOnly=false) {
+		if ($this->conf['useHRDates']) {
+			$piVarsArray['pS'] = null;
+			$piVarsArray['pL'] = null;
+			$piVarsArray['arc'] = null;
+			if ($this->conf['useHRDatesSingle']) {
+				$tmpY = $this->piVars['year'];
+				$tmpM = $this->piVars['month'];
+				$tmpD = $this->piVars['day'];
+
+				$this->getHrDateSingle($row['datetime']);
+				$piVarsArray['year'] = $this->piVars['year'];
+				$piVarsArray['month'] = $this->piVars['month'];
+				$piVarsArray['day'] = ($this->piVars['day']?$this->piVars['day']:null);
+			}
+		} else {
+			$piVarsArray['year'] = null;
+			$piVarsArray['month'] = null;
+		}
+
+		$piVarsArray['tt_news'] = $row['uid'];
+
+		$linkWrap = explode($this->token, $this->pi_linkTP_keepPIvars($this->token, $piVarsArray, $this->allowCaching, $this->conf['dontUseBackPid'], $singlePid));
+		$url = $this->cObj->lastTypoLinkUrl;
+
+		// hook for processing of links
+		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tt_news']['getSingleViewLinkHook'])) {
+			foreach($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tt_news']['getSingleViewLinkHook'] as $_classRef) {
+				$_procObj = & t3lib_div::getUserObj($_classRef);
+				$params = array(
+							'singlePid' => $singlePid,
+							'row' => &$row,
+							'piVarsArray' => $piVarsArray
+						 );
+				$_procObj->processSingleViewLink($linkWrap, $url, $params, $this);
+			}
+		}
+		$this->local_cObj->LOAD_REGISTER(array(
+				'newsMoreLink' => $linkWrap[0].$this->pi_getLL('more').$linkWrap[1],
+				'newsMoreLink_url' => $url
+			), '');
+
+		if ($this->conf['useHRDates'] && $this->conf['useHRDatesSingle']) {
+			$this->piVars['year'] = $tmpY;
+			$this->piVars['month'] = $tmpM;
+			$this->piVars['day'] = $tmpD;
+		}
+
+		if ($urlOnly) {
+			return $url;
+		} else {
+			return $linkWrap;
+		}
+	}
+
+
+
+
+
+	/**
+	 * inserts pagebreaks after a certain amount of words
+	 *
+	 * @param	string		text which can contain manully inserted 'pageBreakTokens'
+	 * @param	integer		amount of words in the subheader (short). The lenght of the first page will be reduced by that amount of words added to the value of $this->conf['cropWordsFromFirstPage'].
+	 * @return	string		the processed text
+	 */
+	function insertPagebreaks($text,$firstPageWordCrop) {
+		$paragraphs = explode(chr(10), $text); // get paragraphs
+ 		$wtmp = array();
+		$firstPageCrop = $firstPageWordCrop+intval($this->conf['cropWordsFromFirstPage']);
+		$cc = 0; // wordcount
+		$isfirst = true; // first paragraph
+		while (list($k,$p) = each ($paragraphs))	{
+			$words = explode(' ', $p); // get words
+			$pArr = array();
+			$break = false;
+			foreach ($words as $w) {
+			#if (trim($w)=='&nbsp;') debug ($w);
+				if (strpos($w,$this->config['pageBreakToken'])) { // manually inserted pagebreaks
+					$cc = 0;
+					$pArr[] = $w;
+					$isfirst = false;
+				} elseif ($cc >= t3lib_div::intInRange($this->config['maxWordsInSingleView']-($isfirst && !$this->conf['subheaderOnAllSViewPages'] ? $firstPageCrop:0),0,$this->config['maxWordsInSingleView'])) {
+					if (trim($paragraphs[$k+1])=='&nbsp;') unset($paragraphs[$k+1]);
+
+					if (!$this->conf['useParagraphAsPagebreak'] && substr($w,-1)=='.') { // break at dot
+   					   $pArr[] = $w.$this->config['pageBreakToken'];
+					} else { // break at paragraph
+						$break = true;
+						$pArr[] = $w;
+						#$pArr[] = '<b> '.$cc.' </b>';
+					}
+					$cc = 0;
+					$isfirst = false;
+				} else {
+					$pArr[] = $w;
+				}
+				$cc++;
+			}
+			if ($break) { // add break at end of current paragraph
+				array_push ($pArr, $this->config['pageBreakToken']);
+			}
+			$wtmp[] = implode($pArr,' ');
+		}
+		$processedText = implode($wtmp,chr(10));
+		return $processedText;
+	}
+
+
+
 	/**
 	 * [Describe function...]
 	 *
@@ -3885,38 +3856,45 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 		$call_info = array_shift( debug_backtrace() );
 		$code_line = $call_info['line'];
 		$file = array_pop( explode('/', $call_info['file']));
-
+		$lbl = $caller;
 		$msg = array();
-		if( $this->start_time === NULL )	{
-			$msg[$caller] = 'initialize';
+		if ($this->start_time === NULL)	{
+			$lbl = 'START: ----------------------------------------------------------------------------------------------------------------------------------------------';
+			$msg['INITIALIZE'] = $caller;
+//			$msg[] = $call_info;
 			$this->start_time = $currentTime;
 			$this->global_start_time = $currentTime;
 			$this->start_time = $currentTime;
 
-			$msg['file:'] = $file;
+//			$msg['file:'] = $file;
 			$msg['start_code_line:'] = $this->start_code_line;
 			$msg['mem:'] = ceil( memory_get_usage()/1024).'  KB';
-			debug ($msg);
+			debug($msg, $lbl, $code_line, $file, 3);
 
 			return ;
 		}
 
 		if ($getGlobalTime) {
 			$time = round(($currentTime - $this->global_start_time),3);
+			$lbl = 'RESULTS: '.$this->theCode;
+			$msg['pid_list'] = $this->pid_list;
 		} else {
 			$time = round(($currentTime - $this->start_time),3);
 		}
 
+		$msg['time:'] = $time.' s';
 		$msg['caller:'] = $caller;
 		$msg['code-lines:'] = $this->start_code_line.'-'.$code_line;
-		$msg['time:'] = $time.' s';
 		$msg['mem:'] = ceil( memory_get_usage()/1024).'  KB';
 
 		$this->start_time = $currentTime;
 		$this->start_code_line = $code_line;
 
 		if ($time > 0.01 || $getGlobalTime) {
-			debug ($msg);
+//			debug ($msg,$lbl);
+
+			debug($msg, $lbl, $code_line, $file, 3);
+
 		}
 	}
 

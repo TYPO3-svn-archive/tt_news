@@ -437,7 +437,7 @@ class tx_ttnews_TCAform_selectTree {
 		$this->table = trim(t3lib_div::_GP('tceFormsTable'));
 		$this->storagePidFromAjax = intval(t3lib_div::_GP('storagePid'));
 		$this->recID = trim(t3lib_div::_GP('recID')); // not intval() here because it might be a new record
-		if (is_int($this->recID)) {
+		if (intval($this->recID) == $this->recID) { 
 			$this->row = t3lib_BEfunc::getRecord($this->table,$this->recID);
 		}
 
@@ -445,7 +445,7 @@ class tx_ttnews_TCAform_selectTree {
 		if ($this->table == 'tt_news') {
 			$this->field = 'category';
 			if (is_array($this->row) && $this->row['pid']) {
-				$cRes = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid_foreign', 'tt_news_cat_mm', 'uid_local='.$this->recID);
+				$cRes = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid_foreign', 'tt_news_cat_mm', 'uid_local='.intval($this->recID));
 				while (($cRow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($cRes))) {
 					$this->selectedItems[] = $cRow['uid_foreign'];
 				}
@@ -589,6 +589,7 @@ class tx_ttnews_TCAform_selectTree {
 
 
 
+
 // 		$tEnd = microtime(true);
 // 		$this->debug['end'] = time();
 //
@@ -698,11 +699,11 @@ class tx_ttnews_tceforms_categorytree extends tx_ttnews_categorytree {
 		if($v['uid']>0) {
 			$hrefTitle = htmlentities('[id='.$v['uid'].'] '.$v['description']);
 			if (in_array($v['uid'],$this->TCEforms_nonSelectableItemsArray)) {
-				$style = $this->getTitleStyles($v);
+				$style = $this->getTitleStyles($v,$hrefTitle);
 				return '<a href="#" title="'.$hrefTitle.'"><span style="color:#999;cursor:default;'.$style.'">'.$title.'</span></a>';
 			} else {
 				$aOnClick = 'setFormValueFromBrowseWin(\''.$this->TCEforms_itemFormElName.'\','.$v['uid'].',\''.t3lib_div::slashJS($title).'\'); return false;';
-				$style = $this->getTitleStyles($v);
+				$style = $this->getTitleStyles($v,$hrefTitle);
 				return '<a href="#" onclick="'.htmlspecialchars($aOnClick).'" title="'.$hrefTitle.'"><span style="'.$style.'">'.$title.'</span></a>';
 			}
 		} else {
@@ -716,16 +717,23 @@ class tx_ttnews_tceforms_categorytree extends tx_ttnews_categorytree {
 	 * @param	[type]		$v: ...
 	 * @return	[type]		...
 	 */
-	function getTitleStyles($v) {
+	function getTitleStyles($v, &$hrefTitle) {
 		$style = '';
 		if (in_array($v['uid'], $this->TCEforms_selectedItemsArray)) {
 			$style .= 'font-weight:bold;';
 		}
+		$p = false;
 		foreach ($this->TCEforms_selectedItemsArray as $selitems) {
 			if (is_array($this->selectedItemsArrayParents[$selitems]) && in_array($v['uid'], $this->selectedItemsArrayParents[$selitems])) {
-				$style .= 'text-decoration:underline;';
+				$p = true;
+				break;
 			}
 		}
+		if ($p) {
+			$style .= 'text-decoration:underline;background:#ffc;';
+			$hrefTitle .= ' (subcategory selected)';
+		}
+		
 		return $style;
 	}
 

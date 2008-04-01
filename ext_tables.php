@@ -89,6 +89,8 @@ t3lib_extMgm::addTypoScriptSetup('
   plugin.tt_news = USER
   plugin.tt_news {
     userFunc = tx_ttnews->main_news
+    
+    # validate some configuration values and display a message if errors have been found
     enableConfigValidation = 1
   }
 ');

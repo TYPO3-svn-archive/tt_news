@@ -183,7 +183,7 @@ class tx_ttnews_tcemain {
  * @subpackage tt_news
  */
 class tx_ttnews_tcemain_cmdmap {
-
+	
 	/**
 	 * This method is called by a hook in the TYPO3 Core Engine (TCEmain) when a command was executed (copy,move,delete...).
 	 * For tt_news it is used to disable saving of the current record if it has an editlock or if it has categories assigned that are not allowed for the current BE user.

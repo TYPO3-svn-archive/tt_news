@@ -24,6 +24,7 @@
 			<label index="goToArchive">go to Archive -&gt;</label>
 			<label index="archiveHeader">ARCHIVE:</label>
 			<label index="archiveItems">items</label>
+			<label index="archiveItem">item</label>
 			<label index="archiveEmptyMsg">Sorry, Archive contains no items</label>
 			<label index="noResultsMsg">nothing found</label>
 			<label index="searchEmptyMsg">Please enter a searchword.</label>

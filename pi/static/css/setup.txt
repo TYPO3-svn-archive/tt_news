@@ -7,6 +7,25 @@ plugin.tt_news {
 	_CSS_DEFAULT_STYLE (
 
 
+
+
+.news-single-rightbox,
+.news-single-imgcaption,
+.news-latest-date,
+.news-latest-morelink,
+.news-latest-category,
+.news-list-category,
+.news-list-author,
+.news-list-imgcaption,
+.news-list-date,
+.news-list-browse,
+.news-amenu-container,
+.news-catmenu  {
+	font-size:10px;
+}
+
+
+
 /*-----------------------------------  clearer  -----------------------------------*/
 /* prevent floated images from overlapping the div-containers they are wrapped in  */
 
@@ -56,20 +75,16 @@ plugin.tt_news {
 
 .news-latest-item IMG {
 
-	margin-bottom:5px;
-	margin-right:5px;
+	margin: 0 5px 5px 0;
 	float:left;
+	border: none;
 }
 .news-latest-category IMG {
 	float: none;
 	border:none;
 	margin:0px;
 }
-.news-latest-date,
-.news-latest-morelink,
-.news-latest-category {
-	font-size:10px;
-}
+
 
 
 
@@ -96,6 +111,7 @@ plugin.tt_news {
 
 .news-list-date {
 	float: right;
+	display:block;
 	padding-left:10px;
 }
 
@@ -107,6 +123,7 @@ plugin.tt_news {
 .news-list-container IMG {
 	float: right;
 	margin:0 2px 5px 5px;
+	border: none;
 
 }
 
@@ -121,12 +138,6 @@ plugin.tt_news {
 }
 
 
-.news-list-category,
-.news-list-author,
-.news-list-imgcaption,
-.news-list-date  {
-	font-size:10px;
-}
 
 	/*---------------------------------  LIST2 / 3 ---------------------------------*/
 
@@ -168,8 +179,7 @@ plugin.tt_news {
 
 .news-list3-item,
 .list3-subdiv,
-.list2-subdiv,
-.list2-subdiv-hdr {
+.list2-subdiv {
 	border-top:5px solid #fff;
 }
 
@@ -177,11 +187,13 @@ plugin.tt_news {
 .news-list2-container IMG {
 	float: right;
 	margin:0 2px 5px 5px;
+	border: none;
 
 }
 .news-list3-container IMG {
 	float: left;
 	margin:0 5px 5px 2px;
+	border: none;
 
 }
 
@@ -190,26 +202,20 @@ plugin.tt_news {
 	/*---------------------------------  tt_news Page-Browser ---------------------------------*/
 
 .news-list-browse {
-text-align:center;
-margin-bottom:20px;
-font-size:10px;
+	text-align:center;
+	margin-bottom:20px;
 }
 
-.tx-ttnews-browsebox {
-
-	margin:3px;
-	padding:3px;
-}
-.activeLinkWrap,.tx-ttnews-browsebox-strong {
-font-weight:bold;
+.activeLinkWrap {
+	font-weight:bold;
 }
 .disabledLinkWrap {
- color: #999;
+	color: #999;
 }
 .disabledLinkWrap,
-.inactiveLinkWrap,
+.browseLinksWrap a,
 .activeLinkWrap {
-  padding:0 1px;
+	padding:0 1px;
 }
 
 	/*--------------------------------- tt_news SINGLE view  ---------------------------------*/
@@ -228,7 +234,9 @@ font-weight:bold;
 	padding:0;
 }
 
-
+.news-single-img img {
+	border:none;
+}
 
 .news-single-imgcaption {
 	padding: 1px 3px 3px 3px;
@@ -245,10 +253,7 @@ font-weight:bold;
 	padding: 10px;
 }
 
-.news-single-rightbox,
-.news-single-imgcaption {
-	font-size: 10px;
-}
+
 
 .news-single-additional-info {
 	margin-top: 15px;
@@ -286,17 +291,9 @@ font-weight:bold;
 	padding-bottom:1px;
 
 }
-.news-amenu-container UL LI A:LINK,
-.news-amenu-container UL LI A:VISITED {
-	text-decoration: none;
-	color: #666;
-}
-.news-amenu-container UL LI A:HOVER,
-.news-amenu-container UL LI A:ACTIVE {
-	color: black;
-}
+
+
 .news-amenu-container UL {
-	font-size: 10px;
     padding:0;
     margin:0;
 	margin-top:5px;
@@ -357,7 +354,7 @@ ul.tree ul li {
 }
 
 ul.tree ul li.expanded ul {
-	background: transparent url('../../typo3/gfx/ol/line.gif') repeat-y top left;
+	background: transparent url('../typo3/gfx/ol/line.gif') repeat-y top left;
 }
 
 ul.tree ul li.last > ul {
