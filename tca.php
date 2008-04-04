@@ -299,35 +299,11 @@ $TCA['tt_news'] = Array (
 				'userFunc' => 'tx_ttnews_TCAform_selectTree->renderCategoryFields',
 				'treeView' => 1,
 				'foreign_table' => 'tt_news_cat',
-				#'foreign_table_where' => $fTableWhere.'ORDER BY tt_news_cat.'.$confArr['category_OrderBy'],
-//				'size' => 3,
 				'autoSizeMax' => 50,
 				'minitems' => $confArr['requireCategories'] ? 1 : 0,
 				'maxitems' => 500,
 				'MM' => 'tt_news_cat_mm',
-//				'wizards' => Array(
-//					'_PADDING' => 2,
-//					'_VERTICAL' => 1,
-//					'openCatManager' => Array(
-//						'type' => 'script',
-//						'script' => 'EXT:tt_news/mod1/index.php',
-//						'title' => 'LLL:EXT:tt_news/locallang_tca.xml:tt_news.manageCategories',
-//						'icon' => 'EXT:tt_news/res/add_cat.gif',
-//						'params' => Array(
-//							'table'=>'tt_news_cat',
-//							'pid' => $sPid,
-//
-//						),
-//					),
-////					'edit' => Array(
-////						'type' => 'popup',
-////						'title' => 'LLL:EXT:tt_news/locallang_tca.xml:tt_news.editCategory',
-////						'script' => 'wizard_edit.php',
-////						'popup_onlyOpenIfSelected' => 1,
-////						'icon' => 'edit2.gif',
-////						'JSopenParams' => 'height=350,width=580,status=0,menubar=0,scrollbars=1',
-////					),
-//				),
+
 			)
 		),
 		'page' => Array (
@@ -358,7 +334,7 @@ $TCA['tt_news'] = Array (
 				'show_thumbs' => '1',
 				'size' => '3',
 				'autoSizeMax' => '10',
-				'maxitems' => '10',
+				'maxitems' => '100',
 				'minitems' => '0'
 			)
 		),

@@ -129,33 +129,42 @@ class tx_ttnews extends tslib_pibase {
 	var $prefixId = 'tx_ttnews'; // Same as class name
 	var $scriptRelPath = 'pi/class.tx_ttnews.php'; // Path to this script relative to the extension dir.
 	var $extKey = 'tt_news'; // The extension key.
-	var $tt_news_uid; // the uid of the current news record in SINGLE view
-	var $config; // the processed TypoScript configuration array
-	var $langArr; // the languages found in the tt_news sysfolder
-	var $sys_language_mode;
-	var $alternatingLayouts;
-	var $allowCaching;
-	var $catExclusive;
-	var $arcExclusive;
+	
+	var $tt_news_uid = 0; // the uid of the current news record in SINGLE view
+	var $pid_list = 0;
+	var $config = array(); // the processed TypoScript configuration array
+	var $sViewSplitLConf = array();		
+	var $langArr = array(); // the languages found in the tt_news sysfolder
+	var $sys_language_mode = '';
+	var $alternatingLayouts = 0;
+	var $allowCaching = 1;
+	var $catExclusive = '';
+	var $actuallySelectedCategories = '';
+	var $arcExclusive = 0;
+	var $fieldNames = array();
 	var $searchFieldList = 'short,bodytext,author,keywords,links,imagecaption,title';
 	var $theCode = '';
 	var $rdfToc = '';
+	var $templateCode = '';
+
 	var $versioningEnabled = false; // is the extension 'version' loaded
 	var $vPrev = false; // do we display a versioning preview
 	var $categories = array();
 	var $pageArray = array(); // Is initialized with an array of the pages in the pid-list
 	var $pointerName = 'pointer';
-	
 	var $SIM_ACCESS_TIME = 0;
-
-
 	var $renderFields = array();
-
 	var $errors = array();
+	
+	var $enableFields = '';
+	var $enableCatFields = '';
+	var $SPaddWhere = '';
+	var $catlistWhere = '';
+	
+	var $token = '';
 
-	var $debugTimes = false;
-
-	var $start_time = 0;
+	var $debugTimes = 0;
+	var $start_time = NULL;
 	var $global_start_time = 0;
 	var $start_code_line = 0;
 
@@ -200,6 +209,7 @@ class tx_ttnews extends tslib_pibase {
 			$this->theCode = $theCode;
 			switch ($theCode) {
 				case 'SINGLE':
+				case 'SINGLE2':
 					$content .= $this->displaySingle();
 					break;
 				case 'VERSION_PREVIEW':
@@ -313,8 +323,8 @@ class tx_ttnews extends tslib_pibase {
 			}
 		}
 			// Archive:
-		$this->config['archiveMode'] = trim($this->conf['archiveMode']) ; // month, quarter or year listing in AMENU
-		$this->config['archiveMode'] = $this->config['archiveMode']?$this->config['archiveMode']:'month';
+		$archiveMode = trim($this->conf['archiveMode']) ; // month, quarter or year listing in AMENU
+		$this->config['archiveMode'] = $archiveMode?$archiveMode:'month';
 
 		// arcExclusive : -1=only non-archived; 0=don't care; 1=only archived
 		$arcExclusive = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'archive', 'sDEF');
@@ -363,7 +373,7 @@ class tx_ttnews extends tslib_pibase {
 		$this->config['backPid'] = $backPid;
 
 		// max items per page
-		$FFlimit = t3lib_div::intInRange($this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'listLimit', 's_misc'), 0, 1000);
+		$FFlimit = t3lib_div::intInRange($this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'listLimit', 's_template'), 0, 1000);
 
 		$limit = t3lib_div::intInRange($this->cObj->stdWrap($this->conf['limit'],$this->conf['limit.']), 0, 1000);
 		$limit = $limit?$limit:	50;
@@ -396,23 +406,29 @@ class tx_ttnews extends tslib_pibase {
 		$this->config['forceFirstImageIsPreview'] = $forcefImgPreview?$fImgPreview : $this->conf['forceFirstImageIsPreview'];
 
 		// List start id
-		$listStartId = intval($this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'listStartId', 's_misc'));
-		$this->config['listStartId'] = $listStartId?$listStartId:intval($this->conf['listStartId']);
+//		$listStartId = intval($this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'listStartId', 's_misc'));
+		$this->config['listStartId'] = /*$listStartId?$listStartId:*/intval($this->conf['listStartId']);
 		// supress pagebrowser
-		$noPageBrowser = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'noPageBrowser', 's_misc');
+		$noPageBrowser = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'noPageBrowser', 's_template');
 		$this->config['noPageBrowser'] = $noPageBrowser?$noPageBrowser:	$this->conf['noPageBrowser'];
 
 
-		// image sizes given from FlexForms
-		$this->config['FFimgH'] = intval($this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'imageMaxHeight', 's_template'));
-		$this->config['FFimgW'] = intval($this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'imageMaxWidth', 's_template'));
+		// image sizes/optionSplit given from FlexForms
+		$this->config['FFimgH'] = trim($this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'imageMaxHeight', 's_template'));
+		$this->config['FFimgW'] = trim($this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'imageMaxWidth', 's_template'));
 
 		// Get number of alternative Layouts (loop layout in LATEST and LIST view) default is 2:
 		$altLayouts = intval($this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'alternatingLayouts', 's_template'));
-		$altLayouts = $altLayouts?$altLayouts:intval($this->conf['alternatingLayouts']);
-		$this->alternatingLayouts = $altLayouts?$altLayouts:2;
-
+		$altLayouts = $altLayouts ? $altLayouts : intval($this->conf['alternatingLayouts']);
+		$this->alternatingLayouts = $altLayouts ? $altLayouts : 2;
+		
+		$altLayouts = trim($this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'altLayoutsOptionSplit', 's_template'));
+		$this->config['altLayoutsOptionSplit'] = $altLayouts ? $altLayouts : trim($this->conf['altLayoutsOptionSplit']);
+		
 		// Get cropping lenght
+		
+		$croppingLenghtOptionSplit = trim($this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'croppingLenghtOptionSplit', 's_template'));
+		$this->config['croppingLenghtOptionSplit'] = $croppingLenghtOptionSplit ? $croppingLenghtOptionSplit : trim($this->conf['croppingLenghtOptionSplit']);	
 		$this->config['croppingLenght'] = trim($this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'croppingLenght', 's_template'));
 
 		$this->initTemplate();
@@ -858,12 +874,41 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 
 if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 
+		$limit = $this->config['limit'];
 
-
-
-
+		$lConf = $this->conf[$prefix_display.'.'];
 		$res = $this->exec_getQuery('tt_news', $selectConf); //get query for list contents
-
+		
+		
+		// make some final config manipulations
+		// overwrite image sizes from TS with the values from content-element if they exist.
+		if ($this->config['FFimgH'] || $this->config['FFimgW']) {
+			$lConf['image.']['file.']['maxW'] = $this->config['FFimgW'];
+			$lConf['image.']['file.']['maxH'] = $this->config['FFimgH'];
+		}
+		if ($this->config['croppingLenght']) {
+			$lConf['subheader_stdWrap.']['crop'] = $this->config['croppingLenght'];
+		}
+		
+		
+	
+		$this->splitLConf = array();
+		if ($this->conf['enableOptionSplit']) {
+			if ($this->config['croppingLenghtOptionSplit']) {
+				$crop = $lConf['subheader_stdWrap.']['crop'];
+				if ($this->config['croppingLenght']) {
+					$crop = $this->config['croppingLenght'];
+				} 
+				$cparts = explode('|',$crop);
+				if (is_array($cparts)) {
+					$cropSuffix = '|'.$cparts[1].($cparts[2]?'|'.$cparts[2]:'');
+				}				
+				$lConf['subheader_stdWrap.']['crop'] = $this->config['croppingLenghtOptionSplit'];
+			}				
+			$resCount = $GLOBALS['TYPO3_DB']->sql_num_rows($res);
+			$this->splitLConf = $this->processOptionSplit($lConf,$limit,$resCount);
+		}
+				
 		$itemsOut = '';
 		$itempartsCount = count($itemparts);
 		$pTmp = $GLOBALS['TSFE']->ATagParams;
@@ -877,13 +922,19 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 
 		// Getting elements
 		while (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))) {
+			
+			// gets the option splitted config for this record
+			if ($this->conf['enableOptionSplit'] && !empty($this->splitLConf[$cc])) {
+				$lConf = $this->splitLConf[$cc];
+				$lConf['subheader_stdWrap.']['crop'] .= $cropSuffix;
+				
+			}
 
 			$GLOBALS['TSFE']->displayedNews[]=$row['uid'];
 
 			$wrappedSubpartArray = array();
-			$lConf = $this->conf[$prefix_display.'.'];
 			$titleField = $lConf['linkTitleField']?$lConf['linkTitleField']:'';
-
+			
 			if ($GLOBALS['TSFE']->sys_language_content) {
 				// prevent link targets from being changed in localized records
 				$tmpPage = $row['page'];
@@ -926,7 +977,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 
 			// reset ATagParams
 			$GLOBALS['TSFE']->ATagParams = $pTmp;
-			$markerArray = $this->getItemMarkerArray($row, $prefix_display);
+			$markerArray = $this->getItemMarkerArray($row, $lConf, $prefix_display);
 
 			// XML
 			if ($this->theCode == 'XML') {
@@ -954,7 +1005,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 			// Store the result of template parsing in the Var $itemsOut, use the alternating layouts
 			$itemsOut .= $this->cObj->substituteMarkerArrayCached($itemparts[$layoutNum], $markerArray, array(), $wrappedSubpartArray);
 			$cc++;
-			if ($cc == $this->config['limit']) {
+			if ($cc == $limit) {
 				break;
 			}
 		}
@@ -966,7 +1017,10 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 		return $itemsOut;
 	}
 
+	
 
+	
+	
 
 
 
@@ -976,6 +1030,8 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 	 * @return	string		html-code for the "single view"
 	 */
 	function displaySingle() {
+		$lConf = $this->conf['displaySingle.'];
+
 		$selectConf = array();
 		$selectConf['selectFields'] = '*';
 		$selectConf['fromTable'] = 'tt_news';
@@ -1019,8 +1075,9 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 			if ($this->conf['displayCurrentRecord']) {
 				$item = trim($this->getNewsSubpart($this->templateCode, $this->spMarker('###TEMPLATE_SINGLE_RECORDINSERT###'), $row));
 			}
+			
 			if (!$item) {
-				$item = $this->getNewsSubpart($this->templateCode, $this->spMarker('###TEMPLATE_SINGLE###'), $row);
+				$item = $this->getNewsSubpart($this->templateCode, $this->spMarker('###TEMPLATE_'.$this->theCode.'###'), $row);
 			}
 				// reset marker array
 			$wrappedSubpartArray = array();
@@ -1044,10 +1101,10 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 				// set pagetitle for indexed search to news title
 				$GLOBALS['TSFE']->indexedDocTitle = $row['title'];
 			}
-			if ($this->conf['displaySingle.']['catOrderBy']) {
-				$this->config['catOrderBy'] = $this->conf['displaySingle.']['catOrderBy'];
+			if ($lConf['catOrderBy']) {
+				$this->config['catOrderBy'] = $lConf['catOrderBy'];
 			}
-			$markerArray = $this->getItemMarkerArray($row, 'displaySingle');
+			$markerArray = $this->getItemMarkerArray($row, $lConf, 'displaySingle');
 			// Substitute
 			$content = $this->cObj->substituteMarkerArrayCached($item, $markerArray, array(), $wrappedSubpartArray);
 		} elseif ($this->sys_language_mode == 'strict' && $this->tt_news_uid && $GLOBALS['TSFE']->sys_language_content) { // not existing translation
@@ -1126,6 +1183,8 @@ if ($this->debugTimes) $this->getParsetime(__METHOD__.' $dateArr');
 
 				$periodInfo = array();
 				$periodInfo['start'] = $v;
+				$periodInfo['active'] = ($this->piVars['pS']==$v?1:0);
+				
 				$periodInfo['stop'] = $dateArr[$k + 1]-1;
 				$periodInfo['HRstart'] = date('d-m-Y', $periodInfo['start']);
 				$periodInfo['HRstop'] = date('d-m-Y', $periodInfo['stop']);
@@ -1222,6 +1281,8 @@ if ($this->debugTimes) $this->getParsetime(__METHOD__.' $$periodAccum');
 				$markerArray['###ARCHIVE_TITLE###'] = $veryLocal_cObj->cObjGetSingle($this->conf['archiveTitleCObject'], $this->conf['archiveTitleCObject.'], 'archiveTitle');
 				$markerArray['###ARCHIVE_COUNT###'] = $pArr['count'];
 				$markerArray['###ARCHIVE_ITEMS###'] = ($pArr['count']==1?$this->pi_getLL('archiveItem'):$this->pi_getLL('archiveItems'));
+				$markerArray['###ARCHIVE_ACTIVE###'] = ($this->piVars['pS']==$pArr['start']?$this->conf['archiveActiveMarkerContent']:'');
+				
 				$layoutNum = ($tCount == 0 ? 0 : ($cc % $tCount));
 				$amenuitem = $this->cObj->substituteMarkerArrayCached($t['item'][$layoutNum], $markerArray, array(), $wrappedSubpartArray);
 
@@ -1455,14 +1516,14 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 	 * @param	array		$textRenderObj : conf vars for the current template
 	 * @return	array		$markerArray: filled marker array
 	 */
-	function getItemMarkerArray ($row, $textRenderObj = 'displaySingle') {
+	function getItemMarkerArray ($row, $lConf, $textRenderObj = 'displaySingle') {
 
 
 if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 
 
 		// get config for current template part:
-		$lConf = $this->conf[$textRenderObj . '.'];
+		
 		$this->local_cObj->start($row, 'tt_news');
 
 		$markerArray = array();
@@ -1534,9 +1595,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 
 if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 
-		if ($this->config['croppingLenght']) {
-			$lConf['subheader_stdWrap.']['crop'] = $this->config['croppingLenght'];
-		}
+
 		$markerArray['###NEWS_SUBHEADER###'] = '';
 		if ($this->isRenderField('short')) {
 			if (!$this->piVars[$this->config['singleViewPointerName']] || $this->conf['subheaderOnAllSViewPages']) {
@@ -1623,7 +1682,8 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 		// Links
 		$markerArray['###TEXT_LINKS###'] = '';
 		$markerArray['###NEWS_LINKS###'] = '';
-		if ($row['links'] && $this->isRenderField('links')) {
+		$links = trim($row['links']);
+		if ($links && $this->isRenderField('links')) {
 			$links_stdWrap = t3lib_div::trimExplode('|', $lConf['links_stdWrap.']['wrap']);
 			$newsLinks = $this->local_cObj->stdWrap($this->formatStr($row['links']), $lConf['linksItem_stdWrap.']);
 			$markerArray['###TEXT_LINKS###'] = $links_stdWrap[0].$this->local_cObj->stdWrap($this->pi_getLL('textLinks'), $lConf['linksHeader_stdWrap.']);
@@ -1642,7 +1702,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 			$fileArr = explode(',', $row['news_files']);
 			$filelinks = '';
 			$rss2Enclousres = '';
-			while (list(, $val) = each($fileArr)) {
+			foreach ($fileArr as $val) {
 				// fills the marker ###FILE_LINK### with the links to the atached files
 				$filelinks .= $this->local_cObj->filelink($val, $this->conf['newsFiles.']) ;
 
@@ -1943,12 +2003,6 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 	 * @return	array		$markerArray: filled markerarray
 	 */
 	function getImageMarkers($markerArray, $row, $lConf, $textRenderObj) {
-		// overwrite image sizes from TS with the values from the content-element if they exist.
-		if ($this->config['FFimgH'] || $this->config['FFimgW']) {
-			$lConf['image.']['file.']['maxW'] = $this->config['FFimgW'];
-			$lConf['image.']['file.']['maxH'] = $this->config['FFimgH'];
-		}
-
 		if ($this->conf['imageMarkerFunc']) {
 			$markerArray = $this->userProcess('imageMarkerFunc', array($markerArray, $lConf));
 		} else {
@@ -1962,55 +2016,141 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 
 			reset($imgs);
 
-			$cc = 0;
-			// remove first img from the image array in single view if the TSvar firstImageIsPreview is set
-			if ((	(count($imgs) > 1 && $this->config['firstImageIsPreview'])
-					||
-					(count($imgs) >= 1 && $this->config['forceFirstImageIsPreview'])
-				) && $textRenderObj == 'displaySingle') {
-				array_shift($imgs);
-				array_shift($imgsCaptions);
-				array_shift($imgsAltTexts);
-				array_shift($imgsTitleTexts);
-			}
-			// get img array parts for single view pages
-			if ($this->piVars[$this->config['singleViewPointerName']]) {
-				$spage = $this->piVars[$this->config['singleViewPointerName']];
-				$astart = $imageNum*$spage;
-				$imgs = array_slice($imgs,$astart,$imageNum);
-				$imgsCaptions = array_slice($imgsCaptions,$astart,$imageNum);
-				$imgsAltTexts = array_slice($imgsAltTexts,$astart,$imageNum);
-				$imgsTitleTexts = array_slice($imgsTitleTexts,$astart,$imageNum);
-			}
-
-			while (list(, $val) = each($imgs)) {
-				if ($cc == $imageNum) break;
-				if ($val) {
-
-					$lConf['image.']['altText'] = $imgsAltTexts[$cc];
-					$lConf['image.']['titleText'] = $imgsTitleTexts[$cc];
-					$lConf['image.']['file'] = 'uploads/pics/' . $val;
-				}
-				$theImgCode .= $this->local_cObj->IMAGE($lConf['image.']) . $this->local_cObj->stdWrap($imgsCaptions[$cc], $lConf['caption_stdWrap.']);
-				$cc++;
-			}
-
-			if ($cc) {
-				$markerArray['###NEWS_IMAGE###'] = $this->local_cObj->wrap(trim($theImgCode), $lConf['imageWrapIfAny']);
+			if ($textRenderObj == 'displaySingle') {
+				$markerArray = $this->getSingleViewImages($lConf,$imgs,$imgsCaptions,$imgsAltTexts,$imgsTitleTexts,$imageNum);
 			} else {
-				$markerArray['###NEWS_IMAGE###'] = $this->local_cObj->stdWrap($markerArray['###NEWS_IMAGE###'],$lConf['image.']['noImage_stdWrap.']);
+				$cc = 0;
+				foreach ($imgs as $val) {
+					if ($cc == $imageNum) break;
+					if ($val) {
+						$lConf['image.']['altText'] = $imgsAltTexts[$cc];
+						$lConf['image.']['titleText'] = $imgsTitleTexts[$cc];
+						$lConf['image.']['file'] = 'uploads/pics/' . $val;
+						
+						$theImgCode .= $this->local_cObj->IMAGE($lConf['image.']) . $this->local_cObj->stdWrap($imgsCaptions[$cc], $lConf['caption_stdWrap.']);
+					}
+					$cc++;
+				}
+				
+				if ($cc) {
+					$markerArray['###NEWS_IMAGE###'] = $this->local_cObj->wrap($theImgCode, $lConf['imageWrapIfAny']);
+				} else {
+					$markerArray['###NEWS_IMAGE###'] = $this->local_cObj->stdWrap($markerArray['###NEWS_IMAGE###'],$lConf['image.']['noImage_stdWrap.']);
+				}
 			}
 		}
-
-if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
-
-
+		if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
+//		debug($markerArray, '$$markerArray ('.__CLASS__.'::'.__FUNCTION__.')', __LINE__, __FILE__, 2);
+		
 		return $markerArray;
 	}
 
+	
+	
+	
+	
+	/**
+	 * Fills the image markers for the SINGLE view with data. Supports Optionssplit for some parameters
+	 *
+	 * @return	array		$markerArray: filled markerarray
+	 */
+	function getSingleViewImages($lConf,$imgs,$imgsCaptions,$imgsAltTexts,$imgsTitleTexts,$imageNum) {
+		$marker = 'NEWS_IMAGE';
+		$sViewSplitLConf = array();
+		$tmpMarkers = array();
+		$markerArray = array();
+		$iC = count($imgs);		
 
+		// remove first img from image array in single view if the TSvar firstImageIsPreview is set
+		if (($iC > 1 && $this->config['firstImageIsPreview']) || 
+			 ($iC >= 1 && $this->config['forceFirstImageIsPreview']))  {
+			array_shift($imgs);
+			array_shift($imgsCaptions);
+			array_shift($imgsAltTexts);
+			array_shift($imgsTitleTexts);
+			$iC--;
+		}
+		
+		if ($iC > $imageNum) {
+			$iC = $imageNum;
+		}
+							
+		// get img array parts for single view pages
+		if ($this->piVars[$this->config['singleViewPointerName']]) {
+			
+			/**
+			 * TODO
+			 * does this work with optionsplit ?
+			 */
+			$spage = $this->piVars[$this->config['singleViewPointerName']];
+			$astart = $imageNum*$spage;
+			$imgs = array_slice($imgs,$astart,$imageNum);
+			$imgsCaptions = array_slice($imgsCaptions,$astart,$imageNum);
+			$imgsAltTexts = array_slice($imgsAltTexts,$astart,$imageNum);
+			$imgsTitleTexts = array_slice($imgsTitleTexts,$astart,$imageNum);
+		}
 
-
+		if ($this->conf['enableOptionSplit']) {
+			if ($lConf['imageMarkerOptionSplit']) {
+				$ostmp = explode('|*|',$lConf['imageMarkerOptionSplit']);
+				$osCount = count($ostmp);	
+			}				
+			$sViewSplitLConf = $this->processOptionSplit($lConf,$iC);
+		}
+		// reset markers for optionSplitted images
+		for ($m = 1; $m <= $imageNum; $m++) {
+			$markerArray['###'.$marker.'_'.$m.'###'] = '';
+		}
+		
+//		debug($markerArray, 'before ('.__CLASS__.'::'.__FUNCTION__.')', __LINE__, __FILE__, 3);
+//						debug($this->theCode, ' ('.__CLASS__.'::'.__FUNCTION__.')', __LINE__, __FILE__, 3);
+		
+				
+		$cc = 0;
+		foreach ($imgs as $val) {
+			if ($cc == $imageNum) break;
+			if ($val) {
+				if (!empty($sViewSplitLConf[$cc])) {
+					$lConf = $sViewSplitLConf[$cc];
+				}
+				$lConf['image.']['altText'] = $imgsAltTexts[$cc];
+				$lConf['image.']['titleText'] = $imgsTitleTexts[$cc];
+				$lConf['image.']['file'] = 'uploads/pics/' . $val;
+				
+				$imgHtml = $this->local_cObj->IMAGE($lConf['image.']) . $this->local_cObj->stdWrap($imgsCaptions[$cc], $lConf['caption_stdWrap.']);
+				if ($osCount) {
+					if ($iC > 1) { 
+						$mName = '###'.$marker.'_'.$lConf['imageMarkerOptionSplit'].'###';
+					} else { // fall back to the first image marker if only one image has been found
+						$mName = '###'.$marker.'_1###';
+					}
+					$tmpMarkers[$mName]['html'] .= $imgHtml;
+					$tmpMarkers[$mName]['wrap'] = $lConf['imageWrapIfAny'];
+				} else {
+					$theImgCode .= $imgHtml;
+				}
+			}
+			$cc++;
+		}
+			
+		if ($cc) {
+			if ($osCount) {
+				foreach ($tmpMarkers as $mName => $res) {
+					$markerArray[$mName] = $this->local_cObj->wrap($res['html'], $res['wrap']);
+				}
+			} else {
+				$markerArray['###'.$marker.'###'] = $this->local_cObj->wrap($theImgCode, $lConf['imageWrapIfAny']);
+			}
+		} else {
+			if ($lConf['imageMarkerOptionSplit']) {
+				$m = '_1';
+			}
+			$markerArray['###'.$marker.$m.'###'] = $this->local_cObj->stdWrap($markerArray['###'.$marker.$m.'###'],$lConf['image.']['noImage_stdWrap.']);
+		}			
+//		debug($sViewSplitLConf, '$sViewSplitLConf ('.__CLASS__.'::'.__FUNCTION__.')', __LINE__, __FILE__, 2);
+		
+		return $markerArray;
+	}
 
 
 
@@ -2735,31 +2875,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 		$selectConf['pidInList'] = $this->pid_list;
 		$selectConf['where'] = '';
 
-		if ($this->sys_language_mode == 'strict' && $GLOBALS['TSFE']->sys_language_content) {
-			// sys_language_mode == 'strict': If a certain language is requested, select only news-records from the default
-			// language which have a translation. The translated articles will be overlayed later in the list or single function.
-			$tmpres = $this->exec_getQuery('tt_news', array(
-				'selectFields' => 'tt_news.l18n_parent',
-				'where' => 'tt_news.sys_language_uid = '.$GLOBALS['TSFE']->sys_language_content.$this->enableFields,
-				'pidInList' => $this->pid_list));
-
-			$strictUids = array();
-			while (($tmprow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($tmpres))) {
-				$strictUids[] = $tmprow['l18n_parent'];
-			}
-			$strStrictUids = implode(',', $strictUids);
-			$selectConf['where'] .= '(tt_news.uid IN (' . ($strStrictUids?$strStrictUids:0) . ') OR tt_news.sys_language_uid=-1)'; // sys_language_uid=-1 = [all languages]
-		} else {
-			// sys_language_mode NOT 'strict': If a certain language is requested, select only news-records in the default language.
-			// The translated articles (if they exist) will be overlayed later in the displayList or displaySingle function.
-			$selectConf['where'] .= 'tt_news.sys_language_uid IN (0,-1)';
-		}
-
-if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
-
-		if ($this->conf['showNewsWithoutDefaultTranslation']) {
-				$selectConf['where'] = '('.$selectConf['where'].' OR (tt_news.sys_language_uid='.$GLOBALS['TSFE']->sys_language_content.' AND NOT tt_news.l18n_parent))';
-		}
+		$selectConf['where'] = $this->getLanguageWhere($selectConf['where']);
 
 		$selectConf['where'] = '1=1 AND ' . ($this->theCode == 'LATEST'?'':($where?'1=1 '.$where.' AND ':'')).$selectConf['where'];
 
@@ -2960,7 +3076,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 
 
-		if ($this->conf['excludeAlreadyDisplayedNews'] && $this->theCode != 'AMENU' && $this->theCode != 'SEARCH') {
+		if ($this->conf['excludeAlreadyDisplayedNews'] && $this->theCode != 'SEARCH' && $this->theCode != 'AMENU') {
 			if (!is_array($GLOBALS['TSFE']->displayedNews)) {
 				$GLOBALS['TSFE']->displayedNews = array();
 			} else {
@@ -3019,7 +3135,37 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 		return $selectConf;
 	}
 
+	
+	function getLanguageWhere($where) {
+		$sys_language_content = $GLOBALS['TSFE']->sys_language_content;
+		if ($this->sys_language_mode == 'strict' && $sys_language_content) {
+			// sys_language_mode == 'strict': If a certain language is requested, select only news-records from the default
+			// language which have a translation. The translated articles will be overlayed later in the list or single function.
+			$tmpres = $this->exec_getQuery('tt_news', array(
+				'selectFields' => 'tt_news.l18n_parent',
+				'where' => 'tt_news.sys_language_uid = '.$sys_language_content.$this->enableFields,
+				'pidInList' => $this->pid_list));
 
+			$strictUids = array();
+			while (($tmprow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($tmpres))) {
+				$strictUids[] = $tmprow['l18n_parent'];
+			}
+			$strStrictUids = implode(',', $strictUids);
+			$where .= '(tt_news.uid IN (' . ($strStrictUids?$strStrictUids:0) . ') OR tt_news.sys_language_uid=-1)'; // sys_language_uid=-1 = [all languages]
+		} else {
+			// sys_language_mode NOT 'strict': If a certain language is requested, select only news-records in the default language.
+			// The translated articles (if they exist) will be overlayed later in the displayList or displaySingle function.
+			$where .= 'tt_news.sys_language_uid IN (0,-1)';
+		}
+
+
+		if ($this->conf['showNewsWithoutDefaultTranslation']) {
+				$where = '('.$where.' OR (tt_news.sys_language_uid='.$sys_language_content.' AND NOT tt_news.l18n_parent))';
+		}		
+		return $where;
+	}
+	
+	 
 
 
 	/**
@@ -3425,15 +3571,17 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 	 */
 	function initPidList () {
 		// pid_list is the pid/list of pids from where to fetch the news items.
-		$pid_list = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'pages', 'sDEF');
+		$pid_list = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'pages', 's_misc');
 		$pid_list = $pid_list?$pid_list:
 		trim($this->cObj->stdWrap($this->conf['pid_list'], $this->conf['pid_list.']));
 		$pid_list = $pid_list ? implode(t3lib_div::intExplode(',', $pid_list), ','):
 		$GLOBALS['TSFE']->id;
 
-		$recursive = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'recursive', 'sDEF');
-		$recursive = is_numeric($recursive)?$recursive:
-		$this->cObj->stdWrap($this->conf['recursive'], $this->conf['recursive.']);
+		$recursive = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'recursive', 's_misc');
+		if (!strcmp($recursive,'') || $recursive === NULL) {
+			$recursive = $this->cObj->stdWrap($this->conf['recursive'], $this->conf['recursive.']);
+		}
+				
 		// extend the pid_list by recursive levels
 		$this->pid_list = $this->pi_getPidList($pid_list, $recursive);
 		$this->pid_list = $this->pid_list?$this->pid_list:0;
@@ -3489,6 +3637,22 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 	}
 
 
+	
+	
+	function processOptionSplit($lConf, $limit, $resCount=false) {
+		// splits the configuration for optionSplit support
+		if ($limit <= $resCount || $resCount === false) {
+			$splitCount = $limit;
+		} else {
+			$splitCount = $resCount;
+		}
+		return $GLOBALS['TSFE']->tmpl->splitConfArray($lConf, $splitCount);		
+	}	
+	
+	
+	
+	
+	
 	/**
 	 * returns an error message if some important settings are missing (template file, singlePid, pidList, code)
 	 *
@@ -3712,13 +3876,26 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 	 */
 	function getLayouts($templateCode, $alternatingLayouts, $marker) {
 		$out = array();
-		for($a = 0; $a < $alternatingLayouts; $a++) {
-			$m = '###' . $marker . ($a?'_' . $a:'') . '###';
-			if (strstr($templateCode, $m)) {
-				$out[] = $GLOBALS['TSFE']->cObj->getSubpart($templateCode, $m);
-			} else {
-				break;
+		if ($this->config['altLayoutsOptionSplit']) {
+			$splitLayouts = $GLOBALS['TSFE']->tmpl->splitConfArray(array('ln' => $this->config['altLayoutsOptionSplit']), $this->config['limit']);
+			if (is_array($splitLayouts)) {
+				foreach ($splitLayouts as $tmpconf) {
+					$a = $tmpconf['ln'];
+					$m = '###' . $marker . ($a?'_' . $a:'') . '###';
+					if (strstr($templateCode, $m)) {
+						$out[] = $GLOBALS['TSFE']->cObj->getSubpart($templateCode, $m);
+					} 
+				}
 			}
+		} else {
+			for($a = 0; $a < $alternatingLayouts; $a++) {
+				$m = '###' . $marker . ($a?'_' . $a:'') . '###';
+				if (strstr($templateCode, $m)) {
+					$out[] = $GLOBALS['TSFE']->cObj->getSubpart($templateCode, $m);
+				} else {
+					break;
+				}
+			}			
 		}
 		return $out;
 	}

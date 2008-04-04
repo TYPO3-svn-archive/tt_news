@@ -7,8 +7,6 @@ plugin.tt_news {
 	_CSS_DEFAULT_STYLE (
 
 
-
-
 .news-single-rightbox,
 .news-single-imgcaption,
 .news-latest-date,
@@ -32,7 +30,8 @@ plugin.tt_news {
 .news-latest-container HR.clearer,
 .news-list-container HR.clearer,
 .news-list2-container HR.clearer,
-.news-list3-container HR.clearer
+.news-list3-container HR.clearer,
+.news-single-item HR.clearer
  {
 	clear:right;
 	height:1px;
@@ -229,7 +228,7 @@ plugin.tt_news {
 }
 
 .news-single-img {
-	float: right;
+float: right;
 	margin:10px 0 0 10px;
 	padding:0;
 }
@@ -240,7 +239,6 @@ plugin.tt_news {
 
 .news-single-imgcaption {
 	padding: 1px 3px 3px 3px;
-	width: {$plugin.tt_news.singleMaxW}px;
 	margin:0;
 }
 
@@ -263,23 +261,56 @@ plugin.tt_news {
 .news-single-related,
 .news-single-files,
 .news-single-links  {
-	margin:0px;
+	margin: 0;
 	margin-bottom: 3px;
-	padding:3px;
+	padding: 3px;
 }
 
 .news-single-related DD,
 .news-single-links DD,
 .news-single-files DD {
-	margin-left:20px;
+	margin-left: 20px;
 }
 
 .news-single-related DT,
 .news-single-links DT,
 .news-single-files DT {
 	font-weight: bold;
-	margin-left:5px;
+	margin-left: 5px;
 }
+
+.news-single-files DD A {
+	padding:0 3px;
+}
+
+
+	/*--------------------------------- SINGLE2  ---------------------------------*/
+
+
+
+
+.sv-img-big {
+	float: right;
+	padding: 0 0 2px 10px;
+}
+.sv-img-small-wrapper {
+width:50%;
+padding: 0 0 0 10px;
+
+}
+.sv-img-small {
+float: none;
+	border:1px solid red;
+
+}
+
+.sv-img-small img {
+float:none;
+}
+
+
+
+
 
 /*--------------------------------- tt_news Archivemenu (AMENU) --------------------------------- */
 .news-amenu-container {
@@ -402,9 +433,7 @@ ul.tree li.active ul, ul.tree ul li.active ul {
 	background-color:#b0cb51;
 	border-left:1px solid #666;
 }
-
-
-   )
+	)
 
 }
 

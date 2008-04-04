@@ -52,16 +52,17 @@
 			<label index="tt_news.pi_flexform.what_to_display">What to display:</label>
 			
 			<label index="tt_news.pi_flexform.LIST">Standard list view (LIST)</label>
-			<label index="tt_news.pi_flexform.LIST2">Advanced list view with 5 alternating template parts (LIST2)</label>
+			<label index="tt_news.pi_flexform.LIST2">Advanced list view with 6 alternating template parts (LIST2)</label>
 			<label index="tt_news.pi_flexform.LIST3">Standard list view with 3 alternating template parts (LIST3)</label>
 			<label index="tt_news.pi_flexform.LATEST">Latest view (LATEST)</label>
 			<label index="tt_news.pi_flexform.SINGLE">Detail view (SINGLE)</label>
+			<label index="tt_news.pi_flexform.SINGLE2">Advanced detail view with 3 image markers (SINGLE2)</label>
+			
 			<label index="tt_news.pi_flexform.HEADER_LIST">Header list without images (HEADER_LIST)</label>
 			<label index="tt_news.pi_flexform.AMENU">Archive menu (AMENU)</label>
 			<label index="tt_news.pi_flexform.SEARCH">Searchform with result list (SEARCH)</label>
 			<label index="tt_news.pi_flexform.CATMENU">Category menu (CATMENU)</label>
 			<label index="tt_news.pi_flexform.VERSION_PREVIEW">Preview of not published versions of news records (VERSION_PREVIEW)</label>
-			
 			
 			<label index="tt_news.pi_flexform.listOrderby">&quot;Order by&quot; this field (LIST &amp; LATEST):</label>
 			<label index="tt_news.pi_flexform.ascDesc">Ascending or Descending (LIST &amp; LATEST):</label>
@@ -86,6 +87,9 @@
 			<label index="tt_news.pi_flexform.catImageMode">Category Image Link Mode:</label>
 			<label index="tt_news.pi_flexform.catTextMode">Category Text Link Mode:</label>
 			<label index="tt_news.pi_flexform.recursive">Recursive level selection:</label>
+			
+			<label index="tt_news.pi_flexform.recursive.I.0">0 levels</label>
+			<label index="tt_news.pi_flexform.recursive_TS">Defined by TypoScript</label>
 			<label index="tt_news.pi_flexform.catImageMaxWidth">Max width of category image:</label>
 			<label index="tt_news.pi_flexform.catImageMaxHeight">Max height of category image:</label>
 			<label index="tt_news.pi_flexform.maxCatImages">Max number of category images:</label>
@@ -106,11 +110,17 @@
 			<label index="tt_news.pi_flexform.limit">Limit: max items for LIST and LATEST</label>
 			<label index="tt_news.pi_flexform.listStartId">List StartId: Force LIST or LATEST to start from this item</label>
 			<label index="tt_news.pi_flexform.noPageBrowser">Don't display Pagebrowser in LIST</label>
-			<label index="tt_news.pi_flexform.imageMaxWidth">Max width for images in news records</label>
-			<label index="tt_news.pi_flexform.imageMaxHeight">Max height for images in news records</label>
-			<label index="tt_news.pi_flexform.alternatingLayouts">Number of alternating template-layouts</label>
+			<label index="tt_news.pi_flexform.imageMaxWidth">Max width for images in news records (accepts optionSplit)</label>
+			<label index="tt_news.pi_flexform.imageMaxHeight">Max height for images in news records (accepts optionSplit)</label>
+			<label index="tt_news.pi_flexform.altLayoutsOptionSplit">Template part number / optionSplit of template part numbers</label>
+			<label index="tt_news.pi_flexform.alternatingLayouts">Number of alternating template parts (is ignored if template part number is set)</label>
 			<label index="tt_news.pi_flexform.croppingLenght">stdWrap.crop for the subheader (short)</label>
+			<label index="tt_news.pi_flexform.croppingLenghtOptionSplit">OptionSplit for cropping lenght of subheader (overwrites lenght parameter from stdWrap.crop)</label>
+			
 			<label index="tt_news.pi_flexform.maxWordsInSingleView">insert pagebreak in SINGLE after this number of words</label>
+			<label index="tt_news.pi_flexform.startingpoint">Page(s) with tt_news records</label>
+			
+			
 			<label index="tt_news.categorymounts">tt_news: allowed/visible categories</label>
 		</languageKey>
 		<languageKey index="dk" type="array">

@@ -1,3 +1,35 @@
+2008-04-03	Rupert Germann <rupi@gmx.li>
+
+	* Implemented optionSplit for tt_news lists: (bug:7141). Thanks JONAS DÜBI and cabag.ch for the patch.
+		Now things like this are possible: plugin.tt_news.displayList.image.file.maxW = 300|*|200|*|100||100||100
+		means: the image-width of the first item will be 300px, the last 3 items will be 100px. The items in between will have 200px width.
+	* Since parsing for splitted options needs extra perfermance you can disable optionSplit by setting plugin.tt_news.enableOptionSplit=0 if you don't need it.
+
+	* Enable optionSplit for templateparts/alternatingLayouts: with the new parameter "altLayoutsOptionSplit" it's possible to control the templatepart number by optionSplit.
+		example: plugin.tt_news.altLayoutsOptionSplit = 0||1|*|2||3||4|*|5||5||5 (limit set to 11)
+		This can be directly used with the included LIST2 template and will use the templateparts in this order: 0,1,2,3,4,2,3,4,5,5,5
+		if "altLayoutsOptionSplit" is set "alternatingLayouts" will be ignored.
+
+	* Enabled optionSplit for images in singleview: with the new parameter "imageMarkerOptionSplit" it's possible to use multiple imagemarkers for the images in the single view.
+		example: plugin.tt_news.imageMarkerOptionSplit = 1|*|2
+		will render the first image to marker ###NEWS_IMAGE_1### and all others to marker ###NEWS_IMAGE_2###
+	* new code/template part: SINGLE2. Only change to normal SINGLE template is, that it uses multiple image markers which can be configured by "imageMarkerOptionSplit"
+
+	* flexform changes: cleaned up the flexform, added some missong localisation labels, moved some fields to other sheets.
+	* new flexform option: "Template part number / optionSplit of template part numbers". Same as "altLayoutsOptionSplit" in TS but applies only to the current content element.
+	* new flexform option: "OptionSplit for cropping lenght of subheader". This overwrites the "lenght" parameter from subheader_stdWrap.crop with an optionsplitted value (applies only to the current content element). This parameter is also available in TS: "plugin.tt_news.croppingLenghtOptionSplit"
+	* more optionsSplits ? ;-) : now the fields "imagesize" and "imagewidth" in flexforms can also be filled with splitted options.
+	* fix: added 2 new options to the recursive selecor in the flexform: "defined by TS" and "0 levels". 0 levels allows to override a globally given value for recursive by 0 for only one content element.
+	* new option/marker: plugin.tt_news.archiveActiveMarkerContent is filled to the marker ###ARCHIVE_ACTIVE### when the current archive period is selected. By default this marker is rendered to the opening <li> tag of an archive item and it is filled with 'class="amenu-act"'.
+
+	* fix: changed TS for the single view to render the linksItem_stdWrap around each link and not around all links. new: 'linksItem_stdWrap.parseFunc.nonTypoTagStdWrap.encapsLines.innerStdWrap_all.wrap = <dd>|</dd>''
+
+	* fix: set maximum of attached files to 100
+	* fix: the "RTEfullScreenWidth" for the tt_news.bodytext field is now set to 100% as in tt_content
+
+	* introduced a new function to class tt_news which renders only the images for the single view.
+	* continued the code cleanup (changed while/list to foreach ...)
+
 
 2008-04-01	Rupert Germann <rupi@gmx.li>
 
@@ -16,15 +48,15 @@
 	* added a new function getSingleViewLink(): This method is called to render all links pointing to a singleView (links in list, related news)
 	* new register "newsMoreLink_url": additionally to "newsMoreLink" which contains the complete "more" link, this register contains only the URL of this link (available in displayList/Latest and for related news)
 	* new hook "getSingleViewLinkHook": can be used to manipulate the singleView links
-	* new hook "sViewSelectConfHook": Allows to manipulate the query for the single view.
+	* new hook "sViewSelectConfHook" (bug 6740): Allows to manipulate the query for the single view.
 
 	* added some missing conditions to prevent calling stdWrap for empty fields to function getItemMarkerArray
 	* fix: links to related news are showing the correct dates now, when useHRDatesSingle is enabled.
 	* moved the some manipulations of the selectConf array from function displayList to function getSelectConf. Allows to alter the groupBy/orderBy part of the query with the selectConfHook.
 	* fix in tcaForm_selectTree: already selected categories don't loose their css class anymore when expanded/collapsed.
 	* better highlighting of parents of selected categories
-	* improvement: the archivemenu distinguishes between 1 item and more than 1 items now. Means: besides the existing language label "archiveItems" there's a new label called "archiveItem" which is displayed if an archive period contains only 1 item.
-
+	* improvement (bug 7507): the archivemenu distinguishes between 1 item and more than 1 items now. Means: besides the existing language label "archiveItems" there's a new label called "archiveItem" which is displayed if an archive period contains only 1 item.
+	* fix: added a limit ($selectconf[max]) to the main list query. Up till now the given limit from TS was only used to end the loop which renders the list content and it did not reach the sql query. Visible effect of this bug was that lists with many results did need significantly more time to render than list with less results no matter of the value of "limit" and the number of actually displayed records.
 
 
 2008-03-29	Rupert Germann <rupi@gmx.li>

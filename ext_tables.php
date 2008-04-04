@@ -82,7 +82,7 @@ $TCA['tt_content']['types']['list']['subtypes_excludelist'][9] = 'layout,select_
 	// add FlexForm field to tt_content
 $TCA['tt_content']['types']['list']['subtypes_addlist'][9] = 'pi_flexform';
 	// add tt_news to the "insert plugin" content element (list_type = 9)
-t3lib_extMgm::addPlugin(array('LLL:EXT:tt_news/locallang_tca.xml:tt_news', '9'));
+t3lib_extMgm::addPlugin(array('LLL:EXT:tt_news/locallang_tca.xml:tt_news', 9));
 
 t3lib_extMgm::addTypoScriptSetup('
   includeLibs.ts_news = EXT:tt_news/pi/class.tx_ttnews.php
@@ -114,12 +114,14 @@ if ($confArr['useStoragePid']) {
 	t3lib_extMgm::addPiFlexFormValue(9, 'FILE:EXT:tt_news/flexform_ds_no_sPID.xml');
 }
 
-	// sets the transformation mode for the RTE to "ts_css" if the extension css_styled_content is installed (default is: "ts")
-if (t3lib_extMgm::isLoaded('css_styled_content')) {
-	t3lib_extMgm::addPageTSConfig('
+
+t3lib_extMgm::addPageTSConfig('
 	# RTE mode in table "tt_news"
-	RTE.config.tt_news.bodytext.proc.overruleMode=ts_css');
-}
+	RTE.config.tt_news.bodytext.proc.overruleMode = ts_css
+	
+	TCEFORM.tt_news.bodytext.RTEfullScreenWidth = 100%
+');
+
 
 
 
