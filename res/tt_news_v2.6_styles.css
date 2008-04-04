@@ -1,11 +1,3 @@
-###
-# These are the default CSS Styles for the new tt_news standard template: EXT:tt_news/pi/tt_news_v2_template.html
-##
-
-plugin.tt_news {
-#}
-	_CSS_DEFAULT_STYLE (
-
 
 .news-single-rightbox,
 .news-single-imgcaption,
@@ -430,15 +422,4 @@ ul.tree li.active ul, ul.tree ul li.active ul {
 	background-color:#b0cb51;
 	border-left:1px solid #666;
 }
-
 	)
-
-}
-
-
-
-
-
-
-### CVS id ###
-# $Id$
