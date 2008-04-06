@@ -35,7 +35,9 @@
 
 /**
  * Example function for dividing the archive menu listing in years.
+ * @deprecated: since tt_news 2.6.0 the functionality of this script is included directly in tt_news
  */
+
 /*  add this to your TS setup:
 
   		# include the php script

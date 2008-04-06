@@ -2,9 +2,6 @@
   # cat=basic//10; type=boolean; label= Use "General record storage page": This option configures the handling of news categories in BackEnd forms and on the website (FrontEnd). By default categories will be displayed only if they are found in the "General record storage page" (AKA "GRSP" or "storagePid"). If you set "useStoragePid" to "0", all categories from the pagetree will be displayed (that was the default behaviour for tt_news versions < 1.3.0). If you're updating an older tt_news version or if you need the "GRSP" for other records (e.g. fe_users) you should set this value to "0". If "useStoragePid" is set to "1" and the tt_news categories are not located in the "GRSP" you won't see any categories in BackEnd forms or on the website. See tt_news manual for more information.
 useStoragePid = 1
 
-  # cat=basic/enable/120; type=boolean; label= Do not use Tab-Dividers: Here you can disable the "dividers2tabs" feature (TYPO3 > 3.7.0). "Dividers to Tabs" means: the BE form is divided in 2 sections. If you don't want this, set this value to 1.
-noTabDividers = 0
-
   # cat=basic/enable/130; type=boolean; label= Localization mode for text fields: By default, all text fields (text, subheader, imagecaption ...) from a new localized news article will be prepended with "[translate to ...]". If this is not wanted you can disable it here. If "l10n_mode_prefixLangTitle" is disabled the text "(copy [#])" will be added to the titles of this records unless "prependAtCopy" is disabled (see "prependAtCopy").
 l10n_mode_prefixLangTitle = 1
 
@@ -35,14 +32,11 @@ label_alt_force = 0
   # cat=basic//90; type=options[title,uid]; label= Category ordering in BackEnd trees: Here you can configure the the ordering of categories in category trees in BackEnd forms.
 treeOrderBy = uid
 
-  # cat=basic/dims/60; type=int [0-600]; label= Width of the left category field: This field shows the selected categories in the tt_news db-record (or parent categories in the category db-record). If "categorySelectedWidth" is set to 0 (zero) the default width (=180px) will be taken.
+  # cat=basic/dims/60; type=int [0-600]; label= Width of the left category field: This field shows the selected categories in the tt_news db-record (or parent categories in the category db-record). If "categorySelectedWidth" is set to 0 (zero) the default width (=200px) will be taken.
 categorySelectedWidth =
 
-  # cat=basic/dims/70; type=int [0-600]; label= Width of the right category field: This field shows the category tree in the tt_news db-record (or in the category db-record). If "categoryTreeWidth" is set to 0 (zero) the default width will depend on the browser which displays the TYPO3 BackEnd. The default width for all browsers except IE is 280px, for IE the default width is 320px to suppress the unneeded horizontal scrollbar below the category tree.
+  # cat=basic/dims/70; type=int [0-600]; label= Width of the right category field: This field shows the category tree in the tt_news db-record (or in the category db-record). If "categoryTreeWidth" is set to 0 (zero) the default width (=350px) will be taken.
 categoryTreeWidth =
-
-  # cat=basic/dims/80; type=int [3-30]; label= Max height for category trees: Here you can configure the maximum height of category trees in BackEnd forms. If you have xajax enabled for the expandable category tree, set this value to 30 because the height of the tree field will then be adapted to the tree height automatically.
-categoryTreeHeigth = 5
 
 
 

@@ -2,10 +2,10 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2004-2007 Rupert Germann <rupi@gmx.li>
+*  (c) 2004-2008 Rupert Germann <rupi@gmx.li>
 *  All rights reserved
 *
-*  This script is part of the Typo3 project. The Typo3 project is
+*  This script is part of the TYPO3 project. The TYPO3 project is
 *  free software; you can redistribute it and/or modify
 *  it under the terms of the GNU General Public License as published by
 *  the Free Software Foundation; either version 2 of the License, or
@@ -13,6 +13,9 @@
 *
 *  The GNU General Public License can be found at
 *  http://www.gnu.org/copyleft/gpl.html.
+*  A copy is found in the textfile GPL.txt and important notices to the license
+*  from the author is found in LICENSE.txt distributed with these scripts.
+*
 *
 *  This script is distributed in the hope that it will be useful,
 *  but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -26,10 +29,10 @@
  *
  *
  *
- *   50: class ext_update
- *   57:     function main()
- *  168:     function access($what = 'all')
- *  197:     function query($updatewhat)
+ *   53: class ext_update
+ *   60:     function main()
+ *  172:     function access($what = 'all')
+ *  202:     function query($updatewhat)
  *
  * TOTAL FUNCTIONS: 3
  * (This index is automatically created/updated by the extension "extdeveval")
@@ -84,15 +87,16 @@ class ext_update {
 			return $returnthis;
 		} elseif($count_cat OR $count_flex) {
 			if ($count_cat) {
-				while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res_cat)) {
+				while (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res_cat))) {
 
-					$res2 = $GLOBALS['TYPO3_DB']->exec_INSERTquery ('tt_news_cat_mm', array('uid_local' => $row['uid'], 'uid_foreign' => $row['category'], 'sorting' => 1));
+					$GLOBALS['TYPO3_DB']->exec_INSERTquery ('tt_news_cat_mm', array('uid_local' => $row['uid'], 'uid_foreign' => $row['category'], 'sorting' => 1));
 
 				}
 				$returndoupdate = $count_cat.' ROW(s) inserted.<br><br>';
 			}
 			if ($count_flex) {
-				while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res_flex)) {
+				$categories_to_display = '';
+				while (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res_flex))) {
 
 					$codes = t3lib_div::trimExplode(',', $row['select_key'], 1);
 					if (!count($codes)) $codes = array('');
@@ -105,7 +109,7 @@ class ext_update {
 						}
 						$categories_to_display .= ($categories_to_display?';'.$cat:$cat);
 					}
-					if (!$selection_mode)$selection_mode = (!$categories_to_display?0:1);
+					if (!$selection_mode) $selection_mode = (!$categories_to_display?0:1);
 						if ($categories_to_display) {
 						$categories_to_display = t3lib_div::trimExplode(';', $categories_to_display, 1);
 						$categories_to_display = array_unique($categories_to_display);
@@ -149,7 +153,7 @@ class ext_update {
 						</T3FlexForms>');
 					$updateRecord = array();
 					$updateRecord['pi_flexform'] = $xml;
-					$res = $GLOBALS['TYPO3_DB']->exec_UPDATEquery('tt_content', 'uid='.intval($row['uid']), $updateRecord);
+					$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tt_content', 'uid='.intval($row['uid']), $updateRecord);
 					unset($what_to_display, $categories_to_display, $archive, $selection_mode, $theCode, $cat);
 				}
 				$returndoupdate .= $count_flex.' ROW(s) updated.<br><br>';
@@ -166,7 +170,7 @@ class ext_update {
 	 * @return	boolean
 	 */
 	function access($what = 'all') {
-		if ($what = 'all') {
+		if ($what == 'all') {
 			if(is_object($GLOBALS['TYPO3_DB'])) {
 				if (in_array('tt_news_cat_mm', $GLOBALS['TYPO3_DB']->admin_get_tables ())) {
 					$testres = $GLOBALS['TYPO3_DB']->exec_SELECTquery ('*', 'tt_news_cat_mm', '1=1');
@@ -185,6 +189,7 @@ class ext_update {
 				}
 			}
 		}
+		return FALSE;
 	}
 
 
