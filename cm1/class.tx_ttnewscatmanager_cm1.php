@@ -53,31 +53,68 @@
  * @subpackage tt_news
  */
 class tx_ttnewscatmanager_cm1 {
-	function main(&$backRef,$menuItems,$table,$srcId)	{
+	
+	
+	
+	function main(&$backRef,$menuItems,$tableID,$srcId)	{
 		$this->includeLocalLang();
 		$this->backRef = &$backRef;
-//print_r( array($GLOBALS['BACK_PATH']));
-		if ($table == 'dragDrop_tt_news_cat' && $srcId) {
-			$this->backRef->backPath = '../../../';
-			$menuItems['moveinto']=$this->dragDrop_moveCategory($srcId,intval(t3lib_div::_GP('dstId')));
-			$menuItems['copyinto']=$this->dragDrop_copyCategory($srcId,intval(t3lib_div::_GP('dstId')));
-		}
+		
+		
+		
+		
+		
+		
+		
+		
+		
 
-		if ($table == 'tt_news_cat_CM' && $srcId) {
+		/**
+		 * FIXME
+		 * backpath will not work in global installations
+		 */
+		if (($tableID == 'dragDrop_tt_news_cat' || $tableID == 'tt_news_cat_CM') && $srcId) {
 			$table = 'tt_news_cat';
-			$this->backRef->backPath = '../../../../typo3/';
+			
 			$rec = t3lib_BEfunc::getRecordWSOL($table,$srcId);
-
-			$menuItems = array();
-			$menuItems['edit'] = $this->DB_edit($table,$srcId);
-			$menuItems['new'] = $this->DB_new($table,$srcId);
-			$menuItems['info'] = $backRef->DB_info($table,$srcId);
-			$menuItems['hide'] = $this->DB_hideUnhide($table,$rec,'hidden');
-
-			$elInfo=array(t3lib_div::fixed_lgd_cs(t3lib_BEfunc::getRecordTitle('tt_news_cat',$rec),$GLOBALS['BE_USER']->uc['titleLen']));
-			$menuItems['spacer2']='spacer';
-			$menuItems['delete'] = $this->DB_delete($table,$srcId,$elInfo);
+			// fetch page record to get editing permissions
+			$lCP = $GLOBALS['BE_USER']->calcPerms(t3lib_BEfunc::getRecord('pages',$rec['pid']));
+			$doEdit = $lCP&16;
+			
+//print_r( array($lCP));
+			
+			if ($doEdit && $tableID == 'dragDrop_tt_news_cat') {
+				$this->backRef->backPath = '../../../';
+				$dstId = intval(t3lib_div::_GP('dstId'));
+				$menuItems['moveinto'] = $this->dragDrop_moveCategory($srcId,$dstId);
+				$menuItems['copyinto'] = $this->dragDrop_copyCategory($srcId,$dstId);
+			}
+	
+			if ($tableID == 'tt_news_cat_CM') {
+				
+				$this->backRef->backPath = '../../../../typo3/';
+				
+	
+	
+				$menuItems = array();
+				if ($doEdit) {
+					$menuItems['edit'] = $this->DB_edit($table,$srcId);
+					$menuItems['new'] = $this->DB_new($table,$rec);
+					$menuItems['newsub'] = $this->DB_new($table,$rec,true);
+				}
+				
+				$menuItems['info'] = $backRef->DB_info($table,$srcId);
+				
+				if ($doEdit) {
+					$menuItems['hide'] = $this->DB_hideUnhide($table,$rec,'hidden');	
+					$elInfo = array(t3lib_div::fixed_lgd_cs(t3lib_BEfunc::getRecordTitle('tt_news_cat',$rec),$GLOBALS['BE_USER']->uc['titleLen']));
+					$menuItems['spacer2'] = 'spacer';
+					$menuItems['delete'] = $this->DB_delete($table,$srcId,$elInfo);
+				}
+			}
 		}
+		
+
 
 		return $menuItems;
 	}
@@ -91,10 +128,9 @@ class tx_ttnewscatmanager_cm1 {
 	 * @return	[type]		...
 	 */
 	function DB_edit($table,$uid)	{
-		$editOnClick='';
 		$loc='top.content.list_frame';
-
-		$editOnClick='if('.$loc.'){'.$loc.".location.href=top.TS.PATH_typo3+'alt_doc.php?returnUrl='+top.rawurlencode(".$this->backRef->frameLocation($loc.'.document').")+'&edit[".$table."][".$uid."]=edit';}";
+		$editOnClick='if('.$loc.'){'.$loc.".location.href=top.TS.PATH_typo3+'alt_doc.php?returnUrl='+top.rawurlencode(".
+			$this->backRef->frameLocation($loc.'.document').")+'&edit[".$table."][".$uid."]=edit';}";
 
 		return $this->backRef->linkItem(
 			$this->backRef->label('edit'),
@@ -111,17 +147,26 @@ class tx_ttnewscatmanager_cm1 {
 	 * @param	[type]		$backRef: ...
 	 * @return	[type]		...
 	 */
-	function DB_new($table,$uid)	{
+	function DB_new($table,$rec,$newsub=false)	{
 		$editOnClick='';
 		$loc='top.content.list_frame';
+		
+		if ($newsub) {
+			$parent = $rec['uid'];
+		} else {
+			$parent = $rec['parent_category'];			
+		}
+		
 		$editOnClick='if('.$loc.'){'.$loc.".location.href=top.TS.PATH_typo3+'".
-// 			($backRef->listFrame?
-				"alt_doc.php?returnUrl='+top.rawurlencode(".$this->backRef->frameLocation($loc.'.document').")+'&edit[".$table."][-".$uid."]=new'"/*:
-				'db_new.php?id='.intval($uid)."'")*/.
-			';}';
-
+				"alt_doc.php?returnUrl='+top.rawurlencode(".$this->backRef->frameLocation($loc.'.document').")+'&edit[".$table."][".$rec['pid']."]=new".
+				($parent?'&defVals['.$table.'][parent_category]='.$parent:'').'\';}';
+		$lkey = 'new';
+		if ($newsub) {
+			$lkey = 'newsub';
+		}
+		
 		return $this->backRef->linkItem(
-			$this->backRef->label('new'),
+			$GLOBALS['LANG']->getLLL($lkey,$this->LL),
 			$this->backRef->excludeIcon('<img'.t3lib_iconWorks::skinImg($this->backRef->PH_backPath,'gfx/new_el.gif','width="11" height="12"').' alt="" />'),
 			$editOnClick.'return hideCM();'
 		);
@@ -177,18 +222,19 @@ class tx_ttnewscatmanager_cm1 {
 	 * @internal
 	 */
 	function DB_delete($table,$uid,$elInfo)	{
-		$editOnClick='';
 		$loc='top.content.list_frame';
 		if($GLOBALS['BE_USER']->jsConfirmation(4))	{
-			$conf = "confirm(".$GLOBALS['LANG']->JScharCode(sprintf($GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:mess.delete'),$elInfo[0]).t3lib_BEfunc::referenceCount($table,$uid,' (There are %s reference(s) to this record!)')).")";
+			$conf = "confirm(".$GLOBALS['LANG']->JScharCode(sprintf($GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:mess.delete'),$elInfo[0]).
+				t3lib_BEfunc::referenceCount($table,$uid,' (There are %s reference(s) to this record!)')).")";
 		} else {
 			$conf = '1==1';
 		}
-		$editOnClick='if('.$loc." && ".$conf." ){".$loc.".location.href=top.TS.PATH_typo3+'tce_db.php?redirect='+top.rawurlencode(".$this->backRef->frameLocation($loc.'.document').")+'".
+		$editOnClick='if('.$loc." && ".$conf." ){".$loc.".location.href=top.TS.PATH_typo3+'tce_db.php?redirect='+top.rawurlencode(".
+			$this->backRef->frameLocation($loc.'.document').")+'".
 			"&cmd[".$table.']['.$uid.'][DDdelete]=1&prErr=1&vC='.$GLOBALS['BE_USER']->veriCode()."';hideCM();}";
 
 		return $this->backRef->linkItem(
-			$this->backRef->label('delete'),
+			$GLOBALS['LANG']->getLLL('delete',$this->LL),
 			$this->backRef->excludeIcon('<img'.t3lib_iconWorks::skinImg($this->backRef->PH_backPath,'gfx/garbage.gif','width="11" height="12"').' alt="" />'),
 			$editOnClick.'return false;'
 		);
@@ -205,7 +251,6 @@ class tx_ttnewscatmanager_cm1 {
 	 * @internal
 	 */
 	function dragDrop_moveCategory($srcUid,$dstUid)	{
-		$editOnClick='';
 		$loc='top.content.list_frame';
 		$editOnClick='if('.$loc.'){'.$loc.'.document.location=top.TS.PATH_typo3+"tce_db.php?redirect="+top.rawurlencode('.$this->backRef->frameLocation($loc.'.document').')+"'.
 			'&data[tt_news_cat]['.$srcUid.'][parent_category]='.$dstUid.'&prErr=1&vC='.$GLOBALS['BE_USER']->veriCode().'";hideCM();}';
@@ -226,9 +271,6 @@ class tx_ttnewscatmanager_cm1 {
 	 * @internal
 	 */
 	function dragDrop_copyCategory($srcUid,$dstUid)	{
-
-		$editOnClick='';
-// 		$loc='top.content'.($backRef->listFrame && !$backRef->alwaysContentFrame ?'.list_frame':'');
 		$loc='top.content.list_frame';
 		$editOnClick='if('.$loc.'){'.$loc.'.document.location=top.TS.PATH_typo3+"tce_db.php?redirect="+top.rawurlencode('.$this->backRef->frameLocation($loc.'.document').')+"'.
 			'&cmd[tt_news_cat]['.$srcUid.'][DDcopy]='.$dstUid.'&prErr=1&vC='.$GLOBALS['BE_USER']->veriCode().'";hideCM();}';

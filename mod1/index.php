@@ -27,40 +27,48 @@
  *
  *
  *
- *   99: class tx_ttnews_module1 extends t3lib_SCbase
- *  112:     function init()
- *  133:     function initGPvars()
- *  145:     function menuConfig()
- *  165:     function main()
- *  228:     function moduleContent()
- *  267:     function ajaxExpandCollapse($params, &$ajaxObj)
- *  285:     function ajaxLoadList($params, &$ajaxObj)
- *  296:     function displayNewsList()
- *  332:     function initSubCategories()
- *  348:     function getTreeObj()
+ *  106: class tx_ttnews_module1 extends t3lib_SCbase
+ *  129:     function init()
+ *  204:     function main()
+ *  266:     function printContent()
+ *
+ *              SECTION: Module content
+ *  298:     function moduleContent()
+ *  335:     function displayOverview()
+ *  389:     function displayCategoryTree()
+ *  409:     function getTreeObj()
+ *  461:     function displayNewsList()
+ *
+ *              SECTION: AJAX functions
+ *  538:     function ajaxExpandCollapse($params, &$ajaxObj)
+ *  556:     function ajaxLoadList($params, &$ajaxObj)
+ *  568:     function processAjaxRequestConstruct()
+ *
+ *              SECTION: GUI Elements
+ *  602:     function getListHeaderMsg()
+ *  646:     function renderTreeCheckBoxes()
+ *  679:     function renderListCheckBoxes()
+ *  701:     function renderNewCatButton()
+ *  720:     function getHeaderButtons()
  *
  *              SECTION: Internal helper functions
- *  400:     function getNothingFoundMsg()
- *  412:     function getListHeaderMsg()
- *  439:     function renderCheckBoxes()
- *  465:     function getHeaderButtons()
- *  558:     function printContent()
+ *  830:     function setPidList()
+ *  849:     function setEditablePages($pidlist)
+ *  869:     function getSubPages($pages, $cc = 0)
+ *  896:     function initGPvars()
+ *  915:     function initSubCategories()
+ *  932:     function menuConfig()
+ *  958:     function checkPageAccess($pid)
+ *  982:     function getCbLinkParams()
  *
  *
- *  569: class tx_ttnews_recordlist extends tx_cms_layout
+ * 1008: class tx_ttnewscatmanager_treeView extends tx_ttnews_categorytree
+ * 1020:     function wrapIcon($icon,&$row)
+ * 1038:     function wrapTitle($title,$v)
+ * 1062:     function makeControl($table,$row)
+ * 1116:     function issueCommand($params,$rUrl='')
  *
- *              SECTION: Generic listing of items
- *  589:     function makeOrdinaryList($table, $id, $fList, $icon=0, $addWhere='')
- *  678:     function makeQueryArray($table, $id, $addWhere="",$fieldList='*')
- *
- *
- *  743: class tx_ttnewscatmanager_treeView extends tx_ttnews_categorytree
- *  755:     function wrapIcon($icon,&$row)
- *  773:     function wrapTitle($title,$v)
- *  804:     function makeControl($table,$row)
- *  868:     function issueCommand($params,$rUrl='')
- *
- * TOTAL FUNCTIONS: 21
+ * TOTAL FUNCTIONS: 28
  * (This index is automatically created/updated by the extension "extdeveval")
  *
  */
@@ -77,14 +85,13 @@ require_once(PATH_t3lib.'class.t3lib_scbase.php');
 $GLOBALS['BE_USER']->modAccess($MCONF,1);	// This checks permissions and exits if the users has no permission for entry.
 	// DEFAULT initialization of a module [END]
 
-require_once(PATH_t3lib.'class.t3lib_recordlist.php');
-require_once(PATH_typo3.'class.db_list.inc');
+
 
 
 require_once(t3lib_extMgm::extPath('tt_news').'lib/class.tx_ttnews_div.php');
 require_once(t3lib_extMgm::extPath('tt_news').'lib/class.tx_ttnews_categorytree.php');
+require_once(t3lib_extMgm::extPath('tt_news').'lib/class.tx_ttnews_recordlist.php');
 
-require_once(t3lib_extMgm::extPath('cms').'layout/class.tx_cms_layout.php');
 
 /**
  * Module 'News Admin' for the 'tt_news' extension.
@@ -104,59 +111,110 @@ class tx_ttnews_module1 extends t3lib_SCbase {
 	var $selectedCategories;
 	var $limit = 20;
 	var $TSprop = array();
+	var $fieldList = 'uid,title,datetime,archivedate,tstamp,category;author';
+	var $pidCache = array();
+	var $pidList = 0;
 
+	var $localCalcPerms = 0; // CALC_PERMS for the current page. Used for categories and for the module header.
+	var $newArticleCalcPerms = 0; // CALC_PERMS for the page with news articles (newArticlePid).
+
+
+	var $excludeCats = array();
+	var $includeCats = array();
 	/**
 	 * Initializes the Module
 	 *
 	 * @return	void
 	 */
 	function init()	{
-		parent::init();
+		if (!$this->MCONF['name']) {
+			$this->MCONF = $GLOBALS['MCONF'];
+		}
+		$this->id = intval(t3lib_div::_GP('id'));
+		$this->CMD = t3lib_div::_GP('CMD');
+		$this->perms_clause = $GLOBALS['BE_USER']->getPagePermsClause(1);
+
+		$this->modTSconfig = t3lib_BEfunc::getModTSconfig($this->id,'mod.'.$this->MCONF['name']);
+		
+				
+//		$this->handleExternalFunctionValue();	
+
+		
 		$this->confArr = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['tt_news']);
-		$this->script = 'index.php?id='.$this->id;
-		$this->pageinfo = t3lib_BEfunc::readPageAccess($this->id,$this->perms_clause);
-		$this->CALC_PERMS = $GLOBALS['BE_USER']->calcPerms($this->pageinfo);
-		$this->EDIT_CONTENT = ($this->CALC_PERMS&16) ? 1 : 0;
+		$this->script = 'index.php';
 
 		$this->TSprop = $this->modTSconfig['properties'];
+		if (($fieldList = $this->TSprop['list.']['fList'])) {
+			$this->fieldList = $fieldList;
+		}
+		$this->isAdmin = $GLOBALS['BE_USER']->isAdmin();
+
+		$this->pageinfo = t3lib_BEfunc::readPageAccess($this->id,$this->perms_clause);
+		$this->localCalcPerms = $GLOBALS['BE_USER']->calcPerms($this->pageinfo);
+		$this->mayUserEditCategories = $this->localCalcPerms&16;
+
+		$newArticlePid = intval($this->TSprop['list.']['pidForNewArticles']);
+		$this->newArticlePid = ($newArticlePid?$newArticlePid:$this->id);
+
+		// get pageinfo array for newArticlePid
+		$newArticlePidPI = t3lib_BEfunc::readPageAccess($this->newArticlePid,$this->perms_clause);
+		$this->newArticleCalcPerms = $GLOBALS['BE_USER']->calcPerms($newArticlePidPI);
+		$this->mayUserEditArticles = $this->newArticleCalcPerms&16;
 
 		$this->divObj = t3lib_div::makeInstance('tx_ttnews_div');
+
+
+//		debug($GLOBALS['BE_USER'], ' ('.__CLASS__.'::'.__FUNCTION__.')', __LINE__, __FILE__, 3);
+
+
+		if (!$this->isAdmin) {
+				// get include/exclude items
+			$excludeList = $GLOBALS['BE_USER']->getTSConfigVal('tt_newsPerms.tt_news_cat.excludeList');
+			$includeList = $GLOBALS['BE_USER']->getTSConfigVal('tt_newsPerms.tt_news_cat.includeList');
+			// get allowed categories from be_users/groups (including subgroups)
+			if (($catmounts = $this->divObj->getAllowedCategories())) {
+				// if there are some use them and ignore "includeList" from TSConfig
+				$includeList = $catmounts;
+			}
+
+			if ($excludeList) {
+				$this->excludeCats = t3lib_div::intExplode(',',$excludeList);
+
+				$this->excludeCatList = implode(',',$this->excludeCats);
+				$this->catlistWhere = ' AND tt_news_cat.uid NOT IN ('.$this->excludeCatList.')';
+			}
+
+
+			if ($includeList) {
+				$this->includeCats = t3lib_div::intExplode(',',$includeList);
+				$this->includeCatList = implode(',',$this->includeCats);
+				if ($this->includeCatList) {
+					$this->catlistWhere .= ' AND tt_news_cat.uid IN ('.$this->includeCatList.')';
+				}
+			}
+
+
+			$this->setPidList();
+			if ($this->pidList) {
+				$this->setEditablePages($this->pidList);
+			}
+
+		}
+		
+		$this->menuConfig();
+		
+		
+
+		$this->mData = $GLOBALS['BE_USER']->uc['moduleData']['web_txttnewsM1'];
+		
+		$this->current_sys_language = intval($this->MOD_SETTINGS['language']);
+		
+		
 
 		$this->initGPvars();
 
 	}
 
-	/**
-	 * [Describe function...]
-	 *
-	 * @return	[type]		...
-	 */
-	function initGPvars() {
-		$this->pointer = t3lib_div::intInRange(t3lib_div::_GP('pointer'),0,100000);
-		$this->category = intval(t3lib_div::_GP('category'));
-
-		$this->useSubCategories = TRUE;
-		
-	}
-
-	/**
-	 * Adds items to the ->MOD_MENU array. Used for the function menu selector.
-	 *
-	 * @return	void
-	 */
-	function menuConfig()	{
-		$this->MOD_MENU = array (
-			'function' => array (
-				'1' => $GLOBALS['LANG']->getLL('function1'),
-//				'2' => $GLOBALS['LANG']->getLL('function2'),
-// 				'3' => $LANG->getLL('function3'),
-			),
-			'showEditIcons' => 0,
-			'expandAll' => 0,
-			'useSubCategories' => 0
-		);
-		parent::menuConfig();
-	}
 
 	/**
 	 * Main function of the module. Write the content to $this->content
@@ -166,8 +224,6 @@ class tx_ttnews_module1 extends t3lib_SCbase {
 	 */
 	function main()	{
 		global $LANG;
-debug($this->modTSconfig, ' ('.__CLASS__.'::'.__FUNCTION__.')', __LINE__, __FILE__, 3);
-		
 
 		$this->doc = t3lib_div::makeInstance('template');
 		$this->doc->backPath = $GLOBALS['BACK_PATH'];
@@ -179,6 +235,7 @@ debug($this->modTSconfig, ' ('.__CLASS__.'::'.__FUNCTION__.')', __LINE__, __FILE
 		// The page will show only if there is a valid page and if this page may be viewed by the user
 
 		$access = is_array($this->pageinfo) ? 1 : 0;
+		$this->markers['MOD_INFO'] = '';
 
 		if (($this->id && $access))	{
 				// JavaScript
@@ -193,25 +250,28 @@ debug($this->modTSconfig, ' ('.__CLASS__.'::'.__FUNCTION__.')', __LINE__, __FILE
 					script_ended = 1;
 				');
 			$this->doc->inDocStylesArray['tt_news_mod1'] = '
-				#ttnewsadmin-tree { float:left; width:230px; border-right: 1px solid #bbb; }
+				#ttnewsadmin-tree { float:left; width:230px; border-right: 1px solid #ccc; }
 				#ttnewsadmin-list {  padding: 0 10px 0 240px; }
 				#togglesubcats { background:#ddd; padding: 2px; cursor: pointer; font-style:italic; }
 				#newssubcats { background:#f8f9fa; padding: 2px; border:1px solid #ddd; }
 				#resetcatselection { float:right; font-style:italic; }
+				span.hiddencat { color:#999; }
+
+				
 			';
 
 			// Render content:
 			$this->moduleContent();
 		} else {
 				// If no access or if ID == zero
-			$this->treeContent = $this->getNothingFoundMsg();
+			$this->displayOverview();
 		}
-
 		$this->docHeaderButtons = $this->getHeaderButtons();
 		$this->markers['FUNC_MENU'] = ''/*t3lib_BEfunc::getFuncMenu($this->id,'SET[function]',$this->MOD_SETTINGS['function'],$this->MOD_MENU['function'])*/;
 		$this->markers['TREE'] = $this->treeContent;
 		$this->markers['LIST'] = $this->listContent;
 		$this->markers['CSH'] = $this->docHeaderButtons['csh'];
+		$this->markers['LANG_MENU'] = $this->getLangMenu();
 
 		// put it all together
 		$this->content = $this->doc->startPage($LANG->getLL('title'));
@@ -221,6 +281,37 @@ debug($this->modTSconfig, ' ('.__CLASS__.'::'.__FUNCTION__.')', __LINE__, __FILE
 
 	}
 
+	/**
+	 * Prints out the module HTML
+	 *
+	 * @return	void
+	 */
+	function printContent()	{
+		echo $this->content;
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	/*************************************************************************
+	 *
+	 * 		Module content
+	 *
+	 ************************************************************************/
+
 
 	/**
 	 * Generates the module content
@@ -228,34 +319,236 @@ debug($this->modTSconfig, ' ('.__CLASS__.'::'.__FUNCTION__.')', __LINE__, __FILE
 	 * @return	void
 	 */
 	function moduleContent()	{
-		switch((string)$this->MOD_SETTINGS['function'])	{
-			case 1:
+		$error = false;
+//		switch((string)$this->MOD_SETTINGS['function'])	{
+//			case 1:
 				$this->table = 'tt_news_cat';
 				if ($this->confArr['useStoragePid']) {
-					$catRows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('uid','tt_news_cat','pid='.$this->id.' AND deleted=0');
+					$catRows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('uid','tt_news_cat','pid='.$this->id.$this->catlistWhere.' AND deleted=0');
 					if (empty($catRows)) {
-						$content = $this->getNothingFoundMsg();
+						$error = $this->displayOverview();
 					}
 				}
-				if (!$content) {
-					$content = $this->renderCheckBoxes();
-					$this->getTreeObj();
-					$content .= '<div id="ttnews-cat-tree">'.$this->treeObj->getBrowsableTree().'</div>';
-
+				if (!$error) {
 					$this->doc->JScodeLibArray['txttnewsM1'] = '
 						<script src="'.$GLOBALS['BACK_PATH'].t3lib_extMgm::extRelPath('tt_news').'js/tt_news_mod1.js" type="text/javascript"></script>
 						';
 					$this->doc->getDragDropCode('tt_news_cat');
 					$this->doc->postCode=$this->doc->wrapScriptTags('
 							txttnewsM1js.registerDragDropHandlers();
-					');						
+					');
 					$this->doc->getContextMenuCode();
-					$this->listContent = $this->doc->section($GLOBALS['LANG']->getLL('function1'),$this->displayNewsList(),0,1).$this->doc->sectionEnd();
+
+					$this->treeContent = $this->displayCategoryTree();
+					$this->listContent .= $this->displayNewsList();
+
+
 				}
-				$this->treeContent = $this->doc->section($GLOBALS['LANG']->getLL('function2'),$content,0,1).$this->doc->sectionEnd();
-			break;
+//			break;
+//		}
+	}
+
+
+
+	/**
+	 * [Describe function...]
+	 *
+	 * @return	[type]		...
+	 */
+	function displayOverview() {
+		$tRows = array();
+		$tRows[] = '<tr>
+				<td colspan="2" valign="top"><p><img'.t3lib_iconWorks::skinImg($this->doc->backPath,'gfx/icon_note.gif','width="18" height="16"').' title="" alt="" />
+				'.$GLOBALS['LANG']->getLL('nothingfound').'
+				</p><br></td>
+				</tr>';
+
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
+					'pid,count(uid)',
+					'tt_news_cat',
+					'pid>=0'.$this->catlistWhere.t3lib_BEfunc::deleteClause('tt_news_cat'),
+					'pid'
+				);
+		while(($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)))	{
+			$list[$row['pid']]['count'] = $row['count(uid)'];
+		}
+		$GLOBALS['TYPO3_DB']->sql_free_result($res);
+
+		$tRows[] = '
+			<tr>
+				<td class="c-headLine"><strong>'.$GLOBALS['LANG']->getLL('path').'</strong></td>
+				<td class="c-headLine"><strong>'.$GLOBALS['LANG']->getLL('categories').'</strong></td>
+
+			</tr>';
+
+		if (is_array($list))	{
+			foreach($list as $pid => $stat)	{
+				$pa = $this->checkPageAccess($pid);
+				if ($pa['path'])	{
+					$tRows[] = '
+						<tr class="bgColor4">
+							<td><a href="index.php?id='.$pid.'">'.htmlspecialchars($pa['path']).'</a></td>
+							<td>'.htmlspecialchars($stat['count']).'</td>
+
+						</tr>';
+				}
+			}
+
+				// Create overview
+			$outputString .= '<table border="0" cellpadding="1" cellspacing="2" id="typo3-page-stdlist">'.implode('',$tRows).'</table>';
+
+				// Add output:
+			$this->markers['MOD_INFO'] = $outputString;
+			return TRUE;
 		}
 	}
+
+
+	/**
+	 * [Describe function...]
+	 *
+	 * @return	[type]		...
+	 */
+	function displayCategoryTree() {
+		$content = '';
+		$content .= $this->renderTreeCheckBoxes();
+		$content .= $this->renderNewCatButton();
+
+		$this->getTreeObj();
+		$content .= '<div id="ttnews-cat-tree">'.$this->treeObj->getBrowsableTree().'</div>';
+
+		return $content;
+	}
+
+
+
+
+
+	/**
+	 * [Describe function...]
+	 *
+	 * @return	[type]		...
+	 */
+	function getTreeObj() {
+		$addWhere = '';
+		if ($this->confArr['useStoragePid']) {
+			$addWhere .= ' AND tt_news_cat.pid=' . $this->id;
+		}
+		if (!$this->mData['showHiddenCategories']) {
+			$addWhere .= ' AND tt_news_cat.hidden=0';
+		}
+
+		$treeOrderBy = $this->confArr['treeOrderBy']?$this->confArr['treeOrderBy']:'uid';
+
+		if (!is_object($this->treeObj)) {
+			$this->treeObj = t3lib_div::makeInstance('tx_ttnewscatmanager_treeView');
+		}
+
+		$this->treeObj->table = 'tt_news_cat';
+		$this->treeObj->init($this->catlistWhere.$addWhere,$treeOrderBy);
+		$this->treeObj->parentField = 'parent_category';
+		$this->treeObj->thisScript = $this->script.'?id='.$this->id;
+		$this->treeObj->returnUrl = t3lib_extMgm::extRelPath('tt_news').'mod1/'.$this->treeObj->thisScript;
+		$this->treeObj->fieldArray = array('uid','title','description','hidden','starttime','endtime','fe_group'); // those fields will be filled to the array $this->treeObj->tree
+		$this->treeObj->calcPerms = $this->localCalcPerms;
+		$this->treeObj->mayUserEditCategories = $this->mayUserEditCategories;
+		$this->treeObj->title = $GLOBALS['LANG']->getLL('treeTitle');
+		$this->treeObj->pageID = $this->id;
+		$this->treeObj->expandAll = $GLOBALS['SOBE']->MOD_SETTINGS['expandAll'];
+		$this->treeObj->expandable = true;
+		$this->treeObj->expandFirst = $this->TSprop['catmenu.']['expandFirst'];
+		$this->treeObj->titleLen = 60;
+		$this->treeObj->useAjax = true;
+		$this->treeObj->showEditIcons = $this->mData['showEditIcons'];
+		$this->treeObj->showHiddenCategories = $this->mData['showHiddenCategories'];
+		$this->treeObj->category = $this->category;
+		$this->treeObj->current_sys_language = $this->current_sys_language;
+
+	}
+
+
+
+
+
+
+
+
+
+	/**
+	 * [Describe function...]
+	 *
+	 * @return	[type]		...
+	 */
+	function displayNewsList()	{
+		$content = '';
+		$content .= $this->renderListCheckBoxes();
+
+		$this->initSubCategories();
+
+		$limit = intval($this->TSprop['list.']['limit']);
+		$limit = ($limit?$limit:$this->limit);
+
+		$table = 'tt_news';
+		$dblist = t3lib_div::makeInstance('tx_ttnews_recordlist');
+
+		$dblist->backPath = $GLOBALS['BACK_PATH'];
+		$dblist->script = $this->script;
+		$dblist->doEdit = $this->mayUserEditArticles;
+		$dblist->ext_CALC_PERMS = $this->newArticleCalcPerms;
+		$dblist->perms_clause = $this->perms_clause;
+		$dblist->agePrefixes = $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:labels.minutesHoursDaysYears');
+		$dblist->id = $this->id;
+		$dblist->newRecPid = $this->newArticlePid;
+		$dblist->itemsLimitSingleTable = $limit;
+		$dblist->selectedCategories = $this->selectedCategories;
+		$dblist->category = $this->category;
+		$dblist->returnUrl = t3lib_extMgm::extRelPath('tt_news').'mod1/'.$dblist->listURL($this->id,FALSE);
+		$dblist->excludeCats = $this->excludeCats;
+		$dblist->includeCats = $this->includeCats;
+		$dblist->includeCatList = $this->includeCatList;
+		$dblist->isAdmin = $this->isAdmin;
+		$dblist->current_sys_language = $this->current_sys_language;
+
+		$dblist->showOnlyEditable = $this->mData['showOnlyEditable'];
+		$dblist->pidList = $this->pidList;
+		$dblist->editablePagesList = $this->editablePagesList;
+
+		$dblist->start($this->id,$table,$this->pointer,$this->search_field,$this->search_levels,$this->showLimit);
+
+		$externalTables[$table][0]['fList'] = $this->fieldList;
+		$externalTables[$table][0]['icon'] = $this->TSprop['list.']['icon'];
+
+		$dblist->externalTables = $externalTables;
+		$dblist->no_noWrap = TRUE;
+		$dblist->lTSprop = $this->TSprop['list.'];
+
+		$dblist->generateList();
+
+		$content .= $this->getListHeaderMsg();
+		$content .= $dblist->HTMLcode;
+
+		return '<div id="ttnewslist">'.$content.'</div>';
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	/*************************************************************************
+	 *
+	 * 		AJAX functions
+	 *
+	 ************************************************************************/
+
 
 	/**
 	 * [Describe function...]
@@ -289,7 +582,11 @@ debug($this->modTSconfig, ' ('.__CLASS__.'::'.__FUNCTION__.')', __LINE__, __FILE
 		$ajaxObj->addContent('ttnewslist', $list);
 	}
 
-	
+	/**
+	 * [Describe function...]
+	 *
+	 * @return	[type]		...
+	 */
 	function processAjaxRequestConstruct() {
 		require_once(PATH_typo3.'template.php');
 
@@ -301,106 +598,8 @@ debug($this->modTSconfig, ' ('.__CLASS__.'::'.__FUNCTION__.')', __LINE__, __FILE
 		$SOBE->doc = t3lib_div::makeInstance('template');
 		$SOBE->doc->backPath = $GLOBALS['BACK_PATH'];
 		$SOBE->doc->docType = 'xhtml_trans';
-		
-	}	
-	
-	/**
-	 * [Describe function...]
-	 *
-	 * @return	[type]		...
-	 */
-	function displayNewsList()	{
-		global $LANG,$BACK_PATH;
-
-		$content = '';
-		$this->initSubCategories();
-
-		$table = 'tt_news';
-		$dblist = t3lib_div::makeInstance('tx_ttnews_recordlist');
-		$dblist->backPath = $BACK_PATH;
-		$dblist->script = $this->script;
-		$dblist->doEdit = $this->EDIT_CONTENT;
-		$dblist->ext_CALC_PERMS = $this->CALC_PERMS;
-		$dblist->agePrefixes = $LANG->sL('LLL:EXT:lang/locallang_core.php:labels.minutesHoursDaysYears');
-		$dblist->id = $this->id;
-		$dblist->itemsLimitSingleTable = $this->limit;
-		$dblist->selectedCategories = $this->selectedCategories;
-		$dblist->category = $this->category;
-		$dblist->returnUrl = t3lib_extMgm::extRelPath('tt_news').'mod1/'.$this->script;
-		
-		
-		$dblist->start($this->id,$table,$this->pointer,$this->search_field,$this->search_levels,$this->showLimit);
-
-		$externalTables[$table][0]['fList'] = 'uid,title,datetime,archivedate,tstamp,category;author';
-		$externalTables[$table][0]['icon'] = TRUE;
-		
-		$dblist->externalTables = $externalTables;
-
-		$dblist->no_noWrap = TRUE;
-		
-		$dblist->generateList();
-
-		$content .= $this->getListHeaderMsg();
-		$content .= $dblist->HTMLcode;
-
-		return '<div id="ttnewslist">'.$content.'</div>';
-	}
-
-	/**
-	 * [Describe function...]
-	 *
-	 * @return	[type]		...
-	 */
-	function initSubCategories() {
-		if ($this->useSubCategories && $this->category) {
-			$subcats = $this->divObj->getSubCategories($this->category);
-			$this->selectedCategories = t3lib_div::uniqueList($this->category.($subcats?','.$subcats:''));
-		} else {
-			$this->selectedCategories = $this->category;
-		}
-	}
-
-
-
-	/**
-	 * [Describe function...]
-	 *
-	 * @return	[type]		...
-	 */
-	function getTreeObj() {
-		if ($this->confArr['useStoragePid']) {
-			$SPaddWhere = ' AND tt_news_cat.pid=' . $this->id;
-		}
-		$treeOrderBy = $this->confArr['treeOrderBy']?$this->confArr['treeOrderBy']:'uid';
-
-		if (!is_object($this->treeObj)) {
-			$this->treeObj = t3lib_div::makeInstance('tx_ttnewscatmanager_treeView');
-		}
-
-		$this->treeObj->table = 'tt_news_cat';
-		$this->treeObj->init($SPaddWhere,$treeOrderBy);
-		$this->treeObj->parentField = 'parent_category';
-		$this->treeObj->thisScript = $this->script;
-		$this->treeObj->returnUrl = t3lib_extMgm::extRelPath('tt_news').'mod1/'.$this->script;
-		$this->treeObj->fieldArray = array('uid','title','description','hidden','starttime','endtime','fe_group'); // those fields will be filled to the array $this->treeObj->tree
-		$this->treeObj->calcPerms = $this->CALC_PERMS;
-		$this->treeObj->title = $GLOBALS['LANG']->getLL('treeTitle');
-		$this->treeObj->pageID = $this->id;
-		$this->treeObj->expandAll = $GLOBALS['SOBE']->MOD_SETTINGS['expandAll'];
-		$this->treeObj->expandable = true;
-		$this->treeObj->titleLen = 60;
-		$this->treeObj->useAjax = true;
-		$this->treeObj->showEditIcons = $GLOBALS['BE_USER']->uc['moduleData']['web_txttnewsM1']['showEditIcons'];
-		$this->treeObj->category = $this->category;
-		
-
-//		$this->treeObj->allowedCategories = false;
 
 	}
-
-
-
-
 
 
 
@@ -411,22 +610,11 @@ debug($this->modTSconfig, ' ('.__CLASS__.'::'.__FUNCTION__.')', __LINE__, __FILE
 
 	/*************************************************************************
 	 *
-	 * 		Internal helper functions
+	 * 		GUI Elements
 	 *
 	 ************************************************************************/
 
 
-	/**
-	 * [Describe function...]
-	 *
-	 * @return	[type]		...
-	 */
-	function getNothingFoundMsg() {
-		return '<table border="0" cellpadding="0" cellspacing="3"><tr>
-				<td valign="top"><img'.t3lib_iconWorks::skinImg($this->doc->backPath,'gfx/icon_note.gif','width="18" height="16"').' title="" alt="" /></td>
-				<td>'.$GLOBALS['LANG']->getLL('nothingfound').'</td>
-				</tr></table>';
-	}
 
 	/**
 	 * [Describe function...]
@@ -436,31 +624,45 @@ debug($this->modTSconfig, ' ('.__CLASS__.'::'.__FUNCTION__.')', __LINE__, __FILE
 	function getListHeaderMsg() {
 		global $LANG;
 		if (!$this->selectedCategories)  {
-			$content = $LANG->getLL('showingAll');
+			if ($this->TSprop['list.']['noListWithoutCatSelection'] && !$this->isAdmin) {
+				$content = $LANG->getLL('selectCategory');
+			} else {
+				$content = $LANG->getLL('showingAll');
+			}
 		} else {
 			$table = 'tt_news_cat';
 			$row = t3lib_BEfunc::getRecord($table, $this->category);
-			$reset = '<a href="'.$this->script.'" id="resetcatselection">'.$LANG->getLL('resetCatSelection').'</a>';
+			$reset = '<a href="'.$this->script.'?id='.$this->id.'" id="resetcatselection">'.$LANG->getLL('resetCatSelection').'</a>';
 			$title = '<strong>'.t3lib_BEfunc::getRecordTitle($table,$row).'</strong>';
-			$content = '<div id="newscatsmsg">'.$reset.$LANG->getLL('showOnlyCat').$title.'</div>';
-			
+			$content = '<div id="newscatsmsg">'.$reset.$LANG->getLL('showingOnlyCat').$title.'</div>';
+
 			if ($this->useSubCategories && ($subCats = t3lib_div::rmFromList($this->category,$this->selectedCategories))) {
-				$scRows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('uid,title',$table,'uid IN ('.$subCats.')');
+				if (!$this->mData['showHiddenCategories']) {
+					$addWhere = ' AND hidden=0';
+				}
+				$scRows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('uid,title,hidden',$table,'uid IN ('.$subCats.')'.$addWhere);
 				$scTitles = array();
 				foreach ($scRows as $scRow) {
-					$scTitles[] = t3lib_BEfunc::getRecordTitle($table,$scRow);
+					$recTitle = t3lib_BEfunc::getRecordTitle($table,$scRow);
+					if ($scRow['hidden']) {
+						$recTitle = '<span class="hiddencat">'.$recTitle.'</span>';
+					}
+					$scTitles[] = $recTitle;
 				}
-				$showLbl = $LANG->getLL('showSubcatgories');
-				$hideLbl = $LANG->getLL('hideSubcatgories');
-				$btnID = 'togglesubcats';
-				$elID = 'newssubcats';
-				$onclick = htmlspecialchars('if ($(\''.$elID.'\').visible()) {$(\''.$elID.'\').hide();$(\''.$btnID.'\').update('.$LANG->JScharCode($showLbl).');} else {$(\''.$elID.'\').show();$(\''.$btnID.'\').update('.$LANG->JScharCode($hideLbl).');}');
-				$content .= '<div id="'.$btnID.'" onclick="'.$onclick.'">'.$showLbl.'</div>';
-				$content .= '<div id="'.$elID.'" style="display:none;">'.implode(', ',$scTitles).'</div>';
+				if (count($scTitles)) {
+					$showLbl = $LANG->getLL('showSubcatgories');
+					$hideLbl = $LANG->getLL('hideSubcatgories');
+					$btnID = 'togglesubcats';
+					$elID = 'newssubcats';
+					$onclick = htmlspecialchars('if ($(\''.$elID.'\').visible()) {$(\''.$elID.'\').hide();$(\''.$btnID.'\').update('.$LANG->JScharCode($showLbl).');} else {$(\''.$elID.'\').show();$(\''.$btnID.'\').update('.$LANG->JScharCode($hideLbl).');}');
+					$content .= '<div id="'.$btnID.'" onclick="'.$onclick.'">'.$showLbl.'</div>';
+					$content .= '<div id="'.$elID.'" style="display:none;">'.implode(', ',$scTitles).'</div>';
+				}
 			}
 		}
 		return $content;
 	}
+
 
 
 
@@ -469,24 +671,73 @@ debug($this->modTSconfig, ' ('.__CLASS__.'::'.__FUNCTION__.')', __LINE__, __FILE
 	 *
 	 * @return	[type]		...
 	 */
-	function renderCheckBoxes() {
-		$content = t3lib_BEfunc::getFuncCheck(
-						$this->id,
-						'SET[showEditIcons]',
-						$this->MOD_SETTINGS['showEditIcons'],'','',
-						'id="checkShowEditIcons"'
-					).' <label for="checkShowEditIcons">'.$GLOBALS['LANG']->getLL('showEditIcons',1).'</label><br />';
+	function renderTreeCheckBoxes() {
+		$show = array();
+		if (is_array($this->TSprop['catmenu.']['show.'])) {
+			$show = $this->TSprop['catmenu.']['show.'];
+		}
+		$cbNames = explode(',','expandAll,showHiddenCategories');
 
-		$content .= t3lib_BEfunc::getFuncCheck(
-						$this->id,
-						'SET[expandAll]',
-						$this->MOD_SETTINGS['expandAll'],'','',
-						'id="checkExpandAll"'
-					).' <label for="checkExpandAll">'.$GLOBALS['LANG']->getLL('expandAll',1).'</label><br />';
+		if ($this->mayUserEditCategories) {
+			$cbNames[] = 'showEditIcons';
+		}
+		$params = $this->getLinkParams();
+		$out = array();
+		foreach ($cbNames as $n) {
+			if ((bool)$show['cb_'.$n]) {
+				$out[] = t3lib_BEfunc::getFuncCheck($params,'SET['.$n.']',$this->MOD_SETTINGS[$n],'','','id="cb-'.$n.'"').
+					' <label for="cb-'.$n.'">'.$GLOBALS['LANG']->getLL($n,1).'</label>';
+			}
+		}
 
-		return '<div>'.$content.'</div>';
+		$content = '<div>'.implode('<br />',$out).'</div>';
+		return $content;
 	}
 
+	/**
+	 * [Describe function...]
+	 *
+	 * @return	[type]		...
+	 */
+	function renderListCheckBoxes() {
+		$show = array();
+		if (is_array($this->TSprop['list.']['show.'])) {
+			$show = $this->TSprop['list.']['show.'];
+		}	
+		$cbNames = array();
+		if (!$this->isAdmin) {
+			$cbNames[] = 'showOnlyEditable';
+		}
+		$params = $this->getLinkParams();
+		$out = array();
+		foreach ($cbNames as $n) {
+			if ((bool)$show['cb_'.$n]) {
+				$out[] = t3lib_BEfunc::getFuncCheck($params,'SET['.$n.']',$this->MOD_SETTINGS[$n],'','','id="cb-'.$n.'"').
+					' <label for="cb-'.$n.'">'.$GLOBALS['LANG']->getLL($n,1).'</label>';
+			}
+		}
+
+		$content = '<div>'.implode('<br />',$out).'</div>';
+		return $content;
+	}
+
+
+	/**
+	 * [Describe function...]
+	 *
+	 * @return	[type]		...
+	 */
+	function renderNewCatButton() {
+		if ($this->mayUserEditCategories)	{
+			$params = '&edit[tt_news_cat]['.$this->id.']=new';
+			$onclick = htmlspecialchars(t3lib_BEfunc::editOnClick($params,$GLOBALS['BACK_PATH'],$this->returnUrl));
+			$button = '<a href="#" onclick="'.$onclick.'">'.
+				'<img'.t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'],'gfx/new_el.gif').' title="'.$GLOBALS['LANG']->getLL('createCategory',1).'" alt="" />'.
+			$GLOBALS['LANG']->getLL('createCategory').
+				'</a>';
+		}
+		return '<div style="padding:5px 0;">'.$button.'</div>';
+	}
 
 
 
@@ -513,8 +764,7 @@ debug($this->modTSconfig, ' ('.__CLASS__.'::'.__FUNCTION__.')', __LINE__, __FILE
 			'export' => ''
 		);
 
-			// Get users permissions for this page record:
-		$localCalcPerms = $GLOBALS['BE_USER']->calcPerms($this->pageinfo);
+
 		$backPath = $GLOBALS['BACK_PATH'];
 
 			// CSH
@@ -540,7 +790,7 @@ debug($this->modTSconfig, ' ('.__CLASS__.'::'.__FUNCTION__.')', __LINE__, __FILE
 							'</a>';
 
 				// If edit permissions are set (see class.t3lib_userauthgroup.php)
-			if ($localCalcPerms&2 && !empty($this->id))	{
+			if ($this->localCalcPerms&2 && !empty($this->id))	{
 					// Edit
 				$params = '&edit[pages][' . $this->pageinfo['uid'] . ']=edit';
 				$buttons['edit'] = '<a href="#" onclick="' . htmlspecialchars(t3lib_BEfunc::editOnClick($params, $backPath, -1)) . '">' .
@@ -581,270 +831,250 @@ debug($this->modTSconfig, ' ('.__CLASS__.'::'.__FUNCTION__.')', __LINE__, __FILE
 		return $buttons;
 	}
 
+	
+	function getLangMenu() {
+		if (count($this->MOD_MENU['language'])>1) {
+			$menu = $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_general.xml:LGL.language',1) . 
+				t3lib_BEfunc::getFuncMenu($this->id,'SET[language]',$this->current_sys_language,$this->MOD_MENU['language']);
+		}
+		return $menu;
+	}
+	
+	
+
+
+
+
+
+
+
+
+
+	/*************************************************************************
+	 *
+	 * 		Internal helper functions
+	 *
+	 ************************************************************************/
+
 
 
 	/**
-	 * Prints out the module HTML
+	 * [Describe function...]
+	 *
+	 * @return	[type]		...
+	 */
+	function setPidList() {
+			// get allowed pages
+		$webmounts = $GLOBALS['BE_USER']->returnWebmounts();
+		if (is_array($webmounts)) {
+			$pidList = '';
+			foreach ($webmounts as $mount) {
+				$pidList .= ','.$mount.','.$this->getSubPages($mount);
+			}
+			$pidList = t3lib_div::uniqueList($pidList);
+			$this->pidList = ($pidList?$pidList:0);
+		}
+	}
+
+	/**
+	 * [Describe function...]
+	 *
+	 * @param	[type]		$pidlist: ...
+	 * @return	[type]		...
+	 */
+	function setEditablePages($pidlist) {
+		$pids = explode(',',$pidlist);
+		$editPids = array();
+		foreach ($pids as $pid) {
+			$pa = $this->checkPageAccess($pid);
+			if ($pa['edit']) {
+				$editPids[] = $pid;
+			}
+		}
+		$this->editablePagesList = implode(',',$editPids);
+
+	}
+
+	/**
+	 * [Describe function...]
+	 *
+	 * @param	[type]		$pages: ...
+	 * @param	[type]		$cc: ...
+	 * @return	[type]		...
+	 */
+	function getSubPages($pages, $cc = 0) {
+		$pArr = array();
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
+			'uid',
+			'pages',
+			'pages.pid IN ('.$pages.') AND pages.deleted=0 AND '.$this->perms_clause);
+
+		while (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))) {
+			$cc++;
+			if ($cc > 10000) {
+				return implode(',', $pArr);
+			}
+			$subpages = $this->getSubPages($row['uid'], $cc);
+			$subpages = $subpages?','.$subpages:'';
+			$pArr[] = $row['uid'].$subpages;
+		}
+		$pages = implode(',', $pArr);
+		return $pages;
+	}
+
+
+
+	/**
+	 * [Describe function...]
+	 *
+	 * @return	[type]		...
+	 */
+	function initGPvars() {
+		$this->pointer = t3lib_div::intInRange(t3lib_div::_GP('pointer'),0,100000);
+		$this->category = intval(t3lib_div::_GP('category'));
+
+		$this->useSubCategories = TRUE;
+
+	}
+
+	/**
+	 * Adds items to the ->MOD_MENU array. Used for the function menu selector.
 	 *
 	 * @return	void
 	 */
-	function printContent()	{
-		echo $this->content;
+	function menuConfig()	{
+		
+	
+		$this->MOD_MENU = array (
+			'function' => array (
+				'1' => $GLOBALS['LANG']->getLL('function1'),
+//				'2' => $GLOBALS['LANG']->getLL('function2'),
+// 				'3' => $LANG->getLL('function3'),
+			),
+			'showEditIcons' => 0,
+			'expandAll' => 0,
+//			'useSubCategories' => 0,
+			'showOnlyEditable' => 0,
+			'showHiddenCategories' => 0,
+			
+			'language' => array(
+				0 => $GLOBALS['LANG']->getLL('defaultLangLabel')
+			)
+
+		);
+		$this->initLanguageMenu();
+		
+		$this->MOD_MENU['function'] = $this->mergeExternalItems($this->MCONF['name'],'function',$this->MOD_MENU['function']);
+		$this->MOD_MENU['function'] = t3lib_BEfunc::unsetMenuItems($this->modTSconfig['properties'],$this->MOD_MENU['function'],'menu.function');	
+		
+		$this->MOD_SETTINGS = t3lib_BEfunc::getModuleData($this->MOD_MENU, t3lib_div::_GP('SET'), $this->MCONF['name'], $this->modMenu_type, $this->modMenu_dontValidateList, $this->modMenu_setDefaultList);
+		
 	}
 
-
-}
-
-	/**
-	 * [Describe function...]
-	 *
-	 */
-class tx_ttnews_recordlist extends tx_cms_layout {
-
-
-
-	/**********************************
-	 *
-	 * Generic listing of items
-	 *
-	 **********************************/
-
-	/**
-	 * Creates a standard list of elements from a table.
-	 *
-	 * @param	string		Table name
-	 * @param	integer		Page id.
-	 * @param	string		Comma list of fields to display
-	 * @param	boolean		If true, icon is shown
-	 * @param	string		Additional WHERE-clauses.
-	 * @return	string		HTML table
-	 */
-	function makeOrdinaryList($table, $id, $fList, $icon=0, $addWhere='')	{
-			// Initialize:
-		$out = '';
-		$queryParts = $this->makeQueryArray($table, $id, $addWhere);
-		$this->setTotalItems($queryParts);
-		$dbCount = 0;
-		$this->eCounter = 0;
-
-			// Make query for records if there were any records found in the count operation:
-		if ($this->totalItems)	{
-			$result = $GLOBALS['TYPO3_DB']->exec_SELECT_queryArray($queryParts);
-			$dbCount = $GLOBALS['TYPO3_DB']->sql_num_rows($result);
+	
+	
+	function initLanguageMenu() {
+		
+		
+		
+		if ($this->isAdmin) {
+			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
+							'sys_language.*',
+							'sys_language',
+							'sys_language.hidden=0',
+							'',
+							'sys_language.title'
+						);			
+			
+		} else {
+			$exQ = t3lib_BEfunc::deleteClause('pages_language_overlay');
+			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
+								'sys_language.*',
+								'pages_language_overlay,sys_language',
+								'pages_language_overlay.sys_language_uid=sys_language.uid AND pages_language_overlay.pid IN ('.$this->pidList.')'.$exQ,
+								'pages_language_overlay.sys_language_uid,sys_language.uid,sys_language.pid,sys_language.tstamp,sys_language.hidden,sys_language.title,sys_language.static_lang_isocode,sys_language.flag',
+								'sys_language.title'
+							);			
 		}
-
-			// If records were found, render the list:
-		if ($dbCount)	{
-
-				// Set fields
-			$this->fieldArray = explode(',','__cmds__,'.$fList);
-
-				// Header line is drawn
-			$theData = array();
-			$theData = $this->headerFields($this->fieldArray,$table,$theData);
-			if ($this->doEdit)	{
-				$params = '&edit['.$table.']['.$this->id.']=new'.($this->category?'&defVals['.$table.'][category]='.$this->category:'');
-				$onclick = htmlspecialchars(t3lib_BEfunc::editOnClick($params,$this->backPath,$this->returnUrl));
-				$theData['__cmds__'] = '<a href="#" onclick="'.$onclick.'">'.
-					'<img'.t3lib_iconWorks::skinImg($this->backPath,'gfx/new_el.gif').' title="'.$GLOBALS['LANG']->getLL('new',1).'" alt="" />'.
-					'</a>';
+						
+		while(($lrow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)))	{
+			if ($GLOBALS['BE_USER']->checkLanguageAccess($lrow['uid']))	{
+				$this->MOD_MENU['language'][$lrow['uid']]=($lrow['hidden']?'('.$lrow['title'].')':$lrow['title']);
 			}
-			$out.= $this->addelement(1,'',$theData,' class="c-headLine"',15);
-
-				// Render Items
-			$this->eCounter = $this->firstElementNumber;
-			while (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($result)))	{
-				t3lib_BEfunc::workspaceOL($table, $row);
-
-				if (is_array($row))	{
-					list($flag,$code) = $this->fwd_rwd_nav();
-					$out.= $code;
-					if ($flag)	{
-						$params = '&edit['.$table.']['.$row['uid'].']=edit';
-						$Nrow = array();
-
-							// Setting icons/edit links:
-						if ($icon)	{
-							$Nrow['__cmds__']= $this->getIcon($table,$row);
-						}
-						if ($this->doEdit)	{
-							$Nrow['__cmds__'].= '<a href="#" onclick="'.htmlspecialchars(t3lib_BEfunc::editOnClick($params,$this->backPath,$this->returnUrl)).'">'.
-											'<img'.t3lib_iconWorks::skinImg($this->backPath,'gfx/edit2.gif','width="11" height="12"').' title="'.$GLOBALS['LANG']->getLL('edit',1).'" alt="" />'.
-											'</a>';
-						} else {
-							$Nrow['__cmds__'].= $this->noEditIcon();
-						}
-
-							// Get values:
-						$Nrow = $this->dataFields($this->fieldArray,$table,$row,$Nrow);
-						$tdparams = $this->eCounter%2 ? ' class="bgColor4"' : ' class="bgColor4-20"';
-						$out.= $this->addelement(1,'',$Nrow,$tdparams);
-					}
-					$this->eCounter++;
-				}
-			}
-
-				// Wrap it all in a table:
-			$out='
-
-				<!--
-					STANDARD LIST OF "'.$table.'"
-				-->
-				<table border="0" cellpadding="1" cellspacing="2" id="typo3-page-stdlist">
-					'.$out.'
-				</table>';
-		}
-		return $out;
-	}
-
-
-
-	/**
-	 * Header fields made for the listing of records
-	 *
-	 * @param	array		Field names
-	 * @param	string		The table name
-	 * @param	array		Array to which the headers are added.
-	 * @return	array		$out returned after addition of the header fields.
-	 * @see makeOrdinaryList()
-	 */
-	function headerFields($fieldArr,$table,$out=array())	{
-		global $TCA;
-
-		t3lib_div::loadTCA($table);
-
-		foreach($fieldArr as $fieldName)	{
-			$ll = $GLOBALS['LANG']->sL($TCA[$table]['columns'][$fieldName]['label'],1);
-			$out[$fieldName] = '<strong>'.($ll?$this->addSortLink($ll,$fieldName,$table):'&nbsp;').'</strong>';
 		}
 		
-		return $out;
-	}
-
-	/**
-	 * Creates a sort-by link on the input string ($code).
-	 * It will automatically detect if sorting should be ascending or descending depending on $this->sortRev.
-	 * Also some fields will not be possible to sort (including if single-table-view is disabled).
-	 *
-	 * @param	string		The string to link (text)
-	 * @param	string		The fieldname represented by the title ($code)
-	 * @param	string		Table name
-	 * @return	string		Linked $code variable
-	 */
-	function addSortLink($code,$field,$table)	{
-
-			// Certain circumstances just return string right away (no links):
-		if ($field=='_CONTROL_' || $field=='_LOCALIZATION_' || $field=='_CLIPBOARD_' || $field=='_REF_' || $this->disableSingleTableView)	return $code;
-
-			// If "_PATH_" (showing record path) is selected, force sorting by pid field (will at least group the records!)
-		if ($field=='_PATH_')	$field=pid;
-
-			//	 Create the sort link:
-		$sortUrl = $this->listURL('',-1,'sortField,sortRev,table').'&table='.$table.'&sortField='.$field.'&sortRev='.($this->sortRev || ($this->sortField!=$field)?0:1);
-		$sortArrow = ($this->sortField==$field?'<img'.t3lib_iconWorks::skinImg($this->backPath,'gfx/red'.($this->sortRev?'up':'down').'.gif','width="7" height="4"').' alt="" />':'');
-
-			// Return linked field:
-		return '<a href="'.htmlspecialchars($sortUrl).'">'.$code.
-				$sortArrow.
-				'</a>';
+			// Setting alternative default label:
+		$dl = trim($this->TSprop['defaultLanguageLabel']);
+		if ($dl && isset($this->MOD_MENU['language'][0]))	{
+			$this->MOD_MENU['language'][0] = $dl;
+		}		
 	}
 	
-	/**
-	 * Creates the URL to this script, including all relevant GPvars
-	 * Fixed GPvars are id, table, imagemode, returlUrl, search_field, search_levels and showLimit
-	 * The GPvars "sortField" and "sortRev" are also included UNLESS they are found in the $exclList variable.
-	 *
-	 * @param	string		Alternative id value. Enter blank string for the current id ($this->id)
-	 * @param	string		Tablename to display. Enter "-1" for the current table.
-	 * @param	string		Commalist of fields NOT to include ("sortField" or "sortRev")
-	 * @return	string		URL
-	 */
-	function listURL($altId='',$table=-1,$exclList='')	{
-		return $this->script.
-			'?id='.(strcmp($altId,'')?$altId:$this->id).
-			'&table='.rawurlencode($table==-1?$this->table:$table).
-			($this->thumbs?'&imagemode='.$this->thumbs:'').
-			($this->returnUrl?'&returnUrl='.rawurlencode($this->returnUrl):'').
-			($this->searchString?'&search_field='.rawurlencode($this->searchString):'').
-			($this->searchLevels?'&search_levels='.rawurlencode($this->searchLevels):'').
-			($this->showLimit?'&showLimit='.rawurlencode($this->showLimit):'').
-			($this->firstElementNumber?'&pointer='.rawurlencode($this->firstElementNumber):'').
-			((!$exclList || !t3lib_div::inList($exclList,'sortField')) && $this->sortField?'&sortField='.rawurlencode($this->sortField):'').
-			((!$exclList || !t3lib_div::inList($exclList,'sortRev')) && $this->sortRev?'&sortRev='.rawurlencode($this->sortRev):'').
-			($this->category?'&category='.$this->category:'')
-			;
-	}	
 	
+
+	
+
+
+
+
 	/**
 	 * [Describe function...]
 	 *
-	 * @param	[type]		$table: ...
-	 * @param	[type]		$id: ...
-	 * @param	[type]		$addWhere: ...
-	 * @param	[type]		$fieldList: ...
 	 * @return	[type]		...
 	 */
-	function makeQueryArray($table, $id, $addWhere="",$fieldList='')	{
-		global $TCA;
-		if (!$fieldList) {
-			$fieldList = $table.'.*';
+	function initSubCategories() {
+		if ($this->useSubCategories && $this->category) {
+			$subcats = $this->divObj->getSubCategories($this->category);
+			$this->selectedCategories = t3lib_div::uniqueList($this->category.($subcats?','.$subcats:''));
+		} else {
+			$this->selectedCategories = $this->category;
 		}
-		
-			// Set ORDER BY:
-		$orderBy = ($TCA[$table]['ctrl']['sortby']) ? 'ORDER BY '.$TCA[$table]['ctrl']['sortby'] : $TCA[$table]['ctrl']['default_sortby'];
-		if ($this->sortField)	{
-			if (in_array($this->sortField,$this->makeFieldList($table,1)))	{
-				$orderBy = 'ORDER BY '.$this->sortField;
-				if ($this->sortRev)	$orderBy.=' DESC';
+	}
+
+
+
+
+
+
+	/**
+	 * Checks if a PID value is accessible and if so returns the path for the page.
+	 * Processing is cached so many calls to the function are OK.
+	 *
+	 * @param	integer		Page id for check
+	 * @return	string		Page path of PID if accessible. otherwise zero.
+	 */
+	function checkPageAccess($pid)	{
+		if (!isset($this->pidCache[$pid]))	{
+			$this->pidCache[$pid] = array();
+
+			$pageinfo = t3lib_BEfunc::readPageAccess($pid,$this->perms_clause);
+			$this->pidCache[$pid]['path'] = $pageinfo['_thePath'];
+
+			$calcPerms = $GLOBALS['BE_USER']->calcPerms($pageinfo);
+			if (($calcPerms&16)) {
+				$this->pidCache[$pid]['edit'] = TRUE;
 			}
 		}
 
-			// Set LIMIT:
-		$limit = $this->iLimit ? ($this->firstElementNumber ? $this->firstElementNumber.',' : '').($this->iLimit+1) : '';
+		return $this->pidCache[$pid];
+	}
 
-			// Adding search constraints:
-		$search = $this->makeSearchString($table);
 
-		if ($this->selectedCategories) {
-			$mmTable = 'tt_news_cat_mm';
-			$fieldList = 'DISTINCT('.$mmTable.'.uid_local), '.$fieldList;
-			
-			$leftjoin = ' LEFT JOIN '.$mmTable.' ON '.$table.'.uid='.$mmTable.'.uid_local';
-			$catWhere = ' AND '.$mmTable.'.uid_foreign IN ('.$this->selectedCategories.')';
+
+
+	/**
+	 * [Describe function...]
+	 *
+	 * @return	[type]		...
+	 */
+	function getLinkParams() {
+		$params = array('id' => $this->id);
+		if ($this->category) {
+			$params['category'] = $this->category;
 		}
-		
-		// FIXME only for admins ??
-		$this->pidSelect = '1=1';
-		
-		// FIXME how to deal with multiple languages
-		$addWhere .= ' AND '.$table.'.sys_language_uid=0';
-
-		// Compiling query array:
-		$queryParts = array(
-			'SELECT' => $fieldList,
-			'FROM' => $table.$leftjoin,
-			'WHERE' => $this->pidSelect.
-						t3lib_BEfunc::deleteClause($table).
-						t3lib_BEfunc::versioningPlaceholderClause($table).
-						' '.$addWhere.
-						' '.$search.$catWhere,
-			'GROUPBY' => '',
-			'ORDERBY' => $GLOBALS['TYPO3_DB']->stripOrderBy($orderBy),
-			'LIMIT' => $limit
-		);
-
-			// Return query:
-		return $queryParts;
+		return $params;
 	}
 }
-
-
-
-
-
-
-
-
 
 
 
@@ -887,7 +1117,10 @@ class tx_ttnewscatmanager_treeView extends tx_ttnews_categorytree {
 	 * @return	string		the wrapped title
 	 */
 	function wrapTitle($title,$v)	{
-// 		debug($v);
+		
+		// TODO: language overlay 
+		
+		
 		if($v['uid']>0) {
 			$hrefTitle = htmlentities('[id='.$v['uid'].'] '.$v['description']);
 			$js = htmlspecialchars('txttnewsM1js.loadList(\''.$v['uid'].'\', $(\'ttnewslist\'), \''.intval($this->pageID).'\');');
@@ -899,7 +1132,7 @@ class tx_ttnewscatmanager_treeView extends tx_ttnews_categorytree {
 				$out .= $this->makeControl('tt_news_cat',$v);
 			}
 		} else {
-			$out = '<span class="dragTitle" id="dragTitleID_0">'.$title.'</span>';
+			$out = '<span class="dragTitle" id="dragTitleID_0"><a href="'.t3lib_div::getIndpEnv('TYPO3_REQUEST_SCRIPT').'?id='.$this->pageID.'">'.$title.'</span>';
 		}
 		return $out;
 	}
@@ -916,11 +1149,9 @@ class tx_ttnewscatmanager_treeView extends tx_ttnews_categorytree {
 
 			// Initialize:
 		t3lib_div::loadTCA($table);
-		$cells=array();
-			// This expresses the edit permissions for this particular element:
-		$permsEdit = ($table!='pages' && ($this->calcPerms&16));
+		$cells = array();
 			// "Edit" link: ( Only if permissions to edit the page-record of the content of the parent page ($this->id)
-		if ($permsEdit)	{
+		if ($this->mayUserEditCategories)	{
 			$params='&edit['.$table.']['.$row['uid'].']=edit';
 			$cells[]='<a href="#" onclick="'.htmlspecialchars(t3lib_BEfunc::editOnClick($params,$this->backPath,$this->returnUrl)).'">'.
 					'<img'.t3lib_iconWorks::skinImg($this->backPath,'gfx/edit2'.(!$TCA[$table]['ctrl']['readOnly']?'':'_d').'.gif',
@@ -935,7 +1166,7 @@ class tx_ttnewscatmanager_treeView extends tx_ttnews_categorytree {
 
 			// "Hide/Unhide" links:
 		$hiddenField = $TCA[$table]['ctrl']['enablecolumns']['disabled'];
-		if ($permsEdit && $hiddenField && $TCA[$table]['columns'][$hiddenField] &&
+		if ($this->mayUserEditCategories && $hiddenField && $TCA[$table]['columns'][$hiddenField] &&
 				(!$TCA[$table]['columns'][$hiddenField]['exclude'] || $GLOBALS['BE_USER']->check('non_exclude_fields',$table.':'.$hiddenField)))	{
 			if ($row[$hiddenField])	{
 				$params='&data['.$table.']['.$row['uid'].']['.$hiddenField.']=0';
@@ -952,15 +1183,7 @@ class tx_ttnewscatmanager_treeView extends tx_ttnews_categorytree {
 			}
 		}
 
-			// "Delete" link:
-// 		if (
-// 			($table=='pages' && ($localCalcPerms&4)) || ($table!='pages' && ($this->calcPerms&16))
-// 			)	{
-// 			$params='&cmd['.$table.']['.$row['uid'].'][delete]=1';
-// 			$cells[]='<a href="#" onclick="'.htmlspecialchars('if (confirm('.$LANG->JScharCode($LANG->getLLL('deleteWarning',$this->LL).t3lib_BEfunc::referenceCount($table,$row['uid'],' (There are %s reference(s) to this record!)')).')) {jumpToUrl(\''.$SOBE->doc->issueCommand($params).'\');} return false;').'">'.
-// 					'<img'.t3lib_iconWorks::skinImg($this->backPath,'gfx/garbage.gif','width="11" height="12"').' title="'.$LANG->getLLL('delete',$this->LL).'" alt="" />'.
-// 					'</a>';
-// 		}
+
 
 
 		return '

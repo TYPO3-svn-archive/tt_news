@@ -389,7 +389,7 @@ $TCA['tt_news'] = Array (
 		
 		/**
 		 * The following fields have to be configured here to get them processed by the listview in the tt_news BE module
-		 * even though they should never appear in the 'showitem' list as editable fields.
+		 * they should never appear in the 'showitem' list as editable fields, though.
 		 */
 		'uid' => Array (
 			'label' => 'LLL:EXT:tt_news/locallang_tca.xml:tt_news.uid',
@@ -397,6 +397,12 @@ $TCA['tt_news'] = Array (
 				'type' => 'none'
 			)
 		),	
+		'pid' => Array (
+			'label' => 'LLL:EXT:tt_news/locallang_tca.xml:tt_news.pid',
+			'config' => Array (
+				'type' => 'none'
+			)
+		),			
 		'tstamp' => Array (
 			'label' => 'LLL:EXT:tt_news/locallang_tca.xml:tt_news.tstamp',
 			'config' => Array (

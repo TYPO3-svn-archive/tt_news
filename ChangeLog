@@ -1,3 +1,28 @@
+
+2008-04-06	Rupert Germann <rupi@gmx.li>
+
+	* Changes in module 'news admin':
+	* added support for allowed/disallowed categories
+	* added support for user/page TSConfig and added a default configuration to pageTSConfig in ext_tables.php
+	* new checkbox (list): 'Show only editable records'. Allows the user to switch the display of not editable news articles on or off. (this checkbox is invisible for admins)
+	* new checkbox (tree): 'Show hidden categories'. Allows the user to switch the display of hidden categories on or off.
+	* all checkboxes can be hidden in TSConfig: mod.web_txttnewsM1.list.show.cb_[name of the checkbox] and mod.web_txttnewsM1.catmenu.show.cb_[name of the checkbox]
+	* added an extra icon for news which are not editable due to disallowed categories
+	* added a language selector which shows the languages (page_language_overlay records) of the allowed pages of a normal BE user, or it shows all languages if the user is admin.
+	* new TSConfig option: 'mod.web_txttnewsM1.defaultLanguageLabel'. Overrides the label for the default language in the language selector
+
+	* added a check to the tree class for BE forms which informs the user if a category he edits is not in the general record storage page (if the use of GRSP is enabled).
+	* improved the 'no categories found' message: added a list which links the pages with news categories where the user has access to (inspired by templavoilá).
+	* new clickmenu options in tree: 'add new category on this level' and 'add subcategory'. Additionally to the 'new category' button on top of the tree these 2 options allow the user to create categories at a certain level in the tree.
+	* did a lot of improvements in the clickmenu class (f.i. the clickmenu items for manipulating records do now only show up if the user has edit permissions)
+
+
+2008-04-04	Rupert Germann <rupi@gmx.li>
+
+	* moved all templates to folder pi/ to res/
+	* added a new html default template: tt_news_v2.6_template.html
+
+
 2008-04-03	Rupert Germann <rupi@gmx.li>
 
 	* Implemented optionSplit for tt_news lists: (bug:7141). Thanks JONAS DÜBI and cabag.ch for the patch.
@@ -5,7 +30,7 @@
 		means: the image-width of the first item will be 300px, the last 3 items will be 100px. The items in between will have 200px width.
 	* Since parsing for splitted options needs extra perfermance you can disable optionSplit by setting plugin.tt_news.enableOptionSplit=0 if you don't need it.
 
-	* Enable optionSplit for templateparts/alternatingLayouts: with the new parameter "altLayoutsOptionSplit" it's possible to control the templatepart number by optionSplit.
+	* Enabled optionSplit for templateparts/alternatingLayouts: with the new parameter "altLayoutsOptionSplit" it's possible to control the templatepart number by optionSplit.
 		example: plugin.tt_news.altLayoutsOptionSplit = 0||1|*|2||3||4|*|5||5||5 (limit set to 11)
 		This can be directly used with the included LIST2 template and will use the templateparts in this order: 0,1,2,3,4,2,3,4,5,5,5
 		if "altLayoutsOptionSplit" is set "alternatingLayouts" will be ignored.
@@ -52,7 +77,7 @@
 
 	* added some missing conditions to prevent calling stdWrap for empty fields to function getItemMarkerArray
 	* fix: links to related news are showing the correct dates now, when useHRDatesSingle is enabled.
-	* moved the some manipulations of the selectConf array from function displayList to function getSelectConf. Allows to alter the groupBy/orderBy part of the query with the selectConfHook.
+	* moved the some manipulations of the selectConf array from function displayList() to function getSelectConf(). Now it's possible to alter the groupBy/orderBy part of the query with the selectConfHook.
 	* fix in tcaForm_selectTree: already selected categories don't loose their css class anymore when expanded/collapsed.
 	* better highlighting of parents of selected categories
 	* improvement (bug 7507): the archivemenu distinguishes between 1 item and more than 1 items now. Means: besides the existing language label "archiveItems" there's a new label called "archiveItem" which is displayed if an archive period contains only 1 item.

@@ -280,7 +280,10 @@
 	/*--------------------------------- SINGLE2  ---------------------------------*/
 
 
-
+.sv-img-big img,
+.sv-img-small img {
+	border:none;
+}
 
 .sv-img-big {
 	float: right;

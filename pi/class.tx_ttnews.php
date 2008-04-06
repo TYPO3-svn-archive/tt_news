@@ -1035,8 +1035,9 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 		$selectConf = array();
 		$selectConf['selectFields'] = '*';
 		$selectConf['fromTable'] = 'tt_news';
-		$selectConf['where'] = 'tt_news.uid=' . intval($this->tt_news_uid);
+		$selectConf['where'] = 'tt_news.uid=' . $this->tt_news_uid;
 		$selectConf['where'] .= ' AND tt_news.type NOT IN(1,2)' . $this->enableFields; // only real news -> type=0
+
 
 			// function Hook for processing the selectConf array
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tt_news']['sViewSelectConfHook'])) {
@@ -1055,6 +1056,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 					$selectConf['limit']);
 
 		$row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
+
 
 		// get the translated record if the content language is not the default language
 		if ($GLOBALS['TSFE']->sys_language_content) {
@@ -1196,6 +1198,9 @@ if ($this->debugTimes) $this->getParsetime(__METHOD__.' $dateArr');
 							$tmpWhere. ' AND tt_news.datetime>=' . $periodInfo['start'] . ' AND tt_news.datetime<' . $periodInfo['stop']);
 
 				$row = $GLOBALS['TYPO3_DB']->sql_fetch_row($res);
+				$GLOBALS['TYPO3_DB']->sql_free_result($res);
+				
+				
 				$periodInfo['count'] = $row[0];
 
 				if (!$this->conf['archiveMenuNoEmpty'] || $periodInfo['count']) {
@@ -3022,7 +3027,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 				$res = $this->exec_getQuery('tt_news', $selectConf);
 
 				$results = array();
-				$resultsCount = array();
+//				$resultsCount = array();
 				while (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))) {
 					$results[$row['uid']] = $row['uid'];
 				}

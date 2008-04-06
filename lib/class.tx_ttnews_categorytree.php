@@ -282,6 +282,8 @@ class tx_ttnews_categorytree extends t3lib_treeview {
 			// add CSS classes to the list item
 			if ($v['hasSub']) { $classAttr .= ($classAttr) ? ' expanded': 'expanded'; }
 			if ($v['isLast']) { $classAttr .= ($classAttr) ? ' last'	: 'last';	 }
+			if ($uid && $uid == $this->category) { $classAttr .= ($classAttr) ? ' active'	: 'active';	 }
+			
 
 			$itemHTML .='
 				<li id="'.$idAttr.'"'.($classAttr ? ' class="'.$classAttr.'"' : '').'>'.

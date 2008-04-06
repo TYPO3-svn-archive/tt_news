@@ -103,6 +103,7 @@ class tx_ttnews_TCAform_selectTree {
 	function setDefVals() {
 		if (!is_int($this->row['uid'])) { // defVals only for new records
 			$defVals = t3lib_div::_GP('defVals');
+		
 			if (is_array($defVals) && $defVals[$this->table][$this->field]) {
 				$defCat = intval($defVals[$this->table][$this->field]);
 				/**
@@ -132,10 +133,6 @@ class tx_ttnews_TCAform_selectTree {
 	function renderCategoryFields(&$PA, &$fobj)    {
 
 		$this->intT3ver = t3lib_div::int_from_ver(TYPO3_version);
-
-
-
-
 		if ($this->intT3ver < 4001000) {
 			// load some additional styles for the BE trees in TYPO3 version lower that 4.1
 			// expand/collapse is disabled
@@ -350,6 +347,7 @@ class tx_ttnews_TCAform_selectTree {
 		} else {
 			$selectedCategories = $this->row[$this->field];
 		}
+				
 		if ($selectedCategories) {
 			$selvals = explode(',',$selectedCategories);
 			if (is_array($selvals)) {
@@ -436,7 +434,7 @@ class tx_ttnews_TCAform_selectTree {
 		}
 		$this->table = trim(t3lib_div::_GP('tceFormsTable'));
 		$this->storagePidFromAjax = intval(t3lib_div::_GP('storagePid'));
-		$this->recID = trim(t3lib_div::_GP('recID')); // not intval() here because it might be a new record
+		$this->recID = trim(t3lib_div::_GP('recID')); // no intval() here because it might be a new record
 		if (intval($this->recID) == $this->recID) { 
 			$this->row = t3lib_BEfunc::getRecord($this->table,$this->recID);
 		}
@@ -458,12 +456,12 @@ class tx_ttnews_TCAform_selectTree {
 			} else { // be_users or be_groups
 				$this->field = 'tt_news_categorymounts';
 			}
-			if (is_int($this->recID) && is_array($this->row)) {
-				$this->setSelectedItems($this->recID);
+			if (is_array($this->row)) {
+				$this->setSelectedItems($this->row['uid']);
 			}
 
 		}
-
+		
 		if ($this->table == 'tt_content') {
 			$this->PA['itemFormElName'] = 'data[tt_content]['.$this->recID.'][pi_flexform][data][sDEF][lDEF][categorySelection][vDEF]';
 		} else {
@@ -503,7 +501,15 @@ class tx_ttnews_TCAform_selectTree {
 				$this->storagePid = $TSconfig['_STORAGE_PID']?$TSconfig['_STORAGE_PID']:0;
 			}
 			$SPaddWhere = ' AND tt_news_cat.pid IN (' . $this->storagePid . ')';
-
+			
+			
+			if ($this->table == 'tt_news_cat' && intval($this->row['pid']) > 0 && $this->row['pid'] != $this->storagePid) {
+				$msg = '<div style="padding:10px;"><img src="gfx/icon_warning2.gif" class="absmiddle" alt="" height="16" width="18">
+					The current category is not located in the "general record storage page" but "useStoragePid" is activated in tt_news configuration. 
+					Selecting a parent category from a different pid is not supported.
+					</div>';
+				$notInGRSP = true;
+			}
 		}
 
 		if ($this->table == 'tt_news' || $this->table == 'tt_news_cat') {
@@ -549,11 +555,13 @@ class tx_ttnews_TCAform_selectTree {
 		$treeViewObj->expandAll = !$this->useAjax;
 		$treeViewObj->useAjax = $this->useAjax;
 		$treeViewObj->titleLen = 60;
+		$treeViewObj->disableAll = $notInGRSP;
 		$treeViewObj->ext_IconMode = '1'; // no context menu on icons
 		$treeViewObj->title = $GLOBALS['LANG']->sL($GLOBALS['TCA']['tt_news_cat']['ctrl']['title']);
 		$treeViewObj->TCEforms_itemFormElName = $this->PA['itemFormElName'];
 
 		if ($this->table=='tt_news_cat') {
+
 			$treeViewObj->TCEforms_nonSelectableItemsArray[] = $this->row['uid'];
 		}
 
@@ -569,7 +577,7 @@ class tx_ttnews_TCAform_selectTree {
 		// mark selected categories
 		$treeViewObj->TCEforms_selectedItemsArray = $this->selectedItems;
 		$treeViewObj->selectedItemsArrayParents = $this->getCatRootline($SPaddWhere);
-
+	
 
 /*
  * FIXME
@@ -595,7 +603,7 @@ class tx_ttnews_TCAform_selectTree {
 //
 // 		$exectime = $tEnd-$tStart;
 // 		$this->debug['exectime'] = $exectime;
-		return $treeContent;
+		return $msg.$treeContent;
 	}
 
 	/**
@@ -698,7 +706,7 @@ class tx_ttnews_tceforms_categorytree extends tx_ttnews_categorytree {
 // 		debug($v);
 		if($v['uid']>0) {
 			$hrefTitle = htmlentities('[id='.$v['uid'].'] '.$v['description']);
-			if (in_array($v['uid'],$this->TCEforms_nonSelectableItemsArray)) {
+			if (in_array($v['uid'],$this->TCEforms_nonSelectableItemsArray) || $this->disableAll) {
 				$style = $this->getTitleStyles($v,$hrefTitle);
 				return '<a href="#" title="'.$hrefTitle.'"><span style="color:#999;cursor:default;'.$style.'">'.$title.'</span></a>';
 			} else {
@@ -747,7 +755,7 @@ class tx_ttnews_tceforms_categorytree extends tx_ttnews_categorytree {
 	 * @access private
 	 */
 	function PMiconATagWrap($icon, $cmd, $isExpand = true)	{
-		if ($this->thisScript && $this->expandable) {
+		if ($this->thisScript && $this->expandable && !$this->disableAll) {
 
 			// activate dynamic ajax-based tree
 			$js = htmlspecialchars('tceFormsCategoryTree.load(\''.$cmd.'\', '.intval($isExpand).', this, \''.$this->tceFormsTable.'\', \''.$this->tceFormsRecID.'\', \''.$this->storagePid.'\');');

@@ -20,6 +20,7 @@
 		
 			<label index="tt_news.uid">ID:</label>
 			<label index="tt_news.tstamp">Last change:</label>
+			<label index="tt_news.pid">Page:</label>
 			
 			<label index="tt_news.type.I.0">News</label>
 			<label index="tt_news.type.I.1">Link internal Page</label>

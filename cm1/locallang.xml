@@ -20,6 +20,8 @@
 			<label index="hide">Hide Record</label>
 			<label index="deleteWarning">Are you sure you want to delete this record?</label>
 			<label index="delete">Delete record (!)</label>
+			<label index="new">Create new category on this level</label>
+			<label index="newsub">Create new subcategory</label>
 
 			
 		</languageKey>
