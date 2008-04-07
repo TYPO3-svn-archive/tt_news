@@ -1,3 +1,6 @@
+2008-04-06	Rupert Germann <rupi@gmx.li>
+	* fix for bug #8021: removed superfluous marker ###COMENTS### from template single_record_insert
+	* version number is now: 3.0.0	
 
 2008-04-06	Rupert Germann <rupi@gmx.li>
 

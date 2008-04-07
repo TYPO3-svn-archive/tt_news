@@ -237,7 +237,8 @@ class tx_ttnews_module1 extends t3lib_SCbase {
 		$access = is_array($this->pageinfo) ? 1 : 0;
 		$this->markers['MOD_INFO'] = '';
 
-		if (($this->id && $access))	{
+
+		if ($this->id && $access)	{
 				// JavaScript
 			$this->doc->JScode = $this->doc->wrapScriptTags('
 				script_ended = 0;
