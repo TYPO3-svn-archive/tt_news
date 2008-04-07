@@ -154,7 +154,7 @@ class tx_ttnews_TCAform_selectTree {
 
 
 
-		$this->init(&$PA);
+		$this->init($PA);
 
 		$table = $this->table;
 		$field = $this->field;
