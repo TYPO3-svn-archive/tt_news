@@ -77,7 +77,7 @@
 	// DEFAULT initialization of a module [BEGIN]
 unset($MCONF);
 require('conf.php');
-require($BACK_PATH.'init.php');
+require_once($BACK_PATH.'init.php');
 require_once($BACK_PATH.'template.php');
 
 $GLOBALS['LANG']->includeLLFile('EXT:tt_news/mod1/locallang.xml');
@@ -108,7 +108,9 @@ class tx_ttnews_module1 extends t3lib_SCbase {
 	var $treeObj;
 	var $markers = array();
 	var $docHeaderButtons = array();
-	var $selectedCategories;
+	var $selectedCategories;	// list of selected category from GETvars extended by subcategories 
+	var $useSubCategories = TRUE;
+	
 	var $limit = 20;
 	var $TSprop = array();
 	var $fieldList = 'uid,title,datetime,archivedate,tstamp,category;author';
@@ -121,6 +123,7 @@ class tx_ttnews_module1 extends t3lib_SCbase {
 
 	var $excludeCats = array();
 	var $includeCats = array();
+	
 	/**
 	 * Initializes the Module
 	 *
@@ -131,7 +134,7 @@ class tx_ttnews_module1 extends t3lib_SCbase {
 			$this->MCONF = $GLOBALS['MCONF'];
 		}
 		$this->id = intval(t3lib_div::_GP('id'));
-		$this->CMD = t3lib_div::_GP('CMD');
+//		$this->CMD = t3lib_div::_GP('CMD');
 		$this->perms_clause = $GLOBALS['BE_USER']->getPagePermsClause(1);
 
 		$this->modTSconfig = t3lib_BEfunc::getModTSconfig($this->id,'mod.'.$this->MCONF['name']);
@@ -155,6 +158,12 @@ class tx_ttnews_module1 extends t3lib_SCbase {
 
 		$newArticlePid = intval($this->TSprop['list.']['pidForNewArticles']);
 		$this->newArticlePid = ($newArticlePid?$newArticlePid:$this->id);
+		
+		$pagesTSC = t3lib_BEfunc::getPagesTSconfig($this->id);
+		if ($pagesTSC['tx_ttnews.']['singlePid']) {
+			$this->singlePid = intval($pagesTSC['tx_ttnews.']['singlePid']);
+		}
+		
 
 		// get pageinfo array for newArticlePid
 		$newArticlePidPI = t3lib_BEfunc::readPageAccess($this->newArticlePid,$this->perms_clause);
@@ -163,58 +172,19 @@ class tx_ttnews_module1 extends t3lib_SCbase {
 
 		$this->divObj = t3lib_div::makeInstance('tx_ttnews_div');
 
-
-//		debug($GLOBALS['BE_USER'], ' ('.__CLASS__.'::'.__FUNCTION__.')', __LINE__, __FILE__, 3);
-
-
-		if (!$this->isAdmin) {
-				// get include/exclude items
-			$excludeList = $GLOBALS['BE_USER']->getTSConfigVal('tt_newsPerms.tt_news_cat.excludeList');
-			$includeList = $GLOBALS['BE_USER']->getTSConfigVal('tt_newsPerms.tt_news_cat.includeList');
-			// get allowed categories from be_users/groups (including subgroups)
-			if (($catmounts = $this->divObj->getAllowedCategories())) {
-				// if there are some use them and ignore "includeList" from TSConfig
-				$includeList = $catmounts;
-			}
-
-			if ($excludeList) {
-				$this->excludeCats = t3lib_div::intExplode(',',$excludeList);
-
-				$this->excludeCatList = implode(',',$this->excludeCats);
-				$this->catlistWhere = ' AND tt_news_cat.uid NOT IN ('.$this->excludeCatList.')';
-			}
-
-
-			if ($includeList) {
-				$this->includeCats = t3lib_div::intExplode(',',$includeList);
-				$this->includeCatList = implode(',',$this->includeCats);
-				if ($this->includeCatList) {
-					$this->catlistWhere .= ' AND tt_news_cat.uid IN ('.$this->includeCatList.')';
-				}
-			}
-
-
-			$this->setPidList();
-			if ($this->pidList) {
-				$this->setEditablePages($this->pidList);
-			}
-
-		}
-		
+		$this->initCategories();
 		$this->menuConfig();
-		
-		
 
 		$this->mData = $GLOBALS['BE_USER']->uc['moduleData']['web_txttnewsM1'];
-		
 		$this->current_sys_language = intval($this->MOD_SETTINGS['language']);
-		
-		
+		$this->searchLevels = intval($this->MOD_SETTINGS['searchLevels']);
 
 		$this->initGPvars();
-
 	}
 
+
+	
+	
 
 	/**
 	 * Main function of the module. Write the content to $this->content
@@ -273,7 +243,8 @@ class tx_ttnews_module1 extends t3lib_SCbase {
 		$this->markers['LIST'] = $this->listContent;
 		$this->markers['CSH'] = $this->docHeaderButtons['csh'];
 		$this->markers['LANG_MENU'] = $this->getLangMenu();
-
+		$this->markers['PAGE_SELECT'] = $this->getPageSelector();
+		
 		// put it all together
 		$this->content = $this->doc->startPage($LANG->getLL('title'));
 		$this->content.= $this->doc->moduleBody($this->pageinfo, $this->docHeaderButtons, $this->markers);
@@ -500,6 +471,7 @@ class tx_ttnews_module1 extends t3lib_SCbase {
 		$dblist->agePrefixes = $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:labels.minutesHoursDaysYears');
 		$dblist->id = $this->id;
 		$dblist->newRecPid = $this->newArticlePid;
+		$dblist->singlePid = $this->singlePid;
 		$dblist->itemsLimitSingleTable = $limit;
 		$dblist->selectedCategories = $this->selectedCategories;
 		$dblist->category = $this->category;
@@ -514,7 +486,7 @@ class tx_ttnews_module1 extends t3lib_SCbase {
 		$dblist->pidList = $this->pidList;
 		$dblist->editablePagesList = $this->editablePagesList;
 
-		$dblist->start($this->id,$table,$this->pointer,$this->search_field,$this->search_levels,$this->showLimit);
+		$dblist->start($this->id,$table,$this->pointer,$this->search_field,$this->searchLevels,$this->showLimit);
 
 		$externalTables[$table][0]['fList'] = $this->fieldList;
 		$externalTables[$table][0]['icon'] = $this->TSprop['list.']['icon'];
@@ -524,13 +496,14 @@ class tx_ttnews_module1 extends t3lib_SCbase {
 		$dblist->lTSprop = $this->TSprop['list.'];
 
 		$dblist->generateList();
+		
+		$content .= $this->getListHeaderMsg($dblist);
 
-		$content .= $this->getListHeaderMsg();
+		
 		$content .= $dblist->HTMLcode;
-
+		
 		return '<div id="ttnewslist">'.$content.'</div>';
 	}
-
 
 
 
@@ -622,14 +595,19 @@ class tx_ttnews_module1 extends t3lib_SCbase {
 	 *
 	 * @return	[type]		...
 	 */
-	function getListHeaderMsg() {
+	function getListHeaderMsg(&$dblist) {
 		global $LANG;
+		
+		
+		$noCatSelMsg = false;
 		if (!$this->selectedCategories)  {
-			if ($this->TSprop['list.']['noListWithoutCatSelection'] && !$this->isAdmin) {
-				$content = $LANG->getLL('selectCategory');
+			if ($this->TSprop['list.']['noListWithoutCatSelection']) {
+				$content = '<img'.t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'],'gfx/icon_note.gif','width="18" height="16"').' title="" alt="" />'.$LANG->getLL('selectCategory');
+				$noCatSelMsg = true;
 			} else {
 				$content = $LANG->getLL('showingAll');
 			}
+			
 		} else {
 			$table = 'tt_news_cat';
 			$row = t3lib_BEfunc::getRecord($table, $this->category);
@@ -661,10 +639,38 @@ class tx_ttnews_module1 extends t3lib_SCbase {
 				}
 			}
 		}
+		if ($dblist->totalItems == 0) {
+			$content .= $this->getNoResultsMsg($dblist,$noCatSelMsg);
+		}
+		$content = '<div style="padding:5px 0;">'.$content.'</div>';
 		return $content;
 	}
 
 
+	
+	function getNoResultsMsg(&$listObj,$noCatSelMsg) {
+		$content = '';
+		$tRows = array();
+		if (!$noCatSelMsg) {
+				$tRows[] = '<tr>
+					<td valign="top"><p><img'.t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'],'gfx/icon_note.gif','width="18" height="16"').' title="" alt="" />
+					'.$GLOBALS['LANG']->getLL('noNewsFound').'
+					</p></td>
+					</tr>';		
+		}
+
+
+		if ($this->mayUserEditArticles) {
+			$tRows[] = '<tr>
+					<td valign="top"><div style="padding:10px 0;">'.$listObj->getNewRecordButton('tt_news',true).'</div></td>
+					</tr>';
+		}
+		
+		$content .= '<table border="0" cellpadding="1" cellspacing="2" id="typo3-page-stdlist">'.implode('',$tRows).'</table>';
+		return $content;
+	}
+	
+	
 
 
 	/**
@@ -733,7 +739,7 @@ class tx_ttnews_module1 extends t3lib_SCbase {
 			$params = '&edit[tt_news_cat]['.$this->id.']=new';
 			$onclick = htmlspecialchars(t3lib_BEfunc::editOnClick($params,$GLOBALS['BACK_PATH'],$this->returnUrl));
 			$button = '<a href="#" onclick="'.$onclick.'">'.
-				'<img'.t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'],'gfx/new_el.gif').' title="'.$GLOBALS['LANG']->getLL('createCategory',1).'" alt="" />'.
+				'<img'.t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'],'gfx/new_el.gif').' title="'.$GLOBALS['LANG']->getLL('createCategory',1).'" alt="" /> '.
 			$GLOBALS['LANG']->getLL('createCategory').
 				'</a>';
 		}
@@ -843,7 +849,17 @@ class tx_ttnews_module1 extends t3lib_SCbase {
 	
 	
 
+	
+	function getPageSelector() {
+		if (count($this->MOD_MENU['searchLevels'])>1) {
+			$menu = $GLOBALS['LANG']->getLL('enterSearchLevels') . 
+				t3lib_BEfunc::getFuncMenu($this->id,'SET[searchLevels]',$this->searchLevels,$this->MOD_MENU['searchLevels']);
+		}
 
+		return $menu;
+	}
+	
+	
 
 
 
@@ -934,7 +950,7 @@ class tx_ttnews_module1 extends t3lib_SCbase {
 		$this->pointer = t3lib_div::intInRange(t3lib_div::_GP('pointer'),0,100000);
 		$this->category = intval(t3lib_div::_GP('category'));
 
-		$this->useSubCategories = TRUE;
+		
 
 	}
 
@@ -950,13 +966,21 @@ class tx_ttnews_module1 extends t3lib_SCbase {
 			'function' => array (
 				'1' => $GLOBALS['LANG']->getLL('function1'),
 //				'2' => $GLOBALS['LANG']->getLL('function2'),
-// 				'3' => $LANG->getLL('function3'),
 			),
 			'showEditIcons' => 0,
 			'expandAll' => 0,
 //			'useSubCategories' => 0,
 			'showOnlyEditable' => 0,
 			'showHiddenCategories' => 0,
+			'searchLevels' => array(
+				-1 => $GLOBALS['LANG']->getLL('allPages'),
+				0 => $GLOBALS['LANG']->getLL('thisPage'),
+				1 => $GLOBALS['LANG']->getLL('oneLevel'),
+				2 => $GLOBALS['LANG']->getLL('twoLevels'),
+				3 => $GLOBALS['LANG']->getLL('threeLevels'),
+				4 => $GLOBALS['LANG']->getLL('fourLevels')
+			
+			),
 			
 			'language' => array(
 				0 => $GLOBALS['LANG']->getLL('defaultLangLabel')
@@ -975,27 +999,23 @@ class tx_ttnews_module1 extends t3lib_SCbase {
 	
 	
 	function initLanguageMenu() {
-		
-		
-		
 		if ($this->isAdmin) {
 			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
-							'sys_language.*',
-							'sys_language',
-							'sys_language.hidden=0',
-							'',
-							'sys_language.title'
-						);			
-			
+					'sys_language.*',
+					'sys_language',
+					'sys_language.hidden=0',
+					'',
+					'sys_language.title'
+				);			
 		} else {
 			$exQ = t3lib_BEfunc::deleteClause('pages_language_overlay');
 			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
-								'sys_language.*',
-								'pages_language_overlay,sys_language',
-								'pages_language_overlay.sys_language_uid=sys_language.uid AND pages_language_overlay.pid IN ('.$this->pidList.')'.$exQ,
-								'pages_language_overlay.sys_language_uid,sys_language.uid,sys_language.pid,sys_language.tstamp,sys_language.hidden,sys_language.title,sys_language.static_lang_isocode,sys_language.flag',
-								'sys_language.title'
-							);			
+					'sys_language.*',
+					'pages_language_overlay,sys_language',
+					'pages_language_overlay.sys_language_uid=sys_language.uid AND pages_language_overlay.pid IN ('.$this->pidList.')'.$exQ,
+					'pages_language_overlay.sys_language_uid,sys_language.uid,sys_language.pid,sys_language.tstamp,sys_language.hidden,sys_language.title,sys_language.static_lang_isocode,sys_language.flag',
+					'sys_language.title'
+				);			
 		}
 						
 		while(($lrow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)))	{
@@ -1013,7 +1033,51 @@ class tx_ttnews_module1 extends t3lib_SCbase {
 	
 	
 
+	function initCategories() {
+		if (!$this->isAdmin) {
+				// get include/exclude items
+			$excludeList = $GLOBALS['BE_USER']->getTSConfigVal('tt_newsPerms.tt_news_cat.excludeList');
+			$includeList = $GLOBALS['BE_USER']->getTSConfigVal('tt_newsPerms.tt_news_cat.includeList');
+			// get allowed categories from be_users/groups (including subgroups)
+			if (($catmounts = $this->divObj->getAllowedCategories())) {
+				// if there are some use them and ignore "includeList" from TSConfig
+				$includeList = $catmounts;
+			}
+
+			if ($excludeList) {
+				$this->excludeCats = $this->posIntExplode($excludeList);
+				if (count($this->excludeCats)) {
+					$this->excludeCatList = implode(',',$this->excludeCats);
+					$this->catlistWhere = ' AND tt_news_cat.uid NOT IN ('.$this->excludeCatList.')';				
+				}
+			}
+
+			if ($includeList) {
+				$this->includeCats = $this->posIntExplode($includeList);
+				if (count($this->includeCats)) {
+					$this->includeCatList = implode(',',$this->includeCats);
+					$this->catlistWhere .= ' AND tt_news_cat.uid IN ('.$this->includeCatList.')';
+				}
+			}
+
+			$this->setPidList();
+			if ($this->pidList) {
+				$this->setEditablePages($this->pidList);
+			}
+		}		
+	}
 	
+	
+	function posIntExplode($list) {
+		$arr = t3lib_div::intExplode(',',$list);
+		$out = array();
+		foreach ($arr as $v) {
+			if ($v > 0) {
+				$out[] = $v;
+			}
+		}
+		return $out;
+	}	
 
 
 

@@ -3,10 +3,9 @@
 #
 # If your site is css based, maybe the css-file and the css-based news template
 # from folder res/ will fit better in your setup.
-# 
+#
 # (see Section Reference in the manual for more options & parameters)
 #
-# tt_news v 2.x
 ###
 
 # Includes the newsLib:
@@ -19,16 +18,16 @@ plugin.tt_news {
   userFunc = tx_ttnews->main_news
 
   templateFile = {$plugin.tt_news.file.templateFile}
-  # pid_list is the page, where your news db-records are stored 
+  # pid_list is the page, where your news db-records are stored
   pid_list = {$plugin.tt_news.pid_list}
-  
+
   # you can also leave the "starting Point" field in the content element empty and
   # define the pid_list in this way:
   # pid_list = 12,13  # comma separated list of pages
-  
+
   recursive.field = recursive
-  
-  # page for the Single view  (changed in version 1.6.0 - PIDitemDisplay don't work anymore) 
+
+  # page for the Single view  (changed in version 1.6.0 - PIDitemDisplay don't work anymore)
   singlePid = {$plugin.tt_news.singlePid}
 
   code.field = select_key
@@ -38,8 +37,8 @@ plugin.tt_news {
   backPid = {$plugin.tt_news.backPid}
   useHRDates = {$plugin.tt_news.useHRDates}
 
-    
-  # show an empty list when entering the search page. 
+
+  # show an empty list when entering the search page.
   emptySearchAtStart = 1
   searchEmptyMsg_stdWrap.wrap (
     <table border="0" cellpadding="0" cellspacing="0" width="100%">
@@ -53,7 +52,7 @@ plugin.tt_news {
     stdWrap.wrap = |<br />
   }
   newsFilesHeader_stdWrap.wrap = <strong>|</strong>
-  newsFiles_stdWrap.wrap = 
+  newsFiles_stdWrap.wrap =
 
   # Display language labels and/or flags
   showLangLabels = 0
@@ -72,8 +71,8 @@ plugin.tt_news {
   color4.wrap = {$plugin.tt_news.color4}
 
   # Renders news items in the same way like content as text or text/w image
-  # RTE parseFunc configuration for the fields: bodytext, short(subheader), links, author 
-  general_stdWrap { 
+  # RTE parseFunc configuration for the fields: bodytext, short(subheader), links, author
+  general_stdWrap {
      parseFunc < tt_content.text.20.parseFunc
   }
 
@@ -84,7 +83,7 @@ plugin.tt_news {
   )
   versionPreviewMessage_stdWrap.wrap = <div style="border:2px solid red;padding:10px;margin:10px 0px 10px 0px;"><img src="t3lib/gfx/icon_note.gif" class="absmiddle" alt="" height="16" width="18">&nbsp;<strong>|</strong></div>
   versionPreviewMessageLinkToOriginal_stdWrap.wrap = &nbsp;<span style="font-weight:normal;">|</span>
-  
+
   # Pagebrowser settings
   usePiBasePagebrowser = 0
   pageBrowser {
@@ -103,17 +102,17 @@ plugin.tt_news {
     activeLinkWrap = <strong>|</strong>
     LinksWrap =|
     showResultsWrap = |<br />
-    showResultsNumbersWrap = 
-    browseBoxWrap =  
+    showResultsNumbersWrap =
+    browseBoxWrap =
     browseLinksWrap = |
   }
-    
+
   # Category settings
   catImageMode = {$plugin.tt_news.catImageMode}
   catTextMode = {$plugin.tt_news.catTextMode}
   maxCatImages = 10
   maxCatTexts = 10
-  
+
   # category modes:
   # 0 = don't care about category selections
   # 1 = display selected categories
@@ -157,11 +156,11 @@ plugin.tt_news {
     catmenuIconMode = 0
 
     # if "catmenuIconPath" is set and "catmenuIconMode" is 2 all icons "join","joinbottom" & "line" are expected in this path
-    catmenuIconPath = 
+    catmenuIconPath =
 
     # icon for all categories if "catmenuIconMode" = 2
     catmenuIconFile = tt_news_cat.gif
- 
+
     # icon size for "catmenuIconMode" 1 & 2
     catmenuIconFile {
       width = 18
@@ -195,7 +194,7 @@ plugin.tt_news {
 
   # substitute pagetitle with title of news article
   substitutePagetitle = 1
-  
+
   # Archive settings
   datetimeDaysToArchive = {$plugin.tt_news.datetimeDaysToArchive}
   enableArchiveDate = 1
@@ -213,35 +212,35 @@ plugin.tt_news {
     20 = TEXT
     20.value = no date
     20.if {
-    # don't insert 0 as value, because localized times can also set other 
-    # values for unixtime start. 
+    # don't insert 0 as value, because localized times can also set other
+    # values for unixtime start.
       value = 20000
       isGreaterThan.field=start
       negate = 1
-    } 
-  }	
-	
+    }
+  }
+
   archiveEmptyMsg_stdWrap.wrap (
     <table border="0" cellpadding="0" cellspacing="0" width="100%">
     <tr><td><strong> | </strong></td></tr></table>
   )
-  
+
   # comment the following lines(//) out, if you want to divide the Archive-menu in yearly columns.
   # the included script inserts html, that will fit in the standard template. If you use another template,
   # see comments in the script for required changes.
-  
+
   # include amenu script & call user function:
   // includeLibs.newsAmenuUserFunc = EXT:tt_news/res/example_amenuUserFunc.php
   // plugin.tt_news.newsAmenuUserFunc = user_processAmenu
-  
+
   pageTypoLink.parameter.current = 1
-  
+
   ### Settings for Related News:
   related_stdWrap.wrap =  <dl class="news-single-related">|</dl>
   relatedHeader_stdWrap.wrap = <dt>|</dt>
-  
+
   relatedHeader_stdWrap.wrap = <strong>|</strong>
-  
+
   # end-wrap for the getRelated objects
   tmp.20 = TEXT
   tmp.20 {
@@ -253,10 +252,10 @@ plugin.tt_news {
   # Build the list of related news:
   getRelatedCObject = COA
   getRelatedCObject {
- 
+
     # groupBy =
     orderBy = datetime desc
-  
+
     10=CASE
     10.key.field=type
     # settings for 'normal' related news
@@ -302,7 +301,7 @@ plugin.tt_news {
   useMultiPageSingleView = {$plugin.tt_news.useMultiPageSingleView}
   maxWordsInSingleView = 0
 
-  
+
   ### SINGLE news
   displaySingle {
     age_stdWrap.age = 1
@@ -318,7 +317,7 @@ plugin.tt_news {
     links_stdWrap.wrap = | <br />
 
     linksHeader_stdWrap.wrap = <strong>|</strong>
-    
+
     imageCount = 2
     imgAltTextField = imagecaption
     imageWrapIfAny (
@@ -369,7 +368,6 @@ plugin.tt_news {
       </td></tr></table>
     )
   }
-  displayLatest.image < displaySingle.image
   displayLatest.image {
     file.maxW = {$plugin.tt_news.latestMaxW}
     file.maxH = {$plugin.tt_news.latestMaxH}
@@ -396,14 +394,13 @@ plugin.tt_news {
     imageWrapIfAny =
     imgAltTextField = imagecaption
   }
-  displayList.image < displaySingle.image
   displayList.image {
     file.maxW = {$plugin.tt_news.listMaxW}
     file.maxH = {$plugin.tt_news.listMaxH}
     imageLinkWrap = 1
     stdWrap.spaceAfter=5
   }
-  
+
   ### Example for overwriting values from locallang.php with other ones
   _LOCAL_LANG.de {
     # latestHeader = Das Allerneuste vom Neuen!

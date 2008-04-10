@@ -123,30 +123,29 @@ t3lib_extMgm::addPageTSConfig('
 	
 	
 	
-	mod.web_txttnewsM1 {
-		catmenu {
-			expandFirst = 1
-			
-			show {
-				cb_showEditIcons = 1
-				cb_expandAll = 1
-				cb_showHiddenCategories = 1
-			}
+mod.web_txttnewsM1 {
+	catmenu {
+		expandFirst = 1
+
+		show {
+			cb_showEditIcons = 1
+			cb_expandAll = 1
+			cb_showHiddenCategories = 1
 		}
-		list {
-			limit = 15
-			pidForNewArticles = 7
-			fList = pid,uid,title,datetime,archivedate,tstamp,category;author
-			icon = 1
-			noListWithoutCatSelection = 1
-			singlePid = 
-			show {
-				cb_showOnlyEditable = 1
-			}			
-			
+	}
+	list {
+		limit = 15
+		pidForNewArticles = 
+		fList = pid,uid,title,datetime,archivedate,tstamp,category;author
+		icon = 1
+		noListWithoutCatSelection = 1
+
+		show {
+			cb_showOnlyEditable = 1
 		}
-		defaultLanguageLabel = 
-	}	
+	}
+	defaultLanguageLabel = 
+}	
 	
 	
 	

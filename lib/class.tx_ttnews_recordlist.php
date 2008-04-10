@@ -105,7 +105,6 @@ class tx_ttnews_recordlist extends tx_cms_layout {
 
 			// If records were found, render the list:
 		if ($dbCount)	{
-
 				// Set fields
 			$this->fieldArray = explode(',','__cmds__,'.$fList);
 
@@ -113,15 +112,7 @@ class tx_ttnews_recordlist extends tx_cms_layout {
 			$theData = array();
 			$theData = $this->headerFields($this->fieldArray,$table,$theData);
 			if ($this->doEdit)	{
-				if ($this->category) {
-					$addP = '&defVals['.$table.'][category]='.$this->category;
-					$addLbl = 'InCategory';
-				}
-				$params = '&edit['.$table.']['.$this->newRecPid.']=new'.$addP;
-				$onclick = htmlspecialchars(t3lib_BEfunc::editOnClick($params,$this->backPath,$this->returnUrl));
-				$theData['__cmds__'] = '<a href="#" onclick="'.$onclick.'">'.
-					'<img'.t3lib_iconWorks::skinImg($this->backPath,'gfx/new_el.gif').' title="'.$GLOBALS['LANG']->getLL('createArticle'.$addLbl,1).'" alt="" />'.
-					'</a>';
+				$theData['__cmds__'] = $this->getNewRecordButton($table);
 			}
 			$out.= $this->addelement(1,'',$theData,' class="c-headLine"',15);
 
@@ -178,7 +169,92 @@ class tx_ttnews_recordlist extends tx_cms_layout {
 		}
 		return $out;
 	}
+	
+	
+	/**
+	 * Adds content to all data fields in $out array
+	 *
+	 * @param	array		Array of fields to display. Each field name has a special feature which is that the field name can be specified as more field names. Eg. "field1,field2;field3". Field 2 and 3 will be shown in the same cell of the table separated by <br /> while field1 will have its own cell.
+	 * @param	string		Table name
+	 * @param	array		Record array
+	 * @param	array		Array to which the data is added
+	 * @return	array		$out array returned after processing.
+	 * @see makeOrdinaryList()
+	 */
+	function dataFields($fieldArr,$table,$row,$out=array())	{
+		global $TCA;
 
+			// Check table validity:
+		if ($TCA[$table])	{
+			t3lib_div::loadTCA($table);
+			$thumbsCol = $TCA[$table]['ctrl']['thumbnail'];
+			$url = t3lib_div::getIndpEnv('TYPO3_SITE_URL').'index.php';
+				// Traverse fields:
+			foreach($fieldArr as $fieldName)	{
+
+				if ($TCA[$table]['columns'][$fieldName])	{	// Each field has its own cell (if configured in TCA)
+					if ($fieldName==$thumbsCol)	{	// If the column is a thumbnail column:
+						$val = $this->thumbCode($row,$table,$fieldName);
+					} else {	// ... otherwise just render the output:
+						$val = nl2br(htmlspecialchars(trim(t3lib_div::fixed_lgd_cs(t3lib_BEfunc::getProcessedValue($table,$fieldName,$row[$fieldName],0,0,0,$row['uid']),250))));
+					}
+					if ($this->singlePid) {
+						$val = $this->linkSingleView($url,$val,$row['uid']);
+					}
+					$out[$fieldName] = $val;				
+				} else {	// Each field is separated by <br /> and shown in the same cell (If not a TCA field, then explode the field name with ";" and check each value there as a TCA configured field)
+					$theFields = explode(';',$fieldName);
+
+						// Traverse fields, separated by ";" (displayed in a single cell).
+					foreach($theFields as $fName2)	{
+						if ($TCA[$table]['columns'][$fName2])	{
+							 $out[$fieldName].= '<b>'.$GLOBALS['LANG']->sL($TCA[$table]['columns'][$fName2]['label'],1).'</b>'.
+							 					'&nbsp;&nbsp;'.
+												htmlspecialchars(t3lib_div::fixed_lgd_cs(t3lib_BEfunc::getProcessedValue($table,$fName2,$row[$fName2],0,0,0,$row['uid']),25)).
+												'<br />';
+						}
+					}
+				}
+					// If no value, add a nbsp.
+				if (!$out[$fieldName])	$out[$fieldName]='&nbsp;';
+
+					// Wrap in dimmed-span tags if record is "disabled"
+				if ($this->isDisabled($table,$row))	{
+					$out[$fieldName] = $GLOBALS['TBE_TEMPLATE']->dfw($out[$fieldName]);
+				}
+			}
+		}
+		return $out;
+	}
+	
+	
+	function linkSingleView($url, $val, $uid) {
+		$params = array(
+				'id' => $this->singlePid, 
+				'tx_ttnews[tt_news]' => $uid,
+				'no_cache' => 1);
+		$linkedurl = t3lib_div::linkThisUrl($url,$params);
+		$link = '<a href="'.$linkedurl.'" target="_blank">'.$val.'</a>';
+		return $link;
+	}
+	
+	
+	
+	function getNewRecordButton($table, $withLabel=false) {
+		if ($this->category) {
+			$addP = '&defVals['.$table.'][category]='.$this->category;
+			$addLbl = 'InCategory';
+		}
+		$params = '&edit['.$table.']['.$this->newRecPid.']=new'.$addP;
+		$onclick = htmlspecialchars(t3lib_BEfunc::editOnClick($params,$this->backPath,$this->returnUrl));
+		$button = '<a href="#" onclick="'.$onclick.'">'.
+			'<img'.t3lib_iconWorks::skinImg($this->backPath,'gfx/new_el.gif').' title="'.$GLOBALS['LANG']->getLL('createArticle'.$addLbl,1).'" alt="" /> '.
+			($withLabel?$GLOBALS['LANG']->getLL('createArticle'.$addLbl):'').
+			'</a>';
+		return $button;
+	}
+	
+	
 
 	/**
 	 * Creates the icon image tag for record from table and wraps it in a link which will trigger the click menu.
@@ -342,7 +418,7 @@ class tx_ttnews_recordlist extends tx_cms_layout {
 //			($this->thumbs?'&imagemode='.$this->thumbs:'').
 //			($this->returnUrl?'&returnUrl='.rawurlencode($this->returnUrl):'').
 			($this->searchString?'&search_field='.rawurlencode($this->searchString):'').
-			($this->searchLevels?'&search_levels='.rawurlencode($this->searchLevels):'').
+			($this->searchLevels?'&searchLevels='.rawurlencode($this->searchLevels):'').
 			($this->showLimit?'&showLimit='.rawurlencode($this->showLimit):'').
 			($this->firstElementNumber?'&pointer='.rawurlencode($this->firstElementNumber):'').
 			((!$exclList || !t3lib_div::inList($exclList,'sortField')) && $this->sortField?'&sortField='.rawurlencode($this->sortField):'').
@@ -374,7 +450,7 @@ class tx_ttnews_recordlist extends tx_cms_layout {
 				if ($this->sortRev)	$orderBy.=' DESC';
 			}
 		}
-
+		
 			// Set LIMIT:
 		$limit = $this->iLimit ? ($this->firstElementNumber ? $this->firstElementNumber.',' : '').($this->iLimit+1) : '';
 
@@ -393,13 +469,19 @@ class tx_ttnews_recordlist extends tx_cms_layout {
 		} elseif ($this->lTSprop['noListWithoutCatSelection'] && !$this->isAdmin) {
 			$addWhere .= ' AND 1=0';
 		}
+		
+		if ($this->searchLevels == -1) {
+			$this->pidSelect = '';
+		}
+		$ps = ($this->pidSelect?$this->pidSelect.' AND ':'');
 		if ($this->isAdmin) {
-			$this->pidSelect = '1=1';
+			$this->pidSelect = $ps.'1=1';
 		} else {
+			
 			if ($this->showOnlyEditable) {
-				$this->pidSelect = $table.'.pid IN ('.$this->editablePagesList.')';
+				$this->pidSelect = $ps.$table.'.pid IN ('.$this->editablePagesList.')';
 			} else {
-				$this->pidSelect = $table.'.pid IN ('.$this->pidList.')';;
+				$this->pidSelect = $ps.$table.'.pid IN ('.$this->pidList.')';
 			}
 		}
 
@@ -420,18 +502,12 @@ class tx_ttnews_recordlist extends tx_cms_layout {
 			'LIMIT' => $limit
 		);
 
-
-
-		if (!$this->isAdmin && $this->selectedCategories && $this->showOnlyEditable) {
+		if (!$this->isAdmin && ($this->selectedCategories || !$this->lTSprop['noListWithoutCatSelection']) && $this->showOnlyEditable) {
 			$queryParts = $this->ckeckDisallowedCategories($queryParts);
 		}
 
 
-
-
-
-
-			// Return query:
+		// Return query:
 		return $queryParts;
 	}
 
@@ -442,33 +518,35 @@ class tx_ttnews_recordlist extends tx_cms_layout {
 	 * @return	[type]		...
 	 */
 	function ckeckDisallowedCategories($queryParts) {
-		// if showOnlyEditable is set, we check for each found record if it has any disallowed category assigned
-		$tmpLimit = $queryParts['LIMIT'];
-		unset($queryParts['LIMIT']);
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECT_queryArray($queryParts);
-		$results = array();
-		while (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))) {
-			$results[$row['uid']] = $row['uid'];
-		}
-		array_unique($results);
-		foreach ($results as $uid) {
-			$currentCats = $this->getCategories($uid);
-			foreach ($currentCats as $cat) {
-				if (!in_array($cat,$this->includeCats) || in_array($cat,$this->excludeCats)) {
-					unset($results[$uid]);
-					break; // break after one disallowed category was found
+		if (count($this->excludeCats) || count($this->includeCats)) {
+			// if showOnlyEditable is set, we check for each found record if it has any disallowed category assigned
+			$tmpLimit = $queryParts['LIMIT'];
+			unset($queryParts['LIMIT']);
+			$res = $GLOBALS['TYPO3_DB']->exec_SELECT_queryArray($queryParts);
+			$results = array();
+			while (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))) {
+				$results[$row['uid']] = $row['uid'];
+			}
+			array_unique($results);
+			foreach ($results as $uid) {
+				$currentCats = $this->getCategories($uid);
+				foreach ($currentCats as $cat) {
+					if (!in_array($cat,$this->includeCats) || in_array($cat,$this->excludeCats)) {
+						unset($results[$uid]);
+						break; // break after one disallowed category was found
+					}
 				}
 			}
+	
+			$matchlist = implode(',',$results);
+			if ($matchlist) {
+				$queryParts['WHERE'] .= ' AND tt_news.uid IN ('.$matchlist.')';
+			} else {
+				$queryParts['WHERE'] .= ' AND tt_news.uid IN (0)';
+			}
+	
+			$queryParts['LIMIT'] = $tmpLimit;
 		}
-
-		$matchlist = implode(',',$results);
-		if ($matchlist) {
-			$queryParts['WHERE'] .= ' AND tt_news.uid IN ('.$matchlist.')';
-		} else {
-			$queryParts['WHERE'] .= ' AND tt_news.uid IN (0)';
-		}
-
-		$queryParts['LIMIT'] = $tmpLimit;
 		return $queryParts;
 	}
 

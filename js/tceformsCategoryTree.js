@@ -102,8 +102,7 @@ var tceFormsCategoryTree = {
 			Event.observe(elements[i], 'dragstart', function(event) { DragDrop.dragElement(event); }, false);
 			Event.observe(elements[i], 'mouseup',   function(event) { DragDrop.dropElement(event); }, false);
 		}
-	},	
-
+	}
 };
 
 

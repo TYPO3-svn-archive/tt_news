@@ -163,7 +163,10 @@ class tx_ttnews extends tslib_pibase {
 	
 	var $token = '';
 
-	var $debugTimes = 0;
+	var $debugTimes = 0;	// debug parsetimes
+	var $useDevlog = 1;	// write parsetimes to devlog instead printing debug messages
+	var $parsetimeThreshold = 0.01; // log only functions which need more than x.xx seconds
+	
 	var $start_time = NULL;
 	var $global_start_time = 0;
 	var $start_code_line = 0;
@@ -407,7 +410,7 @@ class tx_ttnews extends tslib_pibase {
 
 		// List start id
 //		$listStartId = intval($this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'listStartId', 's_misc'));
-		$this->config['listStartId'] = /*$listStartId?$listStartId:*/intval($this->conf['listStartId']);
+//		$this->config['listStartId'] = /*$listStartId?$listStartId:*/intval($this->conf['listStartId']);
 		// supress pagebrowser
 		$noPageBrowser = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'noPageBrowser', 's_template');
 		$this->config['noPageBrowser'] = $noPageBrowser?$noPageBrowser:	$this->conf['noPageBrowser'];
@@ -452,7 +455,7 @@ class tx_ttnews extends tslib_pibase {
 		}
 
 
-if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
+		if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 
 
 	}
@@ -496,7 +499,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 	 */
 	function displayList($excludeUids = 0) {
 
-if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
+		if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 
 
 		$theCode = $this->theCode;
@@ -4041,18 +4044,17 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 		$lbl = $caller;
 		$msg = array();
 		if ($this->start_time === NULL)	{
-			$lbl = 'START: ----------------------------------------------------------------------------------------------------------------------------------------------';
+			$lbl = 'START: '.basename($file);
 			$msg['INITIALIZE'] = $caller;
-//			$msg[] = $call_info;
 			$this->start_time = $currentTime;
 			$this->global_start_time = $currentTime;
 			$this->start_time = $currentTime;
 
-//			$msg['file:'] = $file;
+			$msg['file:'] = $file;
 			$msg['start_code_line:'] = $this->start_code_line;
 			$msg['mem:'] = ceil( memory_get_usage()/1024).'  KB';
-			debug($msg, $lbl, $code_line, $file, 3);
-
+ 			$this->writelog($msg, $lbl, $code_line,0);
+			
 			return ;
 		}
 
@@ -4064,7 +4066,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 			$time = round(($currentTime - $this->start_time),3);
 		}
 
-		$msg['time:'] = $time.' s';
+		$msg['time:'] = $time;
 		$msg['caller:'] = $caller;
 		$msg['code-lines:'] = $this->start_code_line.'-'.$code_line;
 		$msg['mem:'] = ceil( memory_get_usage()/1024).'  KB';
@@ -4072,15 +4074,28 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 		$this->start_time = $currentTime;
 		$this->start_code_line = $code_line;
 
-		if ($time > 0.01 || $getGlobalTime) {
-//			debug ($msg,$lbl);
-
-			debug($msg, $lbl, $code_line, $file, 3);
-
+		if ($time > $this->parsetimeThreshold || $getGlobalTime) {
+ 			$this->writelog($msg, $lbl, $code_line, $getGlobalTime);
 		}
 	}
 
-
+	
+	function writelog($msg, $lbl, $code_line, $sev) {
+		if ($this->useDevlog) {
+			$time = $msg['time:'];
+			if ($time > 0.5) {
+				$sev = 2;
+				if ($time > 1) {
+					$sev = 3;
+				}
+			}
+			t3lib_div::devLog($lbl.($time?' time: '.$time.' s':''), $this->extKey, (int)$sev, $msg);
+		} else {
+			debug($msg, $lbl, $code_line, $msg['file:'], 3);
+		}
+	}
+	
+	
 
 
 

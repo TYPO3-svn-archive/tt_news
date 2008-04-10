@@ -13,6 +13,9 @@
 			<label index="function2"></label>
 			
 			<label index="nothingfound">This page contains no tt_news categories. Please select a page with categories from the list below:</label>
+			<label index="noNewsFound">There are no news matching the current selection.</label>
+			
+			
 			<label index="showSubcatgories">Show subcategories</label>
 			<label index="hideSubcatgories">Hide subcategories</label>
 			<label index="path">Path:</label>
@@ -24,6 +27,13 @@
 			<label index="defaultLangLabel">Default</label>
 			
 			
+			<label index="allPages">all pages</label>
+			<label index="thisPage">this page</label>
+			<label index="oneLevel">this page and 1 level down</label>
+			<label index="twoLevels">this page and 2 levels down</label>
+			<label index="threeLevels">this page and 3 levels down</label>
+			<label index="fourLevels">this page and 4 levels down</label>
+			<label index="enterSearchLevels">Show news from: </label>
 			
 			<label index="showingAll">Showing news from all categories.</label>
 			<label index="showingOnlyCat">Showing news from category: </label>
@@ -46,8 +56,8 @@
 
 
 			<label index="createCategory">Create new category</label>
-			<label index="createArticle">New article</label>
-			<label index="createArticleInCategory">New article in this category</label>
+			<label index="createArticle">Create new article</label>
+			<label index="createArticleInCategory">Create new article in this category</label>
 			<label index="edit">Edit record</label>
 			<label index="showInfo">Show information</label>
 			<label index="unHide">Unhide Record</label>

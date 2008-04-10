@@ -1,6 +1,6 @@
 /***************************************************************
 *
-*  javascript functions regarding the page & folder tree
+*  javascript functions for tt_news 'news admin' module
 *  relies on the javascript library "prototype"
 *
 *
@@ -129,11 +129,5 @@ var txttnewsM1js = {
 			Event.observe(elements[i], 'dragstart', function(event) { DragDrop.dragElement(event); }, false);
 			Event.observe(elements[i], 'mouseup',   function(event) { DragDrop.dropElement(event); }, false);
 		}
-	},	
-	
-	
-
+	}
 };
-
-
-

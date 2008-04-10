@@ -1,6 +1,19 @@
+2008-04-10	Rupert Germann <rupi@gmx.li>
+	* Changes in module 'news admin':
+	* new feature: added a level selector offering the following options: show news from all pages, from this page only and from this page and 1 to 4 levels down.
+	* new feature: the record titles in the list are now linked to the FE single view. The pid of the single view is configured with the same value which is already used for the 'save & preview' button (TSConfig: tx_ttnews.singlePid)
+	* new feature/fix: Added the missing 'no news found' message and a 'Create new article' button which are displayed when the result list is empty. Whether the 'create new' button appears or not depends of course on the current user's permissions.
+
+	* fix: removed some superfluous commas from the js files which caused errors in Internet Explorer.
+	* fix: changed require($BACK_PATH.'init.php'); to require_once... in mod1/ index.php because it threw a php error on ajax actions caused by the double inclusion of init.php.
+	* fixed bug #8048: removed the useless 'displayList[Latest].image < displaySingle.image' lines from all TS files.
+	* tweak: improved the internal time logging for the fe-plugin. It writes the parsetimes to the devlog now and it marks entries with exceptionally high parsetimes with different error levels.
+
+
 2008-04-06	Rupert Germann <rupi@gmx.li>
 	* fix for bug #8021: removed superfluous marker ###COMENTS### from template single_record_insert
-	* version number is now: 3.0.0	
+	* fix: removed a "call time pass by reference" in class tx_ttnews_TCAform_selectTree which caused a PHP error
+	* version number is now: 3.0.0
 
 2008-04-06	Rupert Germann <rupi@gmx.li>
 
@@ -47,10 +60,10 @@
 	* new flexform option: "Template part number / optionSplit of template part numbers". Same as "altLayoutsOptionSplit" in TS but applies only to the current content element.
 	* new flexform option: "OptionSplit for cropping lenght of subheader". This overwrites the "lenght" parameter from subheader_stdWrap.crop with an optionsplitted value (applies only to the current content element). This parameter is also available in TS: "plugin.tt_news.croppingLenghtOptionSplit"
 	* more optionsSplits ? ;-) : now the fields "imagesize" and "imagewidth" in flexforms can also be filled with splitted options.
-	* fix: added 2 new options to the recursive selecor in the flexform: "defined by TS" and "0 levels". 0 levels allows to override a globally given value for recursive by 0 for only one content element.
+	* fix #6659: added 2 new options to the recursive selecor in the flexform: "defined by TS" and "0 levels". 0 levels allows to override a globally given value for recursive by 0 for only one content element.
 	* new option/marker: plugin.tt_news.archiveActiveMarkerContent is filled to the marker ###ARCHIVE_ACTIVE### when the current archive period is selected. By default this marker is rendered to the opening <li> tag of an archive item and it is filled with 'class="amenu-act"'.
 
-	* fix: changed TS for the single view to render the linksItem_stdWrap around each link and not around all links. new: 'linksItem_stdWrap.parseFunc.nonTypoTagStdWrap.encapsLines.innerStdWrap_all.wrap = <dd>|</dd>''
+	* fix #4304: changed TS for the single view to render the linksItem_stdWrap around each link and not around all links. new: 'linksItem_stdWrap.parseFunc.nonTypoTagStdWrap.encapsLines.innerStdWrap_all.wrap = <dd>|</dd>''
 
 	* fix: set maximum of attached files to 100
 	* fix: the "RTEfullScreenWidth" for the tt_news.bodytext field is now set to 100% as in tt_content

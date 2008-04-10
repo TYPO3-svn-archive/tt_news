@@ -217,7 +217,6 @@ plugin.tt_news {
     linkAltField = short
     linkAltField.wrap =
   }
-  displayList.image < displaySingle.image
   displayList.image {
     file.maxW = {$plugin.tt_news.listMaxW}
     file.maxH = {$plugin.tt_news.listMaxH}
@@ -263,7 +262,6 @@ plugin.tt_news {
     linkAltField = short
     linkAltField.wrap =
   }
-  displayLatest.image < displaySingle.image
   displayLatest.image {
     file.maxW = {$plugin.tt_news.latestMaxW}
     file.maxH = {$plugin.tt_news.latestMaxH}
