@@ -131,7 +131,6 @@ class tx_ttnews_recordlist extends tx_cms_layout {
 					list($flag,$code) = $this->fwd_rwd_nav();
 					$out.= $code;
 					if ($flag)	{
-						$params = '&edit['.$table.']['.$row['uid'].']=edit';
 						$Nrow = array();
 						$noEdit = $this->checkRecordPerms($row,$checkCategories);
 
@@ -141,6 +140,7 @@ class tx_ttnews_recordlist extends tx_cms_layout {
 						}
 
 						if (!$noEdit)	{
+							$params = '&edit['.$table.']['.$row['uid'].']=edit';
 							$Nrow['__cmds__'].= '<a href="#" onclick="'.htmlspecialchars(t3lib_BEfunc::editOnClick($params,$this->backPath,$this->returnUrl)).'">'.
 											'<img'.t3lib_iconWorks::skinImg($this->backPath,'gfx/edit2.gif','width="11" height="12"').' title="'.$GLOBALS['LANG']->getLL('edit',1).'" alt="" />'.
 											'</a>';
@@ -149,7 +149,7 @@ class tx_ttnews_recordlist extends tx_cms_layout {
 						}
 
 							// Get values:
-						$Nrow = $this->dataFields($this->fieldArray,$table,$row,$Nrow);
+						$Nrow = $this->dataFields($this->fieldArray,$table,$row,$Nrow,$noEdit);
 						$tdparams = $this->eCounter%2 ? ' class="bgColor4"' : ' class="bgColor4-20"';
 						$out.= $this->addelement(1,'',$Nrow,$tdparams);
 					}
@@ -181,7 +181,7 @@ class tx_ttnews_recordlist extends tx_cms_layout {
 	 * @return	array		$out array returned after processing.
 	 * @see makeOrdinaryList()
 	 */
-	function dataFields($fieldArr,$table,$row,$out=array())	{
+	function dataFields($fieldArr,$table,$row,$out=array(),$noEdit=FALSE)	{
 		global $TCA;
 
 			// Check table validity:
@@ -189,17 +189,34 @@ class tx_ttnews_recordlist extends tx_cms_layout {
 			t3lib_div::loadTCA($table);
 			$thumbsCol = $TCA[$table]['ctrl']['thumbnail'];
 			$url = t3lib_div::getIndpEnv('TYPO3_SITE_URL').'index.php';
+			$thumbsize = $this->lTSprop['imageSize'];
 				// Traverse fields:
 			foreach($fieldArr as $fieldName)	{
 
 				if ($TCA[$table]['columns'][$fieldName])	{	// Each field has its own cell (if configured in TCA)
 					if ($fieldName==$thumbsCol)	{	// If the column is a thumbnail column:
-						$val = $this->thumbCode($row,$table,$fieldName);
+						if ($this->thumbs) {
+							$val = t3lib_BEfunc::thumbCode($row,$table,$fieldName,$this->backPath,$this->thumbScript,NULL,0,'',$thumbsize);
+						} else {
+							$val = str_replace(',',', ',basename($row[$fieldName]));
+						}
+						
+						
 					} else {	// ... otherwise just render the output:
 						$val = nl2br(htmlspecialchars(trim(t3lib_div::fixed_lgd_cs(t3lib_BEfunc::getProcessedValue($table,$fieldName,$row[$fieldName],0,0,0,$row['uid']),250))));
-					}
-					if ($this->singlePid) {
-						$val = $this->linkSingleView($url,$val,$row['uid']);
+						
+						if ($this->lTSprop['clickTitleMode'] == 'view') {
+							if ($this->singlePid) {
+								$val = $this->linkSingleView($url,$val,$row['uid']);
+							}
+						} elseif ($this->lTSprop['clickTitleMode'] == 'edit') {
+							if (!$noEdit)	{
+								$params = '&edit['.$table.']['.$row['uid'].']=edit';
+								$val = '<a href="#" onclick="'.htmlspecialchars(t3lib_BEfunc::editOnClick($params,$this->backPath,$this->returnUrl)).'">'.$val.'</a>';	
+							}	
+						}
+						
+
 					}
 					$out[$fieldName] = $val;				
 				} else {	// Each field is separated by <br /> and shown in the same cell (If not a TCA field, then explode the field name with ";" and check each value there as a TCA configured field)
@@ -290,40 +307,23 @@ class tx_ttnews_recordlist extends tx_cms_layout {
 	 */
 	function checkRecordPerms(&$row,$checkCategories)	{
 		$noEdit = 1;
-		if ($row['pid'] == $this->newRecPid) {
-			$pageCalcPerms = $this->ext_CALC_PERMS;
-		} else {
-			// TODO: cache this
-			$PI = t3lib_BEfunc::readPageAccess($row['pid'],$this->perms_clause);
-			$pageCalcPerms = $GLOBALS['BE_USER']->calcPerms($PI);
-		}
-
-		if (($pageCalcPerms&16)) { // user is allowed to edit page content
+		if ($this->pObj->checkPageAccess($row['pid'])) { // user is allowed to edit page content
+			$noEdit = 0;
 			if ($checkCategories) {
 				$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery (
 					'tt_news_cat_mm.*',
-					'tt_news_cat_mm',
-					'tt_news_cat_mm.uid_local='.$row['uid']);
-				$noEdit = 2;
-				$error = false;
+					'tt_news_cat_mm, tt_news_cat',
+					'tt_news_cat_mm.uid_foreign=tt_news_cat.uid AND tt_news_cat.deleted=0 AND tt_news_cat_mm.uid_local='.$row['uid']);
+				
 				while (($mmrow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))) {
 					if (!in_array($mmrow['uid_foreign'],$this->includeCats) || in_array($mmrow['uid_foreign'],$this->excludeCats)) {
-						$error = true;
+						$noEdit = 2;
 						break;
 					}
 				}
 				$GLOBALS['TYPO3_DB']->sql_free_result($res);
-				if (!$error) {
-					$noEdit = 0;
-				}
-
-			} else {
-				$noEdit = 0;
 			}
-
 		}
-
-
 		return $noEdit;
 	}
 
@@ -415,7 +415,7 @@ class tx_ttnews_recordlist extends tx_cms_layout {
 		return $this->script.
 			'?id='.(strcmp($altId,'')?$altId:$this->id).
 //			($table!==FALSE?'&table='.rawurlencode($table==-1?$this->table:$table):'').
-//			($this->thumbs?'&imagemode='.$this->thumbs:'').
+			($this->thumbs?'&showThumbs='.$this->thumbs:'').
 //			($this->returnUrl?'&returnUrl='.rawurlencode($this->returnUrl):'').
 			($this->searchString?'&search_field='.rawurlencode($this->searchString):'').
 			($this->searchLevels?'&searchLevels='.rawurlencode($this->searchLevels):'').
@@ -477,16 +477,13 @@ class tx_ttnews_recordlist extends tx_cms_layout {
 		if ($this->isAdmin) {
 			$this->pidSelect = $ps.'1=1';
 		} else {
-			
 			if ($this->showOnlyEditable) {
 				$this->pidSelect = $ps.$table.'.pid IN ('.$this->editablePagesList.')';
 			} else {
 				$this->pidSelect = $ps.$table.'.pid IN ('.$this->pidList.')';
 			}
 		}
-
 		$addWhere .= ' AND '.$table.'.sys_language_uid='.$this->current_sys_language;
-		
 
 		// Compiling query array:
 		$queryParts = array(
@@ -505,7 +502,6 @@ class tx_ttnews_recordlist extends tx_cms_layout {
 		if (!$this->isAdmin && ($this->selectedCategories || !$this->lTSprop['noListWithoutCatSelection']) && $this->showOnlyEditable) {
 			$queryParts = $this->ckeckDisallowedCategories($queryParts);
 		}
-
 
 		// Return query:
 		return $queryParts;

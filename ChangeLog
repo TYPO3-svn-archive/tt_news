@@ -1,3 +1,28 @@
+2008-04-14	Rupert Germann <rupi@gmx.li>
+	* new feature: with "mod.web_txttnewsM1.list.clickTitleMode" it's possible to configure the behavior of the record-title link in lists in the news-admin module.
+		Possible values: "edit" = link editform, "view" = link FE singleView, any other value: don't link. Default is "edit". The "edit" link is only inserted if the user has sufficient permisssions, the "view" link needs a value for "tx_ttnews.singlePid" (TSConfig) to work.
+	* performance improvement for the BE module: If a non admin user with many visible pages in his db-mounts opens the news-admin module the script has to check for each page if the user may edit it. This is quite time consuming and so I added a caching mechanism which stores the editperms for each page and the md5hash of the pidList (= list of all mounted pages) in the be_sessions table. Now the permissions are only calculated once per Session.
+	ATTENTION: page permission changes which don't change the pidList will be ignored until the be_user session changes (re-login required)
+	* fix: it was not possible to mount/allow non-root categories in trees. This error was introduced when I changed lots of stuff in the trees to get rid of the tables and xajax.
+	* improved the handling of allowed/disallowed categories in BE trees. FIXME -> making categories un-selectable with "tt_newsPerms.tt_news_cat.allowedItems" doesn't work currenlty
+	* all methods in class.tx_ttnews_div are called statically now.
+
+
+2008-04-12	Rupert Germann <rupi@gmx.li>
+	* Changed handling of StoragePid/GRSP:
+		* category tree in tt_news, tt_news_cat and tt_content: If "useStoragePid" is enabled and no GRSP is given the script looks for categories in the current page.
+		* category tree in be_users/groups: the tree shows all categories from all pages ("useStoragePid" is ignored)
+		* news-admin module: If "useStoragePid" is enabled (and GRSP is visible for the current user) the module diplays all categories found in the current GRSP - no matter which page is actually selected in pagetree. The selection in the pagetree filters only the displayed news and not the categories.
+		* If "useStoragePid" is enabled and NO GRSP is given, only the categories from the current page will be displayed (that was the behaviour also with given GRSP before this change).
+		* improvement: The tree header displays the pid where the current categories have been found.
+	* new feature: added a checkbox to the BE list view which allows users to switch off the image thumbnails.
+	* new feature: added a TSConfig option to show the "create new category" button or not (mod.web_txttnewsM1.catmenu.show.btn_newCategory = 1)
+	* new feature: added a TSConfig option to configure the size of the thumbnails (mod.web_txttnewsM1.list.imageSize)
+
+	* fix: the AMENU didn't take the pid_list into account when doing the count() queries for the archive periods
+	* improved the message handling in the tree for tceforms. Now the messages are partly localized - not yet finished
+	*
+
 2008-04-10	Rupert Germann <rupi@gmx.li>
 	* Changes in module 'news admin':
 	* new feature: added a level selector offering the following options: show news from all pages, from this page only and from this page and 1 to 4 levels down.

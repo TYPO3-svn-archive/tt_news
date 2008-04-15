@@ -82,9 +82,7 @@ class tx_ttnews_TCAform_selectTree {
 	function init(&$PA) {
 		$this->confArr = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['tt_news']);
 
-		if (!is_object($this->divObj)) {
-			$this->divObj = t3lib_div::makeInstance('tx_ttnews_div');
-		}
+
 
 		$this->PA = &$PA;
 		$this->table = $PA['table'];
@@ -209,18 +207,19 @@ class tx_ttnews_TCAform_selectTree {
 					$assignedCategories[$catrow['uid']] = $catrow['title'];
 				}
 
-				$notAllowedItems = array();
-				if ($this->divObj->useAllowedCategories()) {
-					$allowedCategories = $this->divObj->getAllowedCategories();
-
-					if (($excludeList = $GLOBALS['BE_USER']->getTSConfigVal('tt_newsPerms.tt_news_cat.excludeList'))) {
-						$addWhere = ' AND uid NOT IN ('.$excludeList.')';
-					}
-					$notAllowedItems = $this->getNotAllowedItems($addWhere,$allowedCategories);
-				}
+//				$notAllowedItems = array();
+//				if (tx_ttnews_div::useAllowedCategories()) {
+//					$allowedCategories = tx_ttnews_div::getAllowedCategories();
+//
+//					if (($excludeList = $GLOBALS['BE_USER']->getTSConfigVal('tt_newsPerms.tt_news_cat.excludeList'))) {
+//						$addWhere = ' AND uid NOT IN ('.$excludeList.')';
+//					}
+//					$notAllowedItems = $this->getNotAllowedItems($addWhere,$allowedCategories);
+//				}
+				$treeIDs = tx_ttnews_div::getAllowedTreeIDs();
 
 				foreach ($assignedCategories as $cuid => $ctitle) {
-					if(in_array($cuid,$notAllowedItems)) {
+					if (!in_array($cuid,$treeIDs)) {
 						$categories[$cuid] = $NACats[] = '<p style="padding:0px;color:red;font-weight:bold;">- '.$ctitle.' <span class="typo3-dimmed"><em>['.$cuid.']</em></span></p>';
 						$na = true;
 					} else {
@@ -417,6 +416,19 @@ class tx_ttnews_TCAform_selectTree {
 
 		return $msg;
 	}
+	
+	
+	function printMsg($msgLbl, $sev) {
+	
+		$content = '<div style="padding:10px;">
+			<img'.t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'],'gfx/icon_'.$sev.'.gif','width="18" height="16"').' title="" alt="" />';
+		$content .= $GLOBALS['LANG']->sL('LLL:EXT:tt_news/locallang_tca.xml:tt_news.treeSelect.msg_'.$msgLbl);
+		$content .= '</div>';
+		
+		return $content;
+	}
+	
+	
 
 	/**
 	 * [Describe function...]
@@ -429,9 +441,7 @@ class tx_ttnews_TCAform_selectTree {
 		$this->useAjax = TRUE;
 		$this->confArr = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['tt_news']);
 
-		if (!is_object($this->divObj)) {
-			$this->divObj = t3lib_div::makeInstance('tx_ttnews_div');
-		}
+
 		$this->table = trim(t3lib_div::_GP('tceFormsTable'));
 		$this->storagePidFromAjax = intval(t3lib_div::_GP('storagePid'));
 		$this->recID = trim(t3lib_div::_GP('recID')); // no intval() here because it might be a new record
@@ -491,46 +501,29 @@ class tx_ttnews_TCAform_selectTree {
 // 		$tStart = microtime(true);
 // 		$this->debug['start'] = time();
 
-			// ignore the value of "useStoragePid" if table is be_users or be_groups
-		if ($this->confArr['useStoragePid'] && ($this->table == 'tt_news' || $this->table == 'tt_news_cat' || $this->table == 'tt_content')) {
-
+		// ignore useStoragePid if table is be_user/groups.
+		if ($this->confArr['useStoragePid'] && substr($this->table,0,3) != 'be_') {
 			if ($this->storagePidFromAjax) {
 				$this->storagePid = $this->storagePidFromAjax;
 			} else {
 				$TSconfig = t3lib_BEfunc::getTCEFORM_TSconfig($this->table,$this->row);
-				$this->storagePid = $TSconfig['_STORAGE_PID']?$TSconfig['_STORAGE_PID']:0;
+				$this->storagePid = ($TSconfig['_STORAGE_PID']?$TSconfig['_STORAGE_PID']:intval($this->row['pid']));
 			}
 			$SPaddWhere = ' AND tt_news_cat.pid IN (' . $this->storagePid . ')';
-			
-			
 			if ($this->table == 'tt_news_cat' && intval($this->row['pid']) > 0 && $this->row['pid'] != $this->storagePid) {
-				$msg = '<div style="padding:10px;"><img src="gfx/icon_warning2.gif" class="absmiddle" alt="" height="16" width="18">
-					The current category is not located in the "general record storage page" but "useStoragePid" is activated in tt_news configuration. 
-					Selecting a parent category from a different pid is not supported.
-					</div>';
+				$msg = $this->printMsg('notInGRSP','warning2');
 				$notInGRSP = true;
 			}
+		}		
+		
+		if ($this->storagePid > 0) {
+			$catlistWhere = tx_ttnews_div::getCatlistWhere();
+			if ($catlistWhere) {
+				$this->getNotAllowedItems($SPaddWhere);
+			}			
 		}
-
-		if ($this->table == 'tt_news' || $this->table == 'tt_news_cat') {
-				// get include/exclude items
-			$excludeList = $GLOBALS['BE_USER']->getTSConfigVal('tt_newsPerms.tt_news_cat.excludeList');
-			$includeList = $GLOBALS['BE_USER']->getTSConfigVal('tt_newsPerms.tt_news_cat.includeList');
-			// get allowed categories from be_users/groups (including subgroups)
-			if (($catmounts = $this->divObj->getAllowedCategories())) {
-				// if there are some use them and ignore "includeList" from TSConfig
-				$includeList = $catmounts;
-			}
-		}
-
-
-		if ($excludeList) {
-			$catlistWhere = ' AND tt_news_cat.uid NOT IN ('.implode(t3lib_div::intExplode(',',$excludeList),',').')';
-		}
-		if ($includeList) {
-			$catlistWhere .= ' AND tt_news_cat.uid IN ('.implode(t3lib_div::intExplode(',',$includeList),',').')';
-		}
-
+		
+		
 		$treeOrderBy = $this->confArr['treeOrderBy']?$this->confArr['treeOrderBy']:'uid';
 
 		// instantiate tree object
@@ -543,9 +536,6 @@ class tx_ttnews_TCAform_selectTree {
 		$treeViewObj->storagePid = $this->storagePid;
 
 
-//		debug(array($SPaddWhere,$catlistWhere,$treeOrderBy), ' ('.__CLASS__.'::'.__FUNCTION__.')', __LINE__, __FILE__, 3);
-
-
 		$treeViewObj->init($SPaddWhere.$catlistWhere,$treeOrderBy);
 		$treeViewObj->backPath = $GLOBALS['BACK_PATH'];
 		$treeViewObj->thisScript = 'class.tx_ttnews_tceformsSelectTree.php';
@@ -553,6 +543,7 @@ class tx_ttnews_TCAform_selectTree {
 		$treeViewObj->parentField = 'parent_category';
 		$treeViewObj->expandable = $this->useAjax;
 		$treeViewObj->expandAll = !$this->useAjax;
+//		$treeViewObj->expandFirst = 1;
 		$treeViewObj->useAjax = $this->useAjax;
 		$treeViewObj->titleLen = 60;
 		$treeViewObj->disableAll = $notInGRSP;
@@ -561,48 +552,69 @@ class tx_ttnews_TCAform_selectTree {
 		$treeViewObj->TCEforms_itemFormElName = $this->PA['itemFormElName'];
 
 		if ($this->table=='tt_news_cat') {
-
 			$treeViewObj->TCEforms_nonSelectableItemsArray[] = $this->row['uid'];
 		}
 
-		if ($this->divObj->useAllowedCategories() && !$this->divObj->allowedItemsFromTreeSelector) {
-			// 'options.useListOfAllowedItems' is set but not category is selected --> check the 'allowedItems' list
-			$notAllowedItems = $this->getNotAllowedItems($SPaddWhere);
-		}
-		if (is_array($notAllowedItems) && $notAllowedItems[0]) {
-			foreach ($notAllowedItems as $k) {
-				$treeViewObj->TCEforms_nonSelectableItemsArray[] = $k;
-			}
-		}
+		
+		/**
+		 * FIXME
+		 * making categories not-selectable with tt_newsPerms.tt_news_cat.allowedItems doesn't work anymore
+		 */
+//		if (tx_ttnews_div::useAllowedCategories() && !tx_ttnews_div::allowedItemsFromTreeSelector) {
+//			// 'options.useListOfAllowedItems' is set but no category is selected --> check the 'allowedItems' list
+//			$notAllowedItems = $this->getNotAllowedItems($SPaddWhere);
+//		}
+//		if (is_array($notAllowedItems) && $notAllowedItems[0]) {
+//			foreach ($notAllowedItems as $k) {
+//				$treeViewObj->TCEforms_nonSelectableItemsArray[] = $k;
+//			}
+//		}		
+		
+
+		
+		
+
 		// mark selected categories
 		$treeViewObj->TCEforms_selectedItemsArray = $this->selectedItems;
 		$treeViewObj->selectedItemsArrayParents = $this->getCatRootline($SPaddWhere);
 	
-
-/*
- * FIXME
- * muss das wirklich 2 mal aufgerufen werden?
- */
-
-		if (!$this->divObj->allowedItemsFromTreeSelector) {
-//			$notAllowedItems = $this->getNotAllowedItems($SPaddWhere);
-		} else {
-			$treeIDs = $this->divObj->getCategoryTreeIDs();
-			$notAllowedItems = $this->getNotAllowedItems($SPaddWhere,$treeIDs);
+		// if storagePid==0 the table is be_user/groups. In this table all categories are shown
+		if ($this->storagePid > 0) {
+			// get selected categories from be user/group without subcategories
+			$tmpsc = tx_ttnews_div::getBeUserCatMounts(FALSE);
+			$beUserSelCatArr = t3lib_div::intExplode(',',$tmpsc);
+			$includeListArr = tx_ttnews_div::getIncludeCatArray();			
+			$subcatArr = array_diff($includeListArr,$beUserSelCatArr);
+			
+			// get all selected category records from the current storagePid which are not 'root' categories
+			// and add them as tree mounts. Subcategories of selected categories will be excluded. 
+			$nonRootMounts = array();
+			foreach ($beUserSelCatArr as $catID) {
+				$tmpR = t3lib_BEfunc::getRecord('tt_news_cat',$catID,'parent_category',' AND pid='.$this->storagePid);
+				if ($tmpR['parent_category'] > 0 && !in_array($catID,$subcatArr)) {
+					$nonRootMounts[] = $catID;
+				}
+			}
+			$treeViewObj->MOUNTS = array_merge($treeViewObj->MOUNTS,$nonRootMounts);
 		}
+	
+		
 			// render tree html
 		$treeContent = $treeViewObj->getBrowsableTree();
-
 		$this->treeObj_ajaxStatus = $treeViewObj->ajaxStatus;
 
+		
+
+		
+		
+
+//		if (count($treeViewObj->ids) == 0) {
+//			$msg .= str_replace('###PID###',$this->storagePid,$this->printMsg('emptyTree','note'));
+//			$treeContent = '';			
+//		}
 
 
 
-// 		$tEnd = microtime(true);
-// 		$this->debug['end'] = time();
-//
-// 		$exectime = $tEnd-$tStart;
-// 		$this->debug['exectime'] = $exectime;
 		return $msg.$treeContent;
 	}
 
@@ -648,11 +660,11 @@ class tx_ttnews_TCAform_selectTree {
 	 * @return	array		array with not allowed categories
 	 * @see tx_ttnews_tceFunc_selectTreeView::wrapTitle()
 	 */
-	function getNotAllowedItems($SPaddWhere,$allowedItemsList=false) {
+	function getNotSelectableItems($SPaddWhere,$allowedItemsList=false) {
 		$fTable = 'tt_news_cat';
 			// get list of allowed categories for the current BE user
 		if (!$allowedItemsList) {
-			$allowedItemsList = $GLOBALS['BE_USER']->getTSConfigVal('tt_newsPerms.'.$fTable.'.allowedItems');
+			$allowedItemsList = $GLOBALS['BE_USER']->getTSConfigVal('tt_newsPerms.tt_news_cat.allowedItems');
 		}
 		$itemArr = array();
 		if ($allowedItemsList) {
@@ -679,6 +691,35 @@ class tx_ttnews_TCAform_selectTree {
 		}
 		return $itemArr;
 	}
+	
+	
+	
+	
+	
+	function getNotAllowedItems($SPaddWhere) {
+		if ($this->row['category']) {
+			$treeIDs = tx_ttnews_div::getAllowedTreeIDs();
+			if (!$this->row['sys_language_uid'] && !$this->row['l18n_parent']) {
+				$catvals = explode(',',$this->row['category']); // get categories from the current record
+				$notAllowedCats = array();
+				
+				foreach ($catvals as $k) {
+					$c = explode('|',$k);
+					if($c[0] && !in_array($c[0],$treeIDs)) {
+						$notAllowedCats[]= '<p style="padding:0px;color:red;font-weight:bold;">- '.$c[1].' <span class="typo3-dimmed"><em>['.$c[0].']</em></span></p>';
+					}
+				}
+				if (count($notAllowedCats)) {
+					$this->NA_Items = $this->printError($notAllowedCats,array());
+				}
+			}
+		}
+	}
+	
+	
+	
+	
+	
 }
 
 

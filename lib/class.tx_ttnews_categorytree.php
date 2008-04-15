@@ -89,6 +89,7 @@ class tx_ttnews_categorytree extends t3lib_treeview {
 			$this->reset();
 			$this->ids = $curIds;
 
+				
 			// Set PM icon for root of mount:
 			$cmd = $this->bank.'_'.($isOpen? "0_" : "1_").$uid.'_'.$this->treeName;
 			$icon='<img'.t3lib_iconWorks::skinImg($this->backPath,'gfx/ol/'.($isOpen?'minus':'plus').'only.gif').' alt="" />';
@@ -97,15 +98,18 @@ class tx_ttnews_categorytree extends t3lib_treeview {
 			} else {
 				$firstHtml = '<div style="width:18px;float:left;">&nbsp;</div>';
 			}
-
+		
+//			$startFromRoot = FALSE;
 			// Preparing rootRec for the mount
 			if ($uid)   {
+			
 				$rootRec = $this->getRecord($uid);
 				$firstHtml.=$this->getIcon($rootRec);
 			} else {
 				// Artificial record for the tree root, id=0
 				$rootRec = $this->getRootRecord($uid);
 				$firstHtml.=$this->getRootIcon($rootRec);
+//				$startFromRoot = true;
 			}
 
 			if (is_array($rootRec)) {
@@ -125,6 +129,7 @@ class tx_ttnews_categorytree extends t3lib_treeview {
 				$treeArr=array_merge($treeArr,$this->tree);
 			}
 		}
+
 
 		//		print_r($treeArr);
 		return $this->printTree($treeArr);

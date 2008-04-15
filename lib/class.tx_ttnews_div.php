@@ -52,39 +52,43 @@
  * @subpackage tt_news
  */
 class tx_ttnews_div {
-	function useAllowedCategories () {
-		global $BE_USER;
-		if (!$BE_USER->isAdmin()) {
-			if ($BE_USER->user['tt_news_categorymounts']) {
-				$this->allowedItemsFromTreeSelector = TRUE;
-				return TRUE;
-			} else { // no categorymounts set in be_user record - check groups
-				if (is_array($BE_USER->userGroups)) {
-					$cmounts = array();
-					foreach ($BE_USER->userGroups as $group) {
-						if ($group['tt_news_categorymounts']) {
-							$cmounts[] = $group['tt_news_categorymounts'];
-						}
-					}
-					$cMountList = implode(',',$cmounts);
-					if ($cMountList) {
-						$this->allowedItemsFromTreeSelector = TRUE;
-						return TRUE;
-					}
-				}
-			}
-			if ($BE_USER->getTSConfigVal('options.useListOfAllowedItems')) {
-				return TRUE;
-			}
-		}
-	}
+	
+//	var $allowedItemsFromTreeSelector = false;
+	
+	
+//	function useAllowedCategories() {
+//		global $BE_USER;
+//		if (!$BE_USER->isAdmin()) {
+//			if ($BE_USER->user['tt_news_categorymounts']) {
+//				$this->allowedItemsFromTreeSelector = TRUE;
+//				return TRUE;
+//			} else { // no categorymounts set in be_user record - check groups
+//				if (is_array($BE_USER->userGroups)) {
+//					$cmounts = array();
+//					foreach ($BE_USER->userGroups as $group) {
+//						if ($group['tt_news_categorymounts']) {
+//							$cmounts[] = $group['tt_news_categorymounts'];
+//						}
+//					}
+//					$cMountList = implode(',',$cmounts);
+//					if ($cMountList) {
+//						$this->allowedItemsFromTreeSelector = TRUE;
+//						return TRUE;
+//					}
+//				}
+//			}
+//			if ($BE_USER->getTSConfigVal('options.useListOfAllowedItems')) {
+//				return TRUE;
+//			}
+//		}
+//	}
 
 	/**
 	 * [Describe function...]
 	 *
 	 * @return	[type]		...
 	 */
-	function getAllowedCategories() {
+	function getBeUserCatMounts($withSub=true) {
 		global $BE_USER;
 
 		$cmounts = array();
@@ -101,8 +105,8 @@ class tx_ttnews_div {
 		}
 		$categoryMounts = implode(',',$cmounts);
 
-		if ($categoryMounts) {
-			$subcats = $this->getSubCategories($categoryMounts);
+		if ($withSub && $categoryMounts) {
+			$subcats = tx_ttnews_div::getSubCategories($categoryMounts);
 			$categoryMounts = implode(',', array_unique(explode(',', $categoryMounts.($subcats?','.$subcats:''))));
 		}
 		return $categoryMounts;
@@ -129,7 +133,7 @@ class tx_ttnews_div {
 				$GLOBALS['TT']->setTSlogMessage('tt_news: one or more recursive categories where found');
 				return implode(',', $sCatArr);
 			}
-			$subcats = $this->getSubCategories($row['uid'], $cc);
+			$subcats = tx_ttnews_div::getSubCategories($row['uid'], $cc);
 			$subcats = $subcats?','.$subcats:'';
 			$sCatArr[] = $row['uid'].$subcats;
 		}
@@ -139,35 +143,56 @@ class tx_ttnews_div {
 
 
 	/**
-	 * [Describe function...]
+	 * returns a list of all allowed categories for the current user. 
+	 * Subcategories are included, categories from "tt_newsPerms.tt_news_cat.excludeList" are excluded
 	 *
 	 * @return	[type]		...
 	 */
-	function getCategoryTreeIDs() {
-		global $BE_USER;
+	function getAllowedTreeIDs() {
 
-		// get include/exclude items
-		$excludeList = $BE_USER->getTSConfigVal('tt_newsPerms.tt_news_cat.excludeList');
-		$includeList = $BE_USER->getTSConfigVal('tt_newsPerms.tt_news_cat.includeList');
-		$catmounts = $this->getAllowedCategories();
-		if ($catmounts) {
-			$includeList = $catmounts;
-		}
-
-		if ($excludeList) {
-			$catlistWhere = ' AND tt_news_cat.uid NOT IN ('.implode(t3lib_div::intExplode(',',$excludeList),',').')';
-		}
-		if ($includeList) {
-			$catlistWhere = ' AND tt_news_cat.uid IN ('.implode(t3lib_div::intExplode(',',$includeList),',').')';
-		}
-
+		$catlistWhere = tx_ttnews_div::getCatlistWhere();
 		$treeIDs = array();
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'tt_news_cat', '1=1' .$catlistWhere. ' AND deleted=0');
 		while (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))) {
 			$treeIDs[]=$row['uid'];
 		}
-		return implode(',',$treeIDs);
+		return $treeIDs;
 	}
+	
+	
+	
+	function getCatlistWhere() {
+		$catlistWhere = '';
+		if (!$GLOBALS['BE_USER']->isAdmin()) {
+			// get include/exclude items
+			$excludeList = $GLOBALS['BE_USER']->getTSConfigVal('tt_newsPerms.tt_news_cat.excludeList');
+			$includeCatArray = tx_ttnews_div::getIncludeCatArray();
+	
+			if ($excludeList) {
+				$catlistWhere .= ' AND tt_news_cat.uid NOT IN ('.implode(t3lib_div::intExplode(',',$excludeList),',').')';
+			}
+			if (count($includeCatArray)) {
+				$catlistWhere .= ' AND tt_news_cat.uid IN ('.implode(',',$includeCatArray).')';
+			}
+		}
+		
+
+		return $catlistWhere;
+	}
+	
+	
+	function getIncludeCatArray() {
+		$includeList = $GLOBALS['BE_USER']->getTSConfigVal('tt_newsPerms.tt_news_cat.includeList');
+		$catmounts = tx_ttnews_div::getBeUserCatMounts();
+		if ($catmounts) {
+			$includeList = $catmounts;
+		}
+		return t3lib_div::intExplode(',',$includeList);
+	}
+	
+	
+	
+	
 }
 
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_news/lib/class.tx_ttnews_div.php']) {

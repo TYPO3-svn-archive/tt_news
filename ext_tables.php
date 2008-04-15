@@ -131,6 +131,8 @@ mod.web_txttnewsM1 {
 			cb_showEditIcons = 1
 			cb_expandAll = 1
 			cb_showHiddenCategories = 1
+			
+			btn_newCategory = 1
 		}
 	}
 	list {
@@ -138,11 +140,19 @@ mod.web_txttnewsM1 {
 		pidForNewArticles = 
 		fList = pid,uid,title,datetime,archivedate,tstamp,category;author
 		icon = 1
+		
+		# configures the behavior of the record-title link. Possible values: 
+		# edit: link editform, view: link FE singleView, any other value: no link 
+		clickTitleMode = edit
+		
 		noListWithoutCatSelection = 1
 
 		show {
 			cb_showOnlyEditable = 1
+			cb_showThumbs = 1
 		}
+		imageSize = 50
+		
 	}
 	defaultLanguageLabel = 
 }	

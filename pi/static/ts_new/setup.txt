@@ -124,6 +124,7 @@ plugin.tt_news {
     content_stdWrap.parseFunc < lib.parseFunc_RTE
     content_stdWrap.parseFunc.nonTypoTagStdWrap.encapsLines.addAttributes.P >
 
+
     # stdWrap for "additional info" (links, files, related news)
     addInfo_stdWrap.wrap = <div class="news-single-additional-info"> | </div>
 
@@ -158,13 +159,13 @@ plugin.tt_news {
     imageLinkWrap = 1
     imageLinkWrap {
       enable = 1
-      bodyTag = <body bgColor="#ffffff">
+      bodyTag = <body bgColor="#ffffff" style="margin:0;">
       wrap = <a href="javascript:close();"> | </a>
-      width = 500m
-      height = 500
+      width = 800m
+      height = 600
       JSwindow = 1
       JSwindow.newWindow = 1
-      JSwindow.expand = 17,20
+      JSwindow.expand = 0,0
     }
   }
 
@@ -552,7 +553,6 @@ plugin.tt_news {
     size = 1
     size.bytes = 1
     jumpurl = 0
-    target = _blank
     stdWrap.wrap = <dd>|</dd>
   }
 

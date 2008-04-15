@@ -137,10 +137,10 @@ class tx_ttnews_tcemain {
 			}
 // 			debug(t3lib_div::_GP('popViewId_addParams'),__FUNCTION__);
 
-			$divObj = t3lib_div::makeInstance('tx_ttnews_div');
+//			$divObj = t3lib_div::makeInstance('tx_ttnews_div');
 
 			// check permissions of assigned categories
-			if ($divObj->useAllowedCategories() && is_int($id)) {
+			if (is_int($id) && !$GLOBALS['BE_USER']->isAdmin()) {
 				$categories = array();
 				$recID = (($fieldArray['l18n_parent'] > 0) ? $fieldArray['l18n_parent'] : $id);
 					// get categories from the tt_news record in db
@@ -148,16 +148,17 @@ class tx_ttnews_tcemain {
 				while (($cRow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($cRes))) {
 					$categories[] = $cRow['uid_foreign'];
 				}
+				
 				$notAllowedItems = array();
-				if ($categories[0]) { // original record has categories
-					if (!$divObj->allowedItemsFromTreeSelector) {
-						$allowedItemsList = $GLOBALS['BE_USER']->getTSConfigVal('tt_newsPerms.tt_news_cat.allowedItems');
+				if ($categories[0]) { // original record has no categories
+					$treeIDs = tx_ttnews_div::getAllowedTreeIDs();
+					if (count($treeIDs)) {
+						$allowedItems = $treeIDs;
 					} else {
-						$allowedItemsList = $divObj->getCategoryTreeIDs();
+						$allowedItems = t3lib_div::intExplode(',',$GLOBALS['BE_USER']->getTSConfigVal('tt_newsPerms.tt_news_cat.allowedItems'));
 					}
-
 					foreach ($categories as $k) {
-						if(!t3lib_div::inList($allowedItemsList,$k)) {
+						if(!in_array($k,$allowedItems)) {
 							$notAllowedItems[]=$k;
 						}
 					}
@@ -205,32 +206,37 @@ class tx_ttnews_tcemain_cmdmap {
 				$error = true;
 			}
 
-			$divObj = t3lib_div::makeInstance('tx_ttnews_div');
+//			$divObj = t3lib_div::makeInstance('tx_ttnews_div');
 
-			if ($divObj->useAllowedCategories() && is_int($id)) {
+			if (is_int($id)) {
 					// get categories from the (untranslated) record in db
-				if ($table == 'tt_news') {
-					$res = $GLOBALS['TYPO3_DB']->exec_SELECT_mm_query ('tt_news_cat.uid,tt_news_cat_mm.sorting AS mmsorting', 'tt_news', 'tt_news_cat_mm', 'tt_news_cat', ' AND tt_news_cat_mm.uid_local='.(is_int($id)?$id:0).t3lib_BEfunc::BEenableFields('tt_news_cat'));
-					$categories = array();
-					while (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))) {
-						$categories[] = $row['uid'];
+//				if ($table == 'tt_news') {
+				$res = $GLOBALS['TYPO3_DB']->exec_SELECT_mm_query (
+						'tt_news_cat.uid,tt_news_cat_mm.sorting AS mmsorting', 
+						'tt_news', 
+						'tt_news_cat_mm', 
+						'tt_news_cat', 
+						' AND tt_news_cat_mm.uid_local='.(is_int($id)?$id:0).t3lib_BEfunc::BEenableFields('tt_news_cat'));
+				$categories = array();
+				while (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))) {
+					$categories[] = $row['uid'];
+				}
+				
+				$notAllowedItems = array();
+				if ($categories[0]) { // original record has no categories
+					$treeIDs = tx_ttnews_div::getAllowedTreeIDs();
+					if (count($treeIDs)) {
+						$allowedItems = $treeIDs;
+					} else {
+						$allowedItems = t3lib_div::intExplode(',',$GLOBALS['BE_USER']->getTSConfigVal('tt_newsPerms.tt_news_cat.allowedItems'));
 					}
-					if (!$categories[0]) { // original record has no categories
-						$notAllowedItems = array();
-					} else { // original record has categories
-						if (!$divObj->allowedItemsFromTreeSelector) {
-							$allowedItemsList = $GLOBALS['BE_USER']->getTSConfigVal('tt_newsPerms.tt_news_cat.allowedItems');
-						} else {
-							$allowedItemsList = $divObj->getCategoryTreeIDs();
-						}
-						$notAllowedItems = array();
-						foreach ($categories as $k) {
-							if(!t3lib_div::inList($allowedItemsList,$k)) {
-								$notAllowedItems[]=$k;
-							}
+					foreach ($categories as $k) {
+						if(!in_array($k,$allowedItems)) {
+							$notAllowedItems[]=$k;
 						}
 					}
 				}
+//				}
 				if ($notAllowedItems[0]) {
 					$pObj->log($table,$id,2,0,1,"tt_news processCmdmap: Attempt to ".$command." a record from table '%s' without permission. Reason: the record has one or more categories assigned that are not defined in your BE usergroup (tablename.allowedItems).",1,array($table));
 					$error = true;

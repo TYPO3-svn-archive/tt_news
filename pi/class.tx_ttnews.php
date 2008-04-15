@@ -1178,6 +1178,10 @@ if ($this->debugTimes) $this->getParsetime(__METHOD__.' start');
 if ($this->debugTimes) $this->getParsetime(__METHOD__.' $dateArr');
 
 			$selectConf['where'] .= $this->enableFields;
+			
+			if ($this->pid_list) {
+				$selectConf['where'] .= ' AND tt_news.pid IN ('.$this->pid_list.')';
+			}
 			$tmpWhere = $selectConf['where'];
 
 			$periodAccum = array();

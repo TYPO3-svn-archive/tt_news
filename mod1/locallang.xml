@@ -22,6 +22,7 @@
 			<label index="categories">Categories:</label>
 			
 			<label index="showOnlyEditable">Show only editable records</label>
+			<label index="showThumbs">Show images</label>
 			
 			
 			<label index="defaultLangLabel">Default</label>
@@ -48,6 +49,7 @@
 			<label index="treeTitle">News categories</label>
 			
 			<label index="resetCatSelection">[reset selection]</label>
+			<label index="showAllResetSel">Reset current category selection</label>
 			
 
 			<label index="moveCategoryinto">Move category into</label>

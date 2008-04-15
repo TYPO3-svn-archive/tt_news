@@ -95,8 +95,31 @@ class tx_ttnews_catmenu {
 		$this->treeObj->expandFirst = $lConf['expandFirst'];
 		$this->treeObj->titleLen = $this->titleLen;
 
+		/**
+		 * FIXME
+		 * lokalize
+		 */
 		$this->treeObj->title = 'Select a category:';
 //		$this->treeObj->title = $pObj->pi_getLL('catmenuHeader');
+
+
+		$allcatArr = explode(',',$pObj->catExclusive);
+		$selcatArr = explode(',',$pObj->actuallySelectedCategories);	
+		$subcatArr = array_diff($allcatArr,$selcatArr);
+		
+		// get all selected category records from the current storagePid which are not 'root' categories
+		// and add them as tree mounts. Subcategories of selected categories will be excluded. 
+		$nonRootMounts = array();
+		foreach ($selcatArr as $catID) {
+			$tmpR = $GLOBALS['TSFE']->sys_page->getRecordsByField('tt_news_cat','uid',$catID,$pObj->SPaddWhere.$pObj->enableCatFields.$pObj->catlistWhere);
+			if (is_array($tmpR[0]) && $tmpR[0]['parent_category'] > 0 && !in_array($catID,$subcatArr)) {
+				$nonRootMounts[] = $catID;
+			}
+		}
+		$this->treeObj->MOUNTS = array_merge($this->treeObj->MOUNTS,$nonRootMounts);
+	
+					
+		
 
 //debug();
 	}

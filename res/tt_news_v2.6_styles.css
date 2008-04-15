@@ -23,7 +23,8 @@
 .news-list-container HR.clearer,
 .news-list2-container HR.clearer,
 .news-list3-container HR.clearer,
-.news-single-item HR.clearer
+.news-single-item HR.cl-left,
+.news-single-item HR.cl-right
  {
 	clear:right;
 	height:1px;
@@ -31,14 +32,13 @@
 	padding:0;
 	margin:0;
 }
-
 .news-list2-container HR.clearer,
 .news-list3-container HR.clearer {
 	clear:both;
 }
 
-.news-latest-container HR.clearer {
-	/*clear:left;*/
+.news-single-item HR.cl-left {
+	clear:left;
 }
 
 /*-----------------------------------  tt_news LATEST view  -----------------------------------*/
@@ -238,6 +238,7 @@
 	float: right;
 	width:160px;
 	text-align:right;
+	clear:both;
 }
 .news-single-backlink {
 	padding: 10px;
@@ -287,7 +288,7 @@
 
 .sv-img-big {
 	float: right;
-	padding: 0 0 2px 10px;
+	padding: 10px 0 2px 10px;
 }
 .sv-img-small-wrapper {
 	padding:15px 0;
@@ -425,4 +426,3 @@ ul.tree li.active ul, ul.tree ul li.active ul {
 	background-color:#b0cb51;
 	border-left:1px solid #666;
 }
-	)
