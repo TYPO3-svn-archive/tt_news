@@ -23,7 +23,7 @@ plugin.tt_news {
   pid_list = {$plugin.tt_news.pid_list}
 
   # extend "pid_list" by the number of recursive levels.
-  recursive = 2
+  recursive = {$plugin.tt_news.recursive}
 
   # ignore "pid_list" and "recursive". This saves a lot of processing time in huge pagetrees, but it has the disadvantage that the "enable fields" (hidden, start, stop ...) of the pages with news are ignored, too.
   dontUsePidList = 0
@@ -519,10 +519,10 @@ plugin.tt_news {
 
 
   # start date for the archive menu (php strtotime() syntax. e.g.: 1.1.2002, -3 months, -10 years, now
-  amenuStart = -3 years
+  amenuStart = {$plugin.tt_news.amenuStart}
 
   # end date for the archive menu (php strtotime() syntax. e.g.: 1.1.2002, -3 months, -10 years, now
-  amenuEnd = now
+  amenuEnd = {$plugin.tt_news.amenuEnd}
 
   # if set, newer archive menu items are displayed first
   reverseAMenu = 1

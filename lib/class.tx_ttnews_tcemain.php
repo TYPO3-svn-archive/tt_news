@@ -39,13 +39,13 @@
  *
  *   64: class tx_ttnews_tcemain
  *   73:     function getSubCategories($catlist, $cc = 0)
- *  104:     function processDatamap_preProcessFieldArray(&$fieldArray, $table, $id, &$pObj)
+ *  105:     function processDatamap_preProcessFieldArray(&$fieldArray, $table, $id, &$pObj)
  *
  *
- *  185: class tx_ttnews_tcemain_cmdmap
- *  199:     function processCmdmap_preProcess($command, &$table, &$id, $value, &$pObj)
- *  255:     function processCmdmap_postProcess($command, $table, $srcId, $destId, &$pObj)
- *  302:     function int_recordTreeInfo($CPtable, $srcId, $counter, $rootID, $table, &$pObj)
+ *  187: class tx_ttnews_tcemain_cmdmap
+ *  201:     function processCmdmap_preProcess($command, &$table, &$id, $value, &$pObj)
+ *  263:     function processCmdmap_postProcess($command, $table, $srcId, $destId, &$pObj)
+ *  310:     function int_recordTreeInfo($CPtable, $srcId, $counter, $rootID, $table, &$pObj)
  *
  * TOTAL FUNCTIONS: 5
  * (This index is automatically created/updated by the extension "extdeveval")
@@ -87,7 +87,7 @@ class tx_ttnews_tcemain {
 			$subcats = $subcats?','.$subcats:'';
 			$pcatArr[] = $row['uid'].$subcats;
 		}
-		
+
 		$catlist = implode(',', $pcatArr);
 		return $catlist;
 	}
@@ -149,7 +149,7 @@ class tx_ttnews_tcemain {
 				while (($cRow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($cRes))) {
 					$categories[] = $cRow['uid_foreign'];
 				}
-				
+
 				$notAllowedItems = array();
 				if ($categories[0]) { // original record has no categories
 					$treeIDs = tx_ttnews_div::getAllowedTreeIDs();
@@ -185,7 +185,7 @@ class tx_ttnews_tcemain {
  * @subpackage tt_news
  */
 class tx_ttnews_tcemain_cmdmap {
-	
+
 	/**
 	 * This method is called by a hook in the TYPO3 Core Engine (TCEmain) when a command was executed (copy,move,delete...).
 	 * For tt_news it is used to disable saving of the current record if it has an editlock or if it has categories assigned that are not allowed for the current BE user.
@@ -207,23 +207,21 @@ class tx_ttnews_tcemain_cmdmap {
 				$error = true;
 			}
 
-//			$divObj = t3lib_div::makeInstance('tx_ttnews_div');
 
 			if (is_int($id)) {
 					// get categories from the (untranslated) record in db
-//				if ($table == 'tt_news') {
 				$res = $GLOBALS['TYPO3_DB']->exec_SELECT_mm_query (
-						'tt_news_cat.uid,tt_news_cat_mm.sorting AS mmsorting', 
-						'tt_news', 
-						'tt_news_cat_mm', 
-						'tt_news_cat', 
+						'tt_news_cat.uid,tt_news_cat_mm.sorting AS mmsorting',
+						'tt_news',
+						'tt_news_cat_mm',
+						'tt_news_cat',
 						' AND tt_news_cat_mm.uid_local='.(is_int($id)?$id:0).t3lib_BEfunc::BEenableFields('tt_news_cat'));
 				$categories = array();
 				while (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))) {
 					$categories[] = $row['uid'];
 				}
 				$GLOBALS['TYPO3_DB']->sql_free_result($res);
-				
+
 				$notAllowedItems = array();
 				if ($categories[0]) { // original record has no categories
 					$treeIDs = tx_ttnews_div::getAllowedTreeIDs();
@@ -238,12 +236,12 @@ class tx_ttnews_tcemain_cmdmap {
 						}
 					}
 				}
-//				}
+
 				if ($notAllowedItems[0]) {
 					$pObj->log($table,$id,2,0,1,"tt_news processCmdmap: Attempt to ".$command." a record from table '%s' without permission. Reason: the record has one or more categories assigned that are not defined in your BE usergroup (tablename.allowedItems).",1,array($table));
 					$error = true;
-					
-					
+
+
 				}
 				if ($error) {
 					$table = ''; // unset table to prevent saving

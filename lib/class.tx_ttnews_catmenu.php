@@ -40,17 +40,17 @@
  *
  *   61: class tx_ttnews_catmenu
  *   73:     function init(&$pObj)
- *  111:     function ajaxExpandCollapse(&$params, &$ajaxObj)
+ *  135:     function ajaxExpandCollapse(&$params, &$ajaxObj)
  *
  *
- *  127: class tx_ttnews_FEtreeview extends tx_ttnews_categorytree
- *  139:     function wrapTitle($title,$v)
- *  194:     function getRootIcon($rec)
- *  214:     function getIcon($row)
- *  257:     function PMiconATagWrap($icon, $cmd, $isExpand = true)
- *  298:     function initializePositionSaving()
- *  333:     function savePosition()
- *  349:     function getTitleStr($row,$titleLen=30)
+ *  151: class tx_ttnews_FEtreeview extends tx_ttnews_categorytree
+ *  163:     function wrapTitle($title,$v)
+ *  218:     function getRootIcon($rec)
+ *  238:     function getIcon($row)
+ *  281:     function PMiconATagWrap($icon, $cmd, $isExpand = true)
+ *  322:     function initializePositionSaving()
+ *  357:     function savePosition()
+ *  373:     function getTitleStr($row,$titleLen=30)
  *
  * TOTAL FUNCTIONS: 9
  * (This index is automatically created/updated by the extension "extdeveval")
@@ -98,11 +98,11 @@ class tx_ttnews_catmenu {
 		$this->treeObj->title = $GLOBALS['TSFE']->sL('LLL:EXT:tt_news/pi/locallang.xml:catmenuHeader');
 
 		$allcatArr = explode(',',$pObj->catExclusive);
-		$selcatArr = explode(',',$pObj->actuallySelectedCategories);	
+		$selcatArr = explode(',',$pObj->actuallySelectedCategories);
 		$subcatArr = array_diff($allcatArr,$selcatArr);
-		
+
 		// get all selected category records from the current storagePid which are not 'root' categories
-		// and add them as tree mounts. Subcategories of selected categories will be excluded. 
+		// and add them as tree mounts. Subcategories of selected categories will be excluded.
 		$cMounts = array();
 		$nonRootMounts = FALSE;
 		foreach ($selcatArr as $catID) {
@@ -110,17 +110,17 @@ class tx_ttnews_catmenu {
 			if (is_array($tmpR[0]) && !in_array($catID,$subcatArr)) {
 				if ($tmpR[0]['parent_category'] > 0) {
 					$nonRootMounts = TRUE;
-				} 
+				}
 				$cMounts[] = $catID;
 			}
 		}
 		if ($nonRootMounts) {
 			$this->treeObj->MOUNTS = $cMounts;
-			
+
 		}
-	
-					
-		
+
+
+
 
 //debug();
 	}

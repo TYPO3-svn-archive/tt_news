@@ -26,17 +26,18 @@
  *
  *
  *
- *   55: class tx_ttnewscatmanager_cm1
- *   93:     function DB_edit($table,$uid)
- *  114:     function DB_new($table,$uid)
- *  140:     function DB_hideUnhide($table,$rec,$hideField)
- *  155:     function DB_changeFlag($table, $rec, $flagField, $title, $name)
- *  179:     function DB_delete($table,$uid,$elInfo)
- *  207:     function dragDrop_moveCategory($srcUid,$dstUid)
- *  228:     function dragDrop_copyCategory($srcUid,$dstUid)
- *  249:     function includeLocalLang()
+ *   56: class tx_ttnewscatmanager_cm1
+ *   60:     function main(&$backRef,$menuItems,$tableID,$srcId)
+ *  131:     function DB_edit($table,$uid)
+ *  151:     function DB_new($table,$rec,$newsub=false)
+ *  186:     function DB_hideUnhide($table,$rec,$hideField)
+ *  201:     function DB_changeFlag($table, $rec, $flagField, $title, $name)
+ *  225:     function DB_delete($table,$uid,$elInfo)
+ *  254:     function dragDrop_moveCategory($srcUid,$dstUid)
+ *  274:     function dragDrop_copyCategory($srcUid,$dstUid)
+ *  292:     function includeLocalLang()
  *
- * TOTAL FUNCTIONS: 8
+ * TOTAL FUNCTIONS: 9
  * (This index is automatically created/updated by the extension "extdeveval")
  *
  */
@@ -53,21 +54,21 @@
  * @subpackage tt_news
  */
 class tx_ttnewscatmanager_cm1 {
-	
-	
-	
+
+
+
 	function main(&$backRef,$menuItems,$tableID,$srcId)	{
 		$this->includeLocalLang();
 		$this->backRef = &$backRef;
-		
-		
-		
-		
-		
-		
-		
-		
-		
+
+
+
+
+
+
+
+
+
 
 		/**
 		 * FIXME
@@ -75,45 +76,45 @@ class tx_ttnewscatmanager_cm1 {
 		 */
 		if (($tableID == 'dragDrop_tt_news_cat' || $tableID == 'tt_news_cat_CM') && $srcId) {
 			$table = 'tt_news_cat';
-			
+
 			$rec = t3lib_BEfunc::getRecordWSOL($table,$srcId);
 			// fetch page record to get editing permissions
 			$lCP = $GLOBALS['BE_USER']->calcPerms(t3lib_BEfunc::getRecord('pages',$rec['pid']));
 			$doEdit = $lCP&16;
-			
+
 //print_r( array($lCP));
-			
+
 			if ($doEdit && $tableID == 'dragDrop_tt_news_cat') {
 				$this->backRef->backPath = '../../../';
 				$dstId = intval(t3lib_div::_GP('dstId'));
 				$menuItems['moveinto'] = $this->dragDrop_moveCategory($srcId,$dstId);
 				$menuItems['copyinto'] = $this->dragDrop_copyCategory($srcId,$dstId);
 			}
-	
+
 			if ($tableID == 'tt_news_cat_CM') {
-				
+
 				$this->backRef->backPath = '../../../../typo3/';
-				
-	
-	
+
+
+
 				$menuItems = array();
 				if ($doEdit) {
 					$menuItems['edit'] = $this->DB_edit($table,$srcId);
 					$menuItems['new'] = $this->DB_new($table,$rec);
 					$menuItems['newsub'] = $this->DB_new($table,$rec,true);
 				}
-				
+
 				$menuItems['info'] = $backRef->DB_info($table,$srcId);
-				
+
 				if ($doEdit) {
-					$menuItems['hide'] = $this->DB_hideUnhide($table,$rec,'hidden');	
+					$menuItems['hide'] = $this->DB_hideUnhide($table,$rec,'hidden');
 					$elInfo = array(t3lib_div::fixed_lgd_cs(t3lib_BEfunc::getRecordTitle('tt_news_cat',$rec),$GLOBALS['BE_USER']->uc['titleLen']));
 					$menuItems['spacer2'] = 'spacer';
 					$menuItems['delete'] = $this->DB_delete($table,$srcId,$elInfo);
 				}
 			}
 		}
-		
+
 
 
 		return $menuItems;
@@ -150,13 +151,13 @@ class tx_ttnewscatmanager_cm1 {
 	function DB_new($table,$rec,$newsub=false)	{
 		$editOnClick='';
 		$loc='top.content.list_frame';
-		
+
 		if ($newsub) {
 			$parent = $rec['uid'];
 		} else {
-			$parent = $rec['parent_category'];			
+			$parent = $rec['parent_category'];
 		}
-		
+
 		$editOnClick='if('.$loc.'){'.$loc.".location.href=top.TS.PATH_typo3+'".
 				"alt_doc.php?returnUrl='+top.rawurlencode(".$this->backRef->frameLocation($loc.'.document').")+'&edit[".$table."][".$rec['pid']."]=new".
 				($parent?'&defVals['.$table.'][parent_category]='.$parent:'').'\';}';
@@ -164,7 +165,7 @@ class tx_ttnewscatmanager_cm1 {
 		if ($newsub) {
 			$lkey = 'newsub';
 		}
-		
+
 		return $this->backRef->linkItem(
 			$GLOBALS['LANG']->getLLL($lkey,$this->LL),
 			$this->backRef->excludeIcon('<img'.t3lib_iconWorks::skinImg($this->backRef->PH_backPath,'gfx/new_el.gif','width="11" height="12"').' alt="" />'),

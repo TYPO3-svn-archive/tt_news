@@ -29,12 +29,14 @@
  *
  *
  *
- *   54: class tx_ttnews_div
- *   87:     function getAllowedCategories()
- *  119:     function getSubCategories($catlist, $cc = 0)
- *  146:     function getCategoryTreeIDs()
+ *   56: class tx_ttnews_div
+ *   94:     function getBeUserCatMounts($withSub=true)
+ *  126:     function getSubCategories($catlist, $cc = 0)
+ *  154:     function getAllowedTreeIDs()
+ *  170:     function getCatlistWhere()
+ *  194:     function getIncludeCatArray()
  *
- * TOTAL FUNCTIONS: 3
+ * TOTAL FUNCTIONS: 5
  * (This index is automatically created/updated by the extension "extdeveval")
  *
  */
@@ -52,10 +54,10 @@
  * @subpackage tt_news
  */
 class tx_ttnews_div {
-	
+
 //	var $allowedItemsFromTreeSelector = false;
-	
-	
+
+
 //	function useAllowedCategories() {
 //		global $BE_USER;
 //		if (!$BE_USER->isAdmin()) {
@@ -86,6 +88,7 @@ class tx_ttnews_div {
 	/**
 	 * [Describe function...]
 	 *
+	 * @param	[type]		$withSub: ...
 	 * @return	[type]		...
 	 */
 	function getBeUserCatMounts($withSub=true) {
@@ -143,7 +146,7 @@ class tx_ttnews_div {
 
 
 	/**
-	 * returns a list of all allowed categories for the current user. 
+	 * returns a list of all allowed categories for the current user.
 	 * Subcategories are included, categories from "tt_newsPerms.tt_news_cat.excludeList" are excluded
 	 *
 	 * @return	[type]		...
@@ -158,16 +161,19 @@ class tx_ttnews_div {
 		}
 		return $treeIDs;
 	}
-	
-	
-	
+
+	/**
+	 * [Describe function...]
+	 *
+	 * @return	[type]		...
+	 */
 	function getCatlistWhere() {
 		$catlistWhere = '';
 		if (!$GLOBALS['BE_USER']->isAdmin()) {
 			// get include/exclude items
 			$excludeList = $GLOBALS['BE_USER']->getTSConfigVal('tt_newsPerms.tt_news_cat.excludeList');
 			$includeCatArray = tx_ttnews_div::getIncludeCatArray();
-	
+
 			if ($excludeList) {
 				$catlistWhere .= ' AND tt_news_cat.uid NOT IN ('.implode(t3lib_div::intExplode(',',$excludeList),',').')';
 			}
@@ -175,12 +181,16 @@ class tx_ttnews_div {
 				$catlistWhere .= ' AND tt_news_cat.uid IN ('.implode(',',$includeCatArray).')';
 			}
 		}
-		
+
 
 		return $catlistWhere;
 	}
-	
-	
+
+	/**
+	 * [Describe function...]
+	 *
+	 * @return	[type]		...
+	 */
 	function getIncludeCatArray() {
 		$includeList = $GLOBALS['BE_USER']->getTSConfigVal('tt_newsPerms.tt_news_cat.includeList');
 		$catmounts = tx_ttnews_div::getBeUserCatMounts();
@@ -189,10 +199,10 @@ class tx_ttnews_div {
 		}
 		return t3lib_div::intExplode(',',$includeList);
 	}
-	
-	
-	
-	
+
+
+
+
 }
 
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_news/lib/class.tx_ttnews_div.php']) {

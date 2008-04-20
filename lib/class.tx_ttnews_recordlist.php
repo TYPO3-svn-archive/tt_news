@@ -39,21 +39,24 @@
  *
  *
  *
- *   72: class tx_ttnews_recordlist extends tx_cms_layout
+ *   75: class tx_ttnews_recordlist extends tx_cms_layout
  *
  *              SECTION: Generic listing of items
- *   92:     function makeOrdinaryList($table, $id, $fList, $icon=0, $addWhere='')
- *  195:     function getIcon($table,$row,$noEdit)
- *  219:     function checkRecordPerms(&$row,$checkCategories)
- *  265:     function noEditIcon($reason)
- *  291:     function headerFields($fieldArr,$table,$out=array())
- *  314:     function addSortLink($code,$field,$table)
- *  342:     function listURL($altId='',$table=-1,$exclList='')
- *  367:     function makeQueryArray($table, $id, $addWhere="",$fieldList='')
- *  448:     function ckeckDisallowedCategories($queryParts)
- *  485:     function getCategories($uid)
+ *   95:     function makeOrdinaryList($table, $id, $fList, $icon=0, $addWhere='')
+ *  186:     function dataFields($fieldArr,$table,$row,$out=array(),$noEdit=FALSE)
+ *  258:     function linkSingleView($url, $val, $uid)
+ *  277:     function getNewRecordButton($table, $withLabel=false)
+ *  301:     function getIcon($table,$row,$noEdit)
+ *  325:     function checkRecordPerms(&$row,$checkCategories)
+ *  354:     function noEditIcon($reason)
+ *  380:     function headerFields($fieldArr,$table,$out=array())
+ *  403:     function addSortLink($code,$field,$table)
+ *  431:     function listURL($altId='',$table='',$exclList='')
+ *  456:     function makeQueryArray($table, $id, $addWhere="",$fieldList='')
+ *  533:     function ckeckDisallowedCategories($queryParts)
+ *  572:     function getCategories($uid)
  *
- * TOTAL FUNCTIONS: 10
+ * TOTAL FUNCTIONS: 13
  * (This index is automatically created/updated by the extension "extdeveval")
  *
  */
@@ -114,7 +117,7 @@ class tx_ttnews_recordlist extends tx_cms_layout {
 			if ($this->doEdit)	{
 				$newRecIcon = $this->getNewRecordButton($table);
 			}
-			
+
 			$out.= $this->addelement(1,$newRecIcon,$theData,' class="c-headLineTable"');
 
 			$checkCategories = false;
@@ -167,8 +170,8 @@ class tx_ttnews_recordlist extends tx_cms_layout {
 		}
 		return $out;
 	}
-	
-	
+
+
 	/**
 	 * Adds content to all data fields in $out array
 	 *
@@ -176,6 +179,7 @@ class tx_ttnews_recordlist extends tx_cms_layout {
 	 * @param	string		Table name
 	 * @param	array		Record array
 	 * @param	array		Array to which the data is added
+	 * @param	[type]		$noEdit: ...
 	 * @return	array		$out array returned after processing.
 	 * @see makeOrdinaryList()
 	 */
@@ -198,11 +202,11 @@ class tx_ttnews_recordlist extends tx_cms_layout {
 						} else {
 							$val = str_replace(',',', ',basename($row[$fieldName]));
 						}
-						
-						
+
+
 					} else {	// ... otherwise just render the output:
 						$val = nl2br(htmlspecialchars(trim(t3lib_div::fixed_lgd_cs(t3lib_BEfunc::getProcessedValue($table,$fieldName,$row[$fieldName],0,0,0,$row['uid']),250))));
-						
+
 						if ($this->lTSprop['clickTitleMode'] == 'view') {
 							if ($this->singlePid) {
 								$val = $this->linkSingleView($url,$val,$row['uid']);
@@ -211,13 +215,13 @@ class tx_ttnews_recordlist extends tx_cms_layout {
 							if (!$noEdit)	{
 								$params = '&edit['.$table.']['.$row['uid'].']=edit';
 								$lTitle = ' title="'.$GLOBALS['LANG']->getLL('edit',1).'"';
-								$val = '<a href="#" onclick="'.htmlspecialchars(t3lib_BEfunc::editOnClick($params,$this->backPath,$this->returnUrl)).'"'.$lTitle.'>'.$val.'</a>';	
-							}	
+								$val = '<a href="#" onclick="'.htmlspecialchars(t3lib_BEfunc::editOnClick($params,$this->backPath,$this->returnUrl)).'"'.$lTitle.'>'.$val.'</a>';
+							}
 						}
-						
+
 
 					}
-					$out[$fieldName] = $val;				
+					$out[$fieldName] = $val;
 				} else {	// Each field is separated by <br /> and shown in the same cell (If not a TCA field, then explode the field name with ";" and check each value there as a TCA configured field)
 					$theFields = explode(';',$fieldName);
 
@@ -242,11 +246,18 @@ class tx_ttnews_recordlist extends tx_cms_layout {
 		}
 		return $out;
 	}
-	
-	
+
+	/**
+	 * [Describe function...]
+	 *
+	 * @param	[type]		$url: ...
+	 * @param	[type]		$val: ...
+	 * @param	[type]		$uid: ...
+	 * @return	[type]		...
+	 */
 	function linkSingleView($url, $val, $uid) {
 		$params = array(
-				'id' => $this->singlePid, 
+				'id' => $this->singlePid,
 				'tx_ttnews[tt_news]' => $uid,
 				'no_cache' => 1);
 		$linkedurl = t3lib_div::linkThisUrl($url,$params);
@@ -255,9 +266,14 @@ class tx_ttnews_recordlist extends tx_cms_layout {
 		$link = '<a href="#" onclick="'.$onclick.'" title="'.$lTitle.'">'.$val.'</a>';
 		return $link;
 	}
-	
-	
-	
+
+	/**
+	 * [Describe function...]
+	 *
+	 * @param	[type]		$table: ...
+	 * @param	[type]		$withLabel: ...
+	 * @return	[type]		...
+	 */
 	function getNewRecordButton($table, $withLabel=false) {
 		if ($this->category) {
 			$addP = '&defVals['.$table.'][category]='.$this->category;
@@ -271,8 +287,8 @@ class tx_ttnews_recordlist extends tx_cms_layout {
 			'</a>';
 		return $button;
 	}
-	
-	
+
+
 
 	/**
 	 * Creates the icon image tag for record from table and wraps it in a link which will trigger the click menu.
@@ -315,7 +331,7 @@ class tx_ttnews_recordlist extends tx_cms_layout {
 					'tt_news_cat_mm.*',
 					'tt_news_cat_mm, tt_news_cat',
 					'tt_news_cat_mm.uid_foreign=tt_news_cat.uid AND tt_news_cat.deleted=0 AND tt_news_cat_mm.uid_local='.$row['uid']);
-				
+
 				while (($mmrow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))) {
 					if (!in_array($mmrow['uid_foreign'],$this->includeCats) || in_array($mmrow['uid_foreign'],$this->excludeCats)) {
 						$noEdit = 2;
@@ -451,7 +467,7 @@ class tx_ttnews_recordlist extends tx_cms_layout {
 				if ($this->sortRev)	$orderBy.=' DESC';
 			}
 		}
-		
+
 			// Set LIMIT:
 		$limit = $this->iLimit ? ($this->firstElementNumber ? $this->firstElementNumber.',' : '').($this->iLimit+1) : '';
 
@@ -470,7 +486,7 @@ class tx_ttnews_recordlist extends tx_cms_layout {
 		} elseif ($this->lTSprop['noListWithoutCatSelection'] && !$this->isAdmin) {
 			$addWhere .= ' AND 1=0';
 		}
-		
+
 		if ($this->searchLevels == -1) {
 			$this->pidSelect = '';
 		}
@@ -534,14 +550,14 @@ class tx_ttnews_recordlist extends tx_cms_layout {
 					}
 				}
 			}
-	
+
 			$matchlist = implode(',',$results);
 			if ($matchlist) {
 				$queryParts['WHERE'] .= ' AND tt_news.uid IN ('.$matchlist.')';
 			} else {
 				$queryParts['WHERE'] .= ' AND tt_news.uid IN (0)';
 			}
-	
+
 			$queryParts['LIMIT'] = $tmpLimit;
 		}
 		return $queryParts;

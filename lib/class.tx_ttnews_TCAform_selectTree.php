@@ -39,26 +39,30 @@
  *
  *
  *
- *   75: class tx_ttnews_TCAform_selectTree
- *   82:     function init(&$PA)
- *  103:     function setDefVals()
- *  132:     function renderCategoryFields(&$PA, &$fobj)
- *  342:     function setSelectedItems()
+ *   79: class tx_ttnews_TCAform_selectTree
+ *   86:     function init(&$PA)
+ *  105:     function setDefVals()
+ *  135:     function renderCategoryFields(&$PA, &$fobj)
+ *  341:     function setSelectedItems()
  *  373:     function registerRequiredProperty(&$fobj, $type, $name, $value)
  *  393:     function registerNestedElement(&$fobj, $itemName)
  *  412:     function printError($NACats,$row=array())
- *  430:     function ajaxExpandCollapse($params, &$ajaxObj)
- *  491:     function renderCatTree()
- *  607:     function getCatRootline ($SPaddWhere)
- *  642:     function getNotAllowedItems($SPaddWhere,$allowedItemsList=false)
+ *  430:     function printMsg($msgLbl, $sev)
+ *  449:     function ajaxExpandCollapse($params, &$ajaxObj)
+ *  508:     function renderCatTree($calledFromAjax=false)
+ *  668:     function getStoragePageIcon(&$treeObj)
+ *  695:     function getCategoryFolders($where)
+ *  722:     function getCatRootline ($SPaddWhere)
+ *  757:     function getNotSelectableItems($SPaddWhere,$allowedItemsList=false)
+ *  795:     function getNotAllowedItems($SPaddWhere)
  *
  *
- *  684: class tx_ttnews_tceforms_categorytree extends tx_ttnews_categorytree
- *  696:     function wrapTitle($title,$v)
- *  719:     function getTitleStyles($v)
- *  741:     function PMiconATagWrap($icon, $cmd, $isExpand = true)
+ *  830: class tx_ttnews_tceforms_categorytree extends tx_ttnews_categorytree
+ *  842:     function wrapTitle($title,$v)
+ *  873:     function getTitleStyles($v, &$hrefTitle)
+ *  902:     function PMiconATagWrap($icon, $cmd, $isExpand = true)
  *
- * TOTAL FUNCTIONS: 14
+ * TOTAL FUNCTIONS: 18
  * (This index is automatically created/updated by the extension "extdeveval")
  *
  */
@@ -101,7 +105,7 @@ class tx_ttnews_TCAform_selectTree {
 	function setDefVals() {
 		if (!is_int($this->row['uid'])) { // defVals only for new records
 			$defVals = t3lib_div::_GP('defVals');
-		
+
 			if (is_array($defVals) && $defVals[$this->table][$this->field]) {
 				$defCat = intval($defVals[$this->table][$this->field]);
 				/**
@@ -178,7 +182,7 @@ class tx_ttnews_TCAform_selectTree {
 
 			// Creating the label for the "No Matching Value" entry.
 		if (isset($this->PA['fieldTSConfig']['noMatchingValue_label'])) {
-			$nMV_label = $GLOBALS['LANG']->sL($this->PA['fieldTSConfig']['noMatchingValue_label']); 
+			$nMV_label = $GLOBALS['LANG']->sL($this->PA['fieldTSConfig']['noMatchingValue_label']);
 		} else {
 			$nMV_label = '[ '.$fobj->getLL('l_noMatchingValue').' ]';
 		}
@@ -193,7 +197,7 @@ class tx_ttnews_TCAform_selectTree {
 
 
 		if ($this->fieldConfig['treeView'])	{
-			// the current record is a translation of another record 
+			// the current record is a translation of another record
 			if ($row['sys_language_uid'] && $row['l18n_parent'] && ($table == 'tt_news' || $table == 'tt_news_cat')) {
 				$categories = array();
 				$NACats = array();
@@ -233,7 +237,7 @@ class tx_ttnews_TCAform_selectTree {
 					$item = $GLOBALS['LANG']->sL('LLL:EXT:tt_news/locallang_tca.xml:tt_news.treeSelect.translOrgNoCat').'<br />';
 				}
 				$item = '<div class="typo3-TCEforms-originalLanguageValue">'.$item.'</div>';
-				
+
 			} else { // build tree selector
 
 				if ($table == 'tt_news' && $this->intT3ver >= 4001000) {
@@ -255,7 +259,7 @@ class tx_ttnews_TCAform_selectTree {
 							}
 						}
 					}
-					
+
 					// render the tree
 					$treeContent = '<span id="tt_news_cat_tree">'.$this->renderCatTree().'<span>';
 
@@ -345,7 +349,7 @@ class tx_ttnews_TCAform_selectTree {
 		} else {
 			$selectedCategories = $this->row[$this->field];
 		}
-				
+
 		if ($selectedCategories) {
 			$selvals = explode(',',$selectedCategories);
 			if (is_array($selvals)) {
@@ -415,19 +419,25 @@ class tx_ttnews_TCAform_selectTree {
 
 		return $msg;
 	}
-	
-	
+
+	/**
+	 * [Describe function...]
+	 *
+	 * @param	[type]		$msgLbl: ...
+	 * @param	[type]		$sev: ...
+	 * @return	[type]		...
+	 */
 	function printMsg($msgLbl, $sev) {
-	
+
 		$content = '<div style="padding:10px;">
 			<img'.t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'],'gfx/icon_'.$sev.'.gif','width="18" height="16"').' title="" alt="" />';
 		$content .= $GLOBALS['LANG']->sL('LLL:EXT:tt_news/locallang_tca.xml:tt_news.treeSelect.msg_'.$msgLbl);
 		$content .= '</div>';
-		
+
 		return $content;
 	}
-	
-	
+
+
 
 	/**
 	 * [Describe function...]
@@ -444,7 +454,7 @@ class tx_ttnews_TCAform_selectTree {
 		$this->table = trim(t3lib_div::_GP('tceFormsTable'));
 		$this->storagePidFromAjax = intval(t3lib_div::_GP('storagePid'));
 		$this->recID = trim(t3lib_div::_GP('recID')); // no intval() here because it might be a new record
-		if (intval($this->recID) == $this->recID) { 
+		if (intval($this->recID) == $this->recID) {
 			$this->row = t3lib_BEfunc::getRecord($this->table,$this->recID);
 		}
 
@@ -470,7 +480,7 @@ class tx_ttnews_TCAform_selectTree {
 			}
 
 		}
-		
+
 		if ($this->table == 'tt_content') {
 			$this->PA['itemFormElName'] = 'data[tt_content]['.$this->recID.'][pi_flexform][data][sDEF][lDEF][categorySelection][vDEF]';
 		} else {
@@ -514,17 +524,17 @@ class tx_ttnews_TCAform_selectTree {
 					$msg = $this->printMsg('notInGRSP','warning2');
 					$notInGRSP = true;
 				}
-			}		
-			
+			}
+
 			$catlistWhere = tx_ttnews_div::getCatlistWhere();
 			if ($catlistWhere) {
 				$this->getNotAllowedItems($SPaddWhere);
-			}			
-			
+			}
+
 		}
 
-		
-		
+
+
 		$treeOrderBy = $this->confArr['treeOrderBy']?$this->confArr['treeOrderBy']:'uid';
 
 		// instantiate tree object
@@ -536,7 +546,7 @@ class tx_ttnews_TCAform_selectTree {
 		$treeViewObj->tceFormsRecID = $this->recID;
 		$treeViewObj->storagePid = $this->storagePid;
 		$treeViewObj->useStoragePid = $this->confArr['useStoragePid'];
-		
+
 
 		$treeViewObj->init($SPaddWhere.$catlistWhere,$treeOrderBy);
 		$treeViewObj->backPath = $GLOBALS['BACK_PATH'];
@@ -551,16 +561,16 @@ class tx_ttnews_TCAform_selectTree {
 		$treeViewObj->disableAll = $notInGRSP;
 		$treeViewObj->ext_IconMode = '1'; // no context menu on icons
 		$treeViewObj->title = $GLOBALS['LANG']->sL('LLL:EXT:tt_news/locallang_tca.xml:tt_news.treeSelect.treeTitle');
-		
-		
-		
+
+
+
 		$treeViewObj->TCEforms_itemFormElName = $this->PA['itemFormElName'];
 
 		if ($this->table=='tt_news_cat') {
 			$treeViewObj->TCEforms_nonSelectableItemsArray[] = $this->row['uid'];
 		}
 
-		
+
 		/**
 		 * FIXME
 		 * making categories not-selectable with tt_newsPerms.tt_news_cat.allowedItems doesn't work anymore
@@ -573,47 +583,47 @@ class tx_ttnews_TCAform_selectTree {
 //			foreach ($notAllowedItems as $k) {
 //				$treeViewObj->TCEforms_nonSelectableItemsArray[] = $k;
 //			}
-//		}		
-		
+//		}
 
-		
+
+
 		$sPageIcon = '';
 
 		// mark selected categories
 		$treeViewObj->TCEforms_selectedItemsArray = $this->selectedItems;
 		$treeViewObj->selectedItemsArrayParents = $this->getCatRootline($SPaddWhere);
-	
+
 		if (substr($this->table,0,3) == 'be_') {
 			// if table is 'be_users' or 'be_groups' group the categories by folder. 'useStoragePid' is ignored
  			$cf = $this->getCategoryFolders($SPaddWhere.$catlistWhere);
- 			
+
  			/**
  			 * FIXME:
  			 * currently 'expandFirst' is required to prevent js errors when expanding/collapsing the tree
  			 * the problems are caused by multiple "root" records with uid=0
  			 */
- 			 
+
  			$treeViewObj->expandFirst = 1;
  			$treeViewObj->MOUNTS = $cf;
  			$groupByPages = TRUE;
- 			
+
 		} else {
-		
+
 			if ($this->storagePid > 0) {
 				$addWhere = ' AND pid='.$this->storagePid;
 			} else { // useStoragePid=0 and table != beusers/groups
 				$addWhere = '';
-				
+
 			}
 			// get selected categories from be user/group without subcategories
 			$tmpsc = tx_ttnews_div::getBeUserCatMounts(FALSE);
 			$beUserSelCatArr = t3lib_div::intExplode(',',$tmpsc);
-			$includeListArr = tx_ttnews_div::getIncludeCatArray();			
+			$includeListArr = tx_ttnews_div::getIncludeCatArray();
 			$subcatArr = array_diff($includeListArr,$beUserSelCatArr);
-			
+
 			// get all selected category records from the current storagePid which are not 'root' categories
-			// and add them as tree mounts. Subcategories of selected categories will be excluded. 
-			
+			// and add them as tree mounts. Subcategories of selected categories will be excluded.
+
 			$cMounts = array();
 			$nonRootMounts = FALSE;
 			foreach ($beUserSelCatArr as $catID) {
@@ -624,7 +634,7 @@ class tx_ttnews_TCAform_selectTree {
 						if (!$calledFromAjax) {
 							$sPageIcon = $this->getStoragePageIcon($treeViewObj);
 						}
-					} 
+					}
 					$cMounts[] = $catID;
 				}
 			}
@@ -632,16 +642,16 @@ class tx_ttnews_TCAform_selectTree {
 				$treeViewObj->MOUNTS = $cMounts;
 			}
 		}
-	
-		
+
+
 			// render tree html
 		$treeContent = $sPageIcon.$treeViewObj->getBrowsableTree($groupByPages);
 		$this->treeObj_ajaxStatus = $treeViewObj->ajaxStatus;
-	
+
 
 //		if (count($treeViewObj->ids) == 0) {
 //			$msg .= str_replace('###PID###',$this->storagePid,$this->printMsg('emptyTree','note'));
-//			$treeContent = '';			
+//			$treeContent = '';
 //		}
 
 
@@ -649,18 +659,12 @@ class tx_ttnews_TCAform_selectTree {
 		return $msg.$treeContent;
 	}
 
-	
-	
-	
-	
-	
-
-	
-
-
-
-
-	
+	/**
+	 * [Describe function...]
+	 *
+	 * @param	[type]		$$treeObj: ...
+	 * @return	[type]		...
+	 */
 	function getStoragePageIcon(&$treeObj) {
 		if ($this->storagePid) {
 			$tmpt = $treeObj->table;
@@ -669,21 +673,25 @@ class tx_ttnews_TCAform_selectTree {
 			$icon = $treeObj->getIcon($rootRec);
 			$treeObj->table = $tmpt;
 			$pidLbl = sprintf($GLOBALS['LANG']->sL('LLL:EXT:tt_news/locallang_tca.xml:tt_news.treeSelect.pageTitleSuffix'),intval($this->storagePid));
-						
+
 		} else {
 			$rootRec = $treeObj->getRootRecord($this->storagePid);
 			$icon = $treeObj->getRootIcon($rootRec);
 			$pidLbl = $GLOBALS['LANG']->sL('LLL:EXT:tt_news/locallang_tca.xml:tt_news.treeSelect.pageTitleSuffixNoGrsp');
-			
+
 		}
 
-		$pidLbl = ' <span class="typo3-dimmed"><em>'.$pidLbl.'</em></span>';			
+		$pidLbl = ' <span class="typo3-dimmed"><em>'.$pidLbl.'</em></span>';
 		$content = '<div style="margin: 2px 0 -5px 2px;">'.$icon.$rootRec['title'].$pidLbl.'</div>';
-		return $content;		
+		return $content;
 	}
-	
-	
-	
+
+	/**
+	 * [Describe function...]
+	 *
+	 * @param	[type]		$where: ...
+	 * @return	[type]		...
+	 */
 	function getCategoryFolders($where) {
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
 					'pid',
@@ -696,14 +704,14 @@ class tx_ttnews_TCAform_selectTree {
 			$list[] = $row['pid'];
 		}
 		$GLOBALS['TYPO3_DB']->sql_free_result($res);
-		
+
 //		debug($list, ' ('.__CLASS__.'::'.__FUNCTION__.')', __LINE__, __FILE__, 3);
 		return $list;
 	}
-	
-	
-	
-	
+
+
+
+
 	/**
 	 * [Describe function...]
 	 *
@@ -777,18 +785,20 @@ class tx_ttnews_TCAform_selectTree {
 		}
 		return $itemArr;
 	}
-	
-	
-	
-	
-	
+
+	/**
+	 * [Describe function...]
+	 *
+	 * @param	[type]		$SPaddWhere: ...
+	 * @return	[type]		...
+	 */
 	function getNotAllowedItems($SPaddWhere) {
 		if ($this->row['category']) {
 			$treeIDs = tx_ttnews_div::getAllowedTreeIDs();
 			if (!$this->row['sys_language_uid'] && !$this->row['l18n_parent']) {
 				$catvals = explode(',',$this->row['category']); // get categories from the current record
 				$notAllowedCats = array();
-				
+
 				foreach ($catvals as $k) {
 					$c = explode('|',$k);
 					if($c[0] && !in_array($c[0],$treeIDs)) {
@@ -801,11 +811,11 @@ class tx_ttnews_TCAform_selectTree {
 			}
 		}
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 }
 
 
@@ -848,7 +858,7 @@ class tx_ttnews_tceforms_categorytree extends tx_ttnews_categorytree {
 				$pidLbl = $GLOBALS['LANG']->sL('LLL:EXT:tt_news/locallang_tca.xml:tt_news.treeSelect.pageTitleSuffixNoGrsp');
 			}
 			$pidLbl = ' <span class="typo3-dimmed"><em>'.$pidLbl.'</em></span>';
-		
+
 			return $title.$pidLbl;
 		}
 	}
@@ -857,6 +867,7 @@ class tx_ttnews_tceforms_categorytree extends tx_ttnews_categorytree {
 	 * [Describe function...]
 	 *
 	 * @param	[type]		$v: ...
+	 * @param	[type]		$hrefTitle: ...
 	 * @return	[type]		...
 	 */
 	function getTitleStyles($v, &$hrefTitle) {
@@ -875,7 +886,7 @@ class tx_ttnews_tceforms_categorytree extends tx_ttnews_categorytree {
 			$style .= 'text-decoration:underline;background:#ffc;';
 			$hrefTitle .= ' (subcategory selected)';
 		}
-		
+
 		return $style;
 	}
 

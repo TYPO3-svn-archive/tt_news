@@ -1,4 +1,10 @@
-2008-04-16	Rupert Germann <rupi@gmx.li>
+
+2008-04-20	Rupert Germann <rupi@gmx.li>
+	* enhancement: grouped the constants in 3 sections: "basic" (templatefile, pid_list, singlePid, backPid, archivelink), "xml-feeds" (feed-related settings) and "advanced" (all the rest). In most cases it should be sufficient to fill out the pids in the basic section to get an output from the news plugin.
+	* fix: the fe listview did show not-published versions when dontUsePidList was enabled.
+	* updated function indexes
+
+2008-04-20	Rupert Germann <rupi@gmx.li>
 	* fix !IMPORTANT! requires DB update (related to bugs 3531,3907): "news records loose categories when published/swapped into WS". Solution: removed all "unsigned" attributes from the mm tables in ext_tables.sql. Now publishing of news with categories or related news works correctly in TYPO3 version >= 4.1.7
 
 	* new feature: with the new TS parameters "amenuStart" and "amenuEnd" it's now possible to configure an AMENU content element to display news only from a certain period.
