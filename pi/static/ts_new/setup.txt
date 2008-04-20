@@ -139,6 +139,17 @@ plugin.tt_news {
       }
     }
 
+    nextPrevRecSortingField = datetime
+
+    prevLinkTitle_stdWrap.wrap =
+    prevLinkLabel_stdWrap.wrap = &lt;&nbsp;|
+    prevLink_stdWrap.wrap =
+
+    nextLinkTitle_stdWrap.wrap =
+    nextLinkLabel_stdWrap.wrap = |&nbsp;&gt;
+    nextLink_stdWrap.wrap = <div style="float:right;">|</div>
+
+
     imageCount = 10
     imgAltTextField = imagecaption
     imageWrapIfAny = <div class="news-single-img"> | </div>
@@ -376,7 +387,14 @@ plugin.tt_news {
   # page where the category menu links point to. If not set the current page is taken.
   catSelectorTargetPid =
 
+  # if set, the currently selected archive period (year & month) is added to the catmenu links (requires useHRDates=1)
+  catmenuWithArchiveParams = 1
+
   displayCatMenu {
+    # list of page IDs where the categories for the menu are stored (overrides GRSP if given)
+    catPidList =
+    # extend "catPidList" by the number of recursive levels
+    recursive =
 
     # catmenu rendermode:
     # nestedWraps = make a catmenu with nested wraps
@@ -490,8 +508,6 @@ plugin.tt_news {
   useHRDatesSingleWithoutDay = 0
 
 
-
-
   # page id for the archive link in "LATEST" template
   archiveTypoLink.parameter = {$plugin.tt_news.archiveTypoLink.parameter}
 
@@ -501,6 +517,12 @@ plugin.tt_news {
   # If this is set, the archive-menu selects news by their archivedate - otherwise by their datetime.
   enableArchiveDate = {$plugin.tt_news.enableArchiveDate}
 
+
+  # start date for the archive menu (php strtotime() syntax. e.g.: 1.1.2002, -3 months, -10 years, now
+  amenuStart = -3 years
+
+  # end date for the archive menu (php strtotime() syntax. e.g.: 1.1.2002, -3 months, -10 years, now
+  amenuEnd = now
 
   # if set, newer archive menu items are displayed first
   reverseAMenu = 1
@@ -514,7 +536,7 @@ plugin.tt_news {
   # never add the currently selected categories to archive links
   disableCategoriesInAmenuLinks = 0
 
-  # if set, the archive menu changes its contents when a category is selected in the category menu
+  # if set, the archive menu changes its contents when a category is selected in the category menu and the currently selected category is added to the amenu links
   amenuWithCatSelector = 0
 
   # divide the archive menu to yearly periods

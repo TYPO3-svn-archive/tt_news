@@ -181,7 +181,6 @@ class tx_ttnews_module1 extends t3lib_SCbase {
 			$this->singlePid = intval($pagesTSC['tx_ttnews.']['singlePid']);
 		}
 		
-//		$this->divObj = t3lib_div::makeInstance('tx_ttnews_div');
 
 		
 		$this->initCategories();
@@ -202,6 +201,15 @@ class tx_ttnews_module1 extends t3lib_SCbase {
 		$this->searchLevels = intval($this->MOD_SETTINGS['searchLevels']);
 		$this->thumbs = intval($this->MOD_SETTINGS['showThumbs']);
 
+		$limit = intval($this->MOD_SETTINGS['showLimit']);
+		if ($limit) {
+			$this->showLimit = $limit;
+		} else {
+			$this->showLimit = intval($this->TSprop['list.']['limit']);	
+		}
+		
+
+		
 		$this->initGPvars();
 //		debug((microtime(TRUE)-$s), 'time ('.__CLASS__.'::'.__FUNCTION__.')', __LINE__, __FILE__, 3);
 		
@@ -234,7 +242,13 @@ class tx_ttnews_module1 extends t3lib_SCbase {
 		 * - php settings which influence the functionality of t3lib_div::getURL(). allow_url_fopen and the like
 		 * - ...
 		 */
+
 		if (!$this->doc->moduleTemplate) {
+			t3lib_div::devLog('cannot set moduleTemplate', 'tt_news', 2, array(
+					'backpath' => $this->doc->backPath,
+					'filename from TBE_STYLES' => $GLOBALS['TBE_STYLES']['htmlTemplates']['mod_ttnews_admin.html'],
+					'full path' => $this->doc->backPath.$GLOBALS['TBE_STYLES']['htmlTemplates']['mod_ttnews_admin.html']
+			));
 			$tfile = t3lib_extMgm::siteRelPath('tt_news').'mod1/mod_ttnews_admin.html';
 			$this->doc->moduleTemplate = @file_get_contents(PATH_site.$tfile);
 		}
@@ -244,7 +258,7 @@ class tx_ttnews_module1 extends t3lib_SCbase {
 		// Access check!
 		// The page will show only if there is a valid page and if this page may be viewed by the user
 
-		$access = is_array($this->pageinfo) ? 1 : 0;
+		$access = (is_array($this->pageinfo) ? 1 : 0);
 		$this->markers['MOD_INFO'] = '';
 
 
@@ -255,7 +269,13 @@ class tx_ttnews_module1 extends t3lib_SCbase {
 				function jumpToUrl(URL)	{	//
 					window.location.href = URL;
 				}
-			'.$this->doc->redirectUrls());
+			'.($this->singlePid ?
+			'
+			function openFePreview(URL) {
+				previewWin=window.open(URL,\'newTYPO3frontendWindow\');
+				previewWin.focus(); 
+			} '
+			: '').$this->doc->redirectUrls());
 
 			$this->doc->postCode=$this->doc->wrapScriptTags('
 					script_ended = 1;
@@ -266,9 +286,18 @@ class tx_ttnews_module1 extends t3lib_SCbase {
 				#togglesubcats { background:#ddd; padding: 2px; cursor: pointer; font-style:italic; }
 				#newssubcats { background:#f8f9fa; padding: 2px; border:1px solid #ddd; }
 				#resetcatselection { float:right; font-style:italic; }
+				#ttnewsadmin-search {  padding: 0; margin:0; }
+				#ttnewsadmin-search input {  margin: 0 3px; }
 				span.hiddencat { color:#999; }
 				span.list-cb { padding-right:15px;}
 
+				table.typo3-dblist tr td.col-icon a {
+					width: 18px;
+					display: inline;
+				}
+				div.docheader-row2-right {
+					margin-top: -3px;
+				}
 				
 			';
 
@@ -431,7 +460,7 @@ class tx_ttnews_module1 extends t3lib_SCbase {
 		$content .= $this->renderNewCatButton();
 
 		$this->getTreeObj();
-		$content .= '<div id="ttnews-cat-tree">'.$this->treeObj->getBrowsableTree().'</div>';
+		$content .= '<div id="ttnews-cat-tree">'.$this->sPageIcon.$this->treeObj->getBrowsableTree().'</div>';
 
 		return $content;
 	}
@@ -474,6 +503,8 @@ class tx_ttnews_module1 extends t3lib_SCbase {
 		$this->treeObj->title = $GLOBALS['LANG']->getLL('treeTitle');
 		$this->treeObj->pageID = $this->id;
 		$this->treeObj->storagePid = $this->storagePid;
+		$this->treeObj->useStoragePid = $this->confArr['useStoragePid'];
+		
 		$this->treeObj->expandAll = $GLOBALS['SOBE']->MOD_SETTINGS['expandAll'];
 		$this->treeObj->expandable = true;
 		$this->treeObj->expandFirst = $this->TSprop['catmenu.']['expandFirst'];
@@ -492,25 +523,75 @@ class tx_ttnews_module1 extends t3lib_SCbase {
 		$includeListArr = tx_ttnews_div::getIncludeCatArray();			
 		$subcatArr = array_diff($includeListArr,$beUserSelCatArr);
 		
+		
+		/**
+		 * TODO:
+		 * filter out double mounts
+		 */
+		 
+		
 		// get all selected category records from the current storagePid which are not 'root' categories
 		// and add them as tree mounts. Subcategories of selected categories will be excluded. 
-		$nonRootMounts = array();
+		$cMounts = array();
+		$nonRootMounts = FALSE;
 		foreach ($beUserSelCatArr as $catID) {
-			$tmpR = t3lib_BEfunc::getRecord('tt_news_cat',$catID,'parent_category',' AND pid='.$this->storagePid);
-			if ($tmpR['parent_category'] > 0 && !in_array($catID,$subcatArr)) {
-				$nonRootMounts[] = $catID;
+			$tmpR = t3lib_BEfunc::getRecord('tt_news_cat',$catID,'parent_category,hidden',$addWhere);
+			if (is_array($tmpR) && !in_array($catID,$subcatArr)) {
+				if ($tmpR['parent_category'] > 0) {
+					$nonRootMounts = TRUE;
+					$this->sPageIcon = $this->getStoragePageIcon();
+				} 
+				if ($this->mData['showHiddenCategories']) {
+					$cMounts[] = $catID;
+				} else {
+					if ($tmpR['hidden'] == 0) {
+						$cMounts[] = $catID;
+					}
+				}
 			}
 		}
-		$this->treeObj->MOUNTS = array_merge($this->treeObj->MOUNTS,$nonRootMounts);
-	
+		if ($nonRootMounts) {
+			$this->treeObj->MOUNTS = $cMounts;
 			
-
+		}
 	}
 
 
 
 
+	/**
+	 * returns the root element for a category tree: icon, title and pageID
+	 *
+	 * @return	[type]		...
+	 */
+	function getStoragePageIcon() {
 
+		
+		
+		if ($this->confArr['useStoragePid']) {
+			$tmpt = $this->treeObj->table;
+			$this->treeObj->table = 'pages';
+			$rootRec = $this->treeObj->getRecord($this->storagePid);
+			$icon = $this->treeObj->getIcon($rootRec);
+			$this->treeObj->table = $tmpt;			
+			$pidLbl = sprintf($GLOBALS['LANG']->sL('LLL:EXT:tt_news/locallang_tca.xml:tt_news.treeSelect.pageTitleSuffix'),$this->storagePid);
+		} else {
+			$rootRec = $this->treeObj->getRootRecord($this->storagePid);
+			$icon = $this->treeObj->getRootIcon($rootRec);			
+			$pidLbl = $GLOBALS['LANG']->sL('LLL:EXT:tt_news/locallang_tca.xml:tt_news.treeSelect.pageTitleSuffixNoGrsp');
+		}
+		$pidLbl = ' <span class="typo3-dimmed"><em>'.$pidLbl.'</em></span>';
+		$hrefTitle = $GLOBALS['LANG']->sL('LLL:EXT:tt_news/mod1/locallang.xml:showAllResetSel');
+		
+		$out = '<div style="margin: 2px 0 -5px 0;">'
+					.$icon
+					.'<a href="'.t3lib_div::getIndpEnv('TYPO3_REQUEST_SCRIPT').'?id='.$this->id.'" title="'.$hrefTitle.'">'.$rootRec['title'].'</a>'
+					.$pidLbl
+				.'</div>';		
+		return $out;		
+	}
+	
+	
 
 
 
@@ -522,12 +603,8 @@ class tx_ttnews_module1 extends t3lib_SCbase {
 	 */
 	function displayNewsList()	{
 		$content = '';
-		$content .= $this->renderListCheckBoxes();
-
+		
 		$this->initSubCategories();
-
-		$limit = intval($this->TSprop['list.']['limit']);
-		$limit = ($limit?$limit:$this->limit);
 
 		$table = 'tt_news';
 		$dblist = t3lib_div::makeInstance('tx_ttnews_recordlist');
@@ -541,16 +618,13 @@ class tx_ttnews_module1 extends t3lib_SCbase {
 		$dblist->id = $this->id;
 		$dblist->newRecPid = $this->newArticlePid;
 		$dblist->singlePid = $this->singlePid;
-		$dblist->itemsLimitSingleTable = $limit;
 		$dblist->selectedCategories = $this->selectedCategories;
 		$dblist->category = $this->category;
 		$dblist->returnUrl = t3lib_extMgm::extRelPath('tt_news').'mod1/'.$dblist->listURL($this->id,FALSE);
 		$dblist->excludeCats = $this->excludeCats;
 		$dblist->includeCats = $this->includeCats;
-//		$dblist->includeCatList = $this->includeCatList;
 		$dblist->isAdmin = $this->isAdmin;
 		$dblist->current_sys_language = $this->current_sys_language;
-
 		$dblist->showOnlyEditable = $this->mData['showOnlyEditable'];
 		$dblist->pidList = $this->pidList;
 		$dblist->editablePagesList = $this->editablePagesList;
@@ -567,10 +641,14 @@ class tx_ttnews_module1 extends t3lib_SCbase {
 		$dblist->pObj = &$this;
 				
 		$dblist->generateList();
-		
-		$content .= $this->getListHeaderMsg($dblist);
 
-		
+		if (is_array($this->TSprop['list.']['show.']) && $this->TSprop['list.']['show.']['search']) {
+			$search = $this->displaySearch($dblist->listURL($this->id,FALSE));
+			$content .= '<div style="float:right;">'.$search.'</div>';
+		}
+
+		$content .= $this->renderListCheckBoxes();
+		$content .= $this->getListHeaderMsg($dblist);
 		$content .= $dblist->HTMLcode;
 		
 		return '<div id="ttnewslist">'.$content.'</div>';
@@ -669,7 +747,7 @@ class tx_ttnews_module1 extends t3lib_SCbase {
 	function getListHeaderMsg(&$dblist) {
 		global $LANG;
 		
-		
+
 		$noCatSelMsg = false;
 		if (!$this->selectedCategories)  {
 			if ($this->TSprop['list.']['noListWithoutCatSelection']) {
@@ -682,7 +760,7 @@ class tx_ttnews_module1 extends t3lib_SCbase {
 		} else {
 			$table = 'tt_news_cat';
 			$row = t3lib_BEfunc::getRecord($table, $this->category);
-			$reset = '<a href="'.$this->script.'?id='.$this->id.'" id="resetcatselection">'.$LANG->getLL('resetCatSelection').'</a>';
+//			$reset = '<a href="'.$this->script.'?id='.$this->id.'" id="resetcatselection">'.$LANG->getLL('resetCatSelection').'</a>';
 			$title = '<strong>'.t3lib_BEfunc::getRecordTitle($table,$row).'</strong>';
 			$content = '<div id="newscatsmsg">'.$reset.$LANG->getLL('showingOnlyCat').$title.'</div>';
 
@@ -717,7 +795,28 @@ class tx_ttnews_module1 extends t3lib_SCbase {
 		return $content;
 	}
 
+	function displaySearch($url) {
+		$formElements=array('<form action="'.htmlspecialchars($url).'" method="post">','</form>');
 
+			// Table with the search box:
+		$content.= '
+			'.$formElements[0].'
+
+				<!--
+					Search box:
+				-->
+				<table border="0" cellpadding="0" cellspacing="0" id="ttnewsadmin-search">
+					<tr>
+						<td>'.$GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:labels.enterSearchString',1).'<input type="text" name="search_field" value="'.htmlspecialchars($this->search_field).'"'.$GLOBALS['TBE_TEMPLATE']->formWidth(10).' /></td>
+						<td>'.$GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:labels.showRecords',1).':<input type="text" name="SET[showLimit]" value="'.htmlspecialchars($this->showLimit?$this->showLimit:'').'"'.$GLOBALS['TBE_TEMPLATE']->formWidth(4).' /></td>
+						<td><input type="submit" name="search" value="'.$GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:labels.search',1).'" /></td>
+						
+					</tr>
+				</table>
+			'.$formElements[1];
+		return $content;
+		
+	}
 	
 	function getNoResultsMsg(&$listObj,$noCatSelMsg) {
 		$content = '';
@@ -854,11 +953,11 @@ class tx_ttnews_module1 extends t3lib_SCbase {
 
 			// CSH
 		if (!strlen($this->id))	{
-			$buttons['csh'] = t3lib_BEfunc::cshItem('_MOD_web_txttnewsM1', 'list_module_noId', $GLOBALS['BACK_PATH']);
+			$buttons['csh'] = t3lib_BEfunc::cshItem('_MOD_web_txttnewsM1', 'list_module_noId', $backPath);
 		} elseif(!$this->id) {
-			$buttons['csh'] = t3lib_BEfunc::cshItem('_MOD_web_txttnewsM1', 'list_module_root', $GLOBALS['BACK_PATH']);
+			$buttons['csh'] = t3lib_BEfunc::cshItem('_MOD_web_txttnewsM1', 'list_module_root', $backPath);
 		} else {
-			$buttons['csh'] = t3lib_BEfunc::cshItem('_MOD_web_txttnewsM1', 'list_module', $GLOBALS['BACK_PATH']);
+			$buttons['csh'] = t3lib_BEfunc::cshItem('_MOD_web_txttnewsM1', 'list_module', $backPath);
 		}
 
 		if (isset($this->id)) {
@@ -902,7 +1001,7 @@ class tx_ttnews_module1 extends t3lib_SCbase {
 
 				// Shortcut
 			if ($GLOBALS['BE_USER']->mayMakeShortcut()) {
-				$buttons['shortcut'] = $GLOBALS['TBE_TEMPLATE']->makeShortcutIcon('id, imagemode, pointer, table, search_field, search_levels, showLimit, sortField, sortRev', implode(',', array_keys($this->MOD_MENU)), 'web_list');
+				$buttons['shortcut'] = $this->doc->makeShortcutIcon('id, showThumbs, pointer, table, search_field, searchLevels, showLimit, sortField, sortRev', implode(',', array_keys($this->MOD_MENU)), 'web_txttnewsM1');
 			}
 
 				// Back
@@ -1027,6 +1126,8 @@ class tx_ttnews_module1 extends t3lib_SCbase {
 	function initGPvars() {
 		$this->pointer = t3lib_div::intInRange(t3lib_div::_GP('pointer'),0,100000);
 		$this->category = intval(t3lib_div::_GP('category'));
+		$this->search_field = t3lib_div::_GP('search_field');
+		
 	}
 
 	/**
@@ -1057,7 +1158,7 @@ class tx_ttnews_module1 extends t3lib_SCbase {
 			
 			),
 			'showThumbs' => 1,
-			
+			'showLimit' => 0,
 			'language' => array(
 				0 => $GLOBALS['LANG']->getLL('defaultLangLabel')
 			)
@@ -1237,7 +1338,8 @@ class tx_ttnewscatmanager_treeView extends tx_ttnews_categorytree {
 	 */
 	function wrapIcon($icon,&$row)	{
 		$theIcon = $this->addTagAttributes($icon, $this->titleAttrib.'="'.$this->getTitleAttrib($row).'"');
-		if($row['uid']>0) {
+		
+		if($row['uid']>0 && !isset($row['doktype'])) { // no clickmenu for pages
 			$theIcon = $GLOBALS['TBE_TEMPLATE']->wrapClickMenuOnIcon($theIcon,'tt_news_cat_CM',$row['uid'],0,'&bank='.$this->bank);
 			$theIcon = '<span class="dragIcon" id="dragIconID_'.$row['uid'].'">'.$theIcon.'</span>';
 		} else {
@@ -1272,12 +1374,18 @@ class tx_ttnewscatmanager_treeView extends tx_ttnews_categorytree {
 			if ($this->storagePid != $this->pageID) {
 				$grsp = ' GRSP';
 			}
-			$msg = ' <span class="typo3-dimmed"><em>[pid: '.$this->storagePid.$grsp.']</em></span>';
+			if ($this->useStoragePid) {
+				$pidLbl = sprintf($GLOBALS['LANG']->sL('LLL:EXT:tt_news/locallang_tca.xml:tt_news.treeSelect.pageTitleSuffix'),$this->storagePid.$grsp);
+			} else {
+				$pidLbl = $GLOBALS['LANG']->sL('LLL:EXT:tt_news/locallang_tca.xml:tt_news.treeSelect.pageTitleSuffixNoGrsp');
+				
+			}
+			$pidLbl = ' <span class="typo3-dimmed"><em>'.$pidLbl.'</em></span>';
 			$hrefTitle = $GLOBALS['LANG']->sL('LLL:EXT:tt_news/mod1/locallang.xml:showAllResetSel');
 			
 			$out = '<span class="dragTitle" id="dragTitleID_0">
 						<a href="'.t3lib_div::getIndpEnv('TYPO3_REQUEST_SCRIPT').'?id='.$this->pageID.'" title="'.$hrefTitle.'">'.$title.'</a>
-					</span>'.$msg;
+					</span>'.$pidLbl;
 		}
 		return $out;
 	}

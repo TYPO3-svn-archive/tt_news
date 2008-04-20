@@ -87,6 +87,7 @@ class tx_ttnews_tcemain {
 			$subcats = $subcats?','.$subcats:'';
 			$pcatArr[] = $row['uid'].$subcats;
 		}
+		
 		$catlist = implode(',', $pcatArr);
 		return $catlist;
 	}
@@ -221,6 +222,7 @@ class tx_ttnews_tcemain_cmdmap {
 				while (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))) {
 					$categories[] = $row['uid'];
 				}
+				$GLOBALS['TYPO3_DB']->sql_free_result($res);
 				
 				$notAllowedItems = array();
 				if ($categories[0]) { // original record has no categories
@@ -240,6 +242,8 @@ class tx_ttnews_tcemain_cmdmap {
 				if ($notAllowedItems[0]) {
 					$pObj->log($table,$id,2,0,1,"tt_news processCmdmap: Attempt to ".$command." a record from table '%s' without permission. Reason: the record has one or more categories assigned that are not defined in your BE usergroup (tablename.allowedItems).",1,array($table));
 					$error = true;
+					
+					
 				}
 				if ($error) {
 					$table = ''; // unset table to prevent saving

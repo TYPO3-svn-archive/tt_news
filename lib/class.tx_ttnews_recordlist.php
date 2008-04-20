@@ -106,15 +106,16 @@ class tx_ttnews_recordlist extends tx_cms_layout {
 			// If records were found, render the list:
 		if ($dbCount)	{
 				// Set fields
-			$this->fieldArray = explode(',','__cmds__,'.$fList);
+			$this->fieldArray = explode(',',$fList);
 
 				// Header line is drawn
 			$theData = array();
 			$theData = $this->headerFields($this->fieldArray,$table,$theData);
 			if ($this->doEdit)	{
-				$theData['__cmds__'] = $this->getNewRecordButton($table);
+				$newRecIcon = $this->getNewRecordButton($table);
 			}
-			$out.= $this->addelement(1,'',$theData,' class="c-headLine"',15);
+			
+			$out.= $this->addelement(1,$newRecIcon,$theData,' class="c-headLineTable"');
 
 			$checkCategories = false;
 			if (count($this->includeCats) || count($this->excludeCats)) {
@@ -132,26 +133,27 @@ class tx_ttnews_recordlist extends tx_cms_layout {
 					$out.= $code;
 					if ($flag)	{
 						$Nrow = array();
+						$NrowIcon = '';
 						$noEdit = $this->checkRecordPerms($row,$checkCategories);
 
 							// Setting icons/edit links:
 						if ($icon)	{
-							$Nrow['__cmds__']= $this->getIcon($table,$row,$noEdit);
+							$NrowIcon = $this->getIcon($table,$row,$noEdit);
 						}
 
 						if (!$noEdit)	{
 							$params = '&edit['.$table.']['.$row['uid'].']=edit';
-							$Nrow['__cmds__'].= '<a href="#" onclick="'.htmlspecialchars(t3lib_BEfunc::editOnClick($params,$this->backPath,$this->returnUrl)).'">'.
+							$NrowIcon .= '<a href="#" onclick="'.htmlspecialchars(t3lib_BEfunc::editOnClick($params,$this->backPath,$this->returnUrl)).'">'.
 											'<img'.t3lib_iconWorks::skinImg($this->backPath,'gfx/edit2.gif','width="11" height="12"').' title="'.$GLOBALS['LANG']->getLL('edit',1).'" alt="" />'.
 											'</a>';
 						} else {
-							$Nrow['__cmds__'].= $this->noEditIcon($noEdit);
+							$NrowIcon .= $this->noEditIcon($noEdit);
 						}
 
 							// Get values:
 						$Nrow = $this->dataFields($this->fieldArray,$table,$row,$Nrow,$noEdit);
 						$tdparams = $this->eCounter%2 ? ' class="bgColor4"' : ' class="bgColor4-20"';
-						$out.= $this->addelement(1,'',$Nrow,$tdparams);
+						$out.= $this->addelement(1,$NrowIcon,$Nrow,$tdparams);
 					}
 					$this->eCounter++;
 				}
@@ -159,11 +161,7 @@ class tx_ttnews_recordlist extends tx_cms_layout {
 
 				// Wrap it all in a table:
 			$out='
-
-				<!--
-					STANDARD LIST OF "'.$table.'"
-				-->
-				<table border="0" cellpadding="1" cellspacing="2" id="typo3-page-stdlist">
+				<table border="0" cellpadding="1" cellspacing="1" class="typo3-dblist">
 					'.$out.'
 				</table>';
 		}
@@ -212,7 +210,8 @@ class tx_ttnews_recordlist extends tx_cms_layout {
 						} elseif ($this->lTSprop['clickTitleMode'] == 'edit') {
 							if (!$noEdit)	{
 								$params = '&edit['.$table.']['.$row['uid'].']=edit';
-								$val = '<a href="#" onclick="'.htmlspecialchars(t3lib_BEfunc::editOnClick($params,$this->backPath,$this->returnUrl)).'">'.$val.'</a>';	
+								$lTitle = ' title="'.$GLOBALS['LANG']->getLL('edit',1).'"';
+								$val = '<a href="#" onclick="'.htmlspecialchars(t3lib_BEfunc::editOnClick($params,$this->backPath,$this->returnUrl)).'"'.$lTitle.'>'.$val.'</a>';	
 							}	
 						}
 						
@@ -251,7 +250,9 @@ class tx_ttnews_recordlist extends tx_cms_layout {
 				'tx_ttnews[tt_news]' => $uid,
 				'no_cache' => 1);
 		$linkedurl = t3lib_div::linkThisUrl($url,$params);
-		$link = '<a href="'.$linkedurl.'" target="_blank">'.$val.'</a>';
+		$onclick = 'openFePreview(\''.htmlspecialchars($linkedurl).'\');';
+		$lTitle = $GLOBALS['LANG']->getLL('openFePreview',1);
+		$link = '<a href="#" onclick="'.$onclick.'" title="'.$lTitle.'">'.$val.'</a>';
 		return $link;
 	}
 	
@@ -489,7 +490,7 @@ class tx_ttnews_recordlist extends tx_cms_layout {
 		$queryParts = array(
 			'SELECT' => $fieldList,
 			'FROM' => $table.$leftjoin,
-			'WHERE' => $this->pidSelect.
+			'WHERE' => $this->pidSelect.' AND '.$table.'.pid > 0'.
 						t3lib_BEfunc::deleteClause($table).
 						t3lib_BEfunc::versioningPlaceholderClause($table).
 						' '.$addWhere.

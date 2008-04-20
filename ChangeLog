@@ -1,4 +1,27 @@
+2008-04-16	Rupert Germann <rupi@gmx.li>
+	* fix !IMPORTANT! requires DB update (related to bugs 3531,3907): "news records loose categories when published/swapped into WS". Solution: removed all "unsigned" attributes from the mm tables in ext_tables.sql. Now publishing of news with categories or related news works correctly in TYPO3 version >= 4.1.7
+
+	* new feature: with the new TS parameters "amenuStart" and "amenuEnd" it's now possible to configure an AMENU content element to display news only from a certain period.
+	* new feature: "displayCatMenu.catPidList" and "displayCatMenu.recursive" give users the possibility to set a pidList for the categorymenu content element. (overrides GRSP if given)
+	* new feature - stolen from timtab ;-): the singleview can now display two links that point to the previous and next article (template markers: ###PREV_ARTICLE###, ###NEXT_ARTICLE###). The field which is taken to select the previous/next article is configurable: plugin.tt_news.displaySingle.nextPrevRecSortingField (default: datetime)
+	* new feature: the catmenu can now be configured to add/not add the archive parameters to its links. plugin.tt_news.catmenuWithArchiveParams (default = 1)
+	* improved tree display in BE:
+		- if useStoragePid is enabled each tree shows the GRSP folder and its id as rootIcon
+		- in be_users/groups the categories are now grouped by sysfolder.
+	* new feature: added a searchbox to the news-admin module (same as in web->list). if the search shows or not is configurable in TSConfig: mod.web_txttnewsM1.list.show.search (default = 1)
+	* new feature: with "mod.web_txttnewsM1.list.clickTitleMode" it's possible to configures the behavior of the record-title link in lists in the news-admin module.
+		Possible values are: "edit" link editform, "view" link FE singleView, (any other value: no link, default=edit)
+	* changed the "open-preview" link in lists to the same js-window as all other preview links
+	* fix: now the list in the news-admin module excludes unpublished versions
+	* fix: adapted the news-admin list to styles to TYPO3 4.2RC2
+	* fix: the title of the fe-catmenu is now localized
+	* fix: related news links do work with realurl now
+	* code cleanup: started to re-arrange the init() order in class.tx_ttnews. One goal is to find out "what to display" (theCode) first, and afterwards initialize the needed vars and not vice versa like it was before. Current state: the init() order is changed and all "display..."() methods have their own init function wrapper -> TODO: fill the selective init functions.
+
+
+
 2008-04-14	Rupert Germann <rupi@gmx.li>
+	* added document: doc/tt_news_3.0_changes.sxw (summarizes all changes and new features in tt_news 3.0) not yet finished
 	* new feature: with "mod.web_txttnewsM1.list.clickTitleMode" it's possible to configure the behavior of the record-title link in lists in the news-admin module.
 		Possible values: "edit" = link editform, "view" = link FE singleView, any other value: don't link. Default is "edit". The "edit" link is only inserted if the user has sufficient permisssions, the "view" link needs a value for "tx_ttnews.singlePid" (TSConfig) to work.
 	* performance improvement for the BE module: If a non admin user with many visible pages in his db-mounts opens the news-admin module the script has to check for each page if the user may edit it. This is quite time consuming and so I added a caching mechanism which stores the editperms for each page and the md5hash of the pidList (= list of all mounted pages) in the be_sessions table. Now the permissions are only calculated once per Session.

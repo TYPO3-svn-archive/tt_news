@@ -177,7 +177,11 @@ class tx_ttnews_TCAform_selectTree {
 		}
 
 			// Creating the label for the "No Matching Value" entry.
-		$nMV_label = isset($this->PA['fieldTSConfig']['noMatchingValue_label']) ? $fobj->sL($this->PA['fieldTSConfig']['noMatchingValue_label']) : '[ '.$fobj->getLL('l_noMatchingValue').' ]';
+		if (isset($this->PA['fieldTSConfig']['noMatchingValue_label'])) {
+			$nMV_label = $GLOBALS['LANG']->sL($this->PA['fieldTSConfig']['noMatchingValue_label']); 
+		} else {
+			$nMV_label = '[ '.$fobj->getLL('l_noMatchingValue').' ]';
+		}
 		$nMV_label = @sprintf($nMV_label, $this->PA['itemFormElValue']);
 
 					// Set max and min items:
@@ -189,9 +193,8 @@ class tx_ttnews_TCAform_selectTree {
 
 
 		if ($this->fieldConfig['treeView'])	{
+			// the current record is a translation of another record 
 			if ($row['sys_language_uid'] && $row['l18n_parent'] && ($table == 'tt_news' || $table == 'tt_news_cat')) {
-				// the current record is a translation of another record
-//				$errorMsg = array();
 				$categories = array();
 				$NACats = array();
 				$na = false;
@@ -206,16 +209,8 @@ class tx_ttnews_TCAform_selectTree {
 				while (($catrow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($catres))) {
 					$assignedCategories[$catrow['uid']] = $catrow['title'];
 				}
+				$GLOBALS['TYPO3_DB']->sql_free_result($catres);
 
-//				$notAllowedItems = array();
-//				if (tx_ttnews_div::useAllowedCategories()) {
-//					$allowedCategories = tx_ttnews_div::getAllowedCategories();
-//
-//					if (($excludeList = $GLOBALS['BE_USER']->getTSConfigVal('tt_newsPerms.tt_news_cat.excludeList'))) {
-//						$addWhere = ' AND uid NOT IN ('.$excludeList.')';
-//					}
-//					$notAllowedItems = $this->getNotAllowedItems($addWhere,$allowedCategories);
-//				}
 				$treeIDs = tx_ttnews_div::getAllowedTreeIDs();
 
 				foreach ($assignedCategories as $cuid => $ctitle) {
@@ -233,12 +228,12 @@ class tx_ttnews_TCAform_selectTree {
 				$item = implode($categories,chr(10));
 
 				if ($item) {
-					$item = 'Categories from the translation original of this record:<br />'.$item;
+					$item = $GLOBALS['LANG']->sL('LLL:EXT:tt_news/locallang_tca.xml:tt_news.treeSelect.translOrgCat').'<br />'.$item;
 				} else {
-					$item = 'The translation original of this record has no categories assigned.<br />';
+					$item = $GLOBALS['LANG']->sL('LLL:EXT:tt_news/locallang_tca.xml:tt_news.treeSelect.translOrgNoCat').'<br />';
 				}
 				$item = '<div class="typo3-TCEforms-originalLanguageValue">'.$item.'</div>';
-
+				
 			} else { // build tree selector
 
 				if ($table == 'tt_news' && $this->intT3ver >= 4001000) {
@@ -254,14 +249,18 @@ class tx_ttnews_TCAform_selectTree {
 						while (list(,$itemValue) = each($this->fieldConfig['items']))	{
 							if ($itemValue[0]) {
 								$ITitle = $GLOBALS['LANG']->sL($itemValue[0]);
-								$defItems[] = '<a href="#" onclick="setFormValueFromBrowseWin(\'data['.$this->table.']['.$this->row['uid'].']['.$this->field.'][data][sDEF][lDEF][categorySelection][vDEF]\','.$itemValue[1].',\''.$ITitle.'\'); return false;" style="text-decoration:none;">'.$ITitle.'</a>';
+								$data = 'data['.$this->table.']['.$this->row['uid'].']['.$this->field.'][data][sDEF][lDEF][categorySelection][vDEF]';
+								$onclick = ' onclick="setFormValueFromBrowseWin(\''.$data.'\','.$itemValue[1].',\''.$ITitle.'\'); return false;"';
+								$defItems[] = '<a href="#"'.$onclick.' style="text-decoration:none;">'.$ITitle.'</a>';
 							}
 						}
 					}
+					
+					// render the tree
 					$treeContent = '<span id="tt_news_cat_tree">'.$this->renderCatTree().'<span>';
 
-					if ($defItems[0]) { // add default items to the tree table. In this case the value [not categorized]
-						$this->treeItemC += count($defItems);
+					if ($defItems[0]) { // add default items to the tree table. In this case the value: "[not categorized]"
+//						$this->treeItemC += count($defItems);
 						$treeContent .= '<table border="0" cellpadding="0" cellspacing="0"><tr>
 							<td>'.$GLOBALS['LANG']->sL($this->fieldConfig['itemsHeader']).'&nbsp;</td><td>'.implode($defItems,'<br />').'</td>
 							</tr></table>';
@@ -478,7 +477,7 @@ class tx_ttnews_TCAform_selectTree {
 			$this->PA['itemFormElName'] = 'data['.$this->table.']['.$this->recID.']['.$this->field.']';
 		}
 
-		$tree = $this->renderCatTree();
+		$tree = $this->renderCatTree(TRUE);
 
 		if (!$this->treeObj_ajaxStatus) {
 			$ajaxObj->setError($tree);
@@ -496,32 +495,34 @@ class tx_ttnews_TCAform_selectTree {
 	 * @param	[type]		$cmd: ...
 	 * @return	[type]		...
 	 */
-	function renderCatTree() {
+	function renderCatTree($calledFromAjax=false) {
 
 // 		$tStart = microtime(true);
 // 		$this->debug['start'] = time();
 
+		if (substr($this->table,0,3) != 'be_') {
 		// ignore useStoragePid if table is be_user/groups.
-		if ($this->confArr['useStoragePid'] && substr($this->table,0,3) != 'be_') {
-			if ($this->storagePidFromAjax) {
-				$this->storagePid = $this->storagePidFromAjax;
-			} else {
-				$TSconfig = t3lib_BEfunc::getTCEFORM_TSconfig($this->table,$this->row);
-				$this->storagePid = ($TSconfig['_STORAGE_PID']?$TSconfig['_STORAGE_PID']:intval($this->row['pid']));
-			}
-			$SPaddWhere = ' AND tt_news_cat.pid IN (' . $this->storagePid . ')';
-			if ($this->table == 'tt_news_cat' && intval($this->row['pid']) > 0 && $this->row['pid'] != $this->storagePid) {
-				$msg = $this->printMsg('notInGRSP','warning2');
-				$notInGRSP = true;
-			}
-		}		
-		
-		if ($this->storagePid > 0) {
+			if ($this->confArr['useStoragePid']) {
+				if ($this->storagePidFromAjax) {
+					$this->storagePid = $this->storagePidFromAjax;
+				} else {
+					$TSconfig = t3lib_BEfunc::getTCEFORM_TSconfig($this->table,$this->row);
+					$this->storagePid = ($TSconfig['_STORAGE_PID']?$TSconfig['_STORAGE_PID']:intval($this->row['pid']));
+				}
+				$SPaddWhere = ' AND tt_news_cat.pid IN (' . $this->storagePid . ')';
+				if ($this->table == 'tt_news_cat' && intval($this->row['pid']) > 0 && $this->row['pid'] != $this->storagePid) {
+					$msg = $this->printMsg('notInGRSP','warning2');
+					$notInGRSP = true;
+				}
+			}		
+			
 			$catlistWhere = tx_ttnews_div::getCatlistWhere();
 			if ($catlistWhere) {
 				$this->getNotAllowedItems($SPaddWhere);
 			}			
+			
 		}
+
 		
 		
 		$treeOrderBy = $this->confArr['treeOrderBy']?$this->confArr['treeOrderBy']:'uid';
@@ -534,7 +535,8 @@ class tx_ttnews_TCAform_selectTree {
 		$treeViewObj->tceFormsTable = $this->table;
 		$treeViewObj->tceFormsRecID = $this->recID;
 		$treeViewObj->storagePid = $this->storagePid;
-
+		$treeViewObj->useStoragePid = $this->confArr['useStoragePid'];
+		
 
 		$treeViewObj->init($SPaddWhere.$catlistWhere,$treeOrderBy);
 		$treeViewObj->backPath = $GLOBALS['BACK_PATH'];
@@ -543,12 +545,15 @@ class tx_ttnews_TCAform_selectTree {
 		$treeViewObj->parentField = 'parent_category';
 		$treeViewObj->expandable = $this->useAjax;
 		$treeViewObj->expandAll = !$this->useAjax;
-//		$treeViewObj->expandFirst = 1;
+
 		$treeViewObj->useAjax = $this->useAjax;
 		$treeViewObj->titleLen = 60;
 		$treeViewObj->disableAll = $notInGRSP;
 		$treeViewObj->ext_IconMode = '1'; // no context menu on icons
-		$treeViewObj->title = $GLOBALS['LANG']->sL($GLOBALS['TCA']['tt_news_cat']['ctrl']['title']);
+		$treeViewObj->title = $GLOBALS['LANG']->sL('LLL:EXT:tt_news/locallang_tca.xml:tt_news.treeSelect.treeTitle');
+		
+		
+		
 		$treeViewObj->TCEforms_itemFormElName = $this->PA['itemFormElName'];
 
 		if ($this->table=='tt_news_cat') {
@@ -572,14 +577,34 @@ class tx_ttnews_TCAform_selectTree {
 		
 
 		
-		
+		$sPageIcon = '';
 
 		// mark selected categories
 		$treeViewObj->TCEforms_selectedItemsArray = $this->selectedItems;
 		$treeViewObj->selectedItemsArrayParents = $this->getCatRootline($SPaddWhere);
 	
-		// if storagePid==0 the table is be_user/groups. In this table all categories are shown
-		if ($this->storagePid > 0) {
+		if (substr($this->table,0,3) == 'be_') {
+			// if table is 'be_users' or 'be_groups' group the categories by folder. 'useStoragePid' is ignored
+ 			$cf = $this->getCategoryFolders($SPaddWhere.$catlistWhere);
+ 			
+ 			/**
+ 			 * FIXME:
+ 			 * currently 'expandFirst' is required to prevent js errors when expanding/collapsing the tree
+ 			 * the problems are caused by multiple "root" records with uid=0
+ 			 */
+ 			 
+ 			$treeViewObj->expandFirst = 1;
+ 			$treeViewObj->MOUNTS = $cf;
+ 			$groupByPages = TRUE;
+ 			
+		} else {
+		
+			if ($this->storagePid > 0) {
+				$addWhere = ' AND pid='.$this->storagePid;
+			} else { // useStoragePid=0 and table != beusers/groups
+				$addWhere = '';
+				
+			}
 			// get selected categories from be user/group without subcategories
 			$tmpsc = tx_ttnews_div::getBeUserCatMounts(FALSE);
 			$beUserSelCatArr = t3lib_div::intExplode(',',$tmpsc);
@@ -588,25 +613,31 @@ class tx_ttnews_TCAform_selectTree {
 			
 			// get all selected category records from the current storagePid which are not 'root' categories
 			// and add them as tree mounts. Subcategories of selected categories will be excluded. 
-			$nonRootMounts = array();
+			
+			$cMounts = array();
+			$nonRootMounts = FALSE;
 			foreach ($beUserSelCatArr as $catID) {
-				$tmpR = t3lib_BEfunc::getRecord('tt_news_cat',$catID,'parent_category',' AND pid='.$this->storagePid);
-				if ($tmpR['parent_category'] > 0 && !in_array($catID,$subcatArr)) {
-					$nonRootMounts[] = $catID;
+				$tmpR = t3lib_BEfunc::getRecord('tt_news_cat',$catID,'parent_category,hidden',$addWhere);
+				if (is_array($tmpR) && !in_array($catID,$subcatArr)) {
+					if ($tmpR['parent_category'] > 0) {
+						$nonRootMounts = TRUE;
+						if (!$calledFromAjax) {
+							$sPageIcon = $this->getStoragePageIcon($treeViewObj);
+						}
+					} 
+					$cMounts[] = $catID;
 				}
 			}
-			$treeViewObj->MOUNTS = array_merge($treeViewObj->MOUNTS,$nonRootMounts);
+			if ($nonRootMounts) {
+				$treeViewObj->MOUNTS = $cMounts;
+			}
 		}
 	
 		
 			// render tree html
-		$treeContent = $treeViewObj->getBrowsableTree();
+		$treeContent = $sPageIcon.$treeViewObj->getBrowsableTree($groupByPages);
 		$this->treeObj_ajaxStatus = $treeViewObj->ajaxStatus;
-
-		
-
-		
-		
+	
 
 //		if (count($treeViewObj->ids) == 0) {
 //			$msg .= str_replace('###PID###',$this->storagePid,$this->printMsg('emptyTree','note'));
@@ -618,6 +649,61 @@ class tx_ttnews_TCAform_selectTree {
 		return $msg.$treeContent;
 	}
 
+	
+	
+	
+	
+	
+
+	
+
+
+
+
+	
+	function getStoragePageIcon(&$treeObj) {
+		if ($this->storagePid) {
+			$tmpt = $treeObj->table;
+			$treeObj->table = 'pages';
+			$rootRec = $treeObj->getRecord($this->storagePid);
+			$icon = $treeObj->getIcon($rootRec);
+			$treeObj->table = $tmpt;
+			$pidLbl = sprintf($GLOBALS['LANG']->sL('LLL:EXT:tt_news/locallang_tca.xml:tt_news.treeSelect.pageTitleSuffix'),intval($this->storagePid));
+						
+		} else {
+			$rootRec = $treeObj->getRootRecord($this->storagePid);
+			$icon = $treeObj->getRootIcon($rootRec);
+			$pidLbl = $GLOBALS['LANG']->sL('LLL:EXT:tt_news/locallang_tca.xml:tt_news.treeSelect.pageTitleSuffixNoGrsp');
+			
+		}
+
+		$pidLbl = ' <span class="typo3-dimmed"><em>'.$pidLbl.'</em></span>';			
+		$content = '<div style="margin: 2px 0 -5px 2px;">'.$icon.$rootRec['title'].$pidLbl.'</div>';
+		return $content;		
+	}
+	
+	
+	
+	function getCategoryFolders($where) {
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
+					'pid',
+					'tt_news_cat',
+					'pid>=0'.$where.t3lib_BEfunc::deleteClause('tt_news_cat'),
+					'pid'
+				);
+		$list = array();
+		while(($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)))	{
+			$list[] = $row['pid'];
+		}
+		$GLOBALS['TYPO3_DB']->sql_free_result($res);
+		
+//		debug($list, ' ('.__CLASS__.'::'.__FUNCTION__.')', __LINE__, __FILE__, 3);
+		return $list;
+	}
+	
+	
+	
+	
 	/**
 	 * [Describe function...]
 	 *
@@ -744,8 +830,7 @@ class tx_ttnews_tceforms_categorytree extends tx_ttnews_categorytree {
 	 * @return	string		the wrapped title
 	 */
 	function wrapTitle($title,$v)	{
-// 		debug($v);
-		if($v['uid']>0) {
+		if ($v['uid'] > 0) {
 			$hrefTitle = htmlentities('[id='.$v['uid'].'] '.$v['description']);
 			if (in_array($v['uid'],$this->TCEforms_nonSelectableItemsArray) || $this->disableAll) {
 				$style = $this->getTitleStyles($v,$hrefTitle);
@@ -756,7 +841,15 @@ class tx_ttnews_tceforms_categorytree extends tx_ttnews_categorytree {
 				return '<a href="#" onclick="'.htmlspecialchars($aOnClick).'" title="'.$hrefTitle.'"><span style="'.$style.'">'.$title.'</span></a>';
 			}
 		} else {
-			return $title;
+			if ($this->useStoragePid || isset($v['doktype'])) {
+				$pid = ($this->storagePid ? $this->storagePid : $v['pid']);
+				$pidLbl = sprintf($GLOBALS['LANG']->sL('LLL:EXT:tt_news/locallang_tca.xml:tt_news.treeSelect.pageTitleSuffix'),$pid);
+			} else {
+				$pidLbl = $GLOBALS['LANG']->sL('LLL:EXT:tt_news/locallang_tca.xml:tt_news.treeSelect.pageTitleSuffixNoGrsp');
+			}
+			$pidLbl = ' <span class="typo3-dimmed"><em>'.$pidLbl.'</em></span>';
+		
+			return $title.$pidLbl;
 		}
 	}
 

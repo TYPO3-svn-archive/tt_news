@@ -69,14 +69,15 @@ class tx_ttnews_categorytree extends t3lib_treeview {
 	 *
 	 * @return	string		HTML code for the browsable tree
 	 */
-	function getBrowsableTree()	{
+	function getBrowsableTree($groupByPages=false)	{
 		// Get stored tree structure AND updating it if needed according to incoming PM GET var.
 		$this->initializePositionSaving();
 
 		// Init done:
-//		$titleLen = $this->titleLen;
 		$treeArr = array();
-
+		$tmpClause = $this->clause;
+		$savedTable = $this->table;
+		
 		// Traverse mounts:
 		foreach($this->MOUNTS as $idx => $uid)  {
 
@@ -88,30 +89,49 @@ class tx_ttnews_categorytree extends t3lib_treeview {
 			$curIds = $this->ids;
 			$this->reset();
 			$this->ids = $curIds;
-
-				
+			
 			// Set PM icon for root of mount:
 			$cmd = $this->bank.'_'.($isOpen? "0_" : "1_").$uid.'_'.$this->treeName;
+
 			$icon='<img'.t3lib_iconWorks::skinImg($this->backPath,'gfx/ol/'.($isOpen?'minus':'plus').'only.gif').' alt="" />';
 			if ($this->expandable && !$this->expandFirst) {
 				$firstHtml = $this->PMiconATagWrap($icon,$cmd);
 			} else {
-				$firstHtml = '<div style="width:18px;float:left;">&nbsp;</div>';
+				$firstHtml = $icon;
+			}
+			
+			$this->addStyle = '';
+		
+			// Preparing rootRec for the mount
+			if ($groupByPages) {
+				$this->table = 'pages';
+//				$this->addStyle = ' style="margin-bottom:10px;"';
 			}
 		
-//			$startFromRoot = FALSE;
-			// Preparing rootRec for the mount
 			if ($uid)   {
-			
 				$rootRec = $this->getRecord($uid);
-				$firstHtml.=$this->getIcon($rootRec);
+				$firstHtml .= $this->getIcon($rootRec);
 			} else {
-				// Artificial record for the tree root, id=0
-				$rootRec = $this->getRootRecord($uid);
-				$firstHtml.=$this->getRootIcon($rootRec);
-//				$startFromRoot = true;
+				if ($this->storagePid > 0 && $this->useStoragePid) {
+					// root = page record of current GRSP
+					$this->table = 'pages';
+					$rootRec = $this->getRecord($this->storagePid);
+					$firstHtml .= $this->getIcon($rootRec);
+					$rootRec['uid'] = 0;
+				} else { 
+					// Artificial record for the tree root, id=0
+					$rootRec = $this->getRootRecord($uid);
+					$firstHtml .= $this->getRootIcon($rootRec);
+				}
+			}
+			if ($groupByPages) {
+				$this->clause = $tmpClause.' AND tt_news_cat.pid='.$uid;
+				$rootRec['uid'] = 0;
 			}
 
+			// restore $this->table
+			$this->table = $savedTable;
+			
 			if (is_array($rootRec)) {
 				// In case it was swapped inside getRecord due to workspaces.
 				$uid = $rootRec['uid'];
@@ -129,15 +149,12 @@ class tx_ttnews_categorytree extends t3lib_treeview {
 				$treeArr=array_merge($treeArr,$this->tree);
 			}
 		}
-
-
-		//		print_r($treeArr);
+		
 		return $this->printTree($treeArr);
 	}
 
 
-
-
+	
 	/**
 	 * Fetches the data for the tree
 	 *
@@ -156,7 +173,7 @@ class tx_ttnews_categorytree extends t3lib_treeview {
 		$depth = intval($depth);
 		$HTML = '';
 		$a = 0;
-
+		
 		$res = $this->getDataInit($uid, $subCSSclass);
 		$c = $this->getDataCount($res);
 		$crazyRecursionLimiter = 999;
@@ -166,7 +183,7 @@ class tx_ttnews_categorytree extends t3lib_treeview {
 			$crazyRecursionLimiter--;
 			$allRows[] = $row;
 		}
-
+		
 		// Traverse the records:
 		foreach ($allRows as $row)	{
 			$a++;
@@ -274,24 +291,32 @@ class tx_ttnews_categorytree extends t3lib_treeview {
 
 		foreach($treeArr as $v)	{
 			$classAttr = $v['row']['_CSSCLASS'];
-			$uid	   = $v['row']['uid'];
+			$uid = $v['row']['uid'];
 			$idAttr	= htmlspecialchars($this->domIdPrefix.$this->getId($v['row']).'_'.$v['bank']);
-			$itemHTML  = '';
-
+			$itemHTML = '';
+			$addStyle = '';
+			
 			// if this item is the start of a new level,
 			// then a new level <ul> is needed, but not in ajax mode
-			if($v['isFirst'] && !($doCollapse) && !($doExpand && $expandedPageUid == $uid))	{
+			if ($v['isFirst'] && !($doCollapse) && !($doExpand && $expandedPageUid == $uid))	{
 				$itemHTML = '<ul>';
 			}
-
+			
 			// add CSS classes to the list item
-			if ($v['hasSub']) { $classAttr .= ($classAttr) ? ' expanded': 'expanded'; }
-			if ($v['isLast']) { $classAttr .= ($classAttr) ? ' last'	: 'last';	 }
-			if ($uid && $uid == $this->category) { $classAttr .= ($classAttr) ? ' active'	: 'active';	 }
+			if ($v['hasSub']) { 
+				$classAttr .= ($classAttr?' ':'').'expanded'; 
+			}
+			if ($v['isLast']) { 
+				$classAttr .= ($classAttr?' ':'').'last';
+//				$addStyle = $this->addStyle;	 
+			}
+			if ($uid && $uid == $this->category) { 
+				$classAttr .= ($classAttr?' ':'').'active';	 
+			}
 			
 
 			$itemHTML .='
-				<li id="'.$idAttr.'"'.($classAttr ? ' class="'.$classAttr.'"' : '').'>'.
+				<li id="'.$idAttr.'"'.$addStyle.($classAttr ? ' class="'.$classAttr.'"' : '').'>'.
 					$v['HTML'].
 					$this->wrapTitle($this->getTitleStr($v['row'],$titleLen),$v['row'],$v['bank'])."\n";
 
@@ -390,6 +415,8 @@ class tx_ttnews_categorytree extends t3lib_treeview {
 			return $icon;
 		}
 	}
+	
+	
 
 
 }

@@ -150,6 +150,8 @@ mod.web_txttnewsM1 {
 		show {
 			cb_showOnlyEditable = 1
 			cb_showThumbs = 1
+			search = 1
+			
 		}
 		imageSize = 50
 		

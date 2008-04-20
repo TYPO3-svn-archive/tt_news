@@ -95,13 +95,7 @@ class tx_ttnews_catmenu {
 		$this->treeObj->expandFirst = $lConf['expandFirst'];
 		$this->treeObj->titleLen = $this->titleLen;
 
-		/**
-		 * FIXME
-		 * lokalize
-		 */
-		$this->treeObj->title = 'Select a category:';
-//		$this->treeObj->title = $pObj->pi_getLL('catmenuHeader');
-
+		$this->treeObj->title = $GLOBALS['TSFE']->sL('LLL:EXT:tt_news/pi/locallang.xml:catmenuHeader');
 
 		$allcatArr = explode(',',$pObj->catExclusive);
 		$selcatArr = explode(',',$pObj->actuallySelectedCategories);	
@@ -109,14 +103,21 @@ class tx_ttnews_catmenu {
 		
 		// get all selected category records from the current storagePid which are not 'root' categories
 		// and add them as tree mounts. Subcategories of selected categories will be excluded. 
-		$nonRootMounts = array();
+		$cMounts = array();
+		$nonRootMounts = FALSE;
 		foreach ($selcatArr as $catID) {
 			$tmpR = $GLOBALS['TSFE']->sys_page->getRecordsByField('tt_news_cat','uid',$catID,$pObj->SPaddWhere.$pObj->enableCatFields.$pObj->catlistWhere);
-			if (is_array($tmpR[0]) && $tmpR[0]['parent_category'] > 0 && !in_array($catID,$subcatArr)) {
-				$nonRootMounts[] = $catID;
+			if (is_array($tmpR[0]) && !in_array($catID,$subcatArr)) {
+				if ($tmpR[0]['parent_category'] > 0) {
+					$nonRootMounts = TRUE;
+				} 
+				$cMounts[] = $catID;
 			}
 		}
-		$this->treeObj->MOUNTS = array_merge($this->treeObj->MOUNTS,$nonRootMounts);
+		if ($nonRootMounts) {
+			$this->treeObj->MOUNTS = $cMounts;
+			
+		}
 	
 					
 		
@@ -185,8 +186,8 @@ class tx_ttnews_FEtreeview extends tx_ttnews_categorytree {
 			if ($newsConf['useHRDates']) {
 				$link = $this->tt_news_obj->pi_linkTP_keepPIvars($title, array(
 					'cat' => $v['uid'],
-					'year' => ($piVars['year']?$piVars['year']:null),
-					'month' => ($piVars['month']?$piVars['month']:null)
+					'year' => ($piVars['year']&&$newsConf['catmenuWithArchiveParams']?$piVars['year']:null),
+					'month' => ($piVars['month']&&$newsConf['catmenuWithArchiveParams']?$piVars['month']:null)
 				), $this->tt_news_obj->allowCaching, ($newsConf['dontUseBackPid']?1:0), $catSelLinkParams);
 			} else {
 				$link = $this->tt_news_obj->pi_linkTP_keepPIvars($title, array(

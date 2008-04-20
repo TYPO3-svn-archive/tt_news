@@ -88,9 +88,9 @@ CREATE TABLE tt_news_cat (
 # Table structure for table 'tt_news_related_mm'
 #
 CREATE TABLE tt_news_related_mm (
-  uid_local int(11) unsigned DEFAULT '0' NOT NULL,
-  uid_foreign int(11) unsigned DEFAULT '0' NOT NULL,
-  sorting int(11) unsigned DEFAULT '0' NOT NULL,
+  uid_local int(11) DEFAULT '0' NOT NULL,
+  uid_foreign int(11) DEFAULT '0' NOT NULL,
+  sorting int(11) DEFAULT '0' NOT NULL,
   tablenames tinytext NOT NULL,
   KEY uid_local (uid_local),
   KEY uid_foreign (uid_foreign)
@@ -100,10 +100,10 @@ CREATE TABLE tt_news_related_mm (
 # Table structure for table 'tt_news_cat_mm'
 #
 CREATE TABLE tt_news_cat_mm (
-  uid_local int(11) unsigned DEFAULT '0' NOT NULL,
-  uid_foreign int(11) unsigned DEFAULT '0' NOT NULL,
+  uid_local int(11) DEFAULT '0' NOT NULL,
+  uid_foreign int(11) DEFAULT '0' NOT NULL,
   tablenames varchar(30) DEFAULT '' NOT NULL,
-  sorting int(11) unsigned DEFAULT '0' NOT NULL,
+  sorting int(11) DEFAULT '0' NOT NULL,
   KEY uid_local (uid_local),
   KEY uid_foreign (uid_foreign)
 );
@@ -113,7 +113,6 @@ CREATE TABLE tt_news_cat_mm (
 #
 CREATE TABLE be_groups (
 	tt_news_categorymounts tinytext NOT NULL,
-# 	tt_news_cmounts_usesubcats tinyint(4) unsigned DEFAULT '0' NOT NULL
 	
 );
 
@@ -122,6 +121,5 @@ CREATE TABLE be_groups (
 #
 CREATE TABLE be_users (
 	tt_news_categorymounts tinytext NOT NULL,
-# 	tt_news_cmounts_usesubcats tinyint(4) unsigned DEFAULT '0' NOT NULL
 );
 

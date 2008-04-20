@@ -38,7 +38,8 @@ categorySelectedWidth =
   # cat=basic/dims/70; type=int [0-600]; label= Width of the right category field: This field shows the category tree in the tt_news db-record (or in the category db-record). If "categoryTreeWidth" is set to 0 (zero) the default width (=350px) will be taken.
 categoryTreeWidth =
 
-
+  # cat=basic//150; type=boolean; label= Write devlog: Write parsetimes to devlog.
+writeParseTimesToDevlog = 0
 
 /*
   ### CVS id ###
