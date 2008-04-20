@@ -4,7 +4,7 @@
 
 plugin.tt_news {
     # cat=plugin.tt_news: Basic/file/1; type=text; label= Template File: HTML-template which is used to display news (f.e.: 'fileadmin/templates/my_news_tmpl.html').
-  file.templateFile = EXT:tt_news/res/tt_news_v2.6_template.html
+  file.templateFile = EXT:tt_news/res/tt_news_v3_template.html
 
     # cat=plugin.tt_news: Basic/links/10; type=text; label= Starting Point (pid_list): The PID of the page (or comma separated list pf PIDs) where your news articles are stored.
   pid_list = 0
