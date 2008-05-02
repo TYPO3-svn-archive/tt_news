@@ -129,11 +129,11 @@ class tx_ttnews extends tslib_pibase {
 	var $prefixId = 'tx_ttnews'; // Same as class name
 	var $scriptRelPath = 'pi/class.tx_ttnews.php'; // Path to this script relative to the extension dir.
 	var $extKey = 'tt_news'; // The extension key.
-	
+
 	var $tt_news_uid = 0; // the uid of the current news record in SINGLE view
 	var $pid_list = 0;
 	var $config = array(); // the processed TypoScript configuration array
-	var $sViewSplitLConf = array();		
+	var $sViewSplitLConf = array();
 	var $langArr = array(); // the languages found in the tt_news sysfolder
 	var $sys_language_mode = '';
 	var $alternatingLayouts = 0;
@@ -155,12 +155,12 @@ class tx_ttnews extends tslib_pibase {
 	var $SIM_ACCESS_TIME = 0;
 	var $renderFields = array();
 	var $errors = array();
-	
+
 	var $enableFields = '';
 	var $enableCatFields = '';
 	var $SPaddWhere = '';
 	var $catlistWhere = '';
-	
+
 	var $token = '';
 
 	var $debugTimes = 0;
@@ -281,14 +281,14 @@ class tx_ttnews extends tslib_pibase {
 		$this->pi_loadLL(); // Loading language-labels
 		$this->pi_setPiVarDefaults(); // Set default piVars from TS
 		$this->pi_initPIflexForm(); // Init FlexForm configuration for plugin
-		
+
 		$this->SIM_ACCESS_TIME = $GLOBALS['SIM_ACCESS_TIME'];
 		// fallback for TYPO3 < 4.2
 		if (!$this->SIM_ACCESS_TIME) {
 			$simTime = $GLOBALS['SIM_EXEC_TIME'];
 			$this->SIM_ACCESS_TIME = $simTime - ($simTime % 60);
 		}
-		
+
 		$this->local_cObj = t3lib_div::makeInstance('tslib_cObj'); // Local cObj.
 		$this->enableFields = $this->getEnableFields('tt_news');
 		$this->tt_news_uid = intval($this->piVars['tt_news']); // Get the submitted uid of a news (if any)
@@ -421,14 +421,14 @@ class tx_ttnews extends tslib_pibase {
 		$altLayouts = intval($this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'alternatingLayouts', 's_template'));
 		$altLayouts = $altLayouts ? $altLayouts : intval($this->conf['alternatingLayouts']);
 		$this->alternatingLayouts = $altLayouts ? $altLayouts : 2;
-		
+
 		$altLayouts = trim($this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'altLayoutsOptionSplit', 's_template'));
 		$this->config['altLayoutsOptionSplit'] = $altLayouts ? $altLayouts : trim($this->conf['altLayoutsOptionSplit']);
-		
+
 		// Get cropping lenght
-		
+
 		$croppingLenghtOptionSplit = trim($this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'croppingLenghtOptionSplit', 's_template'));
-		$this->config['croppingLenghtOptionSplit'] = $croppingLenghtOptionSplit ? $croppingLenghtOptionSplit : trim($this->conf['croppingLenghtOptionSplit']);	
+		$this->config['croppingLenghtOptionSplit'] = $croppingLenghtOptionSplit ? $croppingLenghtOptionSplit : trim($this->conf['croppingLenghtOptionSplit']);
 		$this->config['croppingLenght'] = trim($this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'croppingLenght', 's_template'));
 
 		$this->initTemplate();
@@ -743,6 +743,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 						$markerArray = $this->userProcess('userPageBrowserFunc', $markerArray);
 					} else {
 
+						$this->pi_alwaysPrev = $pbConf['alwaysPrev'];
 						if ($this->conf['usePiBasePagebrowser']) {
 							$this->internal['pagefloat'] = $pbConf['pagefloat'];
 							$this->internal['showFirstLast'] = $pbConf['showFirstLast'];
@@ -762,7 +763,6 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 								$this->LOCAL_LANG[$this->LLkey]['pi_list_browseresults_displays'] = $this->LOCAL_LANG[$this->LLkey]['pi_list_browseresults_displays_advanced'];
 							}
 
-							$this->pi_alwaysPrev = $pbConf['alwaysPrev'];
 							if ($this->conf['useHRDates']) {
 								// prevent adding pS & pL to pagebrowser links if useHRDates is enabled
 								$tmpPS = $this->piVars['pS'];
@@ -878,8 +878,8 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 
 		$lConf = $this->conf[$prefix_display.'.'];
 		$res = $this->exec_getQuery('tt_news', $selectConf); //get query for list contents
-		
-		
+
+
 		// make some final config manipulations
 		// overwrite image sizes from TS with the values from content-element if they exist.
 		if ($this->config['FFimgH'] || $this->config['FFimgW']) {
@@ -889,26 +889,26 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 		if ($this->config['croppingLenght']) {
 			$lConf['subheader_stdWrap.']['crop'] = $this->config['croppingLenght'];
 		}
-		
-		
-	
+
+
+
 		$this->splitLConf = array();
 		if ($this->conf['enableOptionSplit']) {
 			if ($this->config['croppingLenghtOptionSplit']) {
 				$crop = $lConf['subheader_stdWrap.']['crop'];
 				if ($this->config['croppingLenght']) {
 					$crop = $this->config['croppingLenght'];
-				} 
+				}
 				$cparts = explode('|',$crop);
 				if (is_array($cparts)) {
 					$cropSuffix = '|'.$cparts[1].($cparts[2]?'|'.$cparts[2]:'');
-				}				
+				}
 				$lConf['subheader_stdWrap.']['crop'] = $this->config['croppingLenghtOptionSplit'];
-			}				
+			}
 			$resCount = $GLOBALS['TYPO3_DB']->sql_num_rows($res);
 			$this->splitLConf = $this->processOptionSplit($lConf,$limit,$resCount);
 		}
-				
+
 		$itemsOut = '';
 		$itempartsCount = count($itemparts);
 		$pTmp = $GLOBALS['TSFE']->ATagParams;
@@ -922,19 +922,19 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 
 		// Getting elements
 		while (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))) {
-			
+
 			// gets the option splitted config for this record
 			if ($this->conf['enableOptionSplit'] && !empty($this->splitLConf[$cc])) {
 				$lConf = $this->splitLConf[$cc];
 				$lConf['subheader_stdWrap.']['crop'] .= $cropSuffix;
-				
+
 			}
 
 			$GLOBALS['TSFE']->displayedNews[]=$row['uid'];
 
 			$wrappedSubpartArray = array();
 			$titleField = $lConf['linkTitleField']?$lConf['linkTitleField']:'';
-			
+
 			if ($GLOBALS['TSFE']->sys_language_content) {
 				// prevent link targets from being changed in localized records
 				$tmpPage = $row['page'];
@@ -1017,10 +1017,10 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 		return $itemsOut;
 	}
 
-	
 
-	
-	
+
+
+
 
 
 
@@ -1077,7 +1077,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 			if ($this->conf['displayCurrentRecord']) {
 				$item = trim($this->getNewsSubpart($this->templateCode, $this->spMarker('###TEMPLATE_SINGLE_RECORDINSERT###'), $row));
 			}
-			
+
 			if (!$item) {
 				$item = $this->getNewsSubpart($this->templateCode, $this->spMarker('###TEMPLATE_'.$this->theCode.'###'), $row);
 			}
@@ -1147,8 +1147,8 @@ if ($this->debugTimes) $this->getParsetime(__METHOD__.' start');
 		$res = $this->exec_getQuery('tt_news', $selectConf);
 
 		$row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
-		
-		
+
+
 		if ($row['minval'] || $row['maxval']) {
 			// if ($row['minval']) {
 			$dateArr = array();
@@ -1186,7 +1186,7 @@ if ($this->debugTimes) $this->getParsetime(__METHOD__.' $dateArr');
 				$periodInfo = array();
 				$periodInfo['start'] = $v;
 				$periodInfo['active'] = ($this->piVars['pS']==$v?1:0);
-				
+
 				$periodInfo['stop'] = $dateArr[$k + 1]-1;
 				$periodInfo['HRstart'] = date('d-m-Y', $periodInfo['start']);
 				$periodInfo['HRstop'] = date('d-m-Y', $periodInfo['stop']);
@@ -1199,8 +1199,8 @@ if ($this->debugTimes) $this->getParsetime(__METHOD__.' $dateArr');
 
 				$row = $GLOBALS['TYPO3_DB']->sql_fetch_row($res);
 				$GLOBALS['TYPO3_DB']->sql_free_result($res);
-				
-				
+
+
 				$periodInfo['count'] = $row[0];
 
 				if (!$this->conf['archiveMenuNoEmpty'] || $periodInfo['count']) {
@@ -1267,8 +1267,8 @@ if ($this->debugTimes) $this->getParsetime(__METHOD__.' $$periodAccum');
 				$yearTitle = '';
 				if ($this->conf['showYearHeadersInAmenu'] && $arcMode != 'year') {
 					if ($year != $oldyear) {
-					    if ($pArr['start']<20000) {
-						    $yearTitle = 'no date';
+						if ($pArr['start']<20000) {
+							$yearTitle = 'no date';
 						} else {
 							$yearTitle = $year;
 						}
@@ -1287,7 +1287,7 @@ if ($this->debugTimes) $this->getParsetime(__METHOD__.' $$periodAccum');
 				$markerArray['###ARCHIVE_COUNT###'] = $pArr['count'];
 				$markerArray['###ARCHIVE_ITEMS###'] = ($pArr['count']==1?$this->pi_getLL('archiveItem'):$this->pi_getLL('archiveItems'));
 				$markerArray['###ARCHIVE_ACTIVE###'] = ($this->piVars['pS']==$pArr['start']?$this->conf['archiveActiveMarkerContent']:'');
-				
+
 				$layoutNum = ($tCount == 0 ? 0 : ($cc % $tCount));
 				$amenuitem = $this->cObj->substituteMarkerArrayCached($t['item'][$layoutNum], $markerArray, array(), $wrappedSubpartArray);
 
@@ -1528,7 +1528,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 
 
 		// get config for current template part:
-		
+
 		$this->local_cObj->start($row, 'tt_news');
 
 		$markerArray = array();
@@ -1799,7 +1799,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 				$this->conf['displayXML.']['xmlFormat'] == 'rss091') {
 				$markerArray['###NEWS_SUBHEADER###'] = $this->cleanXML($this->local_cObj->stdWrap($row['short'], $lConf['subheader_stdWrap.']));
 			} elseif ($this->conf['displayXML.']['xmlFormat'] == 'atom03' ||
-			          $this->conf['displayXML.']['xmlFormat'] == 'atom1') {
+					  $this->conf['displayXML.']['xmlFormat'] == 'atom1') {
 				//html doesn't need to be striped off in atom feeds
 				$lConf['subheader_stdWrap.']['stripHtml'] = 0;
 				$markerArray['###NEWS_SUBHEADER###'] = $this->local_cObj->stdWrap($row['short'], $lConf['subheader_stdWrap.']);
@@ -1812,7 +1812,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 				$this->conf['displayXML.']['xmlFormat'] == 'rss091') {
 				$markerArray['###NEWS_DATE###'] = date('D, d M Y H:i:s O', $row['datetime']);
 			} elseif ($this->conf['displayXML.']['xmlFormat'] == 'atom03' ||
-			          $this->conf['displayXML.']['xmlFormat'] == 'atom1') {
+					  $this->conf['displayXML.']['xmlFormat'] == 'atom1') {
 				$markerArray['###NEWS_DATE###'] = $this->getW3cDate($row['datetime']);
 			}
 			//dates for atom03
@@ -2031,12 +2031,12 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 						$lConf['image.']['altText'] = $imgsAltTexts[$cc];
 						$lConf['image.']['titleText'] = $imgsTitleTexts[$cc];
 						$lConf['image.']['file'] = 'uploads/pics/' . $val;
-						
+
 						$theImgCode .= $this->local_cObj->IMAGE($lConf['image.']) . $this->local_cObj->stdWrap($imgsCaptions[$cc], $lConf['caption_stdWrap.']);
 					}
 					$cc++;
 				}
-				
+
 				if ($cc) {
 					$markerArray['###NEWS_IMAGE###'] = $this->local_cObj->wrap($theImgCode, $lConf['imageWrapIfAny']);
 				} else {
@@ -2046,14 +2046,14 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 		}
 		if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 //		debug($markerArray, '$$markerArray ('.__CLASS__.'::'.__FUNCTION__.')', __LINE__, __FILE__, 2);
-		
+
 		return $markerArray;
 	}
 
-	
-	
-	
-	
+
+
+
+
 	/**
 	 * Fills the image markers for the SINGLE view with data. Supports Optionssplit for some parameters
 	 *
@@ -2064,10 +2064,10 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 		$sViewSplitLConf = array();
 		$tmpMarkers = array();
 		$markerArray = array();
-		$iC = count($imgs);		
+		$iC = count($imgs);
 
 		// remove first img from image array in single view if the TSvar firstImageIsPreview is set
-		if (($iC > 1 && $this->config['firstImageIsPreview']) || 
+		if (($iC > 1 && $this->config['firstImageIsPreview']) ||
 			 ($iC >= 1 && $this->config['forceFirstImageIsPreview']))  {
 			array_shift($imgs);
 			array_shift($imgsCaptions);
@@ -2075,14 +2075,14 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 			array_shift($imgsTitleTexts);
 			$iC--;
 		}
-		
+
 		if ($iC > $imageNum) {
 			$iC = $imageNum;
 		}
-							
+
 		// get img array parts for single view pages
 		if ($this->piVars[$this->config['singleViewPointerName']]) {
-			
+
 			/**
 			 * TODO
 			 * does this work with optionsplit ?
@@ -2098,19 +2098,19 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 		if ($this->conf['enableOptionSplit']) {
 			if ($lConf['imageMarkerOptionSplit']) {
 				$ostmp = explode('|*|',$lConf['imageMarkerOptionSplit']);
-				$osCount = count($ostmp);	
-			}				
+				$osCount = count($ostmp);
+			}
 			$sViewSplitLConf = $this->processOptionSplit($lConf,$iC);
 		}
 		// reset markers for optionSplitted images
 		for ($m = 1; $m <= $imageNum; $m++) {
 			$markerArray['###'.$marker.'_'.$m.'###'] = '';
 		}
-		
+
 //		debug($markerArray, 'before ('.__CLASS__.'::'.__FUNCTION__.')', __LINE__, __FILE__, 3);
 //						debug($this->theCode, ' ('.__CLASS__.'::'.__FUNCTION__.')', __LINE__, __FILE__, 3);
-		
-				
+
+
 		$cc = 0;
 		foreach ($imgs as $val) {
 			if ($cc == $imageNum) break;
@@ -2121,10 +2121,10 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 				$lConf['image.']['altText'] = $imgsAltTexts[$cc];
 				$lConf['image.']['titleText'] = $imgsTitleTexts[$cc];
 				$lConf['image.']['file'] = 'uploads/pics/' . $val;
-				
+
 				$imgHtml = $this->local_cObj->IMAGE($lConf['image.']) . $this->local_cObj->stdWrap($imgsCaptions[$cc], $lConf['caption_stdWrap.']);
 				if ($osCount) {
-					if ($iC > 1) { 
+					if ($iC > 1) {
 						$mName = '###'.$marker.'_'.$lConf['imageMarkerOptionSplit'].'###';
 					} else { // fall back to the first image marker if only one image has been found
 						$mName = '###'.$marker.'_1###';
@@ -2137,7 +2137,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 			}
 			$cc++;
 		}
-			
+
 		if ($cc) {
 			if ($osCount) {
 				foreach ($tmpMarkers as $mName => $res) {
@@ -2151,9 +2151,9 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 				$m = '_1';
 			}
 			$markerArray['###'.$marker.$m.'###'] = $this->local_cObj->stdWrap($markerArray['###'.$marker.$m.'###'],$lConf['image.']['noImage_stdWrap.']);
-		}			
+		}
 //		debug($sViewSplitLConf, '$sViewSplitLConf ('.__CLASS__.'::'.__FUNCTION__.')', __LINE__, __FILE__, 2);
-		
+
 		return $markerArray;
 	}
 
@@ -2711,7 +2711,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 			($showResultCount ? '
 			<p>'.
 				($this->internal['res_count'] ?
-    			sprintf(
+				sprintf(
 					str_replace('###SPAN_BEGIN###','<span'.$this->pi_classParam('browsebox-strong').'>',$this->pi_getLL('pi_list_browseresults_displays','Displaying results ###SPAN_BEGIN###%s to %s</span> out of ###SPAN_BEGIN###%s</span>')),
 					$this->internal['res_count'] > 0 ? $pR1 : 0,
 					min(array($this->internal['res_count'],$pR2)),
@@ -3140,7 +3140,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 		return $selectConf;
 	}
 
-	
+
 	function getLanguageWhere($where) {
 		$sys_language_content = $GLOBALS['TSFE']->sys_language_content;
 		if ($this->sys_language_mode == 'strict' && $sys_language_content) {
@@ -3166,11 +3166,11 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 
 		if ($this->conf['showNewsWithoutDefaultTranslation']) {
 				$where = '('.$where.' OR (tt_news.sys_language_uid='.$sys_language_content.' AND NOT tt_news.l18n_parent))';
-		}		
+		}
 		return $where;
 	}
-	
-	 
+
+
 
 
 	/**
@@ -3586,7 +3586,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 		if (!strcmp($recursive,'') || $recursive === NULL) {
 			$recursive = $this->cObj->stdWrap($this->conf['recursive'], $this->conf['recursive.']);
 		}
-				
+
 		// extend the pid_list by recursive levels
 		$this->pid_list = $this->pi_getPidList($pid_list, $recursive);
 		$this->pid_list = $this->pid_list?$this->pid_list:0;
@@ -3642,8 +3642,8 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 	}
 
 
-	
-	
+
+
 	function processOptionSplit($lConf, $limit, $resCount=false) {
 		// splits the configuration for optionSplit support
 		if ($limit <= $resCount || $resCount === false) {
@@ -3651,13 +3651,13 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 		} else {
 			$splitCount = $resCount;
 		}
-		return $GLOBALS['TSFE']->tmpl->splitConfArray($lConf, $splitCount);		
-	}	
-	
-	
-	
-	
-	
+		return $GLOBALS['TSFE']->tmpl->splitConfArray($lConf, $splitCount);
+	}
+
+
+
+
+
 	/**
 	 * returns an error message if some important settings are missing (template file, singlePid, pidList, code)
 	 *
@@ -3889,7 +3889,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 					$m = '###' . $marker . ($a?'_' . $a:'') . '###';
 					if (strstr($templateCode, $m)) {
 						$out[] = $GLOBALS['TSFE']->cObj->getSubpart($templateCode, $m);
-					} 
+					}
 				}
 			}
 		} else {
@@ -3900,7 +3900,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 				} else {
 					break;
 				}
-			}			
+			}
 		}
 		return $out;
 	}
@@ -4002,7 +4002,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 					if (trim($paragraphs[$k+1])=='&nbsp;') unset($paragraphs[$k+1]);
 
 					if (!$this->conf['useParagraphAsPagebreak'] && substr($w,-1)=='.') { // break at dot
-   					   $pArr[] = $w.$this->config['pageBreakToken'];
+						  $pArr[] = $w.$this->config['pageBreakToken'];
 					} else { // break at paragraph
 						$break = true;
 						$pArr[] = $w;

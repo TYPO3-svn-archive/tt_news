@@ -1,3 +1,6 @@
+2008-05-02	Dmitry Dulepov	<dmitry@typo3.org>
+
+	* Fix: pi_alwaysPrev was used in makePageBrowser() but was not initialized
 
 2008-04-06	Rupert Germann <rupi@gmx.li>
 
