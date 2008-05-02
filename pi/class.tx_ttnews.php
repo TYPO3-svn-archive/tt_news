@@ -847,6 +847,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 						$markerArray = $this->userProcess('userPageBrowserFunc', $markerArray);
 					} else {
 
+						$this->pi_alwaysPrev = $pbConf['alwaysPrev'];
 						if ($this->conf['usePiBasePagebrowser']) {
 							$this->internal['pagefloat'] = $pbConf['pagefloat'];
 							$this->internal['showFirstLast'] = $pbConf['showFirstLast'];
@@ -866,7 +867,6 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 								$this->LOCAL_LANG[$this->LLkey]['pi_list_browseresults_displays'] = $this->LOCAL_LANG[$this->LLkey]['pi_list_browseresults_displays_advanced'];
 							}
 
-							$this->pi_alwaysPrev = $pbConf['alwaysPrev'];
 							if ($this->conf['useHRDates']) {
 								// prevent adding pS & pL to pagebrowser links if useHRDates is enabled
 								$tmpPS = $this->piVars['pS'];
@@ -1373,8 +1373,8 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 				$yearTitle = '';
 				if ($this->conf['showYearHeadersInAmenu'] && $arcMode != 'year') {
 					if ($year != $oldyear) {
-					    if ($pArr['start']<20000) {
-						    $yearTitle = 'no date';
+						if ($pArr['start']<20000) {
+							$yearTitle = 'no date';
 						} else {
 							$yearTitle = $year;
 						}
@@ -1913,7 +1913,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 				$this->conf['displayXML.']['xmlFormat'] == 'rss091') {
 				$markerArray['###NEWS_SUBHEADER###'] = $this->cleanXML($this->local_cObj->stdWrap($row['short'], $lConf['subheader_stdWrap.']));
 			} elseif ($this->conf['displayXML.']['xmlFormat'] == 'atom03' ||
-			          $this->conf['displayXML.']['xmlFormat'] == 'atom1') {
+					  $this->conf['displayXML.']['xmlFormat'] == 'atom1') {
 				//html doesn't need to be striped off in atom feeds
 				$lConf['subheader_stdWrap.']['stripHtml'] = 0;
 				$markerArray['###NEWS_SUBHEADER###'] = $this->local_cObj->stdWrap($row['short'], $lConf['subheader_stdWrap.']);
@@ -1926,7 +1926,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 				$this->conf['displayXML.']['xmlFormat'] == 'rss091') {
 				$markerArray['###NEWS_DATE###'] = date('D, d M Y H:i:s O', $row['datetime']);
 			} elseif ($this->conf['displayXML.']['xmlFormat'] == 'atom03' ||
-			          $this->conf['displayXML.']['xmlFormat'] == 'atom1') {
+					  $this->conf['displayXML.']['xmlFormat'] == 'atom1') {
 				$markerArray['###NEWS_DATE###'] = $this->getW3cDate($row['datetime']);
 			}
 			//dates for atom03
@@ -2915,7 +2915,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 			($showResultCount ? '
 			<p>'.
 				($this->internal['res_count'] ?
-    			sprintf(
+				sprintf(
 					str_replace('###SPAN_BEGIN###','<span'.$this->pi_classParam('browsebox-strong').'>',$this->pi_getLL('pi_list_browseresults_displays','Displaying results ###SPAN_BEGIN###%s to %s</span> out of ###SPAN_BEGIN###%s</span>')),
 					$this->internal['res_count'] > 0 ? $pR1 : 0,
 					min(array($this->internal['res_count'],$pR2)),
@@ -4283,7 +4283,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 					if (trim($paragraphs[$k+1])=='&nbsp;') unset($paragraphs[$k+1]);
 
 					if (!$this->conf['useParagraphAsPagebreak'] && substr($w,-1)=='.') { // break at dot
-   					   $pArr[] = $w.$this->config['pageBreakToken'];
+						  $pArr[] = $w.$this->config['pageBreakToken'];
 					} else { // break at paragraph
 						$break = true;
 						$pArr[] = $w;

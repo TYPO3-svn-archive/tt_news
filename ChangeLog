@@ -1,3 +1,6 @@
+2008-05-02	Dmitry Dulepov	<dmitry@typo3.org>
+
+	* Fix: pi_alwaysPrev was used in makePageBrowser() but was not initialized
 
 2008-04-20	Rupert Germann <rupi@gmx.li>
 	* enhancement: grouped the constants in 3 sections: "basic" (templatefile, pid_list, singlePid, backPid, archivelink), "xml-feeds" (feed-related settings) and "advanced" (all the rest). In most cases it should be sufficient to fill out the pids in the basic section to get an output from the news plugin.
