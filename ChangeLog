@@ -1,6 +1,7 @@
 2008-07-14  Dmitry Dulepov <dmitry@typo3.org>
 
 	* Make RRS stream valid -- add GUID
+	* Remove fake link to a category that does not exist
 
 2008-03-17	Rupert Germann <rupi@gmx.li>
 
