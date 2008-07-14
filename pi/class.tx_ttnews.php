@@ -2405,7 +2405,7 @@ if ($this->debugTimes) {  $this->getParsetime(__METHOD__); }
 								$result.= $this->local_cObj->stdWrap($this->pi_linkTP_keepPIvars($val, array('cat' => $array_in['uid']), $this->allowCaching, 1, $catSelLinkParams),$lConf['catmenuItem_NO_stdWrap.']);
 							}
 						} else {
-							$result.= $this->pi_linkTP_keepPIvars($val, array(), $this->allowCaching, 1, $catSelLinkParams);
+							//$result.= $this->pi_linkTP_keepPIvars($val, array(), $this->allowCaching, 1, $catSelLinkParams);
 						}
 						$GLOBALS['TSFE']->ATagParams = $pTmp;
 					}

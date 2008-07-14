@@ -2,6 +2,7 @@
 
 	* Fix: pi_alwaysPrev was used in makePageBrowser() but was not initialized
 	* Remove default template from the flexform
+	* Remove fake link to a category that does not exist
 
 2008-04-06	Rupert Germann <rupi@gmx.li>
 
