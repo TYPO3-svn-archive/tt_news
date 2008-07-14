@@ -1,3 +1,7 @@
+2008-07-14  Dmitry Dulepov <dmitry@typo3.org>
+
+	* Make RRS stream valid -- add GUID
+
 2008-03-17	Rupert Germann <rupi@gmx.li>
 
 	* fixed the fix for bug #7181: Added "DISTINCT(tt_news.uid),tt_news.*" to the list-query to get rid of the "groupBy tt_news.uid" part of that query.
