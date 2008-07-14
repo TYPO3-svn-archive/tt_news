@@ -290,7 +290,6 @@
 				<config>
 					<type>input</type>
 					<eval>trim,tx_ttnews_templateeval</eval>
-					<default>EXT:tt_news/pi/tt_news_v2_template.html</default>
 					<wizards type="array">
 						<_PADDING>2</_PADDING>
 						<link type="array">
