@@ -3,6 +3,7 @@
 	* Make RRS stream valid -- add GUID
 	* Remove fake link to a category that does not exist
 	* Remove default template from flexform xml
+	* Small doc updates
 
 2008-03-17	Rupert Germann <rupi@gmx.li>
 
