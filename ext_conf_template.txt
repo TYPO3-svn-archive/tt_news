@@ -20,8 +20,8 @@ prependAtCopy = 1
   # cat=basic//30; type=options[title,short,author]; label= News Label in List-Module: Defines which field is displayed in the title column in the web/list module.
 label = title
 
-  # cat=basic//40; type=options[,datetime,title,short,author,tstamp,category]; label= Alternative Label: Defines which field is displayed in the title column in lists if the field is empty, that is configured as label. If no alternative label is defined and the label field is empty the text [No title] will be shown. (in TYPO3 versions below 3.8.0 this doesn't work for processed fields like 'datetime' and 'category')
-label_alt =
+  # cat=basic//40; type=options[,datetime,title,short,author,tstamp,category]; label= Alternative Label: Defines which field is displayed in the title column in lists if the field is empty, that is configured as label. If no alternative label is defined and the label field is empty the text [No title] will be shown.
+  label_alt =
 
   # cat=basic//45; type=options[,datetime,title,short,author,tstamp,category]; label= Alternative Label 2: see Alternative label.
 label_alt2 =
@@ -47,6 +47,20 @@ l10n_mode_imageExclude = 1
 hideNewLocalizations = 0
 
 
+
+TSConstantEditor.basic {
+  description ( 
+  <div style="border:2px solid #090;position:absolute;top:10px;right:10px; width:200px;background:white;padding:10px;">
+  	<h3><img src="../../../gfx/icon_warning.gif" style="margin-bottom:-3px;"> Important</h3>
+  	<p>tt_news 3.0.0 comes with a new updater-script which can fix some of the most commen problems when you're updating an existing 
+  	tt_news installation.
+  	<br><a href="index.php?&amp;id=0&amp;CMD[showExt]=tt_news&amp;SET[singleDetails]=updateModule">[Click here to open the updater]</a>
+  	</p>
+  </div> 
+  
+  )
+
+}
 
 
 

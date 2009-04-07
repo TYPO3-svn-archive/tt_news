@@ -1,48 +1,33 @@
 <?php
 /***************************************************************
-*  Copyright notice
-*
-*  (c) 2004-2008 Rupert Germann <rupi@gmx.li>
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*  A copy is found in the textfile GPL.txt and important notices to the license
-*  from the author is found in LICENSE.txt distributed with these scripts.
-*
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
-/**
- * [CLASS/FUNCTION INDEX of SCRIPT]
+ *  Copyright notice
+ *
+ *  (c) 2004-2009 Rupert Germann <rupi@gmx.li>
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *  A copy is found in the textfile GPL.txt and important notices to the license
+ *  from the author is found in LICENSE.txt distributed with these scripts.
  *
  *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
  *
- *   53: class ext_update
- *   60:     function main()
- *  172:     function access($what = 'all')
- *  202:     function query($updatewhat)
- *
- * TOTAL FUNCTIONS: 3
- * (This index is automatically created/updated by the extension "extdeveval")
- *
- */
-
-
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 
 /**
- * Class for updating tt_news content elements and category relations.
+ * New for tt_news 3.0.0
+ * Class for updating tt_news content elements and static template file relations.
  *
  * $Id$
  *
@@ -52,115 +37,196 @@
  */
 class ext_update {
 
+	var $tstemplates;
+
+
 	/**
 	 * Main function, returning the HTML content of the module
 	 *
 	 * @return	string		HTML
 	 */
 	function main() {
-		$testres = $GLOBALS['TYPO3_DB']->exec_SELECTquery ('*', 'tt_news_cat_mm', '1=1');
-		// check only for new category relations if there are 0 rows in the table tt_news_cat_mm
-		if ($testres && !$GLOBALS['TYPO3_DB']->sql_num_rows($testres)) {
-			$res_cat = $GLOBALS['TYPO3_DB']->exec_SELECT_queryArray($this->query('categoryrelations'));
-			if ($res_cat) {
-				$count_cat = $GLOBALS['TYPO3_DB']->sql_num_rows($res_cat);
+		$out = '';
+
+		// analyze
+		$this->tstemplates = $this->getTsTemplates();
+		$ts_count = count($this->tstemplates);
+
+		$this->contentElements = $this->getContentElements();
+		$ce_count = count($this->contentElements);
+
+		if (t3lib_div::_GP('do_update')) {
+			$out .= '<a href="' . t3lib_div::linkThisScript(array('do_update' => '', 'func' => '')) . '">[<- back]</a><br>';
+
+			$func = t3lib_div::_GP('func');
+			if (method_exists($this, $func)) {
+				$out .= $this->$func();
+			} else {
+				$out .= 'ERROR: ' . $func . '() not found';
 			}
-		}
+		} else {
+			if ($ce_count || $ts_count) {
+				$out .= '<table class="warningbox" border="0" cellpadding="0" cellspacing="0">
+					<tr><td>
+						<img ' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/icon_warning2.gif', 'width="14" height="14"') . '>
+						<span class="warningboxheader">Important Notice!</span>
 
-		$res_flex = $GLOBALS['TYPO3_DB']->exec_SELECT_queryArray($this->query('flexforms'));
-		if ($res_flex) {
-			$count_flex = $GLOBALS['TYPO3_DB']->sql_num_rows($res_flex);
-		}
+						<p style="font-weight:normal;">
+						The updater manipulates your database and due to the huge amount of configuration variants it is possible that it <br>
+						might not produce the expexted results.<br>
+						So backup your database (at least the tables sys_template and tt_content) or do a t3d export of your site <strong>BEFORE</strong> <br>
+						you click on any of the "DO_IT" Buttons.
+						</p>
 
-		if (!t3lib_div::_GP('do_update')) {
-			$onClick = "document.location='".t3lib_div::linkThisScript(array('do_update' => 1))."'; return false;";
-			if ($count_cat) {
-				$returnthis = '<b>There are found '.$count_cat.' newsitem(s) with category relations which should be reassigned.</b><br><br>';
-			}
-			if ($count_flex) {
-				$returnthis .= ($returnthis?'<b>There are also found ':'<b>There are found ');
-				$returnthis .= $count_flex.' tt_news content elements which have to be updated.</b><br>
-					(NOTICE: This creates FlexForm-data based on the CODE-field. One thing to know is that if you have a CODE-field like this "LIST/4/,LATEST/1/", the category selection will from now on be 4 AND 1 for both LIST and LATEST. If this is a problem, you should use more than one content element)';
-			}
-			$returnthis .= '<br><br><br><b>Do you want to perform the action now?</b><br>(This action will not change your old data in the tt_news or tt_content table. So even if you perform this action, you will still be able to downgrade to an earlier version of tt_news retaining the old category relations and CODE field data.)
-				<br><br><form action=""><input type="submit" value="DO IT" onclick="'.htmlspecialchars($onClick).'"></form>';
-			return $returnthis;
-		} elseif($count_cat OR $count_flex) {
-			if ($count_cat) {
-				while (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res_cat))) {
 
-					$GLOBALS['TYPO3_DB']->exec_INSERTquery ('tt_news_cat_mm', array('uid_local' => $row['uid'], 'uid_foreign' => $row['category'], 'sorting' => 1));
 
+						</td>
+					</tr>
+				</table>
+				<br>
+				';
+
+				if ($ce_count) {
+					$ceout = 'There have been found ' . $ce_count . ' content elements with a configured html template (EXT:tt_news/pi/tt_news_v2_template.html) which
+						doesn\'t exist in this tt_news version.
+						<br>Should the updater clean this settings?<br>';
+
+					$ceout .= $this->getButton('clearWrongTemplateInCE');
+					$out .= $this->wrapForm($ceout, 'Search for non existing html templates');
+					$out .= '<br><br>';
 				}
-				$returndoupdate = $count_cat.' ROW(s) inserted.<br><br>';
-			}
-			if ($count_flex) {
-				$categories_to_display = '';
-				while (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res_flex))) {
+				if ($ts_count) {
+					$tsout = 'There have been found ';
+					$tsout .= $ts_count . ' TypoScript templates which include one of the tt_news static templates but with an outdated path.
+						<br>Should the updater update these records?<br>';
 
-					$codes = t3lib_div::trimExplode(',', $row['select_key'], 1);
-					if (!count($codes)) $codes = array('');
-						while (list(, $theCode) = each($codes)) {
-						list($theCode, $cat, $archive) = explode('/', $theCode);
-						$what_to_display[] = (string)strtoupper(trim($theCode));
-						if (substr($cat, 0, 2) == '0;') {
-							$selection_mode = -1;
-							$cat = substr($cat, 2);
-						}
-						$categories_to_display .= ($categories_to_display?';'.$cat:$cat);
-					}
-					if (!$selection_mode) $selection_mode = (!$categories_to_display?0:1);
-						if ($categories_to_display) {
-						$categories_to_display = t3lib_div::trimExplode(';', $categories_to_display, 1);
-						$categories_to_display = array_unique($categories_to_display);
-						$categories_to_display = (implode(',', $categories_to_display));
-					}
-					$archive = ($archive?$archive:0);
-
-					// get pages (startingpoint) and recursive fields
-					$pages = $row['pages'];
-					$recursive = $row['recursive'];
-
-					$xml = trim('<?xml version="1.0" encoding="iso-8859-1" standalone="yes" '."?>".'
-						<T3FlexForms>
-						<meta type="array">
-						<currentSheetId>sDEF</currentSheetId>
-						</meta>
-						<data type="array">
-						<sDEF type="array">
-						<lDEF type="array">
-						<what_to_display type="array">
-						<vDEF>'.implode($what_to_display, ', ').'</vDEF>
-						</what_to_display>
-						<categoryMode type="array">
-						<vDEF>'.$selection_mode.'</vDEF>
-						</categoryMode>
-						<categorySelection type="array">
-						<vDEF>'.$categories_to_display.'</vDEF>
-						</categorySelection>
-						<archive type="array">
-						<vDEF>'.$archive.'</vDEF>
-						</archive>
-						<pages type="array">
-						<vDEF>'.$pages.'</vDEF>
-						</pages>
-						<recursive type="array">
-						<vDEF>'.$recursive.'</vDEF>
-						</recursive>
-						</lDEF>
-						</sDEF>
-						</data>
-						</T3FlexForms>');
-					$updateRecord = array();
-					$updateRecord['pi_flexform'] = $xml;
-					$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tt_content', 'uid='.intval($row['uid']), $updateRecord);
-					unset($what_to_display, $categories_to_display, $archive, $selection_mode, $theCode, $cat);
+					$tsout .= $this->getButton('updateStaticTemplateFiles');
+					$out .= $this->wrapForm($tsout, 'Search for old static TS templates');
+					$out .= '<br><br>';
 				}
-				$returndoupdate .= $count_flex.' ROW(s) updated.<br><br>';
+
+			} else {
+				$out .= 'Check for content elements with a configured html template (EXT:tt_news/pi/tt_news_v2_template.html) which
+						doesn\'t exist in this tt_news version: 0<br>
+						Check for TypoScript templates which include one of the tt_news static templates but with an outdated path: 0<br><br>
+						Nothing to do.
+				<br><br>';
 			}
-			return $returndoupdate;
+
 		}
+		return $out;
 	}
+
+
+	function clearWrongTemplateInCE() {
+		$msg = array();
+		foreach ($this->contentElements as $id => $ce) {
+			$ff = $ce['ff'];
+
+			$s = array('EXT:tt_news/pi/tt_news_v2_template.html');
+			$r = array('');
+			$newff = str_replace($s, $r, $ff);
+
+			$table = 'tt_content';
+
+			$where = 'uid=' . $id;
+			$fields_values = array('pi_flexform' => $newff);
+			if ($GLOBALS['TYPO3_DB']->exec_UPDATEquery($table, $where, $fields_values)) {
+				$msg[] = 'Updated contentElement "' . $ce['title'] . '" uid: ' . $id . ', page: ' . $ce['pid'];
+			}
+		}
+		return implode('<br>', $msg);
+
+	}
+
+
+	function updateStaticTemplateFiles() {
+		$msg = array();
+		foreach ($this->tstemplates as $ts) {
+			$oldincFile = $ts['include_static_file'];
+
+			$s = array('EXT:tt_news/static/ts_old', 'EXT:tt_news/static/ts_new', 'EXT:tt_news/static/rss_feed', 'EXT:tt_news/static/css');
+			$r = array('EXT:tt_news/pi/static/ts_old', 'EXT:tt_news/pi/static/ts_new', 'EXT:tt_news/pi/static/rss_feed',
+					'EXT:tt_news/pi/static/css');
+			$newincfile = str_replace($s, $r, $oldincFile);
+
+			$table = 'sys_template';
+
+			$where = 'uid=' . $ts['uid'];
+			$fields_values = array('include_static_file' => $newincfile);
+			if ($GLOBALS['TYPO3_DB']->exec_UPDATEquery($table, $where, $fields_values)) {
+				$msg[] = 'Updated template "' . $ts['title'] . '" uid: ' . $ts['uid'] . ', page: ' . $ts['pid'];
+			}
+		}
+		return implode('<br>', $msg);
+	}
+
+
+	function wrapForm($content, $fsLabel) {
+		$out = '<form action="">
+			<fieldset>
+			<legend>' . $fsLabel . '</legend>
+			' . $content . '
+
+			</fieldset>
+			</form>';
+		return $out;
+	}
+
+
+	function getButton($func, $lbl = 'DO IT') {
+
+		$params = array('do_update' => 1, 'func' => $func);
+
+		$onClick = "document.location='" . t3lib_div::linkThisScript($params) . "'; return false;";
+		$button = '<input type="submit" value="' . $lbl . '" onclick="' . htmlspecialchars($onClick) . '">';
+
+		return $button;
+	}
+
+
+	function getTsTemplates() {
+		$select_fields = '*';
+		$from_table = 'sys_template';
+		$where_clause = 'deleted=0 AND include_static_file LIKE \'%EXT:tt_news/static/%\'';
+
+		$groupBy = '';
+		$orderBy = '';
+		$limit = '';
+
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery($select_fields, $from_table, $where_clause, $groupBy, $orderBy, $limit);
+
+		$resultRows = array();
+		while (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))) {
+			$resultRows[] = $row;
+		}
+
+		return $resultRows;
+	}
+
+
+	function getContentElements() {
+		$select_fields = '*';
+		$from_table = 'tt_content';
+		$where_clause = 'CType="list" AND list_type="9" AND deleted=0';
+
+		$where_clause .= ' AND pi_flexform LIKE \'%EXT:tt_news/pi/tt_news_v2_template.html%\'';
+
+		$groupBy = '';
+		$orderBy = '';
+		$limit = '';
+
+		$res_flex = $GLOBALS['TYPO3_DB']->exec_SELECTquery($select_fields, $from_table, $where_clause, $groupBy, $orderBy, $limit);
+
+		if ($res_flex) {
+			$resultRows = array();
+			while (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res_flex))) {
+				$resultRows[$row['uid']] = array('ff' => $row['pi_flexform'], 'title' => $row['title'], 'pid' => $row['pid']);
+			}
+		}
+		return $resultRows;
+	}
+
 
 	/**
 	 * Checks how many rows are found and returns true if there are any
@@ -170,55 +236,13 @@ class ext_update {
 	 * @return	boolean
 	 */
 	function access($what = 'all') {
-		if ($what == 'all') {
-			if(is_object($GLOBALS['TYPO3_DB'])) {
-				if (in_array('tt_news_cat_mm', $GLOBALS['TYPO3_DB']->admin_get_tables ())) {
-					$testres = $GLOBALS['TYPO3_DB']->exec_SELECTquery ('*', 'tt_news_cat_mm', '1=1');
-					// test, if there are rows in the tt_news_cat_mm table. If so, the UPDATE option is not shown.
-					if ($testres && !$GLOBALS['TYPO3_DB']->sql_num_rows($testres)) {
-						$res = $GLOBALS['TYPO3_DB']->exec_SELECT_queryArray($this->query('categoryrelations'));
-						if ($res && $GLOBALS['TYPO3_DB']->sql_num_rows($res)) {
-							return 1;
-						}
-					} else {
-						$res = $GLOBALS['TYPO3_DB']->exec_SELECT_queryArray($this->query('flexforms'));
-						if ($res && $GLOBALS['TYPO3_DB']->sql_num_rows($res)){
-							return 1;
-						}
-					}
-				}
-			}
-		}
-		return FALSE;
+
+		return TRUE;
 	}
 
-
-	/**
-	 * Creates query finding all tt_news elements which has a category relation in tt_news table not replicated in tt_news_cat_mm
-	 *
-	 * @param	string		$updatewhat: determines which query should be returned
-	 * @return	string		Full query
-	 */
-	function query($updatewhat) {
-		if ($updatewhat == 'categoryrelations') {
-			$query = array(
-			'SELECT' => 'tt_news.uid,tt_news.category,tt_news_cat_mm.uid_foreign, max(tt_news.category = tt_news_cat_mm.uid_foreign) as testit',
-				'FROM' => 'tt_news LEFT JOIN tt_news_cat_mm ON tt_news.uid = tt_news_cat_mm.uid_local',
-				'WHERE' => '1=1 AND tt_news.category',
-				'GROUPBY' => 'uid HAVING (testit !=1 OR ISNULL(testit))');
-			return $query;
-		} elseif($updatewhat == 'flexforms') {
-			$query = array(
-			'SELECT' => '*',
-				'FROM' => 'tt_content',
-				'WHERE' => 'CType="list" AND list_type="9" AND pi_flexform=""');
-
-			return $query;
-		}
-	}
 }
 
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_news/class.ext_update.php']) {
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_news/class.ext_update.php']);
+	include_once ($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_news/class.ext_update.php']);
 }
 ?>

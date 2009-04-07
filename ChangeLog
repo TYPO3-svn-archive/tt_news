@@ -1,4 +1,19 @@
 
+
+
+2009-07-04  Rupert Germann <rupi@gmx.li>
+	* replaced the outdated updater script (class.ext_update.php) with a new one that fixes the 2 most common problems when updating an 
+	  existing tt_news installation	from 2.5.x to 3.0.0.	  
+	  1. since I moved the static/ folder to the pi/ directory all references to the static tt_news ts templates are broken after updating.
+	     the updater script fixes this by searching the affected templates and updating them with an updated field "include_static_file"
+	     where the wrong paths have been corrected.
+	  2. In case the old default template (EXT:tt_news/pi/tt_news_v2_template.html) was used in flexform configuration this will fail because
+	     I renamed this template. The updater script can fix this by setting the template path to an empty value in all tt_news flexforms
+	     where it was used. Then tt_news will render the news with the default template which is configured by TS. Flexforms with other 
+	     templates than tt_news/pi/tt_news_v2_template.html will not be changed.
+	* added a message to ext_conf_template.txt which informs the user about the new updater.
+
+
 2009-04-04  Rupert Germann <rupi@gmx.li>
 	* new feature: now the category menu can show the number of news in each category. 
 	  This can be enabled/disabled by TS: displayCatMenu.showNewsCountForCategories
