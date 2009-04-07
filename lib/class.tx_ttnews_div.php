@@ -144,6 +144,58 @@ class tx_ttnews_div {
 		return $catlist;
 	}
 
+	function getNewsForSubcategory(&$result, $cat, $news_clause, $catclause) {
+		// count news in current category
+
+		$select_fields = 'COUNT(DISTINCT(tt_news.uid))';
+		$from_table = '	tt_news_cat, tt_news_cat_mm, tt_news ';
+
+		$where_clause = '
+			tt_news_cat.uid='.$cat.'
+			AND tt_news_cat.uid=tt_news_cat_mm.uid_foreign
+			AND tt_news_cat_mm.uid_local=tt_news.uid
+			AND tt_news.deleted=0 AND tt_news.hidden=0
+
+		';
+		$where_clause .= $news_clause;
+		$where_clause .= $catclause;
+
+
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery($select_fields, $from_table, $where_clause);
+
+		$cRow = $GLOBALS['TYPO3_DB']->sql_fetch_row($res);
+
+
+//		debug($cRow, ' ('.__CLASS__.'::'.__FUNCTION__.')', __LINE__, __FILE__, 3);
+
+		$GLOBALS['TYPO3_DB']->sql_free_result($res);
+
+		$result['sum'] += $cRow[0];
+//		$result[$cat] = $cRow[0];
+
+		// get subcategories
+		$select_fields = 'tt_news_cat.uid';
+		$from_table = '	tt_news_cat';
+
+		$where_clause = '
+			tt_news_cat.parent_category='.$cat.'
+			AND tt_news_cat.deleted=0 AND tt_news_cat.hidden=0
+
+		';
+		$where_clause .= $catclause;
+
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery($select_fields, $from_table, $where_clause);
+
+		while (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))) {
+			tx_ttnews_div::getNewsForSubcategory($result, $row['uid'], $news_clause,$catclause);
+
+//			debug($result, '$result cat: '.$row['uid'].' ('.__CLASS__.'::'.__FUNCTION__.')', __LINE__, __FILE__, 3);
+
+		}
+
+		$GLOBALS['TYPO3_DB']->sql_free_result($res);
+
+	}
 
 	/**
 	 * returns a list of all allowed categories for the current user.

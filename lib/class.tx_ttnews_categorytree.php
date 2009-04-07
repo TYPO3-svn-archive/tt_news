@@ -52,7 +52,7 @@
  */
 
 require_once(PATH_t3lib.'class.t3lib_treeview.php');
-//require_once(t3lib_extMgm::extPath('tt_news').'lib/class.tx_ttnews_div.php');
+require_once(t3lib_extMgm::extPath('tt_news').'lib/class.tx_ttnews_div.php');;
 
 /**
  * extend class t3lib_treeview to change function wrapTitle().
@@ -71,6 +71,7 @@ class tx_ttnews_categorytree extends t3lib_treeview {
 	 * @return	string		HTML code for the browsable tree
 	 */
 	function getBrowsableTree($groupByPages=false)	{
+
 		// Get stored tree structure AND updating it if needed according to incoming PM GET var.
 		$this->initializePositionSaving();
 
@@ -78,6 +79,9 @@ class tx_ttnews_categorytree extends t3lib_treeview {
 		$treeArr = array();
 		$tmpClause = $this->clause;
 		$savedTable = $this->table;
+
+
+
 
 		// Traverse mounts:
 		foreach($this->MOUNTS as $idx => $uid)  {
@@ -154,6 +158,43 @@ class tx_ttnews_categorytree extends t3lib_treeview {
 		return $this->printTree($treeArr);
 	}
 
+	function getNewsCountForCategory($catID) {
+		$result = array();
+		$result['sum'] = 0;
+
+
+		/**
+		 * FIXME: 06.04.2009
+		 * get additional new qury parameters like amenu period
+		 *
+		 */
+
+//		$this->tt_news_obj->
+
+		$news_clause = '';
+		if (is_object($this->tt_news_obj)) {
+			$where = '';
+			$newsSelConf = $this->tt_news_obj->getSelectConf($where);
+
+//		debug($this->tt_news_obj->config, ' ('.__CLASS__.'::'.__FUNCTION__.')', __LINE__, __FILE__, 3);
+
+
+//				debug($newsSelConf, '$newsSelConf ('.__CLASS__.'::'.__FUNCTION__.')', __LINE__, __FILE__, 3);
+
+			if ($newsSelConf['pidInList']) {
+				$news_clause .= ' AND tt_news.pid IN ('.$newsSelConf['pidInList'].') ';
+			}
+
+			$news_clause = ' AND '.$newsSelConf['where'];
+		}
+
+
+
+
+		tx_ttnews_div::getNewsForSubcategory($result, $catID, $news_clause,$this->clause);
+		return $result['sum'];
+
+	}
 
 
 	/**
@@ -181,6 +222,11 @@ class tx_ttnews_categorytree extends t3lib_treeview {
 
 		$allRows = array();
 		while ($crazyRecursionLimiter > 0 && $row = $this->getDataNext($res,$subCSSclass))	{
+			if ($this->getCatNewsCount) {
+				$row['newsCount'] = $this->getNewsCountForCategory($row['uid']);
+			}
+
+
 			$crazyRecursionLimiter--;
 			$allRows[] = $row;
 		}

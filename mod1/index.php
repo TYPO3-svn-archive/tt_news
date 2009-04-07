@@ -281,13 +281,21 @@ class tx_ttnews_module1 extends t3lib_SCbase {
 					script_ended = 1;
 				');
 			$this->doc->inDocStylesArray['tt_news_mod1'] = '
-				#ttnewsadmin-tree { float:left; width:230px; border-right: 1px solid #ccc; }
+				#ttnewsadmin-tree { 
+					float:left; 
+					overflow-x: auto;
+					overflow-y: auto;
+					width:230px; 
+					border-right: 1px solid #ccc;
+				}
+				#ttnews-cat-tree { margin-bottom: 15px; }
 				#ttnewsadmin-list {  padding: 0 10px 0 240px; }
 				#togglesubcats { background:#ddd; padding: 2px; cursor: pointer; font-style:italic; }
 				#newssubcats { background:#f8f9fa; padding: 2px; border:1px solid #ddd; }
 				#resetcatselection { float:right; font-style:italic; }
 				#ttnewsadmin-search {  padding: 0; margin:0; }
 				#ttnewsadmin-search input {  margin: 0 3px; }
+				
 				span.hiddencat { color:#999; }
 				span.list-cb { padding-right:15px;}
 

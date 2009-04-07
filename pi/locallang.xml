@@ -51,6 +51,8 @@
 			<label index="altTextCatSelector">Display only category:</label>
 			<label index="altTextCatShortcut">Go to:</label>
 			<label index="catmenuHeader">Select a category:</label>
+			<label index="nextArticle">Next article</label>
+			<label index="prevArticle">Previous article</label>
 		</languageKey>
 		<languageKey index="dk" type="array">
 			<label index="latestHeader">Seneste nyt:</label>
@@ -115,6 +117,9 @@
 			<label index="altTextCatSelector">Nur diese Kategorie anzeigen:</label>
 			<label index="altTextCatShortcut">Gehe zu:</label>
 			<label index="catmenuHeader">Kategorieauswahl:</label>
+			<label index="nextArticle">weiter</label>
+			<label index="prevArticle">zurück</label>
+						
 		</languageKey>
 		<languageKey index="no" type="array">
 			<label index="latestHeader">Siste nytt</label>

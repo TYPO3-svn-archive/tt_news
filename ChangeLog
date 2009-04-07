@@ -1,31 +1,81 @@
+
+2009-04-04  Rupert Germann <rupi@gmx.li>
+	* new feature: now the category menu can show the number of news in each category. 
+	  This can be enabled/disabled by TS: displayCatMenu.showNewsCountForCategories
+
+	* performance enhancement: replaced the "renderFields" feature with "renderMarkers" by Dan Osipov - thanx Dan!
+	  although renderMarkers does basically the same as renderFields it is the smarter concept, because it doesn't need any configuration.
+	  The existence of a certain marker in the html template let's tt_news execute the code that is needed for this marker. Means: every code line 
+	  the fills a certain marker is now wrapped with a condition which checks the existence of this marker before the code is executed.
+	  
+	  
+
+2009-04-04  Rupert Germann <rupi@gmx.li>
+	* fix: removed call to t3lib_div::makeInstanceClassName() from fe_index.php which generated mysql error messages in FE during ajax calls from 
+	  category menu. (only occured in TYPO3 4.3dev, probably caused by the deprecation log).
+
+	* new feature: "useSPidFromCategoryRecusive". If activated tt_news searches through the parent categories for a singlePid.
+
+	* fix: added a scrollbar to the category tree in news-admin module
+
+	* fix: removed the default entry for the tt_news html template in both flexform files.
+	* new feature: by setting "showTitleAsPrevNextLink" the previous/next links in tt_news single view can now show labels for "previous" and "next"
+	  instead of the news title. The title is still added to the title-attribute of the link. 
+	* new option: reversePrevNextOrder. As the name says: reverses the order of the "next" and the "previous" links. The "next" marker will be linked
+	  to the previous news article (useful if you use different fields for ordering news on your website).
+	* added a TS option to inlude the prototype library or not in FE (needed for the ajax cat menu)
+	* removed the function index comment from class tt_news
+	* moved helper functions from class tt_news to an external helper class (lib/class.tx_ttnews_helpers.php)
+	* reverted the splitted init() functions change. reason: most of the initialisation is needed by almost all renderfunctions, so the benitfit
+	  of splittin these functions would not be very high.
+	* fix: added a check in the generated link to prevent double adding of the siteUrl
+	  
+	  
+	
+
+
+
+
 2008-05-02	Dmitry Dulepov	<dmitry@typo3.org>
 
 	* Fix: pi_alwaysPrev was used in makePageBrowser() but was not initialized
 
 2008-04-20	Rupert Germann <rupi@gmx.li>
-	* enhancement: grouped the constants in 3 sections: "basic" (templatefile, pid_list, singlePid, backPid, archivelink), "xml-feeds" (feed-related settings) and "advanced" (all the rest). In most cases it should be sufficient to fill out the pids in the basic section to get an output from the news plugin.
+	* enhancement: grouped the constants in 3 sections: "basic" (templatefile, pid_list, singlePid, backPid, archivelink), "xml-feeds" 
+	  (feed-related settings) and "advanced" (all the rest). In most cases it should be sufficient to fill out the pids in the basic section to 
+	  get an output from the news plugin.
 	* fix: the fe listview did show not-published versions when dontUsePidList was enabled.
 	* updated function indexes
 
 2008-04-20	Rupert Germann <rupi@gmx.li>
-	* fix !IMPORTANT! requires DB update (related to bugs 3531,3907): "news records loose categories when published/swapped into WS". Solution: removed all "unsigned" attributes from the mm tables in ext_tables.sql. Now publishing of news with categories or related news works correctly in TYPO3 version >= 4.1.7
+	* fix !IMPORTANT! requires DB update (related to bugs 3531,3907): "news records loose categories when published/swapped into WS". 
+	  Solution: removed all "unsigned" attributes from the mm tables in ext_tables.sql. Now publishing of news with categories or related 
+	  news works correctly in TYPO3 version >= 4.1.7
 
-	* new feature: with the new TS parameters "amenuStart" and "amenuEnd" it's now possible to configure an AMENU content element to display news only from a certain period.
-	* new feature: "displayCatMenu.catPidList" and "displayCatMenu.recursive" give users the possibility to set a pidList for the categorymenu content element. (overrides GRSP if given)
-	* new feature - stolen from timtab ;-): the singleview can now display two links that point to the previous and next article (template markers: ###PREV_ARTICLE###, ###NEXT_ARTICLE###). The field which is taken to select the previous/next article is configurable: plugin.tt_news.displaySingle.nextPrevRecSortingField (default: datetime)
-	* new feature: the catmenu can now be configured to add/not add the archive parameters to its links. plugin.tt_news.catmenuWithArchiveParams (default = 1)
+	* new feature: with the new TS parameters "amenuStart" and "amenuEnd" it's now possible to configure an AMENU content element to display 
+	  news only from a certain period.
+	* new feature: "displayCatMenu.catPidList" and "displayCatMenu.recursive" give users the possibility to set a pidList for the categorymenu 
+	  content element. (overrides GRSP if given)
+	* new feature - stolen from timtab ;-): the singleview can now display two links that point to the previous and next article 
+	  (template markers: ###PREV_ARTICLE###, ###NEXT_ARTICLE###). The field which is taken to select the previous/next article is configurable: 
+	   plugin.tt_news.displaySingle.nextPrevRecSortingField (default: datetime)
+	* new feature: the catmenu can now be configured to add/not add the archive parameters to its links. plugin.tt_news.catmenuWithArchiveParams 
+	  (default = 1)
 	* improved tree display in BE:
 		- if useStoragePid is enabled each tree shows the GRSP folder and its id as rootIcon
 		- in be_users/groups the categories are now grouped by sysfolder.
-	* new feature: added a searchbox to the news-admin module (same as in web->list). if the search shows or not is configurable in TSConfig: mod.web_txttnewsM1.list.show.search (default = 1)
-	* new feature: with "mod.web_txttnewsM1.list.clickTitleMode" it's possible to configures the behavior of the record-title link in lists in the news-admin module.
-		Possible values are: "edit" link editform, "view" link FE singleView, (any other value: no link, default=edit)
+	* new feature: added a searchbox to the news-admin module (same as in web->list). if the search shows or not is configurable in TSConfig: 
+	  mod.web_txttnewsM1.list.show.search (default = 1)
+	* new feature: with "mod.web_txttnewsM1.list.clickTitleMode" it's possible to configures the behavior of the record-title link in lists in 
+	  the news-admin module. Possible values are: "edit" link editform, "view" link FE singleView, (any other value: no link, default=edit)
 	* changed the "open-preview" link in lists to the same js-window as all other preview links
 	* fix: now the list in the news-admin module excludes unpublished versions
 	* fix: adapted the news-admin list to styles to TYPO3 4.2RC2
 	* fix: the title of the fe-catmenu is now localized
 	* fix: related news links do work with realurl now
-	* code cleanup: started to re-arrange the init() order in class.tx_ttnews. One goal is to find out "what to display" (theCode) first, and afterwards initialize the needed vars and not vice versa like it was before. Current state: the init() order is changed and all "display..."() methods have their own init function wrapper -> TODO: fill the selective init functions.
+	* code cleanup: started to re-arrange the init() order in class.tx_ttnews. One goal is to find out "what to display" (theCode) first, 
+	  and afterwards initialize the needed vars and not vice versa like it was before. Current state: the init() order is changed and all 
+	  "display..."() methods have their own init function wrapper -> TODO: fill the selective init functions.
 
 
 

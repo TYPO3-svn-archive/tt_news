@@ -3,7 +3,7 @@
 #
 # (see Section Reference in the manual for more options & parameters)
 #
-# tt_news v 2.6.0
+# tt_news v 3.0.0
 ###
 
 # Includes the newsLib:
@@ -13,7 +13,7 @@ includeLibs.ts_news = EXT:tt_news/pi/class.tx_ttnews.php
 plugin.tt_news = USER
 plugin.tt_news {
 
-  # stdWrap for the complete output
+  # stdWrap for the complete plugin output
   stdWrap.wrap =
 
   # template file
@@ -66,19 +66,6 @@ plugin.tt_news {
 
   # allow news plugins to be cached
   allowCaching = {$plugin.tt_news.allowCaching}
-
-  # fields to render for each CODE
-  renderFields {
-    LIST = image,short,category
-    LIST2 = image,short,category
-    LIST3 = image,short,category
-    HEADER_LIST = short,category
-    LATEST = image,short,category
-    SEARCH = image,short,category
-    SINGLE = *
-    SINGLE2 = *
-    VERSION_PREVIEW = *
-  }
 
   ignoreEnableFields {
     starttime = 0
@@ -140,7 +127,10 @@ plugin.tt_news {
     }
 
     nextPrevRecSortingField = datetime
+    reversePrevNextOrder = 0
 
+    showTitleAsPrevNextLink = {$plugin.tt_news.showTitleAsPrevNextLink}
+    
     prevLinkTitle_stdWrap.wrap =
     prevLinkLabel_stdWrap.wrap = &lt;&nbsp;|
     prevLink_stdWrap.wrap =
@@ -163,9 +153,30 @@ plugin.tt_news {
     }
 
   }
+
+#displaySingle.image < tt_content.image.20
+
+
   displaySingle.image {
     file.maxW = {$plugin.tt_news.singleMaxW}
     file.maxH = {$plugin.tt_news.singleMaxH}
+
+    #maxW = {$plugin.tt_news.singleMaxW}
+    #maxH = {$plugin.tt_news.singleMaxH}
+
+#    altText = TEXT
+#	altText {
+#		field = imagealttext
+#		stripHtml = 1
+#		split.token.char = 10
+#		split.token.if.isTrue = {$styles.content.imgtext.imageTextSplit}
+#		split.returnKey.data = register : IMAGE_NUM_CURRENT
+#	}
+
+#	titleText < .altText
+#	titleText.field = imagetitletext
+
+
     wrap =
     imageLinkWrap = 1
     imageLinkWrap {
@@ -305,6 +316,7 @@ plugin.tt_news {
     showFirstLast = 1
     pagefloat = center
     showRange = 1
+    hscText = 1
 
     showResultsNumbersWrap = |
     browseBoxWrap = <div class="news-list-browse">|</div>
@@ -351,6 +363,9 @@ plugin.tt_news {
 
   # use singlePid from category record instead of global singlePid
   useSPidFromCategory = {$plugin.tt_news.useSPidFromCategory}
+
+  # go up in the category "rootline" until a singlePid has been found
+  useSPidFromCategoryRecusive = 1
 
   # divider for categories in news articles
   categoryDivider = ,
@@ -402,6 +417,12 @@ plugin.tt_news {
     # ajaxtree = expandable menu with ajax (requires TYPO3 >= 4.1)
 
     mode = {$plugin.tt_news.displayCatMenu.mode}
+
+    # include prototype js library (required for catmenu mode "ajaxtree")
+    includePrototypeJS = 1
+    
+    
+    showNewsCountForCategories = 1
 
     # enable expand/collapse for the category menu
     expandable = 1

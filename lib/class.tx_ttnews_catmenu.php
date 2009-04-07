@@ -74,6 +74,7 @@ class tx_ttnews_catmenu {
 		$lConf = $pObj->conf['displayCatMenu.'];
 		$this->treeObj = t3lib_div::makeInstance('tx_ttnews_FEtreeview');
 		$this->treeObj->tt_news_obj = &$pObj;
+		$this->treeObj->category = $pObj->piVars_catSelection;
 		$this->treeObj->table = 'tt_news_cat';
 		$this->treeObj->init($pObj->SPaddWhere.$pObj->enableCatFields.$pObj->catlistWhere, $pObj->config['catOrderBy']);
 		$this->treeObj->backPath = TYPO3_mainDir;
@@ -94,6 +95,8 @@ class tx_ttnews_catmenu {
 		$this->treeObj->expandable = $expandable;
 		$this->treeObj->expandFirst = $lConf['expandFirst'];
 		$this->treeObj->titleLen = $this->titleLen;
+
+		$this->treeObj->getCatNewsCount = $lConf['showNewsCountForCategories'];
 
 		$this->treeObj->title = $GLOBALS['TSFE']->sL('LLL:EXT:tt_news/pi/locallang.xml:catmenuHeader');
 
@@ -133,6 +136,7 @@ class tx_ttnews_catmenu {
 	 * @return	[type]		...
 	 */
 	function ajaxExpandCollapse(&$params, &$ajaxObj) {
+
 		$this->init($params['tt_newsObj']);
 		$this->treeObj->FE_USER = &$params['feUserObj'];
 		$tree = $this->treeObj->getBrowsableTree();
@@ -161,6 +165,9 @@ class tx_ttnews_FEtreeview extends tx_ttnews_categorytree {
 	 * @return	string		the wrapped title
 	 */
 	function wrapTitle($title,$v)	{
+
+
+
 		$newsConf = &$this->tt_news_obj->conf;
 		if ($newsConf['catSelectorTargetPid']) {
 			$catSelLinkParams = $newsConf['catSelectorTargetPid'];
@@ -183,6 +190,13 @@ class tx_ttnews_FEtreeview extends tx_ttnews_categorytree {
 			if ($newsConf['displayCatMenu.']['insertDescrAsTitle']) {
 				$GLOBALS['TSFE']->ATagParams = ($pTmp?$pTmp.' ':'').'title="'.$v['description'].'"';
 			}
+
+			if ($this->getCatNewsCount) {
+				$title .= ' (' . $v['newsCount'] . ')';
+			}
+
+
+
 			if ($newsConf['useHRDates']) {
 				$link = $this->tt_news_obj->pi_linkTP_keepPIvars($title, array(
 					'cat' => $v['uid'],

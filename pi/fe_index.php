@@ -42,9 +42,6 @@ if (!defined ('PATH_typo3conf')) 	die ('Could not access this script directly!')
 $TYPO3_AJAX = true;
 
 
-
-
-
 //print_r(array(TYPO3_REQUESTTYPE_AJAX,TYPO3_REQUESTTYPE,TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_AJAX));
 
 
@@ -59,8 +56,8 @@ require_once(PATH_t3lib.'class.t3lib_userauth.php');
 require_once(PATH_tslib.'class.tslib_feuserauth.php');
 
 // Make new instance of TSFE
-$temp_TSFEclassName = t3lib_div::makeInstanceClassName('tslib_fe');
-$TSFE = new $temp_TSFEclassName(
+//$temp_TSFEclassName = t3lib_div::makeInstanceClassName('tslib_fe');
+$TSFE = new tslib_fe (
 	$GLOBALS['TYPO3_CONF_VARS'],
 	$id,
 	t3lib_div::_GP('type'),
@@ -70,6 +67,10 @@ $TSFE = new $temp_TSFEclassName(
 	t3lib_div::_GP('MP'),
 	t3lib_div::_GP('RDCT')
 );
+
+
+
+
 // don't cache ajax responses
 $TSFE->no_cache = true;
 
