@@ -33,29 +33,7 @@
  *
  * @author Rupert Germann <rupi@gmx.li>
  */
-/**
- * [CLASS/FUNCTION INDEX of SCRIPT]
- *
- *
- *
- *   61: class tx_ttnews_catmenu
- *   73:     function init(&$pObj)
- *  135:     function ajaxExpandCollapse(&$params, &$ajaxObj)
- *
- *
- *  151: class tx_ttnews_FEtreeview extends tx_ttnews_categorytree
- *  163:     function wrapTitle($title,$v)
- *  218:     function getRootIcon($rec)
- *  238:     function getIcon($row)
- *  281:     function PMiconATagWrap($icon, $cmd, $isExpand = true)
- *  322:     function initializePositionSaving()
- *  357:     function savePosition()
- *  373:     function getTitleStr($row,$titleLen=30)
- *
- * TOTAL FUNCTIONS: 9
- * (This index is automatically created/updated by the extension "extdeveval")
- *
- */
+
 require_once(t3lib_extMgm::extPath('tt_news').'lib/class.tx_ttnews_categorytree.php');
 
 class tx_ttnews_catmenu {

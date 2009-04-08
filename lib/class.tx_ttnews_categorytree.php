@@ -34,22 +34,7 @@
  * @package TYPO3
  * @subpackage tt_news
  */
-/**
- * [CLASS/FUNCTION INDEX of SCRIPT]
- *
- *
- *
- *   61: class tx_ttnews_categorytree extends t3lib_treeview
- *   73:     function getBrowsableTree($groupByPages=false)
- *  168:     function getTree($uid, $depth=999, $blankLineCode='', $subCSSclass='')
- *  257:     function printTree($treeArr = '')
- *  383:     function PMicon($row,$a,$c,$nextCount,$exp)
- *  410:     function PMiconATagWrap($icon, $cmd, $isExpand = true)
- *
- * TOTAL FUNCTIONS: 5
- * (This index is automatically created/updated by the extension "extdeveval")
- *
- */
+
 
 require_once(PATH_t3lib.'class.t3lib_treeview.php');
 require_once(t3lib_extMgm::extPath('tt_news').'lib/class.tx_ttnews_div.php');;
@@ -162,36 +147,22 @@ class tx_ttnews_categorytree extends t3lib_treeview {
 		$result = array();
 		$result['sum'] = 0;
 
-
-		/**
-		 * FIXME: 06.04.2009
-		 * get additional new qury parameters like amenu period
-		 *
-		 */
-
-//		$this->tt_news_obj->
-
 		$news_clause = '';
 		if (is_object($this->tt_news_obj)) {
 			$where = '';
 			$newsSelConf = $this->tt_news_obj->getSelectConf($where);
 
-//		debug($this->tt_news_obj->config, ' ('.__CLASS__.'::'.__FUNCTION__.')', __LINE__, __FILE__, 3);
-
-
-//				debug($newsSelConf, '$newsSelConf ('.__CLASS__.'::'.__FUNCTION__.')', __LINE__, __FILE__, 3);
-
 			if ($newsSelConf['pidInList']) {
 				$news_clause .= ' AND tt_news.pid IN ('.$newsSelConf['pidInList'].') ';
 			}
 
-			$news_clause = ' AND '.$newsSelConf['where'];
+			$news_clause = ' AND '.$newsSelConf['where'].$this->tt_news_obj->enableFields;
 		}
 
 
 
 
-		tx_ttnews_div::getNewsForSubcategory($result, $catID, $news_clause,$this->clause);
+		tx_ttnews_div::getNewsCountForSubcategory($result, $catID, $news_clause,$this->clause);
 		return $result['sum'];
 
 	}

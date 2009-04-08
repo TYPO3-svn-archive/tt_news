@@ -2,7 +2,7 @@
 /**
  * $Id$
  */
- 
+
 if (!defined ('TYPO3_MODE')) 	die ('Access denied.');
 	// get extension configuration
 $confArr = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['tt_news']);
@@ -89,7 +89,7 @@ t3lib_extMgm::addTypoScriptSetup('
   plugin.tt_news = USER
   plugin.tt_news {
     userFunc = tx_ttnews->main_news
-    
+
     # validate some configuration values and display a message if errors have been found
     enableConfigValidation = 1
   }
@@ -118,11 +118,11 @@ if ($confArr['useStoragePid']) {
 t3lib_extMgm::addPageTSConfig('
 	# RTE mode in table "tt_news"
 	RTE.config.tt_news.bodytext.proc.overruleMode = ts_css
-	
+
 	TCEFORM.tt_news.bodytext.RTEfullScreenWidth = 100%
-	
-	
-	
+
+
+
 mod.web_txttnewsM1 {
 	catmenu {
 		expandFirst = 1
@@ -131,36 +131,36 @@ mod.web_txttnewsM1 {
 			cb_showEditIcons = 1
 			cb_expandAll = 1
 			cb_showHiddenCategories = 1
-			
+
 			btn_newCategory = 1
 		}
 	}
 	list {
 		limit = 15
-		pidForNewArticles = 
+		pidForNewArticles =
 		fList = pid,uid,title,datetime,archivedate,tstamp,category;author
 		icon = 1
-		
-		# configures the behavior of the record-title link. Possible values: 
-		# edit: link editform, view: link FE singleView, any other value: no link 
+
+		# configures the behavior of the record-title link. Possible values:
+		# edit: link editform, view: link FE singleView, any other value: no link
 		clickTitleMode = edit
-		
+
 		noListWithoutCatSelection = 1
 
 		show {
 			cb_showOnlyEditable = 1
 			cb_showThumbs = 1
 			search = 1
-			
+
 		}
 		imageSize = 50
-		
+
 	}
-	defaultLanguageLabel = 
-}	
-	
-	
-	
+	defaultLanguageLabel =
+}
+
+
+
 ');
 
 
@@ -178,9 +178,12 @@ t3lib_extMgm::addLLrefForTCAdescr('_MOD_web_txttnewsM1','EXT:tt_news/csh/localla
 include_once(t3lib_extMgm::extPath($_EXTKEY).'lib/class.tx_ttnews_itemsProcFunc.php');
 	// class for displaying the category tree in BE forms.
 include_once(t3lib_extMgm::extPath($_EXTKEY).'lib/class.tx_ttnews_TCAform_selectTree.php');
-	// class that uses hooks in class.t3lib_tcemain.php (processDatamapClass and processCmdmapClass)  
+	// class that uses hooks in class.t3lib_tcemain.php (processDatamapClass and processCmdmapClass)
 	// to prevent not allowed "commands" (copy,delete,...) for a certain BE usergroup
 include_once(t3lib_extMgm::extPath($_EXTKEY).'lib/class.tx_ttnews_tcemain.php');
+
+
+
 
 
 $tempColumns = array (
@@ -189,8 +192,8 @@ $tempColumns = array (
 		#	'l10n_mode' => 'exclude', // the localizalion mode will be handled by the userfunction
 			'label' => 'LLL:EXT:tt_news/locallang_tca.xml:tt_news.categorymounts',
 			'config' => array (
-			
-			
+
+
 				'type' => 'select',
 				'form_type' => 'user',
 				'userFunc' => 'tx_ttnews_TCAform_selectTree->renderCategoryFields',
@@ -233,7 +236,7 @@ if (TYPO3_MODE == 'BE')	{
 	if (t3lib_div::int_from_ver(TYPO3_version) >= 4000000) {
 		if (t3lib_div::int_from_ver(TYPO3_version) >= 4002000) {
 			t3lib_extMgm::addModule('web','txttnewsM1','',t3lib_extMgm::extPath($_EXTKEY).'mod1/');
-			
+
 			$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['cms']['db_layout']['addTables'][$_EXTKEY][0]['fList'] = 'uid,title,author,category,datetime,archivedate,tstamp';
 			$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['cms']['db_layout']['addTables'][$_EXTKEY][0]['icon'] = TRUE;
 
@@ -248,9 +251,9 @@ if (TYPO3_MODE == 'BE')	{
 				'tx_ttnewscatmanager_modfunc1',
 				t3lib_extMgm::extPath($_EXTKEY).'modfunc1/class.tx_ttnewscatmanager_modfunc1.php',
 				'LLL:EXT:tt_news/modfunc1/locallang.xml:moduleFunction.tx_ttnews_modfunc1'
-			);			
+			);
 		}
-		// register contextmenu for the tt_news category manager 
+		// register contextmenu for the tt_news category manager
 		$GLOBALS['TBE_MODULES_EXT']['xMOD_alt_clickmenu']['extendCMclasses'][] = array(
 			'name' => 'tx_ttnewscatmanager_cm1',
 			'path' => t3lib_extMgm::extPath($_EXTKEY).'cm1/class.tx_ttnewscatmanager_cm1.php'
@@ -260,7 +263,7 @@ if (TYPO3_MODE == 'BE')	{
 	$TBE_MODULES_EXT['xMOD_db_new_content_el']['addElClasses']['tx_ttnews_wizicon'] = t3lib_extMgm::extPath($_EXTKEY).'pi/class.tx_ttnews_wizicon.php';
 		// add folder icon
 	$ICON_TYPES['news'] = array('icon' => t3lib_extMgm::extRelPath($_EXTKEY).'ext_icon_ttnews_folder.gif');
-	
+
 }
 
 	// register HTML template for the tt_new BackEnd Module

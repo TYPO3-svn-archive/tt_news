@@ -1,66 +1,51 @@
 
-  # cat=basic/10; type=boolean; label= Use "General record storage page": This option configures the handling of news categories in BackEnd forms and on the website (for the CATMENU content element the GRSP can be overridden by "displayCatMenu.catPidList"). By default categories will be displayed only if they are found in the "General record storage page" (AKA "GRSP" or "storagePid"). If you set "useStoragePid" to "0", all categories from the pagetree will be displayed. If "useStoragePid" is set to "1" and there are no tt_news categories in the "GRSP" you won't see any categories in BackEnd forms or on the website. See tt_news manual for more information.
-useStoragePid = 1
 
-  # cat=basic/enable/100; type=boolean; label= Require categories: Check if categories are required for every news item. Note that you can require categories also through page TSConfig using "TCEFORM.tt_news.category.config.minitems=1"
+
+  # cat=basic/11; type=user[EXT:tt_news/lib/class.tx_ttnews_tsparserext.php:tx_ttnews_tsparserext->displayMessage]; label=LLL:EXT:tt_news/locallang.xml:extmng.useStoragePid
+useStoragePid=1
+
+  # cat=basic/enable/100; type=boolean; label=LLL:EXT:tt_news/locallang.xml:extmng.requireCategories
 requireCategories = 0
 
-
-  # cat=basic/enable/150; type=boolean; label= Write devlog: Write parsetimes to devlog.
+  # cat=basic/enable/150; type=boolean; label=LLL:EXT:tt_news/locallang.xml:extmng.writeParseTimesToDevlog
 writeParseTimesToDevlog = 0
 
-
-  # cat=basic//15; type=options[title,uid]; label= Category ordering in BackEnd trees: Here you can configure the the ordering of categories in category trees in BackEnd forms.
+  # cat=basic//15; type=options[title,uid]; label=LLL:EXT:tt_news/locallang.xml:extmng.treeOrderBy
 treeOrderBy = uid
 
-
-  # cat=basic//20; type=boolean; label= Prepend at Copy: Here you can disable adding of the text "(copy [#])" to titles of copied records.
+  # cat=basic//20; type=boolean; label=LLL:EXT:tt_news/locallang.xml:extmng.prependAtCopy
 prependAtCopy = 1
 
-  # cat=basic//30; type=options[title,short,author]; label= News Label in List-Module: Defines which field is displayed in the title column in the web/list module.
+  # cat=basic//30; type=options[title,short,author]; label=LLL:EXT:tt_news/locallang.xml:extmng.label
 label = title
 
-  # cat=basic//40; type=options[,datetime,title,short,author,tstamp,category]; label= Alternative Label: Defines which field is displayed in the title column in lists if the field is empty, that is configured as label. If no alternative label is defined and the label field is empty the text [No title] will be shown.
-  label_alt =
+  # cat=basic//40; type=options[,datetime,title,short,author,tstamp,category]; label=LLL:EXT:tt_news/locallang.xml:extmng.label_alt
+label_alt =
 
-  # cat=basic//45; type=options[,datetime,title,short,author,tstamp,category]; label= Alternative Label 2: see Alternative label.
+  # cat=basic//45; type=options[,datetime,title,short,author,tstamp,category]; label=LLL:EXT:tt_news/locallang.xml:extmng.label_alt2
 label_alt2 =
 
-  # cat=basic//50; type=boolean; label= Force alternative label: If this is activated the alternative label will be always shown behind the label.
+  # cat=basic//50; type=boolean; label=LLL:EXT:tt_news/locallang.xml:extmng.label_alt_force
 label_alt_force = 0
 
-
-  # cat=basic/dims/60; type=int [0-600]; label= Width of the left category field: This field shows the selected categories in the tt_news db-record (or parent categories in the category db-record). If "categorySelectedWidth" is set to 0 (zero) the default width (=200px) will be taken.
+  # cat=basic/dims/60; type=int [0-600]; label=LLL:EXT:tt_news/locallang.xml:extmng.categorySelectedWidth
 categorySelectedWidth =
 
-  # cat=basic/dims/70; type=int [0-600]; label= Width of the right category field: This field shows the category tree in the tt_news db-record (or in the category db-record). If "categoryTreeWidth" is set to 0 (zero) the default width (=350px) will be taken.
+  # cat=basic/dims/70; type=int [0-600]; label=LLL:EXT:tt_news/locallang.xml:extmng.categoryTreeWidth
 categoryTreeWidth =
 
-
-  # cat=basic/language/130; type=boolean; label= Localization mode for text fields: By default, all text fields (text, subheader, imagecaption ...) from a new localized news article will be prepended with "[translate to ...]". If this is not wanted you can disable it here. If "l10n_mode_prefixLangTitle" is disabled the text "(copy [#])" will be added to the titles of this records unless "prependAtCopy" is disabled (see "prependAtCopy").
+  # cat=basic/language/130; type=boolean; label=LLL:EXT:tt_news/locallang.xml:extmng.l10n_mode_prefixLangTitle
 l10n_mode_prefixLangTitle = 1
 
-  # cat=basic/language/140; type=boolean; label= Localization mode for images: The image field of a localized news article is excluded by default (images are alwas taken from the record in the default language). If you need localized images (f.e. if the images show texts) you can enable the "image" field in translated news by setting "l10n_mode_imageExclude" to 0.
+  # cat=basic/language/140; type=boolean; label=LLL:EXT:tt_news/locallang.xml:extmng.l10n_mode_imageExclude
 l10n_mode_imageExclude = 1
 
-  # cat=basic/language/150; type=boolean; label= Hide new localizations: Here you choose if new localizations of news articles should be hidden or not. By default new localizations are visible. If this is not wanted set "hideNewLocalizations" to 1.
+  # cat=basic/language/150; type=boolean; label=LLL:EXT:tt_news/locallang.xml:extmng.hideNewLocalizations
 hideNewLocalizations = 0
 
 
 
-TSConstantEditor.basic {
-  description ( 
-  <div style="border:2px solid #090;position:absolute;top:10px;right:10px; width:200px;background:white;padding:10px;">
-  	<h3><img src="../../../gfx/icon_warning.gif" style="margin-bottom:-3px;"> Important</h3>
-  	<p>tt_news 3.0.0 comes with a new updater-script which can fix some of the most commen problems when you're updating an existing 
-  	tt_news installation.
-  	<br><a href="index.php?&amp;id=0&amp;CMD[showExt]=tt_news&amp;SET[singleDetails]=updateModule">[Click here to open the updater]</a>
-  	</p>
-  </div> 
-  
-  )
 
-}
 
 
 

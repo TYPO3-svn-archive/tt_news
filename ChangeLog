@@ -1,7 +1,15 @@
+2009-04-09  Rupert Germann <rupi@gmx.li>
+	* refactored the updater script. Added language labels and moved all text to tt_news/locallang.xml
+	* moved all text from ext_conf_template.txt to tt_news/locallang.xml (those labels require a colon : to divide the header from the helptext)
+	* because the description field from TSConstantEditor could not be localized, I converted the field useStoragePid to "user" and re-added
+	  the now localized updater-message to ext_conf_template.txt. (new file: lib/class.tx_ttnews_tsparserext.php)
+	* added missing XCLASS statements
+	* moved some more functions from pi/class.tx_ttnews.php to lib/class.tx_ttnews_helpers.php
+	* changed some mysql definitions for better dbal compatibility: converted all tinytext fields to varchar(255), removed NOT NULL statements
+	  from fields without default value.
 
 
-
-2009-07-04  Rupert Germann <rupi@gmx.li>
+2009-04-07  Rupert Germann <rupi@gmx.li>
 	* replaced the outdated updater script (class.ext_update.php) with a new one that fixes the 2 most common problems when updating an 
 	  existing tt_news installation	from 2.5.x to 3.0.0.	  
 	  1. since I moved the static/ folder to the pi/ directory all references to the static tt_news ts templates are broken after updating.
@@ -45,8 +53,7 @@
 	  of splittin these functions would not be very high.
 	* fix: added a check in the generated link to prevent double adding of the siteUrl
 	  
-	  
-	
+
 
 
 

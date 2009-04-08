@@ -54,6 +54,7 @@ require_once(PATH_t3lib.'class.t3lib_tstemplate.php');
 require_once(PATH_t3lib.'class.t3lib_cs.php');
 require_once(PATH_t3lib.'class.t3lib_userauth.php');
 require_once(PATH_tslib.'class.tslib_feuserauth.php');
+require_once(PATH_tslib.'class.tslib_content.php');
 
 // Make new instance of TSFE
 //$temp_TSFEclassName = t3lib_div::makeInstanceClassName('tslib_fe');
@@ -86,20 +87,19 @@ $TSFE->getConfigArray();
 
 
 require_once(t3lib_extMgm::extPath('tt_news').'pi/class.tx_ttnews.php');
-//require_once(t3lib_extMgm::extPath('tt_news').'lib/class.tx_ttnews_catmenu.php');
+require_once(t3lib_extMgm::extPath('tt_news') . 'lib/class.tx_ttnews_helpers.php');
 require_once(t3lib_extMgm::extPath('tt_news').'lib/class.tx_ttnews_typo3ajax.php');
 
 // finding the script path from the variable
 $ajaxID = (string) t3lib_div::_GP('ajaxID');
 
 // instantiating the AJAX object
-$ajaxClassName = t3lib_div::makeInstanceClassName('tx_ttnews_typo3ajax');
-$ajaxObj = new $ajaxClassName($ajaxID);
+//$ajaxClassName = t3lib_div::makeInstanceClassName('tx_ttnews_typo3ajax');
+$ajaxObj = new tx_ttnews_typo3ajax($ajaxID);
 $ajaxParams = array();
 
 $tt_newsObj = new tx_ttnews();
-
-require_once(PATH_tslib.'class.tslib_content.php');
+$tt_newsObj->hObj = new tx_ttnews_helpers($tt_newsObj);
 $tt_newsObj->cObj = t3lib_div::makeInstance('tslib_cObj');
 $tt_newsObj->local_cObj = &$tt_newsObj->cObj;
 
@@ -107,6 +107,7 @@ $cObjUid = intval(t3lib_div::_GP('cObjUid'));
 $tt_newsObj->cObj->data = $TSFE->sys_page->checkRecord('tt_content',$cObjUid,1);
 $tt_newsObj->pi_initPIflexForm();
 $tt_newsObj->conf = &$TSFE->tmpl->setup['plugin.']['tt_news.'];
+
 $tt_newsObj->initCategoryVars();
 $tt_newsObj->initCatmenuEnv($tt_newsObj->conf['displayCatMenu.']);
 

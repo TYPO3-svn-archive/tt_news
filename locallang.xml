@@ -16,6 +16,46 @@
 			<label index="pi_plus_wiz_description">Versatile news system for TYPO3</label>
 			<label index="cms_layout.mode">Displaying: %s</label>
 			<label index="cms_layout.not_configured">Plugin is not configured!</label>
+			
+			<label index="updater.back">[&lt;- back]</label>
+			<label index="updater.lbl_searchOutdatedTempl">Search for outdated static TS templates</label>
+			<label index="updater.msg_searchOutdatedTempl">Check for TypoScript templates which include one of the tt_news static templates but with an outdated path:</label>
+			<label index="updater.foundMsg_searchOutdatedTempl">Found ###COUNT### template records.</label>
+			<label index="updater.question_searchOutdatedTempl">Should the updater update these records?</label>
+			
+			<label index="updater.lbl_searchNonExistingHtml">Search for non existing HTML templates</label>
+			<label index="updater.msg_searchNonExistingHtml">Check for tt_news content elements with a configured HTML template (EXT:tt_news/pi/tt_news_v2_template.html) in flexforms which
+						doesn't exist in this tt_news version:</label>
+			<label index="updater.foundMsg_searchNonExistingHtml">Found ###COUNT### content elements.</label>
+			<label index="updater.question_searchNonExistingHtml">Should the updater clean this settings?</label>			
+			<label index="updater.warningHeader">Important! Please Read!</label>
+			<label index="updater.nothingtodo">Nothing to do</label>
+			<label index="updater.warningMsg">The updater manipulates your database and due to the huge amount of configuration variants it is 
+				possible that it &lt;br&gt;might not produce the expexted results.&lt;br&gt;
+				So backup your database (at least the tables sys_template and tt_content) or do a t3d export of your site 
+				&lt;strong&gt;BEFORE&lt;/strong&gt; &lt;br&gt;
+				you click on any of the "DO_IT" Buttons.</label>
+				
+			<label index="extmng.useStoragePid">Use "General record storage page": This option configures the handling of news categories in BackEnd forms and on the website (for the CATMENU content element the GRSP can be overridden by "displayCatMenu.catPidList"). By default categories will be displayed only if they are found in the "General record storage page" (AKA "GRSP" or "storagePid"). If you set "useStoragePid" to "0", all categories from the pagetree will be displayed. If "useStoragePid" is set to "1" and there are no tt_news categories in the "GRSP" you won't see any categories in BackEnd forms or on the website. See tt_news manual for more information.</label>						
+			<label index="extmng.requireCategories">Require categories: Check if categories are required for every news item. Note that you can require categories also through page TSConfig using "TCEFORM.tt_news.category.config.minitems=1"</label>
+			<label index="extmng.writeParseTimesToDevlog">Write devlog: Write parsetimes to devlog.</label>
+			<label index="extmng.treeOrderBy">Category ordering in BackEnd trees: Here you can configure the the ordering of categories in category trees in BackEnd forms.</label>
+			<label index="extmng.prependAtCopy">Prepend at Copy: Here you can disable adding of the text "(copy [#])" to titles of copied records.</label>
+			<label index="extmng.label">News Label in List-Module: Defines which field is displayed in the title column in the web/list module.</label>
+			<label index="extmng.label_alt">Alternative Label: Defines which field is displayed in the title column in lists if the field is empty, that is configured as label. If no alternative label is defined and the label field is empty the text [No title] will be shown.</label>
+			<label index="extmng.label_alt2">Alternative Label 2: see "Alternative label."</label>
+			<label index="extmng.label_alt_force">Force alternative label: If this is activated the alternative label will be always shown behind the label.</label>
+			<label index="extmng.categoryTreeWidth">Width of the right category field: This field shows the category tree in the tt_news db-record (or in the category db-record). If "categoryTreeWidth" is set to 0 (zero) the default width (=350px) will be taken.</label>
+			<label index="extmng.categorySelectedWidth">Width of the left category field: This field shows the selected categories in the tt_news db-record (or parent categories in the category db-record). If "categorySelectedWidth" is set to 0 (zero) the default width (=200px) will be taken.</label>
+			<label index="extmng.l10n_mode_prefixLangTitle">Localization mode for text fields: By default, all text fields (text, subheader, imagecaption ...) from a new localized news article will be prepended with "[translate to ...]". If this is not wanted you can disable it here. If "l10n_mode_prefixLangTitle" is disabled the text "(copy [#])" will be added to the titles of this records unless "prependAtCopy" is disabled (see "prependAtCopy").</label>
+			<label index="extmng.l10n_mode_imageExclude">Localization mode for images: The image field of a localized news article is excluded by default (images are alwas taken from the record in the default language). If you need localized images (f.e. if the images show texts) you can enable the "image" field in translated news by setting "l10n_mode_imageExclude" to 0.</label>
+			<label index="extmng.hideNewLocalizations">Hide new localizations: Here you choose if new localizations of news articles should be hidden or not. By default new localizations are visible. If this is not wanted set "hideNewLocalizations" to 1.</label>
+			<label index="extmng.updatermsg">tt_news 3.0.0 comes with a new updater-script which can fix some of the most commen problems when you're updating an existing
+  			tt_news installation.</label>
+			<label index="extmng.updatermsgHeader">Important!</label>
+			<label index="extmng.updatermsgLink">[Click here to open the updater]</label>
+			
+			
 		</languageKey>
 		<languageKey index="dk" type="array">
 			<label index="pi_title">Nyheder</label>
@@ -24,6 +64,11 @@
 		<languageKey index="de" type="array">
 			<label index="pi_title">News</label>
 			<label index="pi_plus_wiz_description">Vielseitiges News-System für TYPO3</label>
+			
+			
+			<label index="extmng.back">[&lt;- zurück]</label>
+			<label index="extmng.lbl_searchOutdatedTempl">Suche nach veralteten TypoScript Templates</label>			
+			
 		</languageKey>
 		<languageKey index="no" type="array">
 			<label index="pi_title">Nyheter</label>

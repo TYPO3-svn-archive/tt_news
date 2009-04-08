@@ -154,8 +154,6 @@ plugin.tt_news {
 
   }
 
-#displaySingle.image < tt_content.image.20
-
 
   displaySingle.image {
     file.maxW = {$plugin.tt_news.singleMaxW}
@@ -164,7 +162,7 @@ plugin.tt_news {
     #maxW = {$plugin.tt_news.singleMaxW}
     #maxH = {$plugin.tt_news.singleMaxH}
 
-#    altText = TEXT
+#   altText = TEXT
 #	altText {
 #		field = imagealttext
 #		stripHtml = 1
@@ -714,9 +712,7 @@ plugin.tt_news {
   }
 
   # Alters behavior of tt_news to be compatible with certain previous versions. See manual for details.
-  compatVersion =
-
-
+  compatVersion = 3.0.0
 
 
   # stdWrap for the list of related news by category

@@ -3,7 +3,7 @@
 *  Copyright notice
 *
 *  (c) 1999-2004 Kasper Skårhøj (kasperYYYY@typo3.com)
-*  (c) 2004-2008 Rupert Germann (rupi@gmx.li)
+*  (c) 2004-2009 Rupert Germann (rupi@gmx.li)
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -299,7 +299,7 @@ class tx_ttnews extends tslib_pibase {
 		$this->config['datetimeMinutesToArchive'] = intval($this->conf['datetimeMinutesToArchive']);
 
 		if ($this->conf['useHRDates']) {
-			$this->convertDates();
+			$this->hObj->convertDates();
 		}
 
 		// list of pages where news records will be taken from
@@ -1362,7 +1362,7 @@ if ($this->debugTimes) {  $this->hObj->getParsetime(__METHOD__); }
 				$cArr[] = $this->local_cObj->stdWrap($this->pi_getLL('catmenuHeader','Select a category:'),$lConf['catmenuHeader_stdWrap.']);
 				while (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))) {
 					$cArr[] = $row;
-					$subcats = $this->getSubCategoriesForMenu($row['uid'],$fields,$this->catlistWhere);
+					$subcats = $this->hObj->getSubCategoriesForMenu($row['uid'],$fields,$this->catlistWhere);
 					if (count($subcats))	{
 						$cArr[] = $subcats;
 					}
@@ -1651,11 +1651,11 @@ if ($this->debugTimes) {  $this->hObj->getParsetime(__METHOD__); }
 		}
 		if ($this->isRenderMarker('###NEWS_CONTENT###')) {
 			if ($textRenderObj == 'displaySingle' && !$row['no_auto_pb'] && $this->config['maxWordsInSingleView']>1) {
-				$row['bodytext'] = $this->insertPagebreaks($row['bodytext'],count(t3lib_div::trimExplode(' ',$row['short'],1)));
+				$row['bodytext'] = $this->hObj->insertPagebreaks($row['bodytext'],count(t3lib_div::trimExplode(' ',$row['short'],1)));
 			}
 			if (strpos($row['bodytext'],$this->config['pageBreakToken'])) {
 				if ($this->config['useMultiPageSingleView'] && $textRenderObj == 'displaySingle') {
-					$tmp = $this->makeMultiPageSView($row['bodytext'],$lConf);
+					$tmp = $this->hObj->makeMultiPageSView($row['bodytext'],$lConf);
 					$newscontent = $tmp[0];
 					$sViewPagebrowser = $tmp[1];
 				} else {
@@ -2365,7 +2365,7 @@ if ($this->debugTimes) {  $this->hObj->getParsetime(__METHOD__); }
 			$rows = array($row);
 			if ($this->conf['displaySubCategories'] && $this->config['useSubCategories']) {
 				$subCategories = array();
-				$subcats = implode(',', array_unique(explode(',', $this->getSubCategories($row[0]['uid']))));
+				$subcats = implode(',', array_unique(explode(',', $this->hObj->getSubCategories($row[0]['uid']))));
 
 				$subres = $GLOBALS['TYPO3_DB']->exec_SELECTquery (
 					'tt_news_cat.*',
@@ -2392,7 +2392,7 @@ if ($this->debugTimes) {  $this->hObj->getParsetime(__METHOD__); }
 
 
 				if ($this->conf['useSPidFromCategory'] && $this->conf['useSPidFromCategoryRecusive']) {
-					$parentSP = $this->getRecursiveCategorySinglePid($val['uid']);
+					$parentSP = $this->hObj->getRecursiveCategorySinglePid($val['uid']);
 				}
 				$singlePid = ($parentSP?$parentSP:$val['single_pid']);
 
@@ -2419,26 +2419,6 @@ if ($this->debugTimes) {  $this->hObj->getParsetime(__METHOD__); }
 
 
 
-	/**
-	* Searches the category rootline (up) for a single view pid. If nothing is found in the current
-	* category, the single view pid of the parent categories is taken (recusivly).
-	*
-	* @param int $currentCategory: Uid of the current category
-	* @return int first found single view pid
-	*/
-	function getRecursiveCategorySinglePid($currentCategory) {
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery (
-				'uid,parent_category,single_pid',
-				'tt_news_cat',
-				'tt_news_cat.uid='.$currentCategory.$this->SPaddWhere.$this->enableCatFields
-			);
-		$row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
- 		if ($row['single_pid'] > 0) {
-			return $row['single_pid'];
-		} elseif ($row['parent_category'] > 0) {
-			return $this->getRecursiveCategorySinglePid($row['parent_category']);
-		}
-	}
 
 
 
@@ -2537,37 +2517,6 @@ if ($this->debugTimes) {  $this->hObj->getParsetime(__METHOD__); }
 
 
 
-	/**
-	 * extends a given list of categories by their subcategories
-	 *
-	 * @param	string		$catlist: list of categories which will be extended by subcategories
-	 * @param	integer		$cc: counter to detect recursion in nested categories
-	 * @return	string		extended $catlist
-	 */
-	function getSubCategories($catlist, $cc = 0) {
-		$pcatArr = array();
-
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
-			'uid',
-			'tt_news_cat',
-			'tt_news_cat.parent_category IN ('.$catlist.')'.$this->SPaddWhere.$this->enableCatFields);
-
-
-		while (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))) {
-			$cc++;
-			if ($cc > 10000) {
-				$GLOBALS['TT']->setTSlogMessage('tt_news: one or more recursive categories where found');
-				return implode(',', $pcatArr);
-			}
-			$subcats = $this->getSubCategories($row['uid'], $cc);
-			$subcats = $subcats?','.$subcats:'';
-			$pcatArr[] = $row['uid'].$subcats;
-		}
-		$catlist = implode(',', $pcatArr);
-		return $catlist;
-	}
-
-
 
 
 	/**
@@ -2621,37 +2570,7 @@ if ($this->debugTimes) {  $this->hObj->getParsetime(__METHOD__); }
 		return $result;
 	}
 
-	/**
-	 * extends a given list of categories by their subcategories. This function returns a nested array with subcategories (the function getSubCategories() return only a commaseparated list of category UIDs)
-	 *
-	 * @param	string		$catlist: list of categories which will be extended by subcategories
-	 * @param	string		$fields: list of fields for the query
-	 * @param	integer		$cc: counter to detect recursion in nested categories
-	 * @param	[type]		$cc: ...
-	 * @return	array		all categories in a nested array
-	 */
-	function getSubCategoriesForMenu ($catlist, $fields, $addWhere, $cc = 0) {
-		$pcatArr = array();
 
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
-			$fields,
-			'tt_news_cat',
-			'tt_news_cat.parent_category IN ('.$catlist.')'.$this->SPaddWhere.$this->enableCatFields,
-			'',
-			'tt_news_cat.'.$this->config['catOrderBy']);
-
-
-		while (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))) {
-			$cc++;
-			if ($cc > 10000) {
-				$GLOBALS['TT']->setTSlogMessage('tt_news: one or more recursive categories where found');
-				return $pcatArr;
-			}
-			$subcats = $this->getSubCategoriesForMenu($row['uid'], $fields, $addWhere, $cc);
-			$pcatArr[] = is_array($subcats)?array_merge($row,$subcats):'';
-		}
-		return $pcatArr;
-	}
 
 	/**
 	 * Find related news records and pages, add links to them and wrap them with stdWraps from TS.
@@ -2836,32 +2755,6 @@ if ($this->debugTimes) {  $this->hObj->getParsetime(__METHOD__); }
 
 
 
-	/**
-	 * divides the bodytext field of a news single view to pages and returns the part of the bodytext
-	 * that is choosen by piVars[$pointerName]
-	 *
-	 * @param	string		the text with 'pageBreakTokens' in it
-	 * @param	array		config array for the single view
-	 * @return	string		the current bodytext part wrapped with stdWrap
-	 */
-	function makeMultiPageSView($bodytext,$lConf) {
-		$pointerName = $this->config['singleViewPointerName'];
-		$pagenum = $this->piVars[$pointerName]?$this->piVars[$pointerName]:0;
-		$textArr = t3lib_div::trimExplode($this->config['pageBreakToken'],$bodytext,1);
-		$pagecount = count($textArr);
-		// render a pagebrowser for the single view
-		if ($pagecount > 1) {
-			// configure pagebrowser vars
-			$this->internal['res_count'] = $pagecount;
-			$this->internal['results_at_a_time'] = 1;
-			$this->internal['maxPages'] = $this->conf['pageBrowser.']['maxPages'];
-			if (!$this->conf['pageBrowser.']['showPBrowserText']) {
-				$this->LOCAL_LANG[$this->LLkey]['pi_list_browseresults_page'] = '';
-			}
-			$pagebrowser = $this->makePageBrowser(0, $this->conf['pageBrowser.']['tableParams'],$pointerName);
-		}
-		return array($this->formatStr($this->local_cObj->stdWrap($textArr[$pagenum], $lConf['content_stdWrap.'])),$pagebrowser);
-	}
 
 	/**
 	 * this is a copy of the function pi_list_browseresults from class.tslib_piBase.php
@@ -3689,12 +3582,12 @@ if ($this->debugTimes) {  $this->hObj->getParsetime(__METHOD__); }
 		if ($this->piVars['cat']) {
 
 			// catselection holds only the uids of the categories selected by GETvars
-			$this->config['catSelection'] = $this->checkRecords($this->piVars['cat']);
+			$this->config['catSelection'] = $this->hObj->checkRecords($this->piVars['cat']);
 			$this->piVars_catSelection = $this->config['catSelection'];
 
 			if ($this->config['useSubCategories'] && $this->config['catSelection']) {
 				// get subcategories for selection from getVars
-				$subcats = $this->getSubCategories($this->config['catSelection']);
+				$subcats = $this->hObj->getSubCategories($this->config['catSelection']);
 				$this->config['catSelection'] = implode(',', array_unique(explode(',', $this->config['catSelection'].($subcats?','.$subcats:''))));
 			}
 		}
@@ -3702,13 +3595,13 @@ if ($this->debugTimes) {  $this->hObj->getParsetime(__METHOD__); }
 		$catExclusive = $catExclusive?$catExclusive:trim($this->cObj->stdWrap($this->conf['categorySelection'], $this->conf['categorySelection.']));
 		$this->catExclusive = $this->config['categoryMode']?$catExclusive:0; // ignore cat selection if categoryMode isn't set
 
-		$this->catExclusive = $this->checkRecords($this->catExclusive);
+		$this->catExclusive = $this->hObj->checkRecords($this->catExclusive);
 		// store the actually selected categories because we need them for the comparison in categoryMode 2 and -2
 		$this->actuallySelectedCategories = $this->catExclusive;
 
 		// get subcategories
 		if ($this->config['useSubCategories'] && $this->catExclusive) {
-			$subcats = $this->getSubCategories($this->catExclusive);
+			$subcats = $this->hObj->getSubCategories($this->catExclusive);
 			$this->catExclusive = implode(',', array_unique(explode(',', $this->catExclusive.($subcats?','.$subcats:''))));
 
 
@@ -3746,39 +3639,6 @@ if ($this->debugTimes) {  $this->hObj->getParsetime(__METHOD__); }
 
 
 
-	/**
-	 * Checks the visibility of a list of category-records
-	 *
-	 * @param	string		$recordlist: comma seperated list of category uids
-	 * @return	string		$clearedlist: the cleared list
-	 */
-	function checkRecords($recordlist) {
-		if ($recordlist) {
-			$tempRecs = t3lib_div::trimExplode(',', $recordlist,1);
-			// debug($temp);
-			$newtemp = array();
-			foreach ($tempRecs as $val) {
-				if ($val === '0') {
-					$this->nocat = true;
-				}
-				$val = intval($val);
-				if ($val) {
-					$test = $GLOBALS['TSFE']->sys_page->checkRecord('tt_news_cat',$val,1); // test, if the record is visible
-					if ($test) {
-						$newtemp[] = $val;
-					}
-				}
-			}
-
-			if (!count($newtemp)){
-				// select category 'null' if no visible category was found
-				$newtemp[] = 'null';
-			}
-			$clearedlist = implode(',', $newtemp);
-			return $clearedlist;
-		}
-
-	}
 
 	/**
 	 * read the template file, fill in global wraps and markers and write the result
@@ -3969,33 +3829,6 @@ if ($this->debugTimes) {  $this->hObj->getParsetime(__METHOD__); }
     }
 
 
-	/**
-	 * [Describe function...]
-	 *
-	 * @param	[type]		$fieldName: ...
-	 * @return	[type]		...
-	 */
-	function isRenderField($fieldName) {
-		/**
-		 * FIXME: 05.04.2009
-		 *
-		 */
-
-
-		return true;
-
-//		if ($this->renderFields[$this->theCode] == '*') {
-//			return true;
-//		}
-//		if (t3lib_div::inList($this->renderFields[$this->theCode],$fieldName)) {
-//			return true;
-//		}
-//
-//
-
-
-
-	}
 
 
     /**
@@ -4010,52 +3843,6 @@ if ($this->debugTimes) {  $this->hObj->getParsetime(__METHOD__); }
     }
 
 
-
-
-
-
-	/**
-	 * Converts the piVars 'pS' and 'pL' to a human readable format which will be filled to
-	 * the piVars 'year' and 'month'.
-	 *
-	 * @return	void
-	 */
-	function convertDates() {
-		//readable archivedates
- 		if ($this->piVars['year'] || $this->piVars['month']) {
-			$this->arcExclusive = 1;
-		}
-		if (!$this->piVars['year'] && $this->piVars['pS']) {
-			$this->piVars['year'] = date('Y',(int)$this->piVars['pS']);
-		}
-		if (!$this->piVars['month'] && $this->piVars['pS']) {
-			$this->piVars['month'] = date('m',(int)$this->piVars['pS']);
-		}
-		if (!$this->piVars['day'] && $this->piVars['pS']) {
-			$this->piVars['day'] = date('j',(int)$this->piVars['pS']);
-		}
-		if ($this->piVars['year'] || $this->piVars['month'] || $this->piVars['day']) {
-			$mon = intval($this->piVars['month'] ? $this->piVars['month'] : 1);
-			$day = intval($this->piVars['day']   ? $this->piVars['day']   : 1);
-
-			$this->piVars['pS'] = mktime (0, 0, 0, $mon, $day, (int)$this->piVars['year']);
-
-
-
-			switch ($this->config['archiveMode']) {
-				case 'month':
-					$this->piVars['pL'] = mktime (0, 0, 0, $mon+1, 1, (int)$this->piVars['year'])-(int)$this->piVars['pS']-1;
-				break;
-				case 'quarter':
-					$this->piVars['pL'] = mktime (0, 0, 0, $mon+3, 1, (int)$this->piVars['year'])-(int)$this->piVars['pS']-1;
-				break;
-				case 'year':
-					$this->piVars['pL'] = mktime (0, 0, 0, 1, 1, (int)$this->piVars['year']+1)-(int)$this->piVars['pS']-1;
-					unset($this->piVars['month']);
-				break;
-			}
-		}
-	}
 
 
 
@@ -4227,58 +4014,6 @@ if ($this->debugTimes) {  $this->hObj->getParsetime(__METHOD__); }
 		}
 	}
 
-
-
-
-
-	/**
-	 * inserts pagebreaks after a certain amount of words
-	 *
-	 * @param	string		text which can contain manully inserted 'pageBreakTokens'
-	 * @param	integer		amount of words in the subheader (short). The lenght of the first page will be reduced by that amount of words added to the value of $this->conf['cropWordsFromFirstPage'].
-	 * @return	string		the processed text
-	 */
-	function insertPagebreaks($text,$firstPageWordCrop) {
-		$paragraphs = explode(chr(10), $text); // get paragraphs
- 		$wtmp = array();
-		$firstPageCrop = $firstPageWordCrop+intval($this->conf['cropWordsFromFirstPage']);
-		$cc = 0; // wordcount
-		$isfirst = true; // first paragraph
-		foreach ($paragraphs as $k=>$p) {
-			$words = explode(' ', $p); // get words
-			$pArr = array();
-			$break = false;
-			foreach ($words as $w) {
-			#if (trim($w)=='&nbsp;') debug ($w);
-				if (strpos($w,$this->config['pageBreakToken'])) { // manually inserted pagebreaks
-					$cc = 0;
-					$pArr[] = $w;
-					$isfirst = false;
-				} elseif ($cc >= t3lib_div::intInRange($this->config['maxWordsInSingleView']-($isfirst && !$this->conf['subheaderOnAllSViewPages'] ? $firstPageCrop:0),0,$this->config['maxWordsInSingleView'])) {
-					if (trim($paragraphs[$k+1])=='&nbsp;') unset($paragraphs[$k+1]);
-
-					if (!$this->conf['useParagraphAsPagebreak'] && substr($w,-1)=='.') { // break at dot
-						  $pArr[] = $w.$this->config['pageBreakToken'];
-					} else { // break at paragraph
-						$break = true;
-						$pArr[] = $w;
-						#$pArr[] = '<b> '.$cc.' </b>';
-					}
-					$cc = 0;
-					$isfirst = false;
-				} else {
-					$pArr[] = $w;
-				}
-				$cc++;
-			}
-			if ($break) { // add break at end of current paragraph
-				array_push ($pArr, $this->config['pageBreakToken']);
-			}
-			$wtmp[] = implode($pArr,' ');
-		}
-		$processedText = implode($wtmp,chr(10));
-		return $processedText;
-	}
 
 
 

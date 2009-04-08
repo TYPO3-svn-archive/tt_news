@@ -46,6 +46,8 @@ class ext_update {
 	 * @return	string		HTML
 	 */
 	function main() {
+		global $LANG;
+		$ll = 'LLL:EXT:tt_news/locallang.xml:updater.';
 		$out = '';
 
 		// analyze
@@ -56,64 +58,61 @@ class ext_update {
 		$ce_count = count($this->contentElements);
 
 		if (t3lib_div::_GP('do_update')) {
-			$out .= '<a href="' . t3lib_div::linkThisScript(array('do_update' => '', 'func' => '')) . '">[<- back]</a><br>';
+			$out .= '<a href="' . t3lib_div::linkThisScript(array('do_update' => '', 'func' => '')) . '">' . $LANG->sL($ll . 'back') . '</a><br>';
 
-			$func = t3lib_div::_GP('func');
+			$func = trim(t3lib_div::_GP('func'));
 			if (method_exists($this, $func)) {
 				$out .= $this->$func();
 			} else {
 				$out .= 'ERROR: ' . $func . '() not found';
 			}
 		} else {
-			if ($ce_count || $ts_count) {
-				$out .= '<table class="warningbox" border="0" cellpadding="0" cellspacing="0">
+			$out .= $this->displayWarning();
+
+			$conf = array('lbl' => $LANG->sL($ll . 'lbl_searchOutdatedTempl'), 'func' => 'updateStaticTemplateFiles',
+					'msg' => $LANG->sL($ll . 'msg_searchOutdatedTempl'), 'foundMsg' => $LANG->sL($ll . 'foundMsg_searchOutdatedTempl'),
+					'question' => $LANG->sL($ll . 'question_searchOutdatedTempl'));
+			$out .= $this->displayUpdateOption($conf, $ts_count);
+
+			$conf = array('lbl' => $LANG->sL($ll . 'lbl_searchNonExistingHtml'), 'func' => 'clearWrongTemplateInCE',
+					'msg' => $LANG->sL($ll . 'msg_searchNonExistingHtml'), 'foundMsg' => $LANG->sL($ll . 'foundMsg_searchNonExistingHtml'),
+					'question' => $LANG->sL($ll . 'question_searchNonExistingHtml'));
+			$out .= $this->displayUpdateOption($conf, $ce_count);
+		}
+		return $out;
+	}
+
+
+	function displayUpdateOption($conf, $count) {
+
+		$msg = $conf['msg'] . ' ';
+		$msg .= '<strong>' . str_replace('###COUNT###', $count, $conf['foundMsg']) . '</strong>';
+
+		if ($count) {
+			$msg .= '<br>' . $conf['question'] . '<br>';
+			$msg .= $this->getButton($conf['func']);
+		} else {
+			$msg .= '<br>' . $GLOBALS['LANG']->sL('LLL:EXT:tt_news/locallang.xml:updater.nothingtodo');
+		}
+
+		$out = $this->wrapForm($msg, $conf['lbl']);
+		$out .= '<br><br>';
+
+		return $out;
+	}
+
+
+	function displayWarning() {
+		$out = '<table class="warningbox" border="0" cellpadding="0" cellspacing="0">
 					<tr><td>
 						<img ' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/icon_warning2.gif', 'width="14" height="14"') . '>
-						<span class="warningboxheader">Important Notice!</span>
-
-						<p style="font-weight:normal;">
-						The updater manipulates your database and due to the huge amount of configuration variants it is possible that it <br>
-						might not produce the expexted results.<br>
-						So backup your database (at least the tables sys_template and tt_content) or do a t3d export of your site <strong>BEFORE</strong> <br>
-						you click on any of the "DO_IT" Buttons.
-						</p>
-
-
-
+						<span class="warningboxheader">' . $GLOBALS['LANG']->sL('LLL:EXT:tt_news/locallang.xml:updater.warningHeader') . '</span>
+						<p style="font-weight:normal;">' . $GLOBALS['LANG']->sL('LLL:EXT:tt_news/locallang.xml:updater.warningMsg') . '</p>
 						</td>
 					</tr>
 				</table>
-				<br>
-				';
+				<br>';
 
-				if ($ce_count) {
-					$ceout = 'There have been found ' . $ce_count . ' content elements with a configured html template (EXT:tt_news/pi/tt_news_v2_template.html) which
-						doesn\'t exist in this tt_news version.
-						<br>Should the updater clean this settings?<br>';
-
-					$ceout .= $this->getButton('clearWrongTemplateInCE');
-					$out .= $this->wrapForm($ceout, 'Search for non existing html templates');
-					$out .= '<br><br>';
-				}
-				if ($ts_count) {
-					$tsout = 'There have been found ';
-					$tsout .= $ts_count . ' TypoScript templates which include one of the tt_news static templates but with an outdated path.
-						<br>Should the updater update these records?<br>';
-
-					$tsout .= $this->getButton('updateStaticTemplateFiles');
-					$out .= $this->wrapForm($tsout, 'Search for old static TS templates');
-					$out .= '<br><br>';
-				}
-
-			} else {
-				$out .= 'Check for content elements with a configured html template (EXT:tt_news/pi/tt_news_v2_template.html) which
-						doesn\'t exist in this tt_news version: 0<br>
-						Check for TypoScript templates which include one of the tt_news static templates but with an outdated path: 0<br><br>
-						Nothing to do.
-				<br><br>';
-			}
-
-		}
 		return $out;
 	}
 
@@ -136,7 +135,6 @@ class ext_update {
 			}
 		}
 		return implode('<br>', $msg);
-
 	}
 
 
@@ -189,12 +187,7 @@ class ext_update {
 		$select_fields = '*';
 		$from_table = 'sys_template';
 		$where_clause = 'deleted=0 AND include_static_file LIKE \'%EXT:tt_news/static/%\'';
-
-		$groupBy = '';
-		$orderBy = '';
-		$limit = '';
-
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery($select_fields, $from_table, $where_clause, $groupBy, $orderBy, $limit);
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery($select_fields, $from_table, $where_clause);
 
 		$resultRows = array();
 		while (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))) {
@@ -209,18 +202,13 @@ class ext_update {
 		$select_fields = '*';
 		$from_table = 'tt_content';
 		$where_clause = 'CType="list" AND list_type="9" AND deleted=0';
-
 		$where_clause .= ' AND pi_flexform LIKE \'%EXT:tt_news/pi/tt_news_v2_template.html%\'';
 
-		$groupBy = '';
-		$orderBy = '';
-		$limit = '';
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery($select_fields, $from_table, $where_clause);
 
-		$res_flex = $GLOBALS['TYPO3_DB']->exec_SELECTquery($select_fields, $from_table, $where_clause, $groupBy, $orderBy, $limit);
-
-		if ($res_flex) {
+		if ($res) {
 			$resultRows = array();
-			while (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res_flex))) {
+			while (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))) {
 				$resultRows[$row['uid']] = array('ff' => $row['pi_flexform'], 'title' => $row['title'], 'pid' => $row['pid']);
 			}
 		}
@@ -236,7 +224,6 @@ class ext_update {
 	 * @return	boolean
 	 */
 	function access($what = 'all') {
-
 		return TRUE;
 	}
 
