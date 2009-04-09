@@ -52,6 +52,7 @@
 			<label index="tt_news.pi_flexform.sheet_misc">Other Settings</label>
 			<label index="tt_news.pi_flexform.what_to_display">What to display:</label>
 			
+			<label index="tt_news.pi_flexform.codeFromTS">Defined by TypoScript</label>
 			<label index="tt_news.pi_flexform.LIST">Standard list view (LIST)</label>
 			<label index="tt_news.pi_flexform.LIST2">Advanced list view with 6 alternating template parts (LIST2)</label>
 			<label index="tt_news.pi_flexform.LIST3">Standard list view with 3 alternating template parts (LIST3)</label>

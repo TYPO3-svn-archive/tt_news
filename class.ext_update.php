@@ -1,4 +1,5 @@
 <?php
+
 /***************************************************************
  *  Copyright notice
  *
@@ -38,6 +39,14 @@
 class ext_update {
 
 	var $tstemplates;
+	var $contentElements;
+	var $missingHtmlTemplates = array();
+	var $movedFields = array();
+	var $flexObj;
+	var $ll = 'LLL:EXT:tt_news/locallang.xml:updater.';
+
+	var $checkMovedFields = array('pages' => array('old' => 'sDEF', 'new' => 's_misc'), 'recursive' => array('old' => 'sDEF', 'new' => 's_misc'),
+			'listLimit' => array('old' => 's_misc', 'new' => 's_template'), 'noPageBrowser' => array('old' => 's_misc', 'new' => 's_template'));
 
 
 	/**
@@ -46,56 +55,72 @@ class ext_update {
 	 * @return	string		HTML
 	 */
 	function main() {
-		global $LANG;
-		$ll = 'LLL:EXT:tt_news/locallang.xml:updater.';
 		$out = '';
+		$this->flexObj = t3lib_div::makeInstance('t3lib_flexformtools');
 
 		// analyze
 		$this->tstemplates = $this->getTsTemplates();
-		$ts_count = count($this->tstemplates);
-
 		$this->contentElements = $this->getContentElements();
-		$ce_count = count($this->contentElements);
+		$this->parseFlexformXML();
 
 		if (t3lib_div::_GP('do_update')) {
-			$out .= '<a href="' . t3lib_div::linkThisScript(array('do_update' => '', 'func' => '')) . '">' . $LANG->sL($ll . 'back') . '</a><br>';
+			$out .= '<a href="' . t3lib_div::linkThisScript(array('do_update' => '', 'func' => '')) . '">' . $GLOBALS['LANG']->sL($this->ll . 'back') . '</a><br>';
 
 			$func = trim(t3lib_div::_GP('func'));
 			if (method_exists($this, $func)) {
-				$out .= $this->$func();
+				$out .= '<div style="background:white;padding:10px;border:1px solid #aaa; margin:10px 15px 0 0;" >
+					<h2>Updater results:</h2>' . $this->$func() . '</div>';
 			} else {
 				$out .= 'ERROR: ' . $func . '() not found';
 			}
 		} else {
+			$out .= '<a href="' . t3lib_div::linkThisScript(array('do_update' => '', 'func' => '')) . '">' . $GLOBALS['LANG']->sL($this->ll . 'reload') . '</a><br>';
+
 			$out .= $this->displayWarning();
 
-			$conf = array('lbl' => $LANG->sL($ll . 'lbl_searchOutdatedTempl'), 'func' => 'updateStaticTemplateFiles',
-					'msg' => $LANG->sL($ll . 'msg_searchOutdatedTempl'), 'foundMsg' => $LANG->sL($ll . 'foundMsg_searchOutdatedTempl'),
-					'question' => $LANG->sL($ll . 'question_searchOutdatedTempl'));
-			$out .= $this->displayUpdateOption($conf, $ts_count);
+			// outdated static TS templates
+			$out .= $this->displayUpdateOption('searchOutdatedTempl', count($this->tstemplates),'updateStaticTemplateFiles');
 
-			$conf = array('lbl' => $LANG->sL($ll . 'lbl_searchNonExistingHtml'), 'func' => 'clearWrongTemplateInCE',
-					'msg' => $LANG->sL($ll . 'msg_searchNonExistingHtml'), 'foundMsg' => $LANG->sL($ll . 'foundMsg_searchNonExistingHtml'),
-					'question' => $LANG->sL($ll . 'question_searchNonExistingHtml'));
-			$out .= $this->displayUpdateOption($conf, $ce_count);
+			// missing HTML templates
+			$out .= $this->displayUpdateOption('searchNonExistingHtml', count($this->missingHtmlTemplates),'clearWrongTemplateInCE');
+
+			// moved pidList (pages)
+			$out .= $this->displayUpdateOption('searchMovedPidlist', count($this->movedFields['pages']),'fixfield_movedPidlist');
+
+			// moved recursive
+			$out .= $this->displayUpdateOption('searchMovedRecursive', count($this->movedFields['recursive']),'fixfield_movedRecursive');
+
+			// moved noPagegbrowser
+			$out .= $this->displayUpdateOption('searchMovedNoPageBrowser', count($this->movedFields['noPageBrowser']),'fixfield_movedNoPageBrowser');
+
+			// moved listlimit
+			$out .= $this->displayUpdateOption('searchMovedListLimit', count($this->movedFields['listLimit']),'fixfield_movedListLimit');
 		}
 		return $out;
 	}
 
 
-	function displayUpdateOption($conf, $count) {
+	function displayUpdateOption($k, $count, $func) {
 
-		$msg = $conf['msg'] . ' ';
-		$msg .= '<strong>' . str_replace('###COUNT###', $count, $conf['foundMsg']) . '</strong>';
+		$msg = $GLOBALS['LANG']->sL($this->ll . 'msg_' . $k) . ' ';
+		$msg .= '<strong>' . str_replace('###COUNT###', $count, $GLOBALS['LANG']->sL($this->ll . 'foundMsg_' . $k)) . '</strong>';
+		if ($count == 0) {
+			$i = 'ok';
+
+		} else {
+			$i = 'warning2';
+		}
+		$msg .= ' <img ' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/icon_' . $i . '.gif', 'width="18" height="16"') . '>';
 
 		if ($count) {
-			$msg .= '<br>' . $conf['question'] . '<br>';
-			$msg .= $this->getButton($conf['func']);
+			$msg .= '<br>' . $GLOBALS['LANG']->sL($this->ll . 'question_' . $k) . '<br>';
+			$msg .= $this->getButton($func);
 		} else {
 			$msg .= '<br>' . $GLOBALS['LANG']->sL('LLL:EXT:tt_news/locallang.xml:updater.nothingtodo');
+
 		}
 
-		$out = $this->wrapForm($msg, $conf['lbl']);
+		$out = $this->wrapForm($msg,$GLOBALS['LANG']->sL($this->ll . 'lbl_' . $k));
 		$out .= '<br><br>';
 
 		return $out;
@@ -105,7 +130,7 @@ class ext_update {
 	function displayWarning() {
 		$out = '<table class="warningbox" border="0" cellpadding="0" cellspacing="0">
 					<tr><td>
-						<img ' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/icon_warning2.gif', 'width="14" height="14"') . '>
+						<img ' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/icon_warning2.gif', 'width="18" height="16"') . '>
 						<span class="warningboxheader">' . $GLOBALS['LANG']->sL('LLL:EXT:tt_news/locallang.xml:updater.warningHeader') . '</span>
 						<p style="font-weight:normal;">' . $GLOBALS['LANG']->sL('LLL:EXT:tt_news/locallang.xml:updater.warningMsg') . '</p>
 						</td>
@@ -117,21 +142,61 @@ class ext_update {
 	}
 
 
-	function clearWrongTemplateInCE() {
-		$msg = array();
-		foreach ($this->contentElements as $id => $ce) {
-			$ff = $ce['ff'];
+	function fixfield_movedPidlist() {
+		return $this->fixMovedFfField('pages');
+	}
 
-			$s = array('EXT:tt_news/pi/tt_news_v2_template.html');
-			$r = array('');
-			$newff = str_replace($s, $r, $ff);
+
+	function fixfield_movedRecursive() {
+		return $this->fixMovedFfField('recursive');
+	}
+
+
+	function fixfield_movedNoPageBrowser() {
+		return $this->fixMovedFfField('noPageBrowser');
+	}
+
+
+	function fixfield_movedListLimit() {
+		return $this->fixMovedFfField('listLimit');;
+	}
+
+
+	function fixMovedFfField($fN) {
+		$msg = array();
+		$conf = $this->checkMovedFields[$fN];
+		foreach ($this->movedFields[$fN] as $id => $val) {
+			$tmpArr = $this->contentElements[$id]['ff_parsed'];
+
+			$oldVal = $this->pi_getFFvalue($tmpArr, $fN, $conf['old']);
+			$tmpArr['data'][$conf['new']]['lDEF'][$fN]['vDEF'] = $oldVal;
+			unset($tmpArr['data'][$conf['old']]['lDEF'][$fN]);
+
+			$newff = $this->flexObj->flexArray2Xml($tmpArr, 1);
 
 			$table = 'tt_content';
-
 			$where = 'uid=' . $id;
 			$fields_values = array('pi_flexform' => $newff);
 			if ($GLOBALS['TYPO3_DB']->exec_UPDATEquery($table, $where, $fields_values)) {
-				$msg[] = 'Updated contentElement "' . $ce['title'] . '" uid: ' . $id . ', page: ' . $ce['pid'];
+				$msg[] = 'Updated contentElement uid: ' . $id . ', pid: ' . $this->contentElements[$id]['pid'] . ', fixed field: ' . $val;
+			}
+		}
+		return implode('<br>', $msg);
+	}
+
+
+	function clearWrongTemplateInCE() {
+		$msg = array();
+		foreach ($this->missingHtmlTemplates as $id => $val) {
+			$tmpArr = $this->contentElements[$id]['ff_parsed'];
+			$tmpArr['data']['s_template']['lDEF']['template_file']['vDEF'] = '';
+			$newff = $this->flexObj->flexArray2Xml($tmpArr, 1);
+
+			$table = 'tt_content';
+			$where = 'uid=' . $id;
+			$fields_values = array('pi_flexform' => $newff);
+			if ($GLOBALS['TYPO3_DB']->exec_UPDATEquery($table, $where, $fields_values)) {
+				$msg[] = 'Updated contentElement uid: ' . $id . ', pid: ' . $this->contentElements[$id]['pid'] . ', removed template: ' . $val;
 			}
 		}
 		return implode('<br>', $msg);
@@ -162,7 +227,7 @@ class ext_update {
 
 	function wrapForm($content, $fsLabel) {
 		$out = '<form action="">
-			<fieldset>
+			<fieldset style="background:#f4f4f4;margin-right:15px;">
 			<legend>' . $fsLabel . '</legend>
 			' . $content . '
 
@@ -202,8 +267,6 @@ class ext_update {
 		$select_fields = '*';
 		$from_table = 'tt_content';
 		$where_clause = 'CType="list" AND list_type="9" AND deleted=0';
-		$where_clause .= ' AND pi_flexform LIKE \'%EXT:tt_news/pi/tt_news_v2_template.html%\'';
-
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery($select_fields, $from_table, $where_clause);
 
 		if ($res) {
@@ -213,6 +276,102 @@ class ext_update {
 			}
 		}
 		return $resultRows;
+	}
+
+
+	function parseFlexformXML() {
+
+		foreach ($this->contentElements as $id => $row) {
+			$tmpArr = t3lib_div::xml2array($row['ff']);
+			$this->contentElements[$id]['ff_parsed'] = $tmpArr;
+			$this->getMovedFfFields($tmpArr, $id);
+			$this->getMissingHtmlTemplates($tmpArr, $id);
+		}
+	}
+
+
+	function getMovedFfFields(&$xmlArr, $id) {
+
+		foreach ($this->checkMovedFields as $fn => $conf) {
+			$oldVal = $this->pi_getFFvalue($xmlArr, $fn, $conf['old']);
+			$newVal = $this->pi_getFFvalue($xmlArr, $fn, $conf['new']);
+			if ($oldVal && ! $newVal) {
+				$this->movedFields[$fn][$id] = '"' . $fn . '" (value = ' . $oldVal . ') moved value from sheet "' . $conf['old'] . '" to "' . $conf['new'] . '"';
+			}
+		}
+	}
+
+
+	function getMissingHtmlTemplates(&$xmlArr, $id) {
+		$template_file = $this->pi_getFFvalue($xmlArr, 'template_file', 's_template');
+		if ($template_file) {
+			$absfile = PATH_site . $this->getPath($template_file);
+			if (! is_file($absfile)) {
+				$this->missingHtmlTemplates[$id] = $template_file;
+			}
+		}
+	}
+
+
+	function pi_getFFvalue($T3FlexForm_array, $fieldName, $sheet = 'sDEF', $lang = 'lDEF', $value = 'vDEF') {
+		$sheetArray = is_array($T3FlexForm_array) ? $T3FlexForm_array['data'][$sheet][$lang] : '';
+		if (is_array($sheetArray)) {
+			return $this->pi_getFFvalueFromSheetArray($sheetArray, explode('/', $fieldName), $value);
+		}
+	}
+
+
+	/**
+	 * Returns part of $sheetArray pointed to by the keys in $fieldNameArray
+	 *
+	 * @param	array		Multidimensiona array, typically FlexForm contents
+	 * @param	array		Array where each value points to a key in the FlexForms content - the input array will have the value returned pointed to by these keys. All integer keys will not take their integer counterparts, but rather traverse the current position in the array an return element number X (whether this is right behavior is not settled yet...)
+	 * @param	string		Value for outermost key, typ. "vDEF" depending on language.
+	 * @return	mixed		The value, typ. string.
+	 * @access private
+	 * @see pi_getFFvalue()
+	 */
+	function pi_getFFvalueFromSheetArray($sheetArray, $fieldNameArr, $value) {
+
+		$tempArr = $sheetArray;
+		foreach ($fieldNameArr as $k => $v) {
+			if (t3lib_div::testInt($v)) {
+				if (is_array($tempArr)) {
+					$c = 0;
+					foreach ($tempArr as $values) {
+						if ($c == $v) {
+							#debug($values);
+							$tempArr = $values;
+							break;
+						}
+						$c++;
+					}
+				}
+			} else {
+				$tempArr = $tempArr[$v];
+			}
+		}
+		return $tempArr[$value];
+	}
+
+
+	/**
+	 * [Describe function...]
+	 *
+	 * @param	[type]		$path: ...
+	 * @return	[type]		...
+	 */
+	function getPath($path) {
+		$tmpP = explode('/', $path);
+		if (substr($tmpP[0], 0, 4) === 'EXT:') {
+			$tt = explode(':', $tmpP[0]);
+			$tmpP[0] = substr(t3lib_extMgm::siteRelPath($tt[1]), 0, - 1);
+			$iconPath = implode('/', $tmpP);
+		} else {
+			$iconPath = $path;
+		}
+
+		return $iconPath;
 	}
 
 

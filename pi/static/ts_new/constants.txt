@@ -1,72 +1,72 @@
 ###
-# This are the default TS-constants for tt_news
+# These are the default TS-constants for tt_news
 ##
 
 plugin.tt_news {
-    # cat=plugin.tt_news: Basic/file/1; type=text; label= Template File: HTML-template which is used to display news (f.e.: 'fileadmin/templates/my_news_tmpl.html').
+    # cat=plugin_tt_news_basic/file/1; type=text; label= LLL:EXT:tt_news/locallang.xml:tsce.templateFile
   file.templateFile = EXT:tt_news/res/tt_news_v3_template.html
 
-    # cat=plugin.tt_news: Basic/links/10; type=text; label= Starting Point (pid_list): The PID of the page (or comma separated list pf PIDs) where your news articles are stored.
+    # cat=plugin_tt_news_basic/links/10; type=text; label= LLL:EXT:tt_news/locallang.xml:tsce.pid_list
   pid_list = 0
-    # cat=plugin.tt_news: Basic/links/12; type=int+; label= SinglePid: Page on which single news items should be displayed.
+    # cat=plugin_tt_news_basic/links/12; type=int+; label= LLL:EXT:tt_news/locallang.xml:tsce.singlePid
   singlePid = 0
-    # cat=plugin.tt_news: Basic/links/20; type=int+; label= BackPid: Page where the "back to list" link in single view links to.
+    # cat=plugin_tt_news_basic/links/20; type=int+; label= LLL:EXT:tt_news/locallang.xml:tsce.backPid
   backPid = 0
-    # cat=plugin.tt_news: Basic/links/30; type=text; label= Archive Link parameter: The PID of the page with a LIST element that displays only archived news items. This link appears at the bottom of the 'LATEST template and it is also used for the links in the AMENU (see: http://typo3.org/documentation/document-library/doc_core_tsref/typolink/ section 'parameter' for more information)
+    # cat=plugin_tt_news_basic/links/30; type=text; label= LLL:EXT:tt_news/locallang.xml:tsce.archiveTypoLink.parameter
   archiveTypoLink.parameter = 0
   
   
-    # cat=plugin.tt_news: Advanced/enable/10; type=boolean; label= Allow Caching: Allow caching of displayed news? If you want your news being indexed by the indexed-search this has to be enabled.
+    # cat=plugin_tt_news_advanced/enable/10; type=boolean; label= LLL:EXT:tt_news/locallang.xml:tsce.allowCaching
   allowCaching = 1
-    # cat=plugin.tt_news: Advanced/enable/15; type=boolean; label= Use human readable dates: This enables the use of the GETvars 'year' and 'month' for the archive links instead of the non-readable 'pS', 'pL' and 'arc'.
+    # cat=plugin_tt_news_advanced/enable/15; type=boolean; label= LLL:EXT:tt_news/locallang.xml:tsce.useHRDates
   useHRDates = 1
-  	# cat=plugin.tt_news: Advanced/enable/20; type=boolean; label= Use subcategories: Enable this if news should also be selected for display if they are a member of a subcategory of the selected category. Works only if categoryMode is 1 (="Show items with selected categories").
+  	# cat=plugin_tt_news_advanced/enable/20; type=boolean; label= LLL:EXT:tt_news/locallang.xml:tsce.useSubCategories
   useSubCategories = 1
-    # cat=plugin.tt_news: Advanced/enable/30; type=boolean; label= Show category rootline: Enable this to show the category rootline in the SINGLE or LIST view.
+    # cat=plugin_tt_news_advanced/enable/30; type=boolean; label= LLL:EXT:tt_news/locallang.xml:tsce.showCatRootline
   showCatRootline = 0
 
-    # cat=plugin.tt_news: Advanced/enable/50; type=boolean; label= Use bidirectional relations: If this is enabled the SINGLE view shows the the relations of news in both directions. The relation which points back to the source record will be inserted automatically.
+    # cat=plugin_tt_news_advanced/enable/50; type=boolean; label= LLL:EXT:tt_news/locallang.xml:tsce.useBidirectionalRelations
   useBidirectionalRelations = 1
-	# cat=plugin.tt_news: Advanced/enable/60; type=boolean; label= Use Pages as related news: If this is enabled the SINGLE view shows also relations to pages.
+	# cat=plugin_tt_news_advanced/enable/60; type=boolean; label= LLL:EXT:tt_news/locallang.xml:tsce.usePagesRelations
   usePagesRelations = 1
 
- 	# cat=plugin.tt_news: Advanced/enable/70; type=boolean; label= Display subcategories: If this is enabled the subcategories of the categories that are assigned to a news record will also be displayed in news records in the FrontEnd. If displayed categories in a news record are subcategories they will be wrapped with "subCategoryTitleItem_stdWrap" (titles) or "subCategoryImgItem_stdWrap" (images).
+ 	# cat=plugin_tt_news_advanced/enable/70; type=boolean; label= LLL:EXT:tt_news/locallang.xml:tsce.displaySubCategories
   displaySubCategories = 0
-  	# cat=plugin.tt_news: Advanced/enable/80; type=boolean; label= show related news by category: If this is enbaled the SINGLE view shows a list of news with the same category as the current news record.
+  	# cat=plugin_tt_news_advanced/enable/80; type=boolean; label= LLL:EXT:tt_news/locallang.xml:tsce.showRelatedNewsByCategory
   showRelatedNewsByCategory = 0
 
-    # cat=plugin.tt_news: Advanced/enable/90; type=boolean; label= Use singlePid from category: If this is enabled tt_news uses the singlePid from the first assigned category.
+    # cat=plugin_tt_news_advanced/enable/90; type=boolean; label= LLL:EXT:tt_news/locallang.xml:tsce.useSPidFromCategory
   useSPidFromCategory = 0
 
-    # cat=plugin.tt_news: Advanced/enable/91; type=boolean; label= Use Multipage Single View: Enable this if you want to divide the news SINGLE view to multiple pages.
+    # cat=plugin_tt_news_advanced/enable/91; type=boolean; label= LLL:EXT:tt_news/locallang.xml:tsce.useMultiPageSingleView
   useMultiPageSingleView = 0
 
-    # cat=plugin.tt_news: Advanced/enable/96; type=boolean; label= Show news title as next/prev link: Enable this if you want to show the title of the linked news article in next/previous links in SINGLE view. If disabled the language labels for "next" and "previous" will be used instead.
+    # cat=plugin_tt_news_advanced/enable/96; type=boolean; label= LLL:EXT:tt_news/locallang.xml:tsce.showTitleAsPrevNextLink
   showTitleAsPrevNextLink = 1
   
-    # cat=plugin.tt_news: Advanced//10; type=int+; label= List Limit: max items in LIST template.
+    # cat=plugin_tt_news_advanced//10; type=int+; label= LLL:EXT:tt_news/locallang.xml:tsce.limit
   limit = 7
-    # cat=plugin.tt_news: Advanced//20; type=int+; label= Latest Limit: max news items in LATEST template.
+    # cat=plugin_tt_news_advanced//20; type=int+; label= LLL:EXT:tt_news/locallang.xml:tsce.latestLimit
   latestLimit = 3
 
-    # cat=plugin.tt_news: Advanced//30; type=options[tree,ajaxtree,nestedWraps]; label= Category menu mode: This configures how the tt_news category menu (catmenu) is rendered. 'tree': use TYPO3 class treeview to build an expandable menu, 'ajaxtree': expandable menu with ajax (requires TYPO3 >= 4.2), 'nestedWraps': make a catmenu with nested wraps (static)
+    # cat=plugin_tt_news_advanced//30; type=options[tree,ajaxtree,nestedWraps]; label= LLL:EXT:tt_news/locallang.xml:tsce.displayCatMenu.mode
   displayCatMenu.mode = ajaxtree
 
-    # cat=plugin.tt_news: Advanced//40; type=text; label= Recursive level: extend "pid_list" by the number of recursive levels.
+    # cat=plugin_tt_news_advanced//40; type=text; label= LLL:EXT:tt_news/locallang.xml:tsce.recursive
   recursive = 2
-	# cat=plugin.tt_news: Advanced//50; type=int+; label= datetime Days to Archive: If this is set, elements are automatically in the archive, after the given number of days has passed. Set this to '0' if you want to disable this feature.
+	# cat=plugin_tt_news_advanced//50; type=int+; label= LLL:EXT:tt_news/locallang.xml:tsce.datetimeDaysToArchive
   datetimeDaysToArchive = 0
-	# cat=plugin.tt_news: Advanced//60; type=boolean; label= Enable archivedate: If this is not set, the archive-menu selects news by their datetime.
+	# cat=plugin_tt_news_advanced//60; type=boolean; label= LLL:EXT:tt_news/locallang.xml:tsce.enableArchiveDate
   enableArchiveDate = 1
-  # cat=plugin.tt_news: Advanced//61; type=text; label= Archivemenu start: Start date for the archive menu (php strtotime() syntax. e.g.: 1.1.2002, -3 months, -10 years, now)
+  # cat=plugin_tt_news_advanced//61; type=text; label= LLL:EXT:tt_news/locallang.xml:tsce.amenuStart
   amenuStart = -4 years
 
-  # cat=plugin.tt_news: Advanced//62; type=text; label= Archivemenu end: End date for the archive menu (php strtotime() syntax. e.g.: 1.1.2002, -3 months, -10 years, now)
+  # cat=plugin_tt_news_advanced//62; type=text; label= LLL:EXT:tt_news/locallang.xml:tsce.amenuEnd
   amenuEnd = now
 
-    # cat=plugin.tt_news: Advanced//70; type=int; label= Category Text mode: posible values are: 0 = don't display, 1 = display but no link, 2 = link to category shortcut, 3 = act as category selector.
+    # cat=plugin_tt_news_advanced//70; type=int; label= LLL:EXT:tt_news/locallang.xml:tsce.catTextMode
   catTextMode = 1
-	# cat=plugin.tt_news: Advanced//80; type=int; label= Category Image mode: same values as catTextMode.
+	# cat=plugin_tt_news_advanced//80; type=int; label= LLL:EXT:tt_news/locallang.xml:tsce.catImageMode
   catImageMode = 1
 
 
@@ -75,26 +75,31 @@ plugin.tt_news {
 
 
 
-	# cat=plugin.tt_news: Advanced/dims/10; type=int+; label= single-image max Width: Max width for an image displayed in SINGLE template
+	# cat=plugin_tt_news_advanced/dims/10; type=int+; label= LLL:EXT:tt_news/locallang.xml:tsce.singleMaxW
   singleMaxW = 240
-    # cat=plugin.tt_news: Advanced/dims/20; type=int+; label= single-image max height: Max height for an image displayed in SINGLE template
+    # cat=plugin_tt_news_advanced/dims/20; type=int+; label= LLL:EXT:tt_news/locallang.xml:tsce.singleMaxH
   singleMaxH = 180
 
-    # cat=plugin.tt_news: Advanced/dims/30; type=int+; label= latest-image max width: Max width for an image displayed in LATEST template
+    # cat=plugin_tt_news_advanced/dims/30; type=int+; label= LLL:EXT:tt_news/locallang.xml:tsce.latestMaxW
   latestMaxW = 60
-    # cat=plugin.tt_news: Advanced/dims/40; type=int+; label= latest-image max height: Max height for an image displayed in LATEST template
+    # cat=plugin_tt_news_advanced/dims/40; type=int+; label= LLL:EXT:tt_news/locallang.xml:tsce.latestMaxH
   latestMaxH = 40
 
-    # cat=plugin.tt_news: Advanced/dims/50; type=int+; label= list-image max width: Max width for an image displayed in LIST template
+    # cat=plugin_tt_news_advanced/dims/50; type=int+; label= LLL:EXT:tt_news/locallang.xml:tsce.listMaxW
   listMaxW = 120
-    # cat=plugin.tt_news: Advanced/dims/60; type=int+; label= list-image max height: Max height for an image displayed in LIST template
+    # cat=plugin_tt_news_advanced/dims/60; type=int+; label= LLL:EXT:tt_news/locallang.xml:tsce.listMaxH
   listMaxH = 90
+
 
 
 
 
 }
 
+#  TSConstantEditor.plugin_tt_news_basic {
+#  	header = header
+#  	description = test
+#  }
 
 ### CVS id ###
 # $Id$

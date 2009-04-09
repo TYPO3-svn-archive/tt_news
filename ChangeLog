@@ -1,8 +1,21 @@
 2009-04-09  Rupert Germann <rupi@gmx.li>
+	* updater: new feature: added some more options to the updater script: it is now able to ckeck for values in the moved Flexform fields: 
+	  pages (startingpoint), recursive, listLimit and noPageBrowser. These values will be moved to the field in the correct sheet.
+	* updater: enhanced the "check for not existing html template" function: this function checks now if the found template entry
+	  actually exists in the filesystem and offers to unset the value if the template file doesn't exist anymore.
+	* moved all text from the constants.txt files to tt_news/locallang.xml
+	* reformattd code in class.tx_ttnews.php
+	* fix: added an empty (Set by TS) option to the "what to display" (code) selector in FF. without this it was not possible anmore to 
+	  override the the CODE from TS.
+	  
 	* refactored the updater script. Added language labels and moved all text to tt_news/locallang.xml
 	* moved all text from ext_conf_template.txt to tt_news/locallang.xml (those labels require a colon : to divide the header from the helptext)
 	* because the description field from TSConstantEditor could not be localized, I converted the field useStoragePid to "user" and re-added
 	  the now localized updater-message to ext_conf_template.txt. (new file: lib/class.tx_ttnews_tsparserext.php)
+	  
+	  Note: "user" fields in constants editor require at least TYPO3 4.2. In older Versions the checkbox for this option is shown as simple 
+	  input field but no error occurs. This affects only the new info-message for the updater, the updater itself should work in all TYPO3
+	  versions. 
 	* added missing XCLASS statements
 	* moved some more functions from pi/class.tx_ttnews.php to lib/class.tx_ttnews_helpers.php
 	* changed some mysql definitions for better dbal compatibility: converted all tinytext fields to varchar(255), removed NOT NULL statements
@@ -24,7 +37,7 @@
 
 2009-04-04  Rupert Germann <rupi@gmx.li>
 	* new feature: now the category menu can show the number of news in each category. 
-	  This can be enabled/disabled by TS: displayCatMenu.showNewsCountForCategories
+	  This can be enabled/disabled by TS: displayCatMenu.showNewsCountForCategories (default=0)
 
 	* performance enhancement: replaced the "renderFields" feature with "renderMarkers" by Dan Osipov - thanx Dan!
 	  although renderMarkers does basically the same as renderFields it is the smarter concept, because it doesn't need any configuration.

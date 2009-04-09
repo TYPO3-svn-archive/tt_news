@@ -1,5 +1,5 @@
 ###
-# This is the default TS-setup for the new tt_news standard template: EXT:tt_news/pi/tt_news_v2_template.html
+# This is the default TS-setup for the new tt_news standard html template: EXT:tt_news/pi/res/tt_news_v3_template.html
 #
 # (see Section Reference in the manual for more options & parameters)
 #
@@ -269,9 +269,12 @@ plugin.tt_news {
     date_stdWrap.strftime= %d.%m.%Y
     time_stdWrap.strftime= %H:%M
     caption_stdWrap.if.directReturn = 0
-    subheader_stdWrap.stripHtml = 1
-    subheader_stdWrap.crop = 100 | ... | 1
-    subheader_stdWrap.ifEmpty.field = bodytext
+    subheader_stdWrap {
+      stripHtml = 1
+      crop = 100 | ... | 1
+      ifEmpty.field = bodytext
+      outerWrap = <p>|</p>
+    }
     imageCount = 1
     imgAltTextField = imagecaption
     imageWrapIfAny =
@@ -420,7 +423,7 @@ plugin.tt_news {
     includePrototypeJS = 1
     
     
-    showNewsCountForCategories = 1
+    showNewsCountForCategories = 0
 
     # enable expand/collapse for the category menu
     expandable = 1

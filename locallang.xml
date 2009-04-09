@@ -18,16 +18,40 @@
 			<label index="cms_layout.not_configured">Plugin is not configured!</label>
 			
 			<label index="updater.back">[&lt;- back]</label>
+			<label index="updater.reload">[reload this page]</label>
+			
 			<label index="updater.lbl_searchOutdatedTempl">Search for outdated static TS templates</label>
-			<label index="updater.msg_searchOutdatedTempl">Check for TypoScript templates which include one of the tt_news static templates but with an outdated path:</label>
+			<label index="updater.msg_searchOutdatedTempl">Search for TypoScript templates which include one of the tt_news static templates but with an outdated path:</label>
 			<label index="updater.foundMsg_searchOutdatedTempl">Found ###COUNT### template records.</label>
 			<label index="updater.question_searchOutdatedTempl">Should the updater update these records?</label>
 			
 			<label index="updater.lbl_searchNonExistingHtml">Search for non existing HTML templates</label>
-			<label index="updater.msg_searchNonExistingHtml">Check for tt_news content elements with a configured HTML template (EXT:tt_news/pi/tt_news_v2_template.html) in flexforms which
-						doesn't exist in this tt_news version:</label>
+			<label index="updater.msg_searchNonExistingHtml">Search for tt_news content elements with a configured HTML template in flexforms which doesn't exist in your filesystem:</label>
 			<label index="updater.foundMsg_searchNonExistingHtml">Found ###COUNT### content elements.</label>
-			<label index="updater.question_searchNonExistingHtml">Should the updater clean this settings?</label>			
+			<label index="updater.question_searchNonExistingHtml">Should the updater clean this settings?</label>
+	
+	
+			<label index="updater.lbl_searchMovedPidlist">Search "Startingpoint" ("pages") in FF</label>
+			<label index="updater.msg_searchMovedPidlist">Search for tt_news content elements with a value for "Startingpoint" in flexforms (This field was moved to another sheet):</label>
+			<label index="updater.foundMsg_searchMovedPidlist">Found ###COUNT### content elements.</label>
+			<label index="updater.question_searchMovedPidlist">Should the updater fix this settings?</label>
+			
+			<label index="updater.lbl_searchMovedRecursive">Search "recursive" in FF</label>
+			<label index="updater.msg_searchMovedRecursive">Search for tt_news content elements with a value for "recursive" in flexforms (This field was moved to another sheet):</label>
+			<label index="updater.foundMsg_searchMovedRecursive">Found ###COUNT### content elements.</label>
+			<label index="updater.question_searchMovedRecursive">Should the updater fix this settings?</label>
+			
+			
+			<label index="updater.lbl_searchMovedNoPageBrowser">Search "no page Browser" in FF</label>
+			<label index="updater.msg_searchMovedNoPageBrowser">Search for tt_news content elements with a value for "noPageBrowser" in flexforms (This field was moved to another sheet):</label>
+			<label index="updater.foundMsg_searchMovedNoPageBrowser">Found ###COUNT### content elements.</label>
+			<label index="updater.question_searchMovedNoPageBrowser">Should the updater fix this settings?</label>
+			
+			<label index="updater.lbl_searchMovedListLimit">Search "listLimit" in FF</label>
+			<label index="updater.msg_searchMovedListLimit">Search for tt_news content elements with a value for "listLimit" in flexforms (This field was moved to another sheet):</label>
+			<label index="updater.foundMsg_searchMovedListLimit">Found ###COUNT### content elements.</label>
+			<label index="updater.question_searchMovedListLimit">Should the updater fix this settings?</label>			
+				
 			<label index="updater.warningHeader">Important! Please Read!</label>
 			<label index="updater.nothingtodo">Nothing to do</label>
 			<label index="updater.warningMsg">The updater manipulates your database and due to the huge amount of configuration variants it is 
@@ -50,10 +74,60 @@
 			<label index="extmng.l10n_mode_prefixLangTitle">Localization mode for text fields: By default, all text fields (text, subheader, imagecaption ...) from a new localized news article will be prepended with "[translate to ...]". If this is not wanted you can disable it here. If "l10n_mode_prefixLangTitle" is disabled the text "(copy [#])" will be added to the titles of this records unless "prependAtCopy" is disabled (see "prependAtCopy").</label>
 			<label index="extmng.l10n_mode_imageExclude">Localization mode for images: The image field of a localized news article is excluded by default (images are alwas taken from the record in the default language). If you need localized images (f.e. if the images show texts) you can enable the "image" field in translated news by setting "l10n_mode_imageExclude" to 0.</label>
 			<label index="extmng.hideNewLocalizations">Hide new localizations: Here you choose if new localizations of news articles should be hidden or not. By default new localizations are visible. If this is not wanted set "hideNewLocalizations" to 1.</label>
-			<label index="extmng.updatermsg">tt_news 3.0.0 comes with a new updater-script which can fix some of the most commen problems when you're updating an existing
-  			tt_news installation.</label>
+			<label index="extmng.updatermsg">tt_news 3.0.0 comes with a new updater-script which can fix some of the most commen problems when you're updating an existing tt_news installation.</label>
 			<label index="extmng.updatermsgHeader">Important!</label>
 			<label index="extmng.updatermsgLink">[Click here to open the updater]</label>
+			
+			<label index="tsce.templateFile">Template File: HTML-template which is used to display news (e.g.: "fileadmin/templates/my_news_tmpl.html").</label>
+			<label index="tsce.pid_list">Starting Point (pid_list): The PID of the page (or comma separated list pf PIDs) where your news articles are stored. Note that getting the pidList can be very performance intensive if you use a high recursion level (plugin.tt_news.recursive) in a big pagetree. If this is a problem for your site, consider to completely disable the use of pidList in database queries (TS-Setup: plugin.tt_news.dontUsePidList).</label>
+			<label index="tsce.singlePid">SinglePid: Page on which single news items should be displayed.</label>
+			<label index="tsce.backPid">BackPid: Page where the "back to list" link in single view links to.</label>
+			<label index="tsce.archiveTypoLink.parameter">Archive Link parameter: The PID of the page with a LIST element that displays only archived news items. This link appears at the bottom of the 'LATEST template and it is also used for the links in the AMENU.</label>
+			<label index="tsce.allowCaching">Allow Caching: Allow caching of displayed news? If you want your news being indexed by the indexed-search this has to be enabled.</label>
+			<label index="tsce.useHRDates">Use human readable dates: This enables the use of the GETvars 'year' and 'month' for the archive links instead of the non-readable 'pS', 'pL' and 'arc'.</label>
+			<label index="tsce.useSubCategories">Use subcategories: Enable this if news should also be selected for display if they are a member of a subcategory of the selected category. Works only if categoryMode is 1 (="Show items with selected categories").</label>
+			<label index="tsce.showCatRootline">Show category rootline: Enable this to show the category rootline in the SINGLE or LIST view.</label>
+			<label index="tsce.useBidirectionalRelations">Use bidirectional relations: If this is enabled the SINGLE view shows the the relations of news in both directions. The relation which points back to the source record will be inserted automatically.</label>
+			<label index="tsce.usePagesRelations">Use Pages as related news: If this is enabled the SINGLE view shows also relations to pages.</label>
+			<label index="tsce.displaySubCategories">Display subcategories: If this is enabled the subcategories of the categories that are assigned to a news record will also be displayed in news records in the FrontEnd. If displayed categories in a news record are subcategories they will be wrapped with "subCategoryTitleItem_stdWrap" (titles) or "subCategoryImgItem_stdWrap" (images).</label>
+			<label index="tsce.showRelatedNewsByCategory">Show related news by category: If this is enbaled the SINGLE view shows a list of news with the same category as the current news record.</label>
+			<label index="tsce.useSPidFromCategory">Use singlePid from category: If this is enabled tt_news uses the singlePid from the first assigned category.</label>
+			<label index="tsce.useMultiPageSingleView">Use Multipage Single View: Enable this if you want to divide the news SINGLE view to multiple pages.</label>
+			<label index="tsce.showTitleAsPrevNextLink">Show news title as next/prev link: Enable this if you want to show the title of the linked news article in next/previous links in SINGLE view. If disabled the language labels for "next" and "previous" will be used instead.</label>
+			<label index="tsce.limit">List Limit: max items in LIST template.</label>
+			<label index="tsce.latestLimit">Latest Limit: max news items in LATEST template.</label>
+			<label index="tsce.displayCatMenu.mode">Category menu mode: This configures how the tt_news category menu (catmenu) is rendered. 'tree': use TYPO3 class treeview to build an expandable menu, 'ajaxtree': expandable menu with ajax (requires TYPO3 >= 4.2), 'nestedWraps': make a catmenu with nested wraps (static)</label>
+			<label index="tsce.recursive">Recursive level: extend "pid_list" by the number of recursive levels.</label>
+			<label index="tsce.datetimeDaysToArchive">datetime Days to Archive: If this is set, elements are automatically in the archive, after the given number of days has passed. Set this to '0' if you want to disable this feature.</label>
+			<label index="tsce.enableArchiveDate">Enable archivedate: If this is not set, the archive-menu selects news by their datetime.</label>
+			<label index="tsce.amenuStart">Archivemenu start: Start date for the archive menu (php strtotime() syntax. e.g.: 1.1.2002, -3 months, -10 years, now)</label>
+			<label index="tsce.amenuEnd">Archivemenu end: End date for the archive menu (php strtotime() syntax. e.g.: 1.1.2002, -3 months, -10 years, now)</label>
+			<label index="tsce.catTextMode">Category Text mode: posible values are: 0 = don't display, 1 = display but no link, 2 = link to category shortcut, 3 = act as category selector.</label>
+			<label index="tsce.catImageMode">Category Image mode: same values as catTextMode.</label>
+			<label index="tsce.singleMaxW">single-image max Width: Max width for an image displayed in SINGLE template</label>
+			<label index="tsce.singleMaxH">single-image max height: Max height for an image displayed in SINGLE template</label>
+			<label index="tsce.latestMaxW">latest-image max width: Max width for an image displayed in LATEST template</label>
+			<label index="tsce.latestMaxH">latest-image max height: Max height for an image displayed in LATEST template</label>
+			<label index="tsce.listMaxW">list-image max width: Max width for an image displayed in LIST template</label>
+			<label index="tsce.listMaxH">list-image max height: Max height for an image displayed in LIST template</label>
+			
+			<label index="tsce.xmlFormat">News-Feed XML-Format: Defines the format of the news feed. Possible values are: 'rss091', 'rss2' 'rdf', 'atom1' and 'atom03'</label>
+			<label index="tsce.xmlTitle">News-Feed XML-Title: The title of your news feed. (required for rss091, rss2, rdf and atom03)</label>
+			<label index="tsce.xmlLink">News-Feed XML-Link: The link to your hompage. (required for rss091, rss2, rdf and atom03)</label>
+			<label index="tsce.xmlDesc">News-Feed XML-Description: The description of your news feed. (required for rss091, rss2 and rdf. optional for atom03)</label>
+			<label index="tsce.xmlLang">News-Feed XML-Language: Your site's language. A list of allowable values for &lt;language&gt; in RSS is available at http://backend.userland.com/stories/storyReader$16 (equired for rss091, optional for rss2, not available for rdf, recommended for atom03)</label>
+			<label index="tsce.xmlIcon">News-Feed XML-Icon: Provide an icon for your news feed with preferred size of 16x16 px, can be gif, jpeg or png. (required for rss091, optional for rss2 and rdf, not available for atom03)</label>
+			<label index="tsce.xmlLimit">News-Feed XML-Limit: max news items in RSS feeds.</label>
+			<label index="tsce.xmlCaching">News-Feed XML-Caching: Allow caching for the RSS feed</label>
+			<label index="tsce.rss2_tmplFile">RSS-News rss v2 Template File: XML template for RSS 2.0 feed</label>
+			<label index="tsce.rss091_tmplFile">RSS-News rss v0.91 Template File: XML template for RSS 0.91 feed.</label>
+			<label index="tsce.rdf_tmplFile">RDF-News RDF Template File: XML template for RDF feed.</label>
+			<label index="tsce.atom03_tmplFile">Atom-News Atom v0.3 Template File: XML template for Atom 0.3 feed.</label>
+			<label index="tsce.atom1_tmplFile">Atom-News Atom v1.0 Template File: XML template for Atom 1.0 feed.</label>
+			
+			
+			
+			
 			
 			
 		</languageKey>
