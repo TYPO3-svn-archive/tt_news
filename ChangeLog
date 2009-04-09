@@ -5,8 +5,8 @@
 	  actually exists in the filesystem and offers to unset the value if the template file doesn't exist anymore.
 	* moved all text from the constants.txt files to tt_news/locallang.xml
 	* reformattd code in class.tx_ttnews.php
-	* fix: added an empty (Set by TS) option to the "what to display" (code) selector in FF. without this it was not possible anmore to 
-	  override the the CODE from TS.
+	* fix: added an empty (Set by TS) option to the "what to display" (code) selector in FF. fix: added an empty (Set by TS) option to the 
+	  "what to display" (code) selector in FF. Without this it was not possible anymore to leave CODE empty and override it from TS.
 	  
 	* refactored the updater script. Added language labels and moved all text to tt_news/locallang.xml
 	* moved all text from ext_conf_template.txt to tt_news/locallang.xml (those labels require a colon : to divide the header from the helptext)
