@@ -244,6 +244,7 @@ $TCA['tt_news'] = Array (
 			)
 		),
 		'author_email' => Array (
+			'exclude' => 1,
 			'l10n_mode' => $l10n_mode_author,
 			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.email',
 			'config' => Array (
@@ -385,8 +386,8 @@ $TCA['tt_news'] = Array (
 				'type' => 'check'
 			)
 		),
-		
-		
+
+
 		/**
 		 * The following fields have to be configured here to get them processed by the listview in the tt_news BE module
 		 * they should never appear in the 'showitem' list as editable fields, though.
@@ -396,13 +397,13 @@ $TCA['tt_news'] = Array (
 			'config' => Array (
 				'type' => 'none'
 			)
-		),	
+		),
 		'pid' => Array (
 			'label' => 'LLL:EXT:tt_news/locallang_tca.xml:tt_news.pid',
 			'config' => Array (
 				'type' => 'none'
 			)
-		),			
+		),
 		'tstamp' => Array (
 			'label' => 'LLL:EXT:tt_news/locallang_tca.xml:tt_news.tstamp',
 			'config' => Array (
@@ -410,7 +411,7 @@ $TCA['tt_news'] = Array (
 				'eval' => 'datetime',
 			)
 		),
-		
+
 	),
 	'types' => Array (
 		'0' => Array('showitem' =>
@@ -548,12 +549,12 @@ $TCA['tt_news_cat'] = Array (
 				'size' => 1,
 				'minitems' => 0,
 /**
- * FIXME actually maxitems is '1' but somehow the '2' is needed here 
+ * FIXME actually maxitems is '1' but somehow the '2' is needed here
  * @see lib/class.tx_ttnews_TCAform_selectTree.php
- * 
- */ 
-		
-				'maxitems' => 2, 
+ *
+ */
+
+				'maxitems' => 2,
 				'foreign_table' => 'tt_news_cat',
 //				'wizards' => Array(
 //					'_PADDING' => 2,
@@ -651,7 +652,7 @@ $TCA['tt_news_cat'] = Array (
 			title;;2;;1-1-1,parent_category;;;;1-1-1,
 			--div--;LLL:EXT:tt_news/locallang_tca.xml:tt_news.tabs.special, image;;;;1-1-1,shortcut;;1;;1-1-1,single_pid;;;;1-1-1,description;;;;1-1-1,
 			--div--;LLL:EXT:tt_news/locallang_tca.xml:tt_news.tabs.access, hidden,starttime,endtime,fe_group,
-			--div--;LLL:EXT:tt_news/locallang_tca.xml:tt_news.tabs.extended,		
+			--div--;LLL:EXT:tt_news/locallang_tca.xml:tt_news.tabs.extended,
 		'),
 
 	),

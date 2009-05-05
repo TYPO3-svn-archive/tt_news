@@ -49,6 +49,7 @@ class tx_ttnews_catmenu {
 	 * @return	[type]		...
 	 */
 	function init(&$pObj) {
+
 		$lConf = $pObj->conf['displayCatMenu.'];
 		$this->treeObj = t3lib_div::makeInstance('tx_ttnews_FEtreeview');
 		$this->treeObj->tt_news_obj = &$pObj;
@@ -75,6 +76,7 @@ class tx_ttnews_catmenu {
 		$this->treeObj->titleLen = $this->titleLen;
 
 		$this->treeObj->getCatNewsCount = $lConf['showNewsCountForCategories'];
+		$this->treeObj->newsSelConf = $pObj->getSelectConf('');
 
 		$this->treeObj->title = $GLOBALS['TSFE']->sL('LLL:EXT:tt_news/pi/locallang.xml:catmenuHeader');
 

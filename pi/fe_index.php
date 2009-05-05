@@ -108,6 +108,12 @@ $tt_newsObj->cObj->data = $TSFE->sys_page->checkRecord('tt_content',$cObjUid,1);
 $tt_newsObj->pi_initPIflexForm();
 $tt_newsObj->conf = &$TSFE->tmpl->setup['plugin.']['tt_news.'];
 
+// variables needed to get the newscount per category
+if (! $tt_newsObj->conf['dontUsePidList']) {
+	$tt_newsObj->initPidList();
+}
+$tt_newsObj->enableFields = $tt_newsObj->getEnableFields('tt_news');
+
 $tt_newsObj->initCategoryVars();
 $tt_newsObj->initCatmenuEnv($tt_newsObj->conf['displayCatMenu.']);
 

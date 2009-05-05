@@ -70,27 +70,27 @@ class tx_ttnews_tcemain {
 	 * @param	integer		$cc: counter to detect recursion in nested categories
 	 * @return	string		extended $catlist
 	 */
-	function getSubCategories($catlist, $cc = 0) {
-		$pcatArr = array();
-
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
-			'uid',
-			'tt_news_cat',
-			'tt_news_cat.parent_category IN ('.$catlist.')'.$this->SPaddWhere.$this->enableCatFields);
-
-		while (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))) {
-			$cc++;
-			if ($cc > 10000) { // more than 10k subcategories? looks like a recursion
-				return implode(',', $pcatArr);
-			}
-			$subcats = $this->getSubCategories($row['uid'], $cc);
-			$subcats = $subcats?','.$subcats:'';
-			$pcatArr[] = $row['uid'].$subcats;
-		}
-
-		$catlist = implode(',', $pcatArr);
-		return $catlist;
-	}
+//	function getSubCategories($catlist, $cc = 0) {
+//		$pcatArr = array();
+//
+//		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
+//			'uid',
+//			'tt_news_cat',
+//			'tt_news_cat.parent_category IN ('.$catlist.')'.$this->SPaddWhere.$this->enableCatFields);
+//
+//		while (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))) {
+//			$cc++;
+//			if ($cc > 10000) { // more than 10k subcategories? looks like a recursion
+//				return implode(',', $pcatArr);
+//			}
+//			$subcats = $this->getSubCategories($row['uid'], $cc);
+//			$subcats = $subcats?','.$subcats:'';
+//			$pcatArr[] = $row['uid'].$subcats;
+//		}
+//
+//		$catlist = implode(',', $pcatArr);
+//		return $catlist;
+//	}
 
 	/**
 	 * This method is called by a hook in the TYPO3 Core Engine (TCEmain) when a record is saved. We use it to disable saving of the current record if it has categories assigned that are not allowed for the BE user.
@@ -107,7 +107,7 @@ class tx_ttnews_tcemain {
 		if ($table == 'tt_news_cat' && is_int($id)) { // prevent moving of categories into their rootline
 			$newParent = intval($fieldArray['parent_category']);
 			if ($newParent) {
-				$subcategories = $this->getSubCategories($id);
+				$subcategories = tx_ttnews_div::getSubCategories($id,$this->SPaddWhere.$this->enableCatFields);
 				if (t3lib_div::inList($subcategories,$newParent)) {
 					$sourceRec = t3lib_BEfunc::getRecord($table,$id,'title');
 					$targetRec = t3lib_BEfunc::getRecord($table,$fieldArray['parent_category'],'title');
@@ -149,6 +149,7 @@ class tx_ttnews_tcemain {
 				while (($cRow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($cRes))) {
 					$categories[] = $cRow['uid_foreign'];
 				}
+				$GLOBALS['TYPO3_DB']->sql_free_result($cRes);
 
 				$notAllowedItems = array();
 				if ($categories[0]) { // original record has no categories
@@ -319,6 +320,7 @@ class tx_ttnews_tcemain_cmdmap {
 					}
 				}
 			}
+			$GLOBALS['TYPO3_DB']->sql_free_result($mres);
 		}
 		return $CPtable;
 	}

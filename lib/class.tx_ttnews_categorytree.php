@@ -149,23 +149,18 @@ class tx_ttnews_categorytree extends t3lib_treeview {
 
 		$news_clause = '';
 		if (is_object($this->tt_news_obj)) {
-			$where = '';
-			$newsSelConf = $this->tt_news_obj->getSelectConf($where);
-
-			if ($newsSelConf['pidInList']) {
-				$news_clause .= ' AND tt_news.pid IN ('.$newsSelConf['pidInList'].') ';
+			$news_clause .= ' AND '.$this->newsSelConf['where'].$this->tt_news_obj->enableFields;
+			if ($this->newsSelConf['pidInList']) {
+				$news_clause .= ' AND tt_news.pid IN ('.$this->newsSelConf['pidInList'].') ';
 			}
-
-			$news_clause = ' AND '.$newsSelConf['where'].$this->tt_news_obj->enableFields;
 		}
-
-
-
 
 		tx_ttnews_div::getNewsCountForSubcategory($result, $catID, $news_clause,$this->clause);
 		return $result['sum'];
-
 	}
+
+
+
 
 
 	/**

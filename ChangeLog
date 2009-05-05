@@ -1,3 +1,29 @@
+
+
+2009-05-05  Rupert Germann <rupi@gmx.li>
+	* 
+	* new feature: generic markers (thanks to Georg Ringer for his ttnewsgenericmarkers extension). Generic markers allows you to define new
+	  HTML template Markers and render any field from the tt_news record to them without writing a single line of PHP. 
+	* new feature: it's now possible to enable the "Crop"-Mode for news images directly in the Constant Editor (listImageMode, latestImageMode)
+	* performance fix: moved a call to getSelectConf() from function getNewsCountForCategory() to the init function of the catmenu class because 
+	  it was called multiple there.
+	* cleanup: changed all calls to the different getSubCategories() methods to tx_ttnews_div::getSubCategories(). removed the unneeded methods
+	  from class.tx_ttnews_helpers and class_tx_ttnews_tcemain
+	* fix: added alot of missing calls to $GLOBALS['TYPO3_DB']->sql_free_result($res)
+	* performance fix: changed the initialization of $this->pageArray in class tx_ttnews. This array was initialized with all pages in the 
+	  pid_list which was quite expensive when there was a huge pid_list. $this->pageArray is used to output some data of the news sysfolder 
+	  to the tt_news $markerArray. 
+	  Now $this->pageArray is used as cache for already fetched pagerecords which will only be fetched (by the new method getRelatedNewsByCategory())
+	  if they are actually needed and if there is a marker for them.
+	* cleanup: moved the code for getting newsfiles, related news by category and for the xml markers to own functions: 
+	  getXmlMarkers(), getFileLinks(), getRelatedNewsByCategory()
+	* fixed bug #10708: added 2 missing references to function getSIngleViewLink() to make it possible to alter the singlePid
+	  by a hook.
+	
+
+2009-04-17  Rupert Germann <rupi@gmx.li>
+	* fixed bug #10921: added exclude=1 to tca config of field author_email
+
 2009-04-09  Rupert Germann <rupi@gmx.li>
 	* updater: new feature: added some more options to the updater script: it is now able to ckeck for values in the moved Flexform fields: 
 	  pages (startingpoint), recursive, listLimit and noPageBrowser. These values will be moved to the field in the correct sheet.
@@ -42,7 +68,7 @@
 	* performance enhancement: replaced the "renderFields" feature with "renderMarkers" by Dan Osipov - thanx Dan!
 	  although renderMarkers does basically the same as renderFields it is the smarter concept, because it doesn't need any configuration.
 	  The existence of a certain marker in the html template let's tt_news execute the code that is needed for this marker. Means: every code line 
-	  the fills a certain marker is now wrapped with a condition which checks the existence of this marker before the code is executed.
+	  that fills a certain marker is now wrapped with a condition which checks the existence of this marker before the code is executed.
 	  
 	  
 

@@ -104,28 +104,28 @@ class tx_ttnews_helpers {
 	 * @param	integer		$cc: counter to detect recursion in nested categories
 	 * @return	string		extended $catlist
 	 */
-	function getSubCategories($catlist, $cc = 0) {
-		$pcatArr = array();
-
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
-			'uid',
-			'tt_news_cat',
-			'tt_news_cat.parent_category IN ('.$catlist.')'.$this->pObj->SPaddWhere.$this->pObj->enableCatFields);
-
-
-		while (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))) {
-			$cc++;
-			if ($cc > 10000) {
-				$GLOBALS['TT']->setTSlogMessage('tt_news: one or more recursive categories where found');
-				return implode(',', $pcatArr);
-			}
-			$subcats = $this->getSubCategories($row['uid'], $cc);
-			$subcats = $subcats?','.$subcats:'';
-			$pcatArr[] = $row['uid'].$subcats;
-		}
-		$catlist = implode(',', $pcatArr);
-		return $catlist;
-	}
+//	function getSubCategories($catlist, $cc = 0) {
+//		$pcatArr = array();
+//
+//		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
+//			'uid',
+//			'tt_news_cat',
+//			'tt_news_cat.parent_category IN ('.$catlist.')'.$this->pObj->SPaddWhere.$this->pObj->enableCatFields);
+//
+//
+//		while (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))) {
+//			$cc++;
+//			if ($cc > 10000) {
+//				$GLOBALS['TT']->setTSlogMessage('tt_news: one or more recursive categories where found');
+//				return implode(',', $pcatArr);
+//			}
+//			$subcats = $this->getSubCategories($row['uid'], $cc);
+//			$subcats = $subcats?','.$subcats:'';
+//			$pcatArr[] = $row['uid'].$subcats;
+//		}
+//		$catlist = implode(',', $pcatArr);
+//		return $catlist;
+//	}
 
 	/**
 	* Searches the category rootline (up) for a single view pid. If nothing is found in the current
@@ -141,6 +141,7 @@ class tx_ttnews_helpers {
 				'tt_news_cat.uid='.$currentCategory.$this->pObj->SPaddWhere.$this->pObj->enableCatFields
 			);
 		$row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
+		$GLOBALS['TYPO3_DB']->sql_free_result($res);
  		if ($row['single_pid'] > 0) {
 			return $row['single_pid'];
 		} elseif ($row['parent_category'] > 0) {
@@ -178,6 +179,7 @@ class tx_ttnews_helpers {
 			$subcats = $this->getSubCategoriesForMenu($row['uid'], $fields, $addWhere, $cc);
 			$pcatArr[] = is_array($subcats)?array_merge($row,$subcats):'';
 		}
+		$GLOBALS['TYPO3_DB']->sql_free_result($res);
 		return $pcatArr;
 	}
 

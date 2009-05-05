@@ -104,12 +104,12 @@ class tx_ttnews_div {
 	 * @param	integer		$cc: counter to detect recursion in nested categories
 	 * @return	string		extended $catlist
 	 */
-	function getSubCategories($catlist, $cc = 0) {
+	function getSubCategories($catlist,$addWhere='', $cc = 0) {
 		$sCatArr = array();
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
 			'uid',
 			'tt_news_cat',
-			'tt_news_cat.parent_category IN ('.$catlist.') AND deleted=0');
+			'tt_news_cat.parent_category IN ('.$catlist.') AND deleted=0 '.$addWhere);
 
 		while (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))) {
 			$cc++;
@@ -117,10 +117,11 @@ class tx_ttnews_div {
 				$GLOBALS['TT']->setTSlogMessage('tt_news: one or more recursive categories where found');
 				return implode(',', $sCatArr);
 			}
-			$subcats = tx_ttnews_div::getSubCategories($row['uid'], $cc);
+			$subcats = tx_ttnews_div::getSubCategories($row['uid'],$addWhere, $cc);
 			$subcats = $subcats?','.$subcats:'';
 			$sCatArr[] = $row['uid'].$subcats;
 		}
+		$GLOBALS['TYPO3_DB']->sql_free_result($res);
 		$catlist = implode(',', $sCatArr);
 		return $catlist;
 	}
@@ -192,6 +193,7 @@ class tx_ttnews_div {
 		while (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))) {
 			$treeIDs[]=$row['uid'];
 		}
+		$GLOBALS['TYPO3_DB']->sql_free_result($res);
 		return $treeIDs;
 	}
 

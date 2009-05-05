@@ -111,6 +111,11 @@
 			<label index="tsce.listMaxW">list-image max width: Max width for an image displayed in LIST template</label>
 			<label index="tsce.listMaxH">list-image max height: Max height for an image displayed in LIST template</label>
 			
+			<label index="tsce.listImageMode">Resize mode for LIST images: If set to "resize2max" images will be scaled until either width or height reaches the maximum value (aspect ratio is preserved). If set to "crop" images will be cropped to the given size (centered). If set to "resize" images will be resized to the given values, the aspect ratio is not preserved.</label>
+			<label index="tsce.latestImageMode">Resize mode for LATEST images: see "listImageMode".</label>
+			
+			
+			
 			<label index="tsce.xmlFormat">News-Feed XML-Format: Defines the format of the news feed. Possible values are: 'rss091', 'rss2' 'rdf', 'atom1' and 'atom03'</label>
 			<label index="tsce.xmlTitle">News-Feed XML-Title: The title of your news feed. (required for rss091, rss2, rdf and atom03)</label>
 			<label index="tsce.xmlLink">News-Feed XML-Link: The link to your hompage. (required for rss091, rss2, rdf and atom03)</label>
