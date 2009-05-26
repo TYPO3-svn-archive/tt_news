@@ -113,6 +113,7 @@ class tx_ttnews extends tslib_pibase {
 
 	var $cache_period = 0;
 
+
 	/**
 	 * Main news function: calls the init_news() function and decides by the given CODEs which of the
 	 * functions to display news should by called.
@@ -148,8 +149,6 @@ class tx_ttnews extends tslib_pibase {
 		}
 
 		$this->init();
-
-
 
 		foreach ($this->codes as $theCode) {
 
@@ -269,7 +268,6 @@ class tx_ttnews extends tslib_pibase {
 		}
 
 		$this->initCaching();
-
 
 		$this->local_cObj = t3lib_div::makeInstance('tslib_cObj'); // Local cObj.
 		$this->enableFields = $this->getEnableFields('tt_news');
@@ -414,13 +412,11 @@ class tx_ttnews extends tslib_pibase {
 		$this->allowCaching = $this->conf['allowCaching'] ? 1 : 0;
 		if (! $this->allowCaching) {
 
-
 			/**
 			 * TODO: 25.05.2009
 			 *
 			 * in TYPO3 4.3 this seems not to be needed anymore -> cobj->convertToUserIntObject()
 			 */
-
 
 			$GLOBALS['TSFE']->set_no_cache();
 		}
@@ -586,7 +582,6 @@ class tx_ttnews extends tslib_pibase {
 		$noPeriod = 0; // used to call getSelectConf without a period lenght (pL) at the first archive page
 
 
-
 		if (! $this->conf['emptyArchListAtStart']) {
 			// if this is true, we're listing from the archive for the first time (no pS set), to prevent an empty list page we set the pS value to the archive start
 			if (($this->arcExclusive > 0 && ! $this->piVars['pS'] && $theCode != 'SEARCH')) {
@@ -604,15 +599,10 @@ class tx_ttnews extends tslib_pibase {
 			$noPeriod = 1; // override the period lenght checking in getSelectConf
 		}
 
+		if ($theCode == 'SEARCH' || ($this->arcExclusive == 1 && $this->piVars['pS']) || ($this->arcExclusive < 1 && ! $this->piVars['pS'])) {
 
-				debug($this->config, $this->theCode.' ('.__CLASS__.'::'.__FUNCTION__.')', __LINE__, __FILE__, 3);
-		debug($this->piVars, $this->arcExclusive.' ('.__CLASS__.'::'.__FUNCTION__.')', __LINE__, __FILE__, 3);
-
-
-		if ($theCode=='SEARCH' || ($this->arcExclusive==1 && $this->piVars['pS']) || ($this->arcExclusive<1 && !$this->piVars['pS'])) {
-
-		// Allowed to show the listing? periodStart must be set, when listing from the archive.
-//		if (! ($this->arcExclusive > - 1 && ! $this->piVars['pS'] && $theCode != 'SEARCH')) {
+			// Allowed to show the listing? periodStart must be set, when listing from the archive.
+			//		if (! ($this->arcExclusive > - 1 && ! $this->piVars['pS'] && $theCode != 'SEARCH')) {
 			if ($this->conf['displayCurrentRecord'] && $this->tt_news_uid) {
 				$this->pid_list = $this->cObj->data['pid'];
 				$where = 'AND tt_news.uid=' . $this->tt_news_uid;
@@ -627,7 +617,6 @@ class tx_ttnews extends tslib_pibase {
 			// performing query to count all news (we need to know it for browsing):
 
 
-
 			/**
 			 * TODO: 19.05.2009
 			 *
@@ -635,19 +624,17 @@ class tx_ttnews extends tslib_pibase {
 			 * in LATEST this is almost always the case
 			 */
 
-
 			if ($selectConf['leftjoin']) {
 				$selectConf['selectFields'] = 'COUNT(DISTINCT(tt_news.uid))';
 			} else {
 				$selectConf['selectFields'] = 'COUNT(tt_news.uid)';
 			}
 
-
 			$newsCount = 0;
 			$countSelConf = $selectConf;
 			unset($countSelConf['orderBy']);
 
-			debug($countSelConf, $this->theCode . ' COUNT $selectConf (' . __CLASS__ . '::' . __FUNCTION__ . ')', __LINE__, __FILE__, 3);
+			//			debug($countSelConf, $this->theCode . ' COUNT $selectConf (' . __CLASS__ . '::' . __FUNCTION__ . ')', __LINE__, __FILE__, 3);
 
 
 			if (($res = $this->exec_getQuery('tt_news', $countSelConf))) {
@@ -910,7 +897,9 @@ class tx_ttnews extends tslib_pibase {
 		$lConf = $this->conf[$prefix_display . '.'];
 		$res = $this->exec_getQuery('tt_news', $selectConf); //get query for list contents
 
-//		debug($selectConf, $this->theCode.' final $selectConf (' . __CLASS__ . '::' . __FUNCTION__ . ')', __LINE__, __FILE__, 3);
+
+		//		debug($selectConf, $this->theCode.' final $selectConf (' . __CLASS__ . '::' . __FUNCTION__ . ')', __LINE__, __FILE__, 3);
+
 
 		// make some final config manipulations
 		// overwrite image sizes from TS with the values from content-element if they exist.
@@ -1211,15 +1200,15 @@ class tx_ttnews extends tslib_pibase {
 			$tmpWhere = $selectConf['where'];
 
 			if ($this->cache_amenuPeriods) {
-				$storeKey = md5(serialize(array($this->catExclusive,$this->config['catSelection'],
-														$GLOBALS['TSFE']->sys_language_content,$selectConf['pidInList'], $arcMode)));
-//				$cachedPeriodAccum = $GLOBALS['TSFE']->sys_page->getHash($storeKey);
-				$cachedPeriodAccum = tx_ttnews_div::cache_get($storeKey,$this->cache_period);
+				$storeKey = md5(serialize(array($this->catExclusive, $this->config['catSelection'], $GLOBALS['TSFE']->sys_language_content,
+						$selectConf['pidInList'], $arcMode)));
+				//				$cachedPeriodAccum = $GLOBALS['TSFE']->sys_page->getHash($storeKey);
+				$cachedPeriodAccum = tx_ttnews_div::cache_get($storeKey, $this->cache_period);
 			}
 
 			if ($cachedPeriodAccum != '') {
-				if ($this->writeCachingInfoToDevlog>1) {
-					t3lib_div::devLog('CACHE HIT ('.__CLASS__.'::'.__FUNCTION__.')', 'tt_news', -1, array());
+				if ($this->writeCachingInfoToDevlog > 1) {
+					t3lib_div::devLog('CACHE HIT (' . __CLASS__ . '::' . __FUNCTION__ . ')', 'tt_news', - 1, array());
 				}
 				$periodAccum = unserialize($cachedPeriodAccum);
 			} else {
@@ -1251,10 +1240,10 @@ class tx_ttnews extends tslib_pibase {
 				}
 				if ($this->cache_amenuPeriods && count($periodAccum)) {
 					if ($this->writeCachingInfoToDevlog) {
-						t3lib_div::devLog('CACHE MISS ('.__CLASS__.'::'.__FUNCTION__.')', 'tt_news', 2, array());
+						t3lib_div::devLog('CACHE MISS (' . __CLASS__ . '::' . __FUNCTION__ . ')', 'tt_news', 2, array());
 					}
-//					$GLOBALS['TSFE']->sys_page->storeHash($storeKey, serialize($periodAccum), 'news_amenuPeriodsCache');
-					tx_ttnews_div::cache_set($storeKey,serialize($periodAccum),__FUNCTION__);
+					//					$GLOBALS['TSFE']->sys_page->storeHash($storeKey, serialize($periodAccum), 'news_amenuPeriodsCache');
+					tx_ttnews_div::cache_set($storeKey, serialize($periodAccum), __FUNCTION__);
 				}
 
 			}
@@ -2341,12 +2330,12 @@ class tx_ttnews extends tslib_pibase {
 			$hash = t3lib_div::shortMD5(serialize(array($uid, $this->config['catOrderBy'], $this->enableCatFields, $this->SPaddWhere, $getAll,
 					$GLOBALS['TSFE']->sys_language_content, $this->conf['useSPidFromCategory'], $this->conf['useSPidFromCategoryRecusive'],
 					$this->conf['displaySubCategories'], $this->config['useSubCategories'])), 30);
-			$tmpcat = tx_ttnews_div::cache_get($hash,$this->cache_period);
+			$tmpcat = tx_ttnews_div::cache_get($hash, $this->cache_period);
 		}
 
 		if ($tmpcat !== false) {
-			if ($this->writeCachingInfoToDevlog>1) {
-				t3lib_div::devLog('CACHE HIT ('.__CLASS__.'::'.__FUNCTION__.')', 'tt_news', -1, array());
+			if ($this->writeCachingInfoToDevlog > 1) {
+				t3lib_div::devLog('CACHE HIT (' . __CLASS__ . '::' . __FUNCTION__ . ')', 'tt_news', - 1, array());
 			}
 			$categories = unserialize($tmpcat);
 		} else {
@@ -2416,7 +2405,7 @@ class tx_ttnews extends tslib_pibase {
 			}
 			$GLOBALS['TYPO3_DB']->sql_free_result($res);
 			if ($this->cache_categories && is_array($categories)) {
-				tx_ttnews_div::cache_set($hash, serialize($categories),__FUNCTION__);
+				tx_ttnews_div::cache_set($hash, serialize($categories), __FUNCTION__);
 			}
 
 			if ($this->debugTimes) {
@@ -3477,7 +3466,6 @@ class tx_ttnews extends tslib_pibase {
 	}
 
 
-
 	function initCaching() {
 		if ($this->confArr['useInternalCaching']) {
 			$this->cache_amenuPeriods = true;
@@ -3485,25 +3473,24 @@ class tx_ttnews extends tslib_pibase {
 			$this->cache_categories = true;
 
 			if ($this->confArr['writeCachingInfoToDevlog']) {
-				$tmp = t3lib_div::trimExplode('|',$this->confArr['writeCachingInfoToDevlog'],0);
+				$tmp = t3lib_div::trimExplode('|', $this->confArr['writeCachingInfoToDevlog'], 0);
 				if ($tmp[1]) {
 					$this->writeCachingInfoToDevlog = $tmp[1];
 				}
 			}
 
 			switch ($this->confArr['cacheClearMode']) {
-				case 'lifetime':
+				case 'lifetime' :
 					$this->cache_period = $this->confArr['cacheLifetime'];
-				break;
+					break;
 
-				default: // normal
-					$this->cache_period = $GLOBALS['TSFE']->get_cache_timeout();		// seconds until a cached page is too old
-				break;
+				default : // normal
+					$this->cache_period = $GLOBALS['TSFE']->get_cache_timeout(); // seconds until a cached page is too old
+					break;
 
 			}
 		}
 	}
-
 
 
 	/**
@@ -3770,9 +3757,6 @@ class tx_ttnews extends tslib_pibase {
 			$res = $this->exec_getQuery('tt_news', $selectConf);
 			$range = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
 		}
-
-
-		debug($range, '$range ('.__CLASS__.'::'.__FUNCTION__.')', __LINE__, __FILE__, 3);
 
 		return $range;
 	}
