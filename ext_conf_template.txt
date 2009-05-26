@@ -7,8 +7,14 @@ useStoragePid=1
   # cat=basic/enable/100; type=boolean; label=LLL:EXT:tt_news/locallang.xml:extmng.requireCategories
 requireCategories = 0
 
-  # cat=basic/enable/150; type=boolean; label=LLL:EXT:tt_news/locallang.xml:extmng.writeParseTimesToDevlog
-writeParseTimesToDevlog = 0
+  # cat=basic/enable/150; type=boolean; label=LLL:EXT:tt_news/locallang.xml:extmng.useInternalCaching
+useInternalCaching = 1
+
+  # cat=basic/enable/155; type=options[normal,lifetime,static]; label=LLL:EXT:tt_news/locallang.xml:extmng.cachingMode
+cachingMode = normal
+
+  # cat=basic/enable/157; type=int; label=LLL:EXT:tt_news/locallang.xml:extmng.cacheLifetime
+cacheLifetime = 0
 
   # cat=basic//15; type=options[title,uid]; label=LLL:EXT:tt_news/locallang.xml:extmng.treeOrderBy
 treeOrderBy = uid
@@ -44,6 +50,14 @@ l10n_mode_imageExclude = 1
 hideNewLocalizations = 0
 
 
+  # cat=basic/dev/151; type=options[disabled|0,cache misses|1,all|2]; label=LLL:EXT:tt_news/locallang.xml:extmng.writeCachingInfoToDevlog
+writeCachingInfoToDevlog = 0
+
+  # cat=basic/dev/160; type=boolean; label=LLL:EXT:tt_news/locallang.xml:extmng.writeParseTimesToDevlog
+writeParseTimesToDevlog = 0
+
+  # cat=basic/dev/161; type=input; label=LLL:EXT:tt_news/locallang.xml:extmng.parsetimeThreshold
+parsetimeThreshold = 0.1
 
 
 

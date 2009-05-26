@@ -104,6 +104,7 @@ class tx_ttnews_tcemain {
 	 */
 	function processDatamap_preProcessFieldArray(&$fieldArray, $table, $id, &$pObj) {
 
+
 		if ($table == 'tt_news_cat' && is_int($id)) { // prevent moving of categories into their rootline
 			$newParent = intval($fieldArray['parent_category']);
 			if ($newParent) {
@@ -111,6 +112,13 @@ class tx_ttnews_tcemain {
 				if (t3lib_div::inList($subcategories,$newParent)) {
 					$sourceRec = t3lib_BEfunc::getRecord($table,$id,'title');
 					$targetRec = t3lib_BEfunc::getRecord($table,$fieldArray['parent_category'],'title');
+
+
+					/**
+					 * TODO: 19.05.2009
+					 * localize
+					 */
+
 					$pObj->log($table,$id,2,0,1,"processDatamap: Attempt to move category '%s' (%s) to inside of its own rootline (at category '%s' (%s)).",1,array($sourceRec['title'],$id,$targetRec['title'],$newParent));
 						// unset fieldArray to prevent saving of the record
 					$fieldArray = array();
@@ -326,6 +334,8 @@ class tx_ttnews_tcemain_cmdmap {
 	}
 
 }
+
+
 
 
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_news/lib/class.tx_ttnews_tcemain.php'])    {

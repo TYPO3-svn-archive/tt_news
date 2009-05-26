@@ -105,6 +105,13 @@ class tx_ttnews_div {
 	 * @return	string		extended $catlist
 	 */
 	function getSubCategories($catlist,$addWhere='', $cc = 0) {
+
+		if (!$catlist) {
+			t3lib_div::devLog('EMPTY $catlist ('.__CLASS__.'::'.__FUNCTION__.')', 'tt_news', 3, array());
+
+		}
+
+
 		$sCatArr = array();
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
 			'uid',
@@ -125,6 +132,35 @@ class tx_ttnews_div {
 		$catlist = implode(',', $sCatArr);
 		return $catlist;
 	}
+
+	function cache_set($hash, $content,$identifier) {
+		$fields_values = array('hash' => $hash, 'content' => $content, 'tstamp' => $GLOBALS['EXEC_TIME'],'identifier'=>$identifier);
+		$GLOBALS['TYPO3_DB']->exec_DELETEquery('tt_news_cache', 'hash="' . $hash . '"');
+		$GLOBALS['TYPO3_DB']->exec_INSERTquery('tt_news_cache', $fields_values);
+	}
+
+
+	function cache_get($hash,$period) {
+		$select_fields = 'content';
+		$from_table = 'tt_news_cache';
+		$where_clause = 'hash="' . $hash . '"';
+		$ACCESS_TIME = ($GLOBALS['ACCESS_TIME']?$GLOBALS['ACCESS_TIME']:$GLOBALS['EXEC_TIME']);
+		if ($period>0) {
+			$where_clause .= ' AND tstamp+'.(int)$period.'>'.$ACCESS_TIME;
+		}
+
+		$cRec = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows($select_fields, $from_table, $where_clause);
+
+		if (is_array($cRec[0]) && $cRec[0]['content']!='') {
+			return $cRec[0]['content'];
+		} else {
+			return false;
+		}
+
+	}
+
+
+
 
 	function getNewsCountForSubcategory(&$result, $cat, $news_clause, $catclause) {
 		// count news in current category

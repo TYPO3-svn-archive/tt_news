@@ -52,7 +52,8 @@ CREATE TABLE tt_news (
 
   PRIMARY KEY (uid),
   KEY parent (pid),
-  KEY t3ver_oid (t3ver_oid,t3ver_wsid)
+  KEY t3ver_oid (t3ver_oid,t3ver_wsid),
+  KEY datetime (datetime)
 
 );
 
@@ -80,7 +81,8 @@ CREATE TABLE tt_news_cat (
   description text,
 
   PRIMARY KEY (uid),
-  KEY parent (pid)
+  KEY parent (pid),
+  KEY parent_category (parent_category)
 
 );
 
@@ -92,6 +94,7 @@ CREATE TABLE tt_news_related_mm (
   uid_foreign int(11) DEFAULT '0' NOT NULL,
   sorting int(11) DEFAULT '0' NOT NULL,
   tablenames varchar(255) DEFAULT '' NOT NULL,
+
   KEY uid_local (uid_local),
   KEY uid_foreign (uid_foreign)
 );
@@ -104,6 +107,7 @@ CREATE TABLE tt_news_cat_mm (
   uid_foreign int(11) DEFAULT '0' NOT NULL,
   tablenames varchar(30) DEFAULT '' NOT NULL,
   sorting int(11) DEFAULT '0' NOT NULL,
+
   KEY uid_local (uid_local),
   KEY uid_foreign (uid_foreign)
 );
@@ -122,4 +126,18 @@ CREATE TABLE be_groups (
 CREATE TABLE be_users (
 	tt_news_categorymounts varchar(255) DEFAULT '' NOT NULL,
 );
+
+
+
+CREATE TABLE tt_news_cache (
+    hash varchar(32) DEFAULT '' NOT NULL,
+    content text NOT NULL,
+	tstamp int(11) DEFAULT '0' NOT NULL,
+    identifier varchar(32) DEFAULT '' NOT NULL,
+
+    PRIMARY KEY (hash),
+	KEY identifier (identifier)
+);
+
+# -- ENGINE=InnoDB
 

@@ -82,12 +82,14 @@ plugin.tt_news {
   # insert pagebreaks to the singleview after a certain number of words
   maxWordsInSingleView = 0
 
+  appendSViewPBtoContent = 0
+  useParagraphAsPagebreak = 0
 
   displaySingle {
     age_stdWrap.age = 1
     age_stdWrap.wrap = |<br />
     textNewsAge_stdWrap.wrap =
-    date_stdWrap.strftime= %A %d. of %B %Y
+    date_stdWrap.strftime= %d.%m.%Y
     time_stdWrap.strftime= %H:%M
     title_stdWrap.wrap =
 
@@ -159,9 +161,6 @@ plugin.tt_news {
   
     file.maxW = {$plugin.tt_news.singleMaxW}
     file.maxH = {$plugin.tt_news.singleMaxH}
-
-    #maxW = {$plugin.tt_news.singleMaxW}
-    #maxH = {$plugin.tt_news.singleMaxH}
 
 #   altText = TEXT
 #	altText {
@@ -338,7 +337,29 @@ plugin.tt_news {
   }
 
 
+  singleViewPageBrowser {
+    maxPages = 10
+    showResultCount = 0
+    showPBrowserText = 0
+    dontLinkActivePage = 1
 
+    showFirstLast = 1
+    pagefloat = center
+    showRange = 0
+    hscText = 1
+
+    showResultsNumbersWrap = |
+    browseBoxWrap = <div class="news-single-browse">|</div>
+    showResultsWrap = <div class="showResultsWrap">|</div>
+    browseLinksWrap = <div class="browseLinksWrap">|</div>
+    disabledLinkWrap = <span class="disabledLinkWrap">|</span>
+    inactiveLinkWrap = |
+    activeLinkWrap = <span class="activeLinkWrap">|</span>
+    activeLinkWrap.stdWrap.wrap = <span class="activeLinkWrap">|</span>
+
+
+  }
+  
 
   /********************************************************************************
    *    settings for categories:
@@ -410,7 +431,7 @@ plugin.tt_news {
   catSelectorTargetPid =
 
   # if set, the currently selected archive period (year & month) is added to the catmenu links (requires useHRDates=1)
-  catmenuWithArchiveParams = 1
+  catmenuWithArchiveParams = {$plugin.tt_news.catmenuWithArchiveParams}
 
   displayCatMenu {
     # list of page IDs where the categories for the menu are stored (overrides GRSP if given)
@@ -429,14 +450,14 @@ plugin.tt_news {
     includePrototypeJS = 1
     
     
-    showNewsCountForCategories = 0
+    showNewsCountForCategories = {$plugin.tt_news.displayCatMenu.showNewsCountForCategories}
 
     # enable expand/collapse for the category menu
-    expandable = 1
+    expandable = {$plugin.tt_news.displayCatMenu.expandable}
     # completely expand the category menu on first load
-    expandAll = 0
+    expandAll = {$plugin.tt_news.displayCatMenu.expandAll}
     # keep the first level of the category menu expanded
-    expandFirst = 1
+    expandFirst = {$plugin.tt_news.displayCatMenu.expandFirst}
 
     # stdWrap for the complete category menu
     catmenu_stdWrap.wrap = <div class="news-catmenu">|</div>
@@ -449,7 +470,7 @@ plugin.tt_news {
     # 2 = own icons
     # 0 = default icon
     # -1 = no icon
-    catmenuIconMode = 0
+    catmenuIconMode = {$plugin.tt_news.displayCatMenu.catmenuIconMode}
 
     # if "catmenuIconMode" = "2" all catmenu images (join, line ...) are expected in this path (relative)
     catmenuIconPath =
@@ -465,7 +486,7 @@ plugin.tt_news {
     }
 
     # disables the "root" icon of the category tree
-    catmenuNoRootIcon = 0
+    catmenuNoRootIcon = {$plugin.tt_news.displayCatMenu.catmenuNoRootIcon}
 
     # insert the category description as title attribute in catmenu links
     insertDescrAsTitle = 1
@@ -524,7 +545,9 @@ plugin.tt_news {
    */
 
 
-
+  archiveMode = {$plugin.tt_news.archiveMode}
+  archive = 0 
+  emptyArchListAtStart = 0 
 
   # This enables the use of the GETvars "year" and "month" for the archive links instead of "pS", "pL" and "arc".
   useHRDates = {$plugin.tt_news.useHRDates}
@@ -565,7 +588,7 @@ plugin.tt_news {
   disableCategoriesInAmenuLinks = 0
 
   # if set, the archive menu changes its contents when a category is selected in the category menu and the currently selected category is added to the amenu links
-  amenuWithCatSelector = 0
+  amenuWithCatSelector = {$plugin.tt_news.amenuWithCatSelector}
 
   # divide the archive menu to yearly periods
   showYearHeadersInAmenu = 1
@@ -640,8 +663,8 @@ plugin.tt_news {
   tmp.5 = IMAGE
   tmp.5 {
     file = EXT:tt_news/ext_icon.gif
-    file.width = 11
-    file.height = 12
+    file.width = 18
+    file.height = 16
     wrap = | &nbsp;
   }
 
@@ -649,7 +672,7 @@ plugin.tt_news {
   tmp.20 = TEXT
   tmp.20 {
     field = datetime
-    strftime = %d-%m-%y %H:%M
+    strftime = %d.%m.%Y %H:%M
     wrap = &nbsp;-&nbsp; |
   }
 
@@ -729,6 +752,29 @@ plugin.tt_news {
   relatedByCategoryHeader_stdWrap.wrap = <dt>|</dt>
   # globalwrap 2 is used to wrap the list of related news by category
   wrap2.wrap = <dd>|</dd>
+  
+  
+  relNewsByCategory {
+    code = list
+    categoryMode = 1
+    noPageBrowser = 1
+    limit = 15
+
+    noNewsToListMsg_stdWrap.wrap = 
+    displayList {
+      time_stdWrap.strftime= %H:%M
+      date_stdWrap.strftime= %d.%m.%Y
+      title_stdWrap.crop = 55|...
+    }
+    _LOCAL_LANG {
+      de.noNewsToListMsg = 
+      en.noNewsToListMsg = 
+    }
+
+    altMainMarkers.TEMPLATE_LIST = TEMPLATE_CAT_RELATED
+    altMainMarkers.TEMPLATE_LIST.wrap = ### | ###
+
+  }
 
 
 
@@ -799,6 +845,39 @@ tt_news.displayCurrentRecord = 1
 
 
 
+[globalVar = LIT:1 = {$plugin.tt_news.noIconsInRelatedNews}]
+	plugin.tt_news.getRelatedCObject.10.default.5 >
+	plugin.tt_news.getRelatedCObject.10.1.5 >
+	plugin.tt_news.getRelatedCObject.10.2.5 >
+[global]
+
+[globalVar = LIT:year = {$plugin.tt_news.archiveMode}]
+    plugin.tt_news.archiveTitleCObject.10.strftime = %Y
+   
+[global]
+
+[globalVar = LIT:quarter = {$plugin.tt_news.archiveMode}]
+    plugin.tt_news.archiveTitleCObject >
+    plugin.tt_news.archiveTitleCObject = COA
+    plugin.tt_news.archiveTitleCObject {
+      10 = COA
+      10 {
+        10= TEXT
+        10 {
+          field = start
+          strftime = %b -&nbsp;
+          wrap = 
+        }
+        11 = TEXT
+        11 {
+          field = stop
+          strftime = %b %Y
+          wrap = 
+        }
+      }
+    }
+
+[global]
 
 
 ### CVS id ###

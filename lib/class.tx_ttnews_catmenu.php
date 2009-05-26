@@ -77,6 +77,8 @@ class tx_ttnews_catmenu {
 
 		$this->treeObj->getCatNewsCount = $lConf['showNewsCountForCategories'];
 		$this->treeObj->newsSelConf = $pObj->getSelectConf('');
+		$this->treeObj->cache_timeOutTime = $pObj->cache_timeOutTime;
+		$this->treeObj->cache_period = $pObj->cache_period;
 
 		$this->treeObj->title = $GLOBALS['TSFE']->sL('LLL:EXT:tt_news/pi/locallang.xml:catmenuHeader');
 
@@ -101,6 +103,7 @@ class tx_ttnews_catmenu {
 			$this->treeObj->MOUNTS = $cMounts;
 
 		}
+
 
 
 

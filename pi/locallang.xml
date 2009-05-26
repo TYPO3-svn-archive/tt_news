@@ -91,6 +91,7 @@
 			<label index="goToArchive">zum Archiv -&gt;</label>
 			<label index="archiveHeader">Nachrichten Archiv:</label>
 			<label index="archiveItems">Einträge</label>
+			<label index="archiveItem">Eintrag</label>
 			<label index="archiveEmptyMsg">Leider keine Einträge im Archiv vorhanden.</label>
 			<label index="noResultsMsg">Keine Ergebnisse</label>
 			<label index="searchEmptyMsg">Bitte geben Sie einen Suchbegriff ein.</label>

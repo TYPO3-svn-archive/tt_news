@@ -1,7 +1,63 @@
 
+2009-05-25  Rupert Germann <rupi@gmx.li>
+
+*** DB table changes ***
+	* performance improvement: internal caching of processing intensive values.
+	  - archive periods: getting the newscount for every archive period is a quite "expnsive" operation as there can be
+	    a lot of these periods. These counts are now cached internally which reduces the rendering time of the archive menu drastically. 
+	  - categories: the categories (and also subcategories) for a news article are now stored in the internal cache, too.
+	    This reduces the amount of queries which has to be made to display a listview.
+	  - internal caching for newscounts in category menus with 2 stages: getting the newscounts for categories is also a very expensive
+	    operation especially when the categorymenu is a USER_INT object (which is required for the ajax expand/collapse to work)
+	    Now the newscounts are cached seperately for each category and also in an array containing the complete counts for a category menu in a 
+	    certain state.
+	* SQL query improvements: 
+	  - the "Distinct" subselect for the listquery is now only added if it is actually needed (in case when news are selected 
+	    by category)
+	  - removed the "orderby" part from the count query for lists
+	* added indices for tt_news.datetime and tt_news_cat.parent_category
+	
+	* new extmanager options: 
+	  useInternalCaching (as the name says, enabled by default), 
+	  cachingMode: this determines the cache entries lifetime and if the internal cache from tt_news will be cleared by TYPO3. 
+				"normal": (default) the cache entries will get the same lifetime as normal pages. The tt_news cache will be cleared 
+				  when the "clear all caches" button is pressed. 
+				"lifetime": will set the livetime of cache entries to the given amount of seconds in field "cacheLifetime". 
+				  The cache table is not cleared when "clear all caches" is clicked. 
+				"static": the lifetime of cache entries is set to zero (= unlimited). TYPO3 does not clear the tt_news cache 
+				  (useful if you clear the cache with an external script or for debugging).
+	  cacheLifetime: lifetime in seconds of the internal cache entries (used only when cachingMode is "lifetime").
+	  writeCachingInfoToDevlog: Which information about internal caching should be written to devlog (extension "devlog" required).
+	    "disabled": don't write any information about caching to devlog. 
+	    "cache misses": log only cache misses. 
+	    "all": log cache misses and cache hits to devlog.
+	  parsetimeThreshold: Execution time in seconds after which a single function is logged to devlog. Default is 0.1 sec = 100ms. 
+	    any function in tt_news which needs more time to be executed will be logged. The execution time indicates the severity of the log entry: 
+	    0-0.2 sec = 0 (info), 0.2-0.5 sec = 1 (notice), 0.5-1 sec = 2 (warning) and everything above 1 second get severerity 3 = error.
+	
+	* added a lot of TS default variables to setup.txt (These options are not new but before they were only mentioned in the manual and were
+	  not visible by default in TypoScriptObjectBrowser)
+	* changed the default TS for date formatting for all "codes" to a consistent format (%d.%m.%Y) and removed the non localized "of" in 
+	  displaySingle.date_stdWrap.strftime 
+
+	* "related news by category" do now have their own TS namespace. Before this the settings for relNewsByCat had to be configured in "displayList." 
+	  which made it quite unhandy to configure. Now "related news by category" use relNewsByCategory{} which is a copy of the whole plugin.tt_news{} 
+	  array. This makes it possible to deliver an "out-of-the-box" working default configuration and it gives you more possibilties to adapt the
+	  output to your needs. 
+	* added a TS condition to disable the icons in related news by a TS constants switch.
+	* added a TS condition to directly switch the archiveMode and change the rendering of archiveTitleCObject accordingly by a TS constants switch.  
+	* changed initialisation of "multipageSingleView". Now useMultiPageSingleView is not activated automatically anymore when maxWordsInSingleView
+	  has a non zero value. 
+	* singleView pagebrowser now uses the same pagebrowser as a normal list view (with own config array: plugin.tt_news.singleViewPageBrowser)
+	  
+	* moved the pagebrowser initialisation/call to a new function: getPagebrowserContent()
+	* the archivemenu is now able to display dates in the future
+	* fix for xmlIcon path: now "EXT:" is resolved correctly in the image path
+	* cleanup: moved all record icons to the new folder res/gfx/
+	
+	
 
 2009-05-05  Rupert Germann <rupi@gmx.li>
-	* 
 	* new feature: generic markers (thanks to Georg Ringer for his ttnewsgenericmarkers extension). Generic markers allows you to define new
 	  HTML template Markers and render any field from the tt_news record to them without writing a single line of PHP. 
 	* new feature: it's now possible to enable the "Crop"-Mode for news images directly in the Constant Editor (listImageMode, latestImageMode)

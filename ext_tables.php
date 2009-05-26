@@ -7,6 +7,10 @@ if (!defined ('TYPO3_MODE')) 	die ('Access denied.');
 	// get extension configuration
 $confArr = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['tt_news']);
 
+
+
+
+
 $TCA['tt_news'] = array (
 	'ctrl' => array (
 		'title' => 'LLL:EXT:tt_news/locallang_tca.xml:tt_news',
@@ -39,12 +43,12 @@ $TCA['tt_news'] = array (
 		),
 		'typeicon_column' => 'type',
 		'typeicons' => array (
-			'1' => t3lib_extMgm::extRelPath($_EXTKEY).'res/tt_news_article.gif',
-			'2' => t3lib_extMgm::extRelPath($_EXTKEY).'res/tt_news_exturl.gif',
+			'1' => t3lib_extMgm::extRelPath($_EXTKEY).'res/gfx/tt_news_article.gif',
+			'2' => t3lib_extMgm::extRelPath($_EXTKEY).'res/gfx/tt_news_exturl.gif',
 		),
 //		'mainpalette' => '10',
 		'thumbnail' => 'image',
-		'iconfile' => t3lib_extMgm::extRelPath($_EXTKEY).'ext_icon.gif',
+		'iconfile' => t3lib_extMgm::extRelPath($_EXTKEY).'res/gfx/ext_icon.gif',
 		'dynamicConfigFile' => t3lib_extMgm::extPath($_EXTKEY).'tca.php'
 	)
 );
@@ -70,7 +74,7 @@ $TCA['tt_news_cat'] = array (
 		'hideAtCopy' => true,
 		'mainpalette' => '2,10',
 		'crdate' => 'crdate',
-		'iconfile' => t3lib_extMgm::extRelPath($_EXTKEY).'res/tt_news_cat.gif',
+		'iconfile' => t3lib_extMgm::extRelPath($_EXTKEY).'res/gfx/tt_news_cat.gif',
 		'dynamicConfigFile' => t3lib_extMgm::extPath($_EXTKEY).'tca.php'
 	)
 );
@@ -262,11 +266,15 @@ if (TYPO3_MODE == 'BE')	{
 		// Adds a tt_news wizard icon to the content element wizard.
 	$TBE_MODULES_EXT['xMOD_db_new_content_el']['addElClasses']['tx_ttnews_wizicon'] = t3lib_extMgm::extPath($_EXTKEY).'pi/class.tx_ttnews_wizicon.php';
 		// add folder icon
-	$ICON_TYPES['news'] = array('icon' => t3lib_extMgm::extRelPath($_EXTKEY).'ext_icon_ttnews_folder.gif');
+	$ICON_TYPES['news'] = array('icon' => t3lib_extMgm::extRelPath($_EXTKEY).'res/gfx/ext_icon_ttnews_folder.gif');
 
 }
 
-	// register HTML template for the tt_new BackEnd Module
+	// register HTML template for the tt_news BackEnd Module
 $GLOBALS['TBE_STYLES']['htmlTemplates']['mod_ttnews_admin.html'] = t3lib_extMgm::extRelPath('tt_news').'mod1/mod_ttnews_admin.html';
+
+
+
+
 
 ?>
