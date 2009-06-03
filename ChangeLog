@@ -1,4 +1,16 @@
 
+2009-06-02  Rupert Germann <rupi@gmx.li>
+*** DB table changes ***
+ 	* connected the internal caching from tt_news to the TYPO3 caching framework (requires at least TYPO3 4.3). By default it's configured to 
+ 	  use the DB backend but of course it will work with all other available caching backEnds too (tested with memcached, APC, filecache and DB)
+ 	* Added a switch to the extmanager config where one can choose the "caching Engine" (options: internal, cachingFramework). If the caching 
+ 	  framework is not available (TYPO3 < v4.3) tt_news automatically falls back to the internal caching. 
+ 	* Moved the caching related functions to their own classfile: lib/class.tx_ttnews_cache.php
+ 	* changed the "lifetime" handling of cache entries to use the same system as the caching framework.
+ 	* changed the fieldnames of table tt_news_cache to make it work with the caching framework and the internal caching.
+	* fixed bug #11236:  Wrong param passed to getSubCategoriesForMenu 
+	* fix: moved the call to function initCategories() inside the $codes loop because initCategories() requires $this->theCode to be set.
+
 2009-05-25  Rupert Germann <rupi@gmx.li>
 
 *** DB table changes ***

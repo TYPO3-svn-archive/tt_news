@@ -72,15 +72,17 @@ class tx_ttnews_categorytree extends t3lib_treeview {
 					$this->newsSelConf['pidInList'] . $this->newsSelConf['where'] . $this->tt_news_obj->enableFields . $this->clause)));
 
 //			$tmpCCC = $GLOBALS['TSFE']->sys_page->getHash($storeKey);
-			$tmpCCC = tx_ttnews_div::cache_get($storeKey,$this->cache_period);
+			$tmpCCC = $this->tt_news_obj->cache->get($storeKey);
 			if ($tmpCCC) {
 				if ($this->tt_news_obj->writeCachingInfoToDevlog>1) {
 					t3lib_div::devLog('categoryCountCache CACHE HIT (' . __CLASS__ . '::' . __FUNCTION__ . ')', 'tt_news', - 1, array());
 				}
+
 				$this->categoryCountCache = unserialize($tmpCCC);
 			} else {
 				if ($this->tt_news_obj->writeCachingInfoToDevlog) {
-					t3lib_div::devLog('categoryCountCache CACHE MISS (' . __CLASS__ . '::' . __FUNCTION__ . ')', 'tt_news', 2, array());
+					t3lib_div::devLog('categoryCountCache CACHE MISS (' . __CLASS__ . '::' . __FUNCTION__ . ')', 'tt_news', 2, array($this->stored,
+					$this->newsSelConf['pidInList'] . $this->newsSelConf['where'] . $this->tt_news_obj->enableFields . $this->clause));
 				}
 			}
 
@@ -164,7 +166,7 @@ class tx_ttnews_categorytree extends t3lib_treeview {
 
 		if ($this->tt_news_obj->cache_categoryCount && count($this->categoryCountCache)) {
 //			$GLOBALS['TSFE']->sys_page->storeHash($storeKey, serialize($this->categoryCountCache), 'news_categoryCountCache');
-			tx_ttnews_div::cache_set($storeKey,serialize($this->categoryCountCache),'categoryCounts');
+			$this->tt_news_obj->cache->set($storeKey,serialize($this->categoryCountCache),'categoryCounts');
 		}
 
 		return $this->printTree($treeArr);
@@ -183,7 +185,7 @@ class tx_ttnews_categorytree extends t3lib_treeview {
 		} else {
 			if ($this->tt_news_obj->cache_categoryCount) {
 				$hash = t3lib_div::shortMD5(serialize($catID . $this->newsSelConf['pidInList'] . $this->newsSelConf['where'] . $this->tt_news_obj->enableFields . $this->clause), 30);
-				$sum = tx_ttnews_div::cache_get($hash,$this->cache_period);
+				$sum = $this->tt_news_obj->cache->get($hash);
 
 			}
 
@@ -209,7 +211,7 @@ class tx_ttnews_categorytree extends t3lib_treeview {
 			}
 			$this->categoryCountCache[$catID] = (int) $sum;
 			if ($this->tt_news_obj->cache_categoryCount) {
-				tx_ttnews_div::cache_set($hash, $sum,'categoryCounts');
+				$this->tt_news_obj->cache->set($hash, (string)$sum,'categoryCounts');
 			}
 
 		}

@@ -130,13 +130,14 @@ CREATE TABLE be_users (
 
 
 CREATE TABLE tt_news_cache (
-    hash varchar(32) DEFAULT '' NOT NULL,
-    content text NOT NULL,
-	tstamp int(11) DEFAULT '0' NOT NULL,
     identifier varchar(32) DEFAULT '' NOT NULL,
+    content text NOT NULL,
+	crdate int(11) DEFAULT '0' NOT NULL,
+	lifetime int(11) DEFAULT '0' NOT NULL,    
+	tags varchar(250) DEFAULT '' NOT NULL,
 
-    PRIMARY KEY (hash),
-	KEY identifier (identifier)
+    PRIMARY KEY (identifier),
+	KEY tags (tags)
 );
 
 # -- ENGINE=InnoDB

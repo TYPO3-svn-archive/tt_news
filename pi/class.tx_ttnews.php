@@ -45,6 +45,7 @@ require_once (PATH_t3lib . 'class.t3lib_htmlmail.php');
 
 require_once (t3lib_extMgm::extPath('tt_news') . 'lib/class.tx_ttnews_catmenu.php');
 require_once (t3lib_extMgm::extPath('tt_news') . 'lib/class.tx_ttnews_helpers.php');
+require_once (t3lib_extMgm::extPath('tt_news') . 'lib/class.tx_ttnews_cache.php');
 
 /**
  * Plugin 'news' for the 'tt_news' extension.
@@ -107,11 +108,11 @@ class tx_ttnews extends tslib_pibase {
 	var $global_start_time = 0;
 	var $start_code_line = 0;
 
+	var $cache;
 	var $cache_amenuPeriods = FALSE;
 	var $cache_categoryCount = FALSE;
 	var $cache_categories = FALSE;
 
-	var $cache_period = 0;
 
 
 	/**
@@ -154,6 +155,8 @@ class tx_ttnews extends tslib_pibase {
 
 			$theCode = (string) strtoupper(trim($theCode));
 			$this->theCode = $theCode;
+				// initialize category vars
+			$this->initCategoryVars();
 			$this->initGenericMarkers();
 
 			switch ($theCode) {
@@ -287,8 +290,7 @@ class tx_ttnews extends tslib_pibase {
 		// sys_language_mode defines what to do if the requested translation is not found
 		$this->sys_language_mode = ($this->conf['sys_language_mode'] ? $this->conf['sys_language_mode'] : $GLOBALS['TSFE']->sys_language_mode);
 
-		// initialize category vars
-		$this->initCategoryVars();
+
 
 		if ($this->conf['searchFieldList']) {
 			// get fieldnames from the tt_news db-table
@@ -599,10 +601,17 @@ class tx_ttnews extends tslib_pibase {
 			$noPeriod = 1; // override the period lenght checking in getSelectConf
 		}
 
-		if ($theCode == 'SEARCH' || ($this->arcExclusive == 1 && $this->piVars['pS']) || ($this->arcExclusive < 1 && ! $this->piVars['pS'])) {
+		if (1) {
+
+/**
+ * TODO: 28.05.2009
+ * what exactly is this condition supposed to do?
+ */
 
 			// Allowed to show the listing? periodStart must be set, when listing from the archive.
-			//		if (! ($this->arcExclusive > - 1 && ! $this->piVars['pS'] && $theCode != 'SEARCH')) {
+//		if (! ($this->arcExclusive > - 1 && ! $this->piVars['pS'] && $theCode != 'SEARCH')) {
+
+
 			if ($this->conf['displayCurrentRecord'] && $this->tt_news_uid) {
 				$this->pid_list = $this->cObj->data['pid'];
 				$where = 'AND tt_news.uid=' . $this->tt_news_uid;
@@ -622,25 +631,36 @@ class tx_ttnews extends tslib_pibase {
 			 *
 			 * if the pagebrowser is disabled the count query should not be needed
 			 * in LATEST this is almost always the case
+			 *
+			 * FIXME
+			 * this will not work reliably!
 			 */
 
-			if ($selectConf['leftjoin']) {
-				$selectConf['selectFields'] = 'COUNT(DISTINCT(tt_news.uid))';
-			} else {
-				$selectConf['selectFields'] = 'COUNT(tt_news.uid)';
-			}
+//			if ($this->config['noPageBrowser']) {
+//				$newsCount = 1;
+//			} else {
 
-			$newsCount = 0;
-			$countSelConf = $selectConf;
-			unset($countSelConf['orderBy']);
+				if ($selectConf['leftjoin']) {
+					$selectConf['selectFields'] = 'COUNT(DISTINCT(tt_news.uid))';
+				} else {
+					$selectConf['selectFields'] = 'COUNT(tt_news.uid)';
+				}
 
-			//			debug($countSelConf, $this->theCode . ' COUNT $selectConf (' . __CLASS__ . '::' . __FUNCTION__ . ')', __LINE__, __FILE__, 3);
+				$newsCount = 0;
+				$countSelConf = $selectConf;
+				unset($countSelConf['orderBy']);
+
+				//			debug($countSelConf, $this->theCode . ' COUNT $selectConf (' . __CLASS__ . '::' . __FUNCTION__ . ')', __LINE__, __FILE__, 3);
 
 
-			if (($res = $this->exec_getQuery('tt_news', $countSelConf))) {
-				list($newsCount) = $GLOBALS['TYPO3_DB']->sql_fetch_row($res);
-				$GLOBALS['TYPO3_DB']->sql_free_result($res);
-			}
+				if (($res = $this->exec_getQuery('tt_news', $countSelConf))) {
+					list($newsCount) = $GLOBALS['TYPO3_DB']->sql_fetch_row($res);
+					$GLOBALS['TYPO3_DB']->sql_free_result($res);
+				}
+//			}
+
+
+
 
 			// Only do something if the query result is not empty
 			if ($newsCount > 0) {
@@ -659,7 +679,13 @@ class tx_ttnews extends tslib_pibase {
 
 
 				// build query for display:
-				$selectConf['selectFields'] = 'DISTINCT(tt_news.uid),tt_news.*';
+				if ($selectConf['leftjoin']) {
+					$selectConf['selectFields'] = 'DISTINCT(tt_news.uid),tt_news.*';
+				} else {
+					$selectConf['selectFields'] = 'tt_news.*';
+				}
+
+//
 
 				// exclude the LATEST template from changing its content with the pagebrowser. This can be overridden by setting the conf var latestWithPagebrowser
 				if ($this->theCode != 'LATEST' || $this->conf['latestWithPagebrowser']) {
@@ -1203,7 +1229,7 @@ class tx_ttnews extends tslib_pibase {
 				$storeKey = md5(serialize(array($this->catExclusive, $this->config['catSelection'], $GLOBALS['TSFE']->sys_language_content,
 						$selectConf['pidInList'], $arcMode)));
 				//				$cachedPeriodAccum = $GLOBALS['TSFE']->sys_page->getHash($storeKey);
-				$cachedPeriodAccum = tx_ttnews_div::cache_get($storeKey, $this->cache_period);
+				$cachedPeriodAccum = $this->cache->get($storeKey);
 			}
 
 			if ($cachedPeriodAccum != '') {
@@ -1243,7 +1269,7 @@ class tx_ttnews extends tslib_pibase {
 						t3lib_div::devLog('CACHE MISS (' . __CLASS__ . '::' . __FUNCTION__ . ')', 'tt_news', 2, array());
 					}
 					//					$GLOBALS['TSFE']->sys_page->storeHash($storeKey, serialize($periodAccum), 'news_amenuPeriodsCache');
-					tx_ttnews_div::cache_set($storeKey, serialize($periodAccum), __FUNCTION__);
+					$this->cache->set($storeKey, serialize($periodAccum), __FUNCTION__);
 				}
 
 			}
@@ -2330,7 +2356,7 @@ class tx_ttnews extends tslib_pibase {
 			$hash = t3lib_div::shortMD5(serialize(array($uid, $this->config['catOrderBy'], $this->enableCatFields, $this->SPaddWhere, $getAll,
 					$GLOBALS['TSFE']->sys_language_content, $this->conf['useSPidFromCategory'], $this->conf['useSPidFromCategoryRecusive'],
 					$this->conf['displaySubCategories'], $this->config['useSubCategories'])), 30);
-			$tmpcat = tx_ttnews_div::cache_get($hash, $this->cache_period);
+			$tmpcat = $this->cache->get($hash);
 		}
 
 		if ($tmpcat !== false) {
@@ -2405,7 +2431,7 @@ class tx_ttnews extends tslib_pibase {
 			}
 			$GLOBALS['TYPO3_DB']->sql_free_result($res);
 			if ($this->cache_categories && is_array($categories)) {
-				tx_ttnews_div::cache_set($hash, serialize($categories), __FUNCTION__);
+				$this->cache->set($hash, serialize($categories), __FUNCTION__);
 			}
 
 			if ($this->debugTimes) {
@@ -2972,6 +2998,7 @@ class tx_ttnews extends tslib_pibase {
 			$this->hObj->getParsetime(__METHOD__);
 		}
 
+
 		if ($this->arcExclusive) {
 			if ($this->conf['enableArchiveDate'] && $this->config['datetimeDaysToArchive'] && $this->arcExclusive > 0) {
 				$theTime = $this->SIM_ACCESS_TIME - intval($this->config['datetimeDaysToArchive']) * 3600 * 24;
@@ -3467,7 +3494,23 @@ class tx_ttnews extends tslib_pibase {
 
 
 	function initCaching() {
+		$lifetime = 0;
+
 		if ($this->confArr['useInternalCaching']) {
+
+			$cachingEngine = $this->confArr['cachingEngine'];
+			if ($cachingEngine == 'cachingFramework') {
+				if (!is_object($GLOBALS['typo3CacheFactory']) || !isset($GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['tt_news_cache']['backend'])) {
+					// if there's no cacheFactory object fall back to internal caching (TYPO3 < 4.3)
+					$cachingEngine = 'internal';
+				}
+			}
+			if (!$cachingEngine) {
+				$cachingEngine = 'internal';
+			}
+
+
+
 			$this->cache_amenuPeriods = true;
 			$this->cache_categoryCount = true;
 			$this->cache_categories = true;
@@ -3481,16 +3524,24 @@ class tx_ttnews extends tslib_pibase {
 
 			switch ($this->confArr['cacheClearMode']) {
 				case 'lifetime' :
-					$this->cache_period = $this->confArr['cacheLifetime'];
+					$lifetime = $this->confArr['cacheLifetime'];
 					break;
 
 				default : // normal
-					$this->cache_period = $GLOBALS['TSFE']->get_cache_timeout(); // seconds until a cached page is too old
+					if (method_exists($GLOBALS['TSFE'],'get_cache_timeout')) { // TYPO3 >= 4.2
+						$lifetime = $GLOBALS['TSFE']->get_cache_timeout(); // seconds until a cached page is too old
+					} else {
+						$lifetime = 86400;
+					}
 					break;
-
+					// the case 'never' uses the default: $lifetime = 0;
 			}
+			$this->cache = new tx_ttnews_cache($cachingEngine);
+			$this->cache->lifetime = $lifetime;
+			$this->cache->ACCESS_TIME = $this->SIM_ACCESS_TIME;
 		}
 	}
+
 
 
 	/**

@@ -77,9 +77,6 @@ class tx_ttnews_catmenu {
 
 		$this->treeObj->getCatNewsCount = $lConf['showNewsCountForCategories'];
 		$this->treeObj->newsSelConf = $pObj->getSelectConf('');
-		$this->treeObj->cache_timeOutTime = $pObj->cache_timeOutTime;
-		$this->treeObj->cache_period = $pObj->cache_period;
-
 		$this->treeObj->title = $GLOBALS['TSFE']->sL('LLL:EXT:tt_news/pi/locallang.xml:catmenuHeader');
 
 		$allcatArr = explode(',',$pObj->catExclusive);
@@ -325,6 +322,8 @@ class tx_ttnews_FEtreeview extends tx_ttnews_categorytree {
 		}
 		if (!is_array($this->stored)) { $this->stored = array(); }
 //		debug($this->stored);
+
+//debug($_COOKIE, ' ('.__CLASS__.'::'.__FUNCTION__.')', __LINE__, __FILE__, 3);
 
 		// PM action
 		// (If an plus/minus icon has been clicked, the PM GET var is sent and we must update the stored positions in the tree):

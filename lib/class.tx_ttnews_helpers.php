@@ -130,7 +130,15 @@ class tx_ttnews_helpers {
 	function getSubCategoriesForMenu($catlist, $fields, $addWhere, $cc = 0) {
 		$pcatArr = array();
 
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery($fields, 'tt_news_cat', 'tt_news_cat.parent_category IN (' . $catlist . ')' . $this->pObj->SPaddWhere . $this->pObj->enableCatFields, '', 'tt_news_cat.' . $this->config['catOrderBy']);
+		$from_table = 'tt_news_cat';
+		$where_clause = 'tt_news_cat.parent_category IN (' . $catlist . ')' . $this->pObj->SPaddWhere . $this->pObj->enableCatFields;
+		$orderBy = 'tt_news_cat.' . $this->pObj->config['catOrderBy'];
+
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
+					$fields,
+					$from_table,
+					$where_clause,
+					'', $orderBy);
 
 		while (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))) {
 			$cc++;

@@ -70,7 +70,7 @@
 			3 = error.</label>
 
 			<label index="extmng.useInternalCaching">Internal caching: If enabled tt_news caches some processing intensive information (archive period count, 
-			category count, categories) in an internal cache table.</label>
+			category count, categories) in an internal cache.</label>
 			
 			<label index="extmng.writeCachingInfoToDevlog">Debug caching info: Which information about internal caching should be written to devlog
 				 (extension "devlog" required)."disabled": don't write any information about caching to devlog. "cache misses": log only cache misses.
@@ -83,6 +83,7 @@
 				"static": means: the lifetime of cache entries is set to zero (= unlimited). TYPO3 does not clear the tt_news cache (useful if you clear the cache with an external script or
 				for debugging).</label>
 			<label index="extmng.cacheLifetime">Cache lifetime: lifetime in seconds of the internal cache entries (if "cachingMode" is set to "lifetime"). example: 86400 (a day), 604800 (a week)</label>
+			<label index="extmng.cachingEngine">Caching engine: where should the cache entries from tt_news be stored. "internal": store cache records directly in the database using internal methods. "cachingFramework" Requires at least TYPO3 4.3: store cache records in the TYPO3 caching framework (in the default configuration tt_news uses the DB backend of the caching framework).</label>
 			
 			
 			
@@ -97,7 +98,7 @@
 			<label index="extmng.l10n_mode_prefixLangTitle">Localization mode for text fields: By default, all text fields (text, subheader, imagecaption ...) from a new localized news article will be prepended with "[translate to ...]". If this is not wanted you can disable it here. If "l10n_mode_prefixLangTitle" is disabled the text "(copy [#])" will be added to the titles of this records unless "prependAtCopy" is disabled (see "prependAtCopy").</label>
 			<label index="extmng.l10n_mode_imageExclude">Localization mode for images: The image field of a localized news article is excluded by default (images are alwas taken from the record in the default language). If you need localized images (f.e. if the images show texts) you can enable the "image" field in translated news by setting "l10n_mode_imageExclude" to 0.</label>
 			<label index="extmng.hideNewLocalizations">Hide new localizations: Here you choose if new localizations of news articles should be hidden or not. By default new localizations are visible. If this is not wanted set "hideNewLocalizations" to 1.</label>
-			<label index="extmng.updatermsg">tt_news 3.0.0 comes with a new updater-script which can fix some of the most commen problems when you're updating an existing tt_news 2.x installation.</label>
+			<label index="extmng.updatermsg">tt_news 3.0.0 comes with a new updater-script which can fix some of the most common problems when you're updating an existing tt_news 2.x installation.</label>
 			<label index="extmng.updatermsgHeader">Important!</label>
 			<label index="extmng.updatermsgLink">[Click here to open the updater]</label>
 			

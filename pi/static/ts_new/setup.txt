@@ -418,8 +418,8 @@ plugin.tt_news {
   # maximum number of displayed category titles in a news article
   maxCatTexts = 10
 
-
-
+  # order categories by this field.
+  catOrderBy = 
 
 
 
