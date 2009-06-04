@@ -138,7 +138,6 @@ CREATE TABLE tt_news_cache (
 
     PRIMARY KEY (identifier),
 	KEY tags (tags)
-);
+) ENGINE=InnoDB;
 
-# -- ENGINE=InnoDB
 

@@ -1,4 +1,10 @@
 
+2009-06-04  Rupert Germann <rupi@gmx.li>
+	* new feature: added the new pagebrowser from the listview to the tt_news admin listview (class tx_ttnews_recordlist::renderListNavigation()) 
+	* fix: the categorycount cache was always written no matter of a cached value was found or not.
+	* fix: added missing () around the lifetime part of the getfromcache query for the internal caching.
+	* changed the db-engine of the tt_news_cache table to innodb.
+	
 2009-06-02  Rupert Germann <rupi@gmx.li>
 *** DB table changes ***
  	* connected the internal caching from tt_news to the TYPO3 caching framework (requires at least TYPO3 4.3). By default it's configured to 

@@ -150,7 +150,6 @@ class tx_ttnews extends tslib_pibase {
 		}
 
 		$this->init();
-
 		foreach ($this->codes as $theCode) {
 
 			$theCode = (string) strtoupper(trim($theCode));
@@ -261,7 +260,6 @@ class tx_ttnews extends tslib_pibase {
 
 		$this->pi_loadLL(); // Loading language-labels
 		$this->pi_setPiVarDefaults(); // Set default piVars from TS
-
 
 		$this->SIM_ACCESS_TIME = $GLOBALS['SIM_ACCESS_TIME'];
 		// fallback for TYPO3 < 4.2

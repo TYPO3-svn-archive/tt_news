@@ -132,9 +132,9 @@ class tx_ttnews_recordlist extends tx_cms_layout {
 				t3lib_BEfunc::workspaceOL($table, $row);
 
 				if (is_array($row))	{
-					list($flag,$code) = $this->fwd_rwd_nav();
-					$out.= $code;
-					if ($flag)	{
+//					list($flag,$code) = $this->fwd_rwd_nav();
+//					$out.= $code;
+					if (1)	{
 						$Nrow = array();
 						$NrowIcon = '';
 						$noEdit = $this->checkRecordPerms($row,$checkCategories);
@@ -167,9 +167,150 @@ class tx_ttnews_recordlist extends tx_cms_layout {
 				<table border="0" cellpadding="1" cellspacing="1" class="typo3-dblist">
 					'.$out.'
 				</table>';
+
+						// Record navigation is added to the beginning and end of the table if in single table mode
+				if ($table) {
+					$pageNavigation = $this->renderListNavigation();
+					$out = $pageNavigation . $out . $pageNavigation;
+				}
+
+
 		}
 		return $out;
 	}
+	/**
+	 * Creates a page browser for tables with many records
+	 * (copied from class.db_list_extra_inc)
+	 *
+	 * @return	string	Navigation HTML
+	 *
+	 * @author	Dmitry Pikhno <dpi@goldenplanet.com>
+	 * @author	Christian Kuhn <lolli@schwarzbu.ch>
+	 */
+	function renderListNavigation() {
+		$totalPages = ceil($this->totalItems / $this->iLimit);
+
+		$content = '';
+
+			// Show page selector if not all records fit into one page
+		if ($totalPages > 1) {
+			$first = $previous = $next = $last = $reload = '';
+			$listURL = $this->listURL('', $this->table);
+
+				// 1 = first page
+			$currentPage = floor(($this->firstElementNumber + 1) / $this->iLimit) + 1;
+
+				// Compile first, previous, next, last and refresh buttons
+			if ($currentPage > 1) {
+				$labelFirst = $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_common.xml:first');
+
+				$first = '<a href="' . $listURL . '&pointer=0">
+					<img' . t3lib_iconWorks::skinImg($this->backPath, 'gfx/control_first.gif')
+					. 'alt="' . $labelFirst . '" title="' . $labelFirst . '" />
+				</a>';
+			} else {
+				$first = '<img' . t3lib_iconWorks::skinImg($this->backPath, 'gfx/control_first_disabled.gif') . 'alt="" title="" />';
+			}
+
+			if (($currentPage - 1) > 0) {
+				$labelPrevious = $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_common.xml:previous');
+
+				$previous = '<a href="' . $listURL . '&pointer=' . (($currentPage - 2) * $this->iLimit) . '">
+					<img' . t3lib_iconWorks::skinImg($this->backPath, 'gfx/control_previous.gif')
+					. 'alt="' . $labelPrevious . '" title="' . $labelPrevious . '" />
+					</a>';
+			} else {
+				$previous = '<img' . t3lib_iconWorks::skinImg($this->backPath, 'gfx/control_previous_disabled.gif') . 'alt="" title="" />';
+			}
+
+			if (($currentPage + 1) <= $totalPages) {
+				$labelNext = $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_common.xml:next');
+
+				$next = '<a href="' . $listURL . '&pointer=' . (($currentPage) * $this->iLimit) . '">
+					<img' . t3lib_iconWorks::skinImg($this->backPath, 'gfx/control_next.gif')
+					. 'alt="' . $labelNext . '" title="' . $labelNext . '" />
+					</a>';
+			} else {
+				$next = '<img' . t3lib_iconWorks::skinImg($this->backPath, 'gfx/control_next_disabled.gif') . 'alt="" title="" />';
+			}
+
+			if ($currentPage != $totalPages) {
+				$labelLast = $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_common.xml:last');
+
+				$last = '<a href="' . $listURL . '&pointer=' . (($totalPages - 1) * $this->iLimit) . '">
+					<img' . t3lib_iconWorks::skinImg($this->backPath, 'gfx/control_last.gif')
+					. 'alt="' . $labelLast . '" title="' . $labelLast . '" />
+					</a>';
+			} else {
+				$last = '<img' . t3lib_iconWorks::skinImg($this->backPath, 'gfx/control_last_disabled.gif') . 'alt="" title="" />';
+			}
+
+			$reload = '<a href="#" onclick="document.dblistForm.action=\''
+				. $listURL . '&pointer=\'+calculatePointer(); document.dblistForm.submit(); return true;">
+				<img' . t3lib_iconWorks::skinImg($this->backPath, 'gfx/refresh_n.gif')
+				. 'alt="' . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_common.xml:reload')
+				. '" title="' . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_common.xml:reload')
+				. '" /></a>';
+
+			// Add js to traverse a page select input to a pointer value
+			$content = '
+<script type="text/JavaScript">
+/*<![CDATA[*/
+
+	function calculatePointer(){
+		page = document.getElementById(\'jumpPage\').value;
+
+		if (page > ' . $totalPages . ') {
+			page = ' . $totalPages . ';
+		}
+
+		if (page < 1) {
+			page = 1;
+		}
+
+		pointer = (page - 1) * ' . $this->iLimit . ';
+
+		return pointer;
+	}
+
+/*]]>*/
+</script>
+';
+
+			$pageNumberInput = '<span>
+				<input type="text" value="' . $currentPage
+				. '" size="3" id="jumpPage" name="jumpPage" onkeyup="if (event.keyCode == Event.KEY_RETURN) { document.dblistForm.action=\'' . $listURL . '&pointer=\'+calculatePointer(); document.dblistForm.submit(); } return true;" />
+				</span>';
+			$pageIndicator = '<span class="pageIndicator">'
+				. sprintf($GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_mod_web_list.xml:pageIndicator'), $pageNumberInput, $totalPages)
+				. '</span>';
+
+			if ($this->totalItems > ($this->firstElementNumber + $this->iLimit)) {
+				$lastElementNumber = $this->firstElementNumber + $this->iLimit;
+			} else {
+				$lastElementNumber = $this->totalItems;
+			}
+			$rangeIndicator = '<span class="pageIndicator">'
+				. sprintf($GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_mod_web_list.xml:rangeIndicator'), $this->firstElementNumber + 1, $lastElementNumber)
+				. '</span>';
+
+			$content .= '<div id="typo3-dblist-pagination">'
+				. $first . $previous
+				. '<span class="bar">&nbsp;</span>'
+				. $rangeIndicator . '<span class="bar">&nbsp;</span>'
+				. $pageIndicator . '<span class="bar">&nbsp;</span>'
+				. $next . $last . '<span class="bar">&nbsp;</span>'
+				. $reload
+				. '</div>';
+		} // end of if pages > 1
+
+		$data = Array();
+		$titleColumn = $this->fieldArray[0];
+		$data[$titleColumn] = $content;
+
+		return ($this->addElement(1, '', $data));
+	}
+
 
 
 	/**

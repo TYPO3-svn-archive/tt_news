@@ -46,6 +46,7 @@ require_once (t3lib_extMgm::extPath('tt_news') . 'lib/class.tx_ttnews_div.php');
 class tx_ttnews_categorytree extends t3lib_treeview {
 
 	var $categoryCountCache = array();
+	var $cacheHit = false;
 
 
 	/**
@@ -68,7 +69,7 @@ class tx_ttnews_categorytree extends t3lib_treeview {
 		$this->tmpC = 0;
 
 		if ($this->tt_news_obj->cache_categoryCount) {
-			$storeKey = md5(serialize(array($this->stored,
+			$storeKey = md5(serialize(array($this->stored,$this->MOUNTS,
 					$this->newsSelConf['pidInList'] . $this->newsSelConf['where'] . $this->tt_news_obj->enableFields . $this->clause)));
 
 //			$tmpCCC = $GLOBALS['TSFE']->sys_page->getHash($storeKey);
@@ -79,9 +80,10 @@ class tx_ttnews_categorytree extends t3lib_treeview {
 				}
 
 				$this->categoryCountCache = unserialize($tmpCCC);
+				$this->cacheHit = TRUE;
 			} else {
 				if ($this->tt_news_obj->writeCachingInfoToDevlog) {
-					t3lib_div::devLog('categoryCountCache CACHE MISS (' . __CLASS__ . '::' . __FUNCTION__ . ')', 'tt_news', 2, array($this->stored,
+					t3lib_div::devLog('categoryCountCache CACHE MISS (' . __CLASS__ . '::' . __FUNCTION__ . ')', 'tt_news', 2, array($this->stored,$this->MOUNTS,
 					$this->newsSelConf['pidInList'] . $this->newsSelConf['where'] . $this->tt_news_obj->enableFields . $this->clause));
 				}
 			}
@@ -164,7 +166,7 @@ class tx_ttnews_categorytree extends t3lib_treeview {
 			}
 		}
 
-		if ($this->tt_news_obj->cache_categoryCount && count($this->categoryCountCache)) {
+		if ($this->tt_news_obj->cache_categoryCount && count($this->categoryCountCache) && !$this->cacheHit) {
 //			$GLOBALS['TSFE']->sys_page->storeHash($storeKey, serialize($this->categoryCountCache), 'news_categoryCountCache');
 			$this->tt_news_obj->cache->set($storeKey,serialize($this->categoryCountCache),'categoryCounts');
 		}

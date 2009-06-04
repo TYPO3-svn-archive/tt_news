@@ -89,7 +89,7 @@ class tx_ttnews_cache {
 				$GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['tt_news_cache']['backend'],
 				$GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['tt_news_cache']['options']);
 		} catch (t3lib_cache_exception_DuplicateIdentifier $e) {
-			// do nothing, a cache_hash cache already exists
+			// do nothing, a tt_news_cache cache already exists
 		}
 
 		$this->tt_news_cache = $GLOBALS['typo3CacheManager']->getCache('tt_news_cache');
@@ -98,9 +98,8 @@ class tx_ttnews_cache {
 
 
 	function set($hash, $content, $ident) {
-
 		if ($this->cachingEngine=='cachingFramework' ) {
-			$this->tt_news_cache->set($hash, $content, array('ident_' . $ident), $this->lifetime);
+			$this->tt_news_cache->set($hash, $content, array('ident_' . $ident),$this->lifetime);
 
 		} elseif ( $this->cachingEngine=='memcached') {
 			$this->tt_news_cache->set($hash, $content, false, $this->lifetime);
@@ -115,7 +114,6 @@ class tx_ttnews_cache {
 
 
 	function get($hash) {
-
 		$cacheEntry = FALSE;
 		if ($this->cachingEngine=='cachingFramework' || $this->cachingEngine=='memcached') {
 			$cacheEntry = $this->tt_news_cache->get($hash);
@@ -125,7 +123,7 @@ class tx_ttnews_cache {
 			$where_clause = 'identifier="' . $hash . '"';
 
 //			if ($period > 0) {
-				$where_clause .= ' AND crdate+lifetime>' . $this->ACCESS_TIME.' OR lifetime=0';
+				$where_clause .= ' AND (crdate+lifetime>' . $this->ACCESS_TIME.' OR lifetime=0)';
 //			}
 
 			$cRec = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows($select_fields, $from_table, $where_clause);
