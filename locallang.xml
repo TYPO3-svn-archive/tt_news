@@ -21,36 +21,42 @@
 			<label index="updater.reload">[reload this page]</label>
 			
 			<label index="updater.lbl_searchOutdatedTempl">Search for outdated static TS templates</label>
-			<label index="updater.msg_searchOutdatedTempl">Search for TypoScript templates which include one of the tt_news static templates but with an outdated path:</label>
+			<label index="updater.msg_searchOutdatedTempl">Search for TypoScript templates which include one of the tt_news static templates (e.g. "CSS based tmpl") but with an outdated path:</label>
 			<label index="updater.foundMsg_searchOutdatedTempl">Found ###COUNT### template records.</label>
 			<label index="updater.question_searchOutdatedTempl">Should the updater update these records?</label>
+			<label index="updater.questionInfo_searchOutdatedTempl">(If you click "DO IT" the updater script will update these template records with a fixed path)</label>
 			
 			<label index="updater.lbl_searchNonExistingHtml">Search for non existing HTML templates</label>
 			<label index="updater.msg_searchNonExistingHtml">Search for tt_news content elements with a configured HTML template in flexforms which doesn't exist in your filesystem:</label>
 			<label index="updater.foundMsg_searchNonExistingHtml">Found ###COUNT### content elements.</label>
 			<label index="updater.question_searchNonExistingHtml">Should the updater clean this settings?</label>
+			<label index="updater.questionInfo_searchNonExistingHtml">(If you click "DO IT" the updater script will search all tt_news plugin content-elements for configured template files. If there are template files configured which do not exist under the configured path (e.g. "EXT:tt_news/pi/tt_news_v2_template.html") the updater will clean this settings. Then tt_news uses the default template which is configured in typoScript.)</label>
 	
 	
 			<label index="updater.lbl_searchMovedPidlist">Search "Startingpoint" ("pages") in FF</label>
 			<label index="updater.msg_searchMovedPidlist">Search for tt_news content elements with a value for "Startingpoint" in flexforms (This field was moved to another sheet):</label>
 			<label index="updater.foundMsg_searchMovedPidlist">Found ###COUNT### content elements.</label>
 			<label index="updater.question_searchMovedPidlist">Should the updater fix this settings?</label>
+			<label index="updater.questionInfo_searchMovedPidlist">(If you click "DO IT" the entry will be moved to the new flexform sheet)</label>		
 			
 			<label index="updater.lbl_searchMovedRecursive">Search "recursive" in FF</label>
 			<label index="updater.msg_searchMovedRecursive">Search for tt_news content elements with a value for "recursive" in flexforms (This field was moved to another sheet):</label>
 			<label index="updater.foundMsg_searchMovedRecursive">Found ###COUNT### content elements.</label>
 			<label index="updater.question_searchMovedRecursive">Should the updater fix this settings?</label>
+			<label index="updater.questionInfo_searchMovedRecursive">(If you click "DO IT" the entry will be moved to the new flexform sheet)</label>		
 			
 			
 			<label index="updater.lbl_searchMovedNoPageBrowser">Search "no page Browser" in FF</label>
 			<label index="updater.msg_searchMovedNoPageBrowser">Search for tt_news content elements with a value for "noPageBrowser" in flexforms (This field was moved to another sheet):</label>
 			<label index="updater.foundMsg_searchMovedNoPageBrowser">Found ###COUNT### content elements.</label>
 			<label index="updater.question_searchMovedNoPageBrowser">Should the updater fix this settings?</label>
+			<label index="updater.questionInfo_searchMovedNoPageBrowser">(If you click "DO IT" the entry will be moved to the new flexform sheet)</label>		
 			
 			<label index="updater.lbl_searchMovedListLimit">Search "listLimit" in FF</label>
 			<label index="updater.msg_searchMovedListLimit">Search for tt_news content elements with a value for "listLimit" in flexforms (This field was moved to another sheet):</label>
 			<label index="updater.foundMsg_searchMovedListLimit">Found ###COUNT### content elements.</label>
-			<label index="updater.question_searchMovedListLimit">Should the updater fix this settings?</label>			
+			<label index="updater.question_searchMovedListLimit">Should the updater fix this settings?</label>
+			<label index="updater.questionInfo_searchMovedListLimit">(If you click "DO IT" the entry will be moved to the new flexform sheet)</label>		
 				
 			<label index="updater.warningHeader">Important! Please Read!</label>
 			<label index="updater.nothingtodo">Nothing to do</label>
@@ -203,6 +209,168 @@
 			<label index="pi_plus_wiz_description">Aggiungi news alla pagina</label>
 		</languageKey>
 		<languageKey index="fr" type="array">
+			<label index="pi_title">Actualités</label>
+			<label index="pi_plus_wiz_description">Système de gestion des Actualités pour TYPO3</label>
+			<label index="cms_layout.mode">Affichage : %s</label>
+			<label index="cms_layout.not_configured">Le plugin n'est pas configuré !</label>
+
+			<label index="updater.back">[&lt;- retour]</label>
+			<label index="updater.reload">[recharger la page]</label>
+
+			<label index="updater.lbl_searchOutdatedTempl">Recherche des gabarits TS statics dépassés</label>
+			<label index="updater.msg_searchOutdatedTempl">Recherche des gabarits TS incluant un des gabarits statics tt_news mais avec une adresse dépassée :</label>
+			<label index="updater.foundMsg_searchOutdatedTempl"> ###COUNT### enregistrement(s) de gabarit trouvé(s).</label>
+			<label index="updater.question_searchOutdatedTempl">Mettre à jour ces enregistrements ?</label>
+
+			<label index="updater.lbl_searchNonExistingHtml">Recherche de template HTML inexistant</label>
+			<label index="updater.msg_searchNonExistingHtml">Recherche de contenus tt_news avec des templates HTML définis dans les flexforms n'existant pas sur le serveur :</label>
+			<label index="updater.foundMsg_searchNonExistingHtml">###COUNT### enregistrement(s) de contenu trouvé(s).</label>
+			<label index="updater.question_searchNonExistingHtml">Nettoyer ces paramètres ?</label>
+
+
+			<label index="updater.lbl_searchMovedPidlist">Recherche de "Startingpoint" ("pages") dans les flexforms</label>
+			<label index="updater.msg_searchMovedPidlist">Recherche de contenu tt_news avec une valeur pour le champ "Startingpoint" (ce champ a été déplacé dans un autre onglet):</label>
+			<label index="updater.foundMsg_searchMovedPidlist"> ###COUNT### enregistrement(s) de contenu trouvé(s).</label>
+			<label index="updater.question_searchMovedPidlist">Conserver ces paramètres ?</label>
+
+			<label index="updater.lbl_searchMovedRecursive">Recherche de "récursif" dans les flexforms</label>
+			<label index="updater.msg_searchMovedRecursive">Recherche de contenu tt_news avec une valeur pour le champ "récursif" (ce champ a été déplacé dans un autre onglet):</label>
+			<label index="updater.foundMsg_searchMovedRecursive">###COUNT### enregistrement(s) de contenu trouvé(s).</label>
+			<label index="updater.question_searchMovedRecursive">Conserver ces paramètres ?</label>
+
+
+			<label index="updater.lbl_searchMovedNoPageBrowser">Recherche de "noPageBrowser" dans les flexforms</label>
+			<label index="updater.msg_searchMovedNoPageBrowser">Recherche de contenu tt_news avec une valeur pour le champ "noPageBrowser" (ce champ a été déplacé dans un autre onglet):</label>
+			<label index="updater.foundMsg_searchMovedNoPageBrowser">###COUNT### enregistrement(s) de contenu trouvé(s).</label>
+			<label index="updater.question_searchMovedNoPageBrowser">Conserver ces paramètres ?</label>
+
+			<label index="updater.lbl_searchMovedListLimit">Recherche de "listLimit" dans les flexforms</label>
+			<label index="updater.msg_searchMovedListLimit">Recherche de contenu tt_news avec une valeur pour le champ "listLimit" (ce champ a été déplacé dans un autre onglet):</label>
+			<label index="updater.foundMsg_searchMovedListLimit">###COUNT### enregistrement(s) de contenu trouvé(s).</label>
+			<label index="updater.question_searchMovedListLimit">Conserver ces paramètres ?</label>
+
+			<label index="updater.warningHeader">Important ! à lire svp !</label>
+			<label index="updater.nothingtodo">Rien à faire</label>
+			<label index="updater.warningMsg">l'updater manipule votre base de données et, étant donné la grande quantité de configuration possible, il est possible que cela &lt;br&gt;
+                                ne produise pas le résultat attendu.&lt;br&gt;
+				Donc, sauvegardez votre base de données (notamment les tables sys_template et tt_content) ou faites un export t3d de votre site
+				&lt;strong&gt;AVANT&lt;/strong&gt; &lt;br&gt;
+				de cliquer sur un bouton de validation.</label>
+
+			<label index="extmng.useStoragePid">Utiliser la page générale de stockage des enregistrements : Cette option configure le traitement des catégories d'actualité dans les formulaires Back Office et sur le site (pour le contenu "CATMENU" le GRSP peut être surchargé avec "displayCatMenu.catPidList"). Par défaut, les catégories seront affichées uniquement si elles sont trouvées dans cette page de stockage (AKA "GRSP" ou "storagePid"). Si vous paramétrez "useStoragePid" à "0", toutes les catégories de l'arborescence seront affichées. Si "useStoragePid" est paramétré à "1" et s'il n'y a pas de catégorie dans le "GRSP" vous ne verrez aucune catégorie, ni dans les formulaires Back Office, ni sur le site. Voir le manuel tt_news pour plus d'information.</label>
+			<label index="extmng.requireCategories">Catégories obligatoires : Sélectionner cette option si les catégories sont obligatoires pour toutes les actualités. Notez que vous pouvez forcer l'utilisation des catégories sur des pages données du site via le paramétrage de page TSConfig en utilisant "TCEFORM.tt_news.category.config.minitems=1"</label>
+			<label index="extmng.writeParseTimesToDevlog">Debug parsetimes: Ecrit les "parsetimes" dans le devlog (extension "devlog" nécessaire).</label>
+
+			<label index="extmng.parsetimeThreshold"> Seuil parsetime : Délai d'exécution en seconde après lequel une fonction est loguée dans le devlog. Par défaut
+			 0.1 sec = 100ms. Cela signifie que toute fonction de tt_news nécessitant plus de temps pour être exécutée sera loguée. Le délai d'exécution indique la
+			sévérité du log: 0-0.2 sec = 0 (information), 0.2-0.5 sec = 1 (observation), 0.5-1 sec = 2 (alerte) et tout log au dessus d'1 seconde prend la sévérité
+			3 = erreur.</label>
+
+			<label index="extmng.useInternalCaching">Caching interne : Si activé, tt_news met en cache des information de processing (nombre de période d'archivage,
+			nombre de catégories, les catégories) dans un cache interne.</label>
+
+			<label index="extmng.writeCachingInfoToDevlog">Debuguer les information de cache: Quelles informations du cache interne doivent être écrites dans le devlog
+				 (extension "devlog" nécessaire)."désactivé": n'écrit aucune information du cache dans le devlog. "cache misses": logue unquement les actions ratées.
+				 "all": logue tous les caches dans le devlog.</label>
+
+			<label index="extmng.cachingMode">Mode de Caching: Détermine la durée de vie des entrées du cache et quand le cache interne de tt_news doit être vidé.
+				"normal": (valeur par défaut) les entrées du cache ont la même durée de vie que les pages normales. Le cache de tt_news sera vidé
+                                        quand le bouton "vider tous les caches" sera cliqué.
+				"lifetime": paramètre la durée de vie des entrées du cache avec le nombre de secondes du champ "cacheLifetime". La table des caches n'est pas vidée quand le bouton "vider tous les caches" est cliqué.
+				"static": signifie que la durée de vie des entrées du cache est égale à 0 (= illimitée). TYPO3 ne vide pas les caches de tt_news (utile lorsque vous videz les caches avec un script externe ou
+                                pour debugger).</label>
+			<label index="extmng.cacheLifetime">Durée de vie du cache: durée de vie en secondes des entrées du cache interne (si le "cachingMode" est paramétré à "lifetime"). exemple: 86400 (1 jour), 604800 (une semaine)</label>
+			<label index="extmng.cachingEngine">Moteur de caching: où les entrées du cache de tt_news seront stockées ? "internal": stocke les enregistrement du cache directement dans la base de données en utilisant les méthodes internes. "cachingFramework" Nécessite TYPO3 4.3: stocke les enregistrements du cache dans le nouveau framework de caching TYPO3 (par défaut, tt_news utilise la base de données back office du framework de caching).</label>
+
+
+
+			<label index="extmng.treeOrderBy">Tri des catégories dans les arborescences du Back Office : Ici vous pouvez configurer la clé de tri des arborescences de catégories dans les formulaires back office.</label>
+			<label index="extmng.prependAtCopy">Préfixer lors de la copie : Ici vous pouvez désactiver l'ajout de texte"(copy [#])" dans les titres des enregistrements copiés.</label>
+			<label index="extmng.label">Libellé des actualités en mode liste : Définit quel champ sera affiché dans la colonne titre dans le module web/liste.</label>
+			<label index="extmng.label_alt">Libellé alternatif : Définit quel champ sera affiché dans la colonne titre en mode liste si le libellé par défaut est vide. Si aucun libellé alternatif n'est défini et que le libellé est vide, le texte [sans titre] sera affiché.</label>
+			<label index="extmng.label_alt2">Libellé alternatif 2: Libellé alternatif."</label>
+			<label index="extmng.label_alt_force">Forcer les libellés alternatifs : Si cette option est activée les libellés alternatifs seront toujours affichés derrière le libellé par défaut.</label>
+			<label index="extmng.categoryTreeWidth">Largeur de la zone de droite du champ catégorie : Cette zone affiche l'arborescence des catégories dans les formulaires back office des enregistrements d'actualité (ou des enregistrements de catégories). Si cette option est paramétrée à 0  (zero) la largeur par défaut (=350px) sera utilisée.</label>
+			<label index="extmng.categorySelectedWidth">Largeur de la zone de gauche du champ catégorie : Cette zone affiche les catégories sélectionnées dans le champ catégories des formulaires back office des enregistrements d'actualités (ou des enregistrements de catégories). Si cette option est paramétrée à 0  (zero) la largeur par défaut (=200px) sera utilisée.</label>
+			<label index="extmng.l10n_mode_prefixLangTitle">Mode de traduction pour les champs texte : Par défaut, tous les champs texte (texte, titre, étiquette d'image...) dans une nouvelle traduction d'actualité seront préfixés avec "[translate to ...]". Si ce n'est pas souhaité, vous pouvez désactiver cela ici. Si "l10n_mode_prefixLangTitle" est désactivé, le texte "(copy [#])" sera ajouté aux titres des enregistrements même si "prependAtCopy" est désactivé (voir "prependAtCopy").</label>
+			<label index="extmng.l10n_mode_imageExclude">Mode de traduction pour les images : Le champ image d'une actualité traduite est exclu par défaut (les images sont toujours récupérées à partir de l'enregistrement de la langue par défaut). Si vous souhaitez traduire les images (ex: si une images contient des textes) vous pouvez activer le champ image dans les actualités traduites en paramétrant "l10n_mode_imageExclude" à 0.</label>
+			<label index="extmng.hideNewLocalizations">Cacher les nouvelles traductions : Ici vous pouvez choisir si les nouvelles traductions d'actualité doivent être cachées par défaut ou pas. Par défaut les nouvelles traductions sont visibles. Si ce n'est pas souhaité, paramétrer "hideNewLocalizations" à 1.</label>
+			<label index="extmng.updatermsg">tt_news 3.0.0 contient un nouvel  Updater qui permet de résoudre la majeur partie des problèmes courants lorsque vous mettez à jour une installation tt_news 2.x existante.</label>
+			<label index="extmng.updatermsgHeader">Important !</label>
+			<label index="extmng.updatermsgLink">[Cliquez ici pour ouvrir l'Updater]</label>
+
+			<label index="tsce.templateFile">Fichier template : template HTML utilisé pour afficher les actualités(ex : "fileadmin/templates/my_news_tmpl.html").</label>
+			<label index="tsce.pid_list">Page de stockage (pid_list): le PID de la page (ou liste de PIDs séparée par des virgules) où les actualités sont stockées. Notez que l'utilisation de la pidList peut être très lourd en termes de performances si vous utilisez un niveau de récursion élevé (plugin.tt_news.recursive) sur une arborescence de site importante. Si cela pose un problème pour votre site, désactivez totalement l'utilisation de la pidList dans les requêtes de BDD (TS-Setup: plugin.tt_news.dontUsePidList).</label>
+			<label index="tsce.singlePid">Page de vue single : PID de la page sur laquelle les vues détaillées des actualités seront affichées.</label>
+			<label index="tsce.backPid">Page de retour : PID de la page vers laquelle mène le lien "retour" des vues single.</label>
+			<label index="tsce.archiveTypoLink.parameter">Page des archives : PID de la page contenant la liste des actualités archivées. Le lien vers cette page est affiché en bas des vues "LATEST" et est également utilisé dans les liens du "AMENU".</label>
+			<label index="tsce.allowCaching">Autoriser le caching: Si vous souhaitez que vos actualités soient indexées par indexed search, ceci doit être activé.</label>
+			<label index="tsce.useHRDates">Utiliser des dates lisibles : Ceci active l'utilisation de paramètres GET lisibles tels que "year" et "month" pour les liens vers les archives à la place des paramètres "pS", "pL" et "arc".</label>
+			<label index="tsce.useSubCategories">Utiliser les sous-catégories: Séléctionnez cette option pour sélectionner les actualités faisant partie de sous catégories de la catégorie sélectionnée. Ne fonctionne que si categoryMode = 1 (="Afficher les enregistrements appartenant aux catégories sélectionnées").</label>
+			<label index="tsce.showCatRootline">Afficher la rootline des catégories : Activez cette option pour afficher la rootline des catégories dans les vues SINGLE ou LIST.</label>
+			<label index="tsce.useBidirectionalRelations">Utiliser les relations bidirectionnelles : Si cette option est activée, la vue SINGLE affiche les relations des actualités dans les deux directions. Les relations qui vont vers l'enregistrement source seront insérées automatiquement.</label>
+			<label index="tsce.usePagesRelations">Utiliser les pages en tant qu'actualité liée: Si cette option est activée, la vue SINGLE affiche également les relations vers les pages.</label>
+			<label index="tsce.displaySubCategories">Afficher les sous catégories : Si cette option est activée, les sous catégories des catégories assignées à une actualité seront également affichées dans les enregistrements en Front Office. Si les catégories affichées dans une actualité sont des sous catégories, elles seront wrappées avec "subCategoryTitleItem_stdWrap" (titres) ou "subCategoryImgItem_stdWrap" (images).</label>
+			<label index="tsce.showRelatedNewsByCategory">Afficher les actualités liées par catégorie : Si cette option est activée la vue SINGLE affiche la liste des actualités appartenant à la même catégorie que l'actualité affichée.</label>
+			<label index="tsce.useSPidFromCategory">Utiliser la page Single à partir de la catégorie : Si cette option est activée, tt_news utilise la page de vue single définie pour la première catégorie assignée.</label>
+			<label index="tsce.useMultiPageSingleView">Utiliser des vues single multiples : Activez cette option si vous voulez utiliser plusieurs pages de vue single.</label>
+			<label index="tsce.showTitleAsPrevNextLink">Afficher les titres des actualités à la place des liens précédent/suivant : Activez cette option si vous voulez afficher le titre de l'actualité dans les liens précédent / suivant dans les vues SINGLE. Si cette option est désactivée, les textes (traduits selon la langue) "précédent" et "suivant" seront affichés.</label>
+			<label index="tsce.limit">Limite de la vue LIST: Nombre maximum d'enregistrements dans la vue LIST.</label>
+			<label index="tsce.latestLimit">Limite de la vue LATEST: Nombre maximum d'enregistrements dans la vue LATEST.</label>
+			<label index="tsce.recursive">Profondeur (niveau de récursion) : Etend la fonction "pid_list" avec un niveau de récursion.</label>
+			<label index="tsce.noIconsInRelatedNews">Pas d'icône dans les actualités liées: Désactive les icônes dans les actualités liées.</label>
+
+			<label index="tsce.displayCatMenu.mode">Mode du menu des catégories: Ceci configure la façon dont le menu des catégories de tt_news est affiché (catmenu). "tree": utilise la class TYPO3 "treeview" pour construire un menu arborescent, "ajaxtree": le menu est dynamique avec ajax (nécessite TYPO3 4.2 ou supérieur), "nestedWraps": créé un menu avec des wraps imbriqués (non dynamique)</label>
+			<label index="tsce.displayCatMenu.showNewsCountForCategories">Afficher le nombre d'actualités dans le menu des catégories : Si cette option est activée, le menu des catégories affiche le nombre d'actualités pour chaque catégorie à côté du titre de la catégorie.</label>
+			<label index="tsce.displayCatMenu.catmenuIconMode">Mode d'affichage des icônes du menu des catégories : les modes tree/ajaxtree ont des options spéciales pour configurer les icônes. L'option  "catmenuIconMode" configure le comportement des icônes affichés à gauche des titres des catégories. "catmenuIconMode" offre les options suivantes :
+-1 = n'affiche pas d'icône du tout, 0 = affiche l'icône par défaut (tt_news_cat.gif), 1 = affiche l'image de l'enregistrement de catégorie en tant qu'icône, 2 = affiche l'icône qui est configurée dans  "catmenuIconFile"  (default: EXT:tt_news/res/arrow.gif)</label>
+			<label index="tsce.displayCatMenu.catmenuNoRootIcon">Pas d'icône à la racine du menu des catégories : Désactive l'icône pour l'item situé à la racine de l'arborescence du menu des catégories (le "catmenu header") si cette option est sélectionnée.</label>
+			<label index="tsce.catmenuWithArchiveParams">Paramètres d'archivage dans le menu des catégories : Si cette option est sélectionnée, les paramètres d'archivage (pS,pL,arc or day,month,year) seront ajoutés dans les liens du menu des caégories.</label>
+
+			<label index="tsce.displayCatMenu.expandable">Menu des catégories extensible : active les liens plier/déplier pour le menu des catégories.</label>
+			<label index="tsce.displayCatMenu.expandAll">Menu des catégories - tout déplier : montre toujours le menu des catégories complètement déplié.</label>
+			<label index="tsce.displayCatMenu.expandFirst">Menu des catégories - déplier le premier niveau : affiche le menu des catégories en dépliant le premier niveau.</label>
+
+
+			<label index="tsce.datetimeDaysToArchive">Délai d'archivage en jours: Si cette option est sélectionnée, les actualités sont automatiquement considérées comme archivées lorsque la date du champ "datetime" + le nombre de jours donnés est dépassée. Si cette option est à "0" seul le champ "archivedate" est pris en compte pour l'archivage.</label>
+			<label index="tsce.enableArchiveDate">Activer la date d'archivage : Si cette option est sélectionnée, le menu des archives sélectionne les actualités par leur date d'archivage "archivedate" - si "enableArchiveDate" est désactivé, les actualités du menu des archives seront sélectionnées par le champ date "datetime".</label>
+			<label index="tsce.amenuStart">Début du menu des archives: Date de début pour le menu des archives (Syntaxe php strtotime() ex: 1.1.2002, -3 months, -10 years, now)</label>
+			<label index="tsce.amenuEnd">Fin du menu des archives: Date de fin pour le menu des archives (Syntaxe php strtotime() ex: 1.1.2002, -3 months, -10 years, now, 1 year (la valeur peut être dans le futur))</label>
+
+			<label index="tsce.amenuWithCatSelector">Sélection des catégories dans le menu des archives : Si cette option est sélectionnée (par defaut) le menu des archives respecte la catégorie sélectionnée à partir du "catmenu". Si le contenu "AMENU" est configuré pour afficher seulement les actualités d'une certaine catégorie, la catégorie sélectionnée à partir du "catmenu" surchargera ce paramètre.</label>
+
+			<label index="tsce.archiveMode">Mode d'affichage du menu des archives : Ceci configure la façon dont le menu des archives est divisé en périodes. "month": affiche un lien par mois, "year": affiche uniquement les années, "quarter": divise chaque année en trimestre. </label>
+
+
+			<label index="tsce.catTextMode">Mode d'affichage du texte des catégories : Ceci configure la gestion des catégories dans les enregistrements des actualités.
+				Les valeurs possibles sont : 0 = ne pas afficher, 1 = afficher mais sans lien (par defaut), 2 = lien de raccourci vers la catégorie, 3 = agit comme un selecteur de catégorie (pointe vers une vue liste affichant uniquement la catégorie cliquée).</label>
+			<label index="tsce.catImageMode">Mode d'affichage des images des catégories: mêmes options que "catTextMode" mais pour les images des catégories.</label>
+			<label index="tsce.singleMaxW">Largeur maximum de la "single-image" : Largeur maximum de l'image affichée dans la vue SINGLE</label>
+			<label index="tsce.singleMaxH">Hauteur maximum de la "single-image": Hauteur maximum de l'image affichée dans la vue SINGLE</label>
+			<label index="tsce.latestMaxW">Largeur maximum de la "latest-image" : Largeur maximum de l'image affichée dans la vue LATEST</label>
+			<label index="tsce.latestMaxH">Hauteur maximum de la "latest-image" : Hauteur maximum de l'image affichée dans la vue LATEST</label>
+			<label index="tsce.listMaxW">Largeur maximum de la "list-image" : Largeur maximum de l'image affichée dans la vue LIST</label>
+			<label index="tsce.listMaxH">Hauteur maximum de la "list-image" : Hauteur maximum de l'image affichée dans la vue LIST</label>
+
+			<label index="tsce.listImageMode">Mode de redimensionnement pour les images en mode LIST : Si cette option est paramétrée à "resize2max" les images seront redimensionnées jusqu'à ce que la largeur ou la hauteur atteigne la valeur maximum (les proportions sont préservées). Si cette option est paramétrée à "crop" les images seront rognées et centrées afin d'atteindre les dimensions. Si cette option est paramétrée à "resize" les images seront redimensionnées sans respecter les proportions.</label>
+			<label index="tsce.latestImageMode">Mode de redimensionnement pour les images en mode LATEST : voir "listImageMode".</label>
+
+
+
+			<label index="tsce.xmlFormat">Format du flux XML des actualités : Définie le format XML du flux des actualités. Les valeurs possibles sont: "rss091", "rss2" "rdf", "atom1" et "atom03"</label>
+			<label index="tsce.xmlTitle">Titre du flux XML des actualités : Définie le titre du flux XML des actualités. (obligatoire pour les formats rss091, rss2, rdf et atom03)</label>
+			<label index="tsce.xmlLink">Lien du flux XML des actualités : Définie le lien vers la homepage du flux XML des actualités. (obligatoire pour les formats rss091, rss2, rdf et atom03)</label>
+			<label index="tsce.xmlDesc">Description du flux XML des actualités : Définie la description du flux XML des actualités. (obligatoire pour les formats rss091, rss2 and rdf. optionnel pour le format atom03)</label>
+			<label index="tsce.xmlLang">Langue du flux XML des actualités : La langue du site. Une liste des valeurs acceptées dans les flux XML est disponible à l'adresse http://backend.userland.com/stories/storyReader$16 (obligatoire pour les formats rss091, optionnel pour le format rss2, non disponible pour le format rdf, recommandé pour le format atom03)</label>
+			<label index="tsce.xmlIcon">Icône du flux XML des actualités : Produit un icône pour le flux XML des actualités avec une taille de 16x16 px, peut être un gif, un jpeg ou un png. (obligatoire pour les formats rss091, optionnel pour le format rss2 et rdf, non disponible pour le format atom03)</label>
+			<label index="tsce.xmlLimit">Limite du flux XML des actualités: nombre maximum d'actualités pour le flux XML.</label>
+			<label index="tsce.xmlCaching">Caching du flux XML des actualités: Autorise le caching pour le flux XML.</label>
+			<label index="tsce.rss2_tmplFile">Fichier template Actualités RSS v2: Template XML pour le flux RSS 2.0.</label>
+			<label index="tsce.rss091_tmplFile">Fichier template Actualités RSS v0.91: Template XML pour le flux RSS 0.91.</label>
+			<label index="tsce.rdf_tmplFile">Fichier template Actualités RDF: Template XML pour le flux RDF.</label>
+			<label index="tsce.atom03_tmplFile">Fichier template Actualités Atom v0.3: Template XML pour le flux Atom 0.3.</label>
+			<label index="tsce.atom1_tmplFile">Fichier template Actualités Atom v1.0: Template XML pour le flux Atom 1.0.</label>		
+			
 		</languageKey>
 		<languageKey index="es" type="array">
 			<label index="pi_title">Noticias</label>

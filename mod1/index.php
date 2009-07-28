@@ -233,15 +233,7 @@ class tx_ttnews_module1 extends t3lib_SCbase {
 		$this->doc->setModuleTemplate('mod_ttnews_admin.html');
 		$this->doc->docType = 'xhtml_trans';
 
-		/**
-		 * FIXME:
-		 * on some servers $this->doc->moduleTemplate is empty (occured only on netcreators servers until now)
-		 * by opening the template directly it worked.
-		 * possible reasons:
-		 * - paths with '../typo3/../' could make problems
-		 * - php settings which influence the functionality of t3lib_div::getURL(). allow_url_fopen and the like
-		 * - ...
-		 */
+
 
 		if (!$this->doc->moduleTemplate) {
 			t3lib_div::devLog('cannot set moduleTemplate', 'tt_news', 2, array(
@@ -306,6 +298,18 @@ class tx_ttnews_module1 extends t3lib_SCbase {
 				div.docheader-row2-right {
 					margin-top: -3px;
 				}
+				div.ttnewsadmin-pagination {
+					padding: 5px 0;
+					white-space: nowrap;
+				}
+				div.ttnewsadmin-pagination img, div.ttnewsadmin-pagination span.pageIndicator {
+					margin-right: 6px;
+				}
+				div.ttnewsadmin-pagination img {
+					vertical-align: bottom;
+					padding-bottom: 2px;
+				}
+
 
 			';
 

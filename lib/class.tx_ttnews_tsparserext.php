@@ -61,7 +61,7 @@ class tx_ttnews_tsparserext {
   			<h3><img src="../../../gfx/icon_warning.gif" style="margin-bottom:-3px;"> ' . $GLOBALS['LANG']->sL('LLL:EXT:tt_news/locallang.xml:extmng.updatermsgHeader') . '
   			</h3>
   			<p>' . $GLOBALS['LANG']->sL('LLL:EXT:tt_news/locallang.xml:extmng.updatermsg') . '<br>
-  			<a href="index.php?&amp;id=0&amp;CMD[showExt]=tt_news&amp;SET[singleDetails]=updateModule">
+  			<a style="text-decoration:underline;" href="index.php?&amp;id=0&amp;CMD[showExt]=tt_news&amp;SET[singleDetails]=updateModule">
   				' . $GLOBALS['LANG']->sL('LLL:EXT:tt_news/locallang.xml:extmng.updatermsgLink') . '</a>
   			</p>
   		</div>';

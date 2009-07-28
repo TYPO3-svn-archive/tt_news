@@ -73,6 +73,13 @@
 			<label index="noEditCategories">You're not allowed to edit this record because it has disallowed categories assigned.</label>
 			
 			
+			<label index="first">First</label>
+			<label index="last">Last</label>		
+			<label index="reload">Reload</label>
+			<label index="next">Next</label>
+			<label index="previous">Previous</label>
+			<label index="pageIndicator">Page %1$s of %2$d</label>
+			<label index="rangeIndicator">Records %1$d - %2$d of %3$d</label>
 			
 		</languageKey>
 

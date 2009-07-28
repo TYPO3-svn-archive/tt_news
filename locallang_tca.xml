@@ -115,7 +115,7 @@
 			<label index="tt_news.pi_flexform.imageMaxWidth">Max width for images in news records (accepts optionSplit)</label>
 			<label index="tt_news.pi_flexform.imageMaxHeight">Max height for images in news records (accepts optionSplit)</label>
 			<label index="tt_news.pi_flexform.altLayoutsOptionSplit">Template part number / optionSplit of template part numbers</label>
-			<label index="tt_news.pi_flexform.alternatingLayouts">Number of alternating template parts (is ignored if template part number is set)</label>
+			<label index="tt_news.pi_flexform.alternatingLayouts">Number of alternating template parts (is ignored if "Template part number / optionSplit" is set)</label>
 			<label index="tt_news.pi_flexform.croppingLenght">stdWrap.crop for the subheader (short)</label>
 			<label index="tt_news.pi_flexform.croppingLenghtOptionSplit">OptionSplit for cropping lenght of subheader (overwrites lenght parameter from stdWrap.crop)</label>
 			

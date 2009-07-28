@@ -74,7 +74,8 @@ class ext_update {
 				$out .= 'ERROR: ' . $func . '() not found';
 			}
 		} else {
-			$out .= '<a href="' . t3lib_div::linkThisScript(array('do_update' => '', 'func' => '')) . '">' . $GLOBALS['LANG']->sL($this->ll . 'reload') . '</a><br>';
+			$out .= '<a href="' . t3lib_div::linkThisScript(array('do_update' => '', 'func' => '')) . '">' . $GLOBALS['LANG']->sL($this->ll . 'reload') . '
+			<img style="vertical-align:bottom;" ' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/refresh_n.gif', 'width="18" height="16"') . '></a><br>';
 
 			$out .= $this->displayWarning();
 
@@ -103,7 +104,7 @@ class ext_update {
 	function displayUpdateOption($k, $count, $func) {
 
 		$msg = $GLOBALS['LANG']->sL($this->ll . 'msg_' . $k) . ' ';
-		$msg .= '<strong>' . str_replace('###COUNT###', $count, $GLOBALS['LANG']->sL($this->ll . 'foundMsg_' . $k)) . '</strong>';
+		$msg .= '<br><strong>' . str_replace('###COUNT###', $count, $GLOBALS['LANG']->sL($this->ll . 'foundMsg_' . $k)) . '</strong>';
 		if ($count == 0) {
 			$i = 'ok';
 
@@ -113,7 +114,8 @@ class ext_update {
 		$msg .= ' <img ' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/icon_' . $i . '.gif', 'width="18" height="16"') . '>';
 
 		if ($count) {
-			$msg .= '<br>' . $GLOBALS['LANG']->sL($this->ll . 'question_' . $k) . '<br>';
+			$msg .= '<p style="margin:5px 0;">' . $GLOBALS['LANG']->sL($this->ll . 'question_' . $k) . '<p>';
+			$msg .=  '<p style="margin-bottom:10px;"><em>'.$GLOBALS['LANG']->sL($this->ll . 'questionInfo_' . $k) . '</em><p>';
 			$msg .= $this->getButton($func);
 		} else {
 			$msg .= '<br>' . $GLOBALS['LANG']->sL('LLL:EXT:tt_news/locallang.xml:updater.nothingtodo');

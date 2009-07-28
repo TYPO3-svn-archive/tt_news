@@ -1,4 +1,12 @@
 
+2009-07-28  Rupert Germann <rupi@gmx.li>
+	* fix: the pagebrowser in the newsadmin module didn't work correctly under TYPO3 4.2.x. Moved all locallang labels, icons and 
+	  css styles to tt_news.
+
+2009-06-14  Rupert Germann <rupi@gmx.li>
+	* Added french labels for new localized options in constant-editor, extmanager and updater (thanks to Rachel Foucard)
+	* added a new label to each updater function which displays information about what the updater is going to do.
+
 2009-06-04  Rupert Germann <rupi@gmx.li>
 	* new feature: added the new pagebrowser from the listview to the tt_news admin listview (class tx_ttnews_recordlist::renderListNavigation()) 
 	* fix: the categorycount cache was always written no matter of a cached value was found or not.
@@ -2582,6 +2590,6 @@
 	* cvsroot/typo3xdev/tx_ttnews/tca.php 1.1.1.1:
 
 -----------------------------------------------------------------------------------
-* cvs ID:
+* svn ID:
 $Id$
 

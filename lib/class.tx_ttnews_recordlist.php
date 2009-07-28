@@ -97,17 +97,17 @@ class tx_ttnews_recordlist extends tx_cms_layout {
 		$out = '';
 		$queryParts = $this->makeQueryArray($table, $id, $addWhere);
 		$this->setTotalItems($queryParts);
-		$dbCount = 0;
+//		$dbCount = 0;
 		$this->eCounter = 0;
 
 			// Make query for records if there were any records found in the count operation:
 		if ($this->totalItems)	{
 			$result = $GLOBALS['TYPO3_DB']->exec_SELECT_queryArray($queryParts);
-			$dbCount = $GLOBALS['TYPO3_DB']->sql_num_rows($result);
+//			$dbCount = $GLOBALS['TYPO3_DB']->sql_num_rows($result);
 		}
 
 			// If records were found, render the list:
-		if ($dbCount)	{
+		if ($this->totalItems)	{
 				// Set fields
 			$this->fieldArray = explode(',',$fList);
 
@@ -202,88 +202,86 @@ class tx_ttnews_recordlist extends tx_cms_layout {
 
 				// Compile first, previous, next, last and refresh buttons
 			if ($currentPage > 1) {
-				$labelFirst = $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_common.xml:first');
+				$labelFirst = $GLOBALS['LANG']->sL('LLL:EXT:tt_news/mod1/locallang.xml:first');
 
 				$first = '<a href="' . $listURL . '&pointer=0">
-					<img' . t3lib_iconWorks::skinImg($this->backPath, 'gfx/control_first.gif')
+					<img' . t3lib_iconWorks::skinImg('', '../res/gfx/control_first.gif')
 					. 'alt="' . $labelFirst . '" title="' . $labelFirst . '" />
 				</a>';
 			} else {
-				$first = '<img' . t3lib_iconWorks::skinImg($this->backPath, 'gfx/control_first_disabled.gif') . 'alt="" title="" />';
+				$first = '<img' . t3lib_iconWorks::skinImg('', '../res/gfx/control_first_disabled.gif') . 'alt="" title="" />';
 			}
 
 			if (($currentPage - 1) > 0) {
-				$labelPrevious = $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_common.xml:previous');
+				$labelPrevious = $GLOBALS['LANG']->sL('LLL:EXT:tt_news/mod1/locallang.xml:previous');
 
 				$previous = '<a href="' . $listURL . '&pointer=' . (($currentPage - 2) * $this->iLimit) . '">
-					<img' . t3lib_iconWorks::skinImg($this->backPath, 'gfx/control_previous.gif')
+					<img' . t3lib_iconWorks::skinImg('', '../res/gfx/control_previous.gif')
 					. 'alt="' . $labelPrevious . '" title="' . $labelPrevious . '" />
 					</a>';
 			} else {
-				$previous = '<img' . t3lib_iconWorks::skinImg($this->backPath, 'gfx/control_previous_disabled.gif') . 'alt="" title="" />';
+				$previous = '<img' . t3lib_iconWorks::skinImg('', '../res/gfx/control_previous_disabled.gif') . 'alt="" title="" />';
 			}
 
 			if (($currentPage + 1) <= $totalPages) {
-				$labelNext = $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_common.xml:next');
+				$labelNext = $GLOBALS['LANG']->sL('LLL:EXT:tt_news/mod1/locallang.xml:next');
 
 				$next = '<a href="' . $listURL . '&pointer=' . (($currentPage) * $this->iLimit) . '">
-					<img' . t3lib_iconWorks::skinImg($this->backPath, 'gfx/control_next.gif')
+					<img' . t3lib_iconWorks::skinImg('', '../res/gfx/control_next.gif')
 					. 'alt="' . $labelNext . '" title="' . $labelNext . '" />
 					</a>';
 			} else {
-				$next = '<img' . t3lib_iconWorks::skinImg($this->backPath, 'gfx/control_next_disabled.gif') . 'alt="" title="" />';
+				$next = '<img' . t3lib_iconWorks::skinImg('', '../res/gfx/control_next_disabled.gif') . 'alt="" title="" />';
 			}
 
 			if ($currentPage != $totalPages) {
-				$labelLast = $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_common.xml:last');
+				$labelLast = $GLOBALS['LANG']->sL('LLL:EXT:tt_news/mod1/locallang.xml:last');
 
 				$last = '<a href="' . $listURL . '&pointer=' . (($totalPages - 1) * $this->iLimit) . '">
-					<img' . t3lib_iconWorks::skinImg($this->backPath, 'gfx/control_last.gif')
+					<img' . t3lib_iconWorks::skinImg('', '../res/gfx/control_last.gif')
 					. 'alt="' . $labelLast . '" title="' . $labelLast . '" />
 					</a>';
 			} else {
-				$last = '<img' . t3lib_iconWorks::skinImg($this->backPath, 'gfx/control_last_disabled.gif') . 'alt="" title="" />';
+				$last = '<img' . t3lib_iconWorks::skinImg('', '../res/gfx/control_last_disabled.gif') . 'alt="" title="" />';
 			}
 
-			$reload = '<a href="#" onclick="document.dblistForm.action=\''
-				. $listURL . '&pointer=\'+calculatePointer(); document.dblistForm.submit(); return true;">
-				<img' . t3lib_iconWorks::skinImg($this->backPath, 'gfx/refresh_n.gif')
-				. 'alt="' . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_common.xml:reload')
-				. '" title="' . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_common.xml:reload')
-				. '" /></a>';
+//			$reload = '<a href="#" onclick="document.dblistForm.action=\''
+//				. $listURL . '&pointer=\'+calculatePointer(); document.dblistForm.submit(); return true;">
+//				<img' . t3lib_iconWorks::skinImg($this->backPath, 'gfx/refresh_n.gif')
+//				. 'alt="' . $GLOBALS['LANG']->sL('LLL:EXT:tt_news/mod1/locallang.xml:reload')
+//				. '" title="' . $GLOBALS['LANG']->sL('LLL:EXT:tt_news/mod1/locallang.xml:reload')
+//				. '" /></a>';
 
 			// Add js to traverse a page select input to a pointer value
-			$content = '
-<script type="text/JavaScript">
-/*<![CDATA[*/
+//			$content = '
+//<script type="text/JavaScript">
+///*<![CDATA[*/
+//
+//	function calculatePointer(){
+//		page = document.getElementById(\'jumpPage\').value;
+//
+//		if (page > ' . $totalPages . ') {
+//			page = ' . $totalPages . ';
+//		}
+//
+//		if (page < 1) {
+//			page = 1;
+//		}
+//
+//		pointer = (page - 1) * ' . $this->iLimit . ';
+//
+//		return pointer;
+//	}
+//
+///*]]>*/
+//</script>
+//';
 
-	function calculatePointer(){
-		page = document.getElementById(\'jumpPage\').value;
-
-		if (page > ' . $totalPages . ') {
-			page = ' . $totalPages . ';
-		}
-
-		if (page < 1) {
-			page = 1;
-		}
-
-		pointer = (page - 1) * ' . $this->iLimit . ';
-
-		return pointer;
-	}
-
-/*]]>*/
-</script>
-';
-
-			$pageNumberInput = '<span>
-				<input type="text" value="' . $currentPage
-				. '" size="3" id="jumpPage" name="jumpPage" onkeyup="if (event.keyCode == Event.KEY_RETURN) { document.dblistForm.action=\'' . $listURL . '&pointer=\'+calculatePointer(); document.dblistForm.submit(); } return true;" />
-				</span>';
-			$pageIndicator = '<span class="pageIndicator">'
-				. sprintf($GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_mod_web_list.xml:pageIndicator'), $pageNumberInput, $totalPages)
-				. '</span>';
+//			$pageNumberInput = '<span>
+//				<input type="text" value="' . $currentPage
+//				. '" size="3" id="jumpPage" name="jumpPage" onkeyup="if (event.keyCode == Event.KEY_RETURN) { document.dblistForm.action=\'' . $listURL . '&pointer=\'+calculatePointer(); document.dblistForm.submit(); } return true;" />
+//				</span>';
+			$pageIndicator = sprintf($GLOBALS['LANG']->sL('LLL:EXT:tt_news/mod1/locallang.xml:pageIndicator'), $currentPage, $totalPages);
 
 			if ($this->totalItems > ($this->firstElementNumber + $this->iLimit)) {
 				$lastElementNumber = $this->firstElementNumber + $this->iLimit;
@@ -291,16 +289,15 @@ class tx_ttnews_recordlist extends tx_cms_layout {
 				$lastElementNumber = $this->totalItems;
 			}
 			$rangeIndicator = '<span class="pageIndicator">'
-				. sprintf($GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_mod_web_list.xml:rangeIndicator'), $this->firstElementNumber + 1, $lastElementNumber)
+				. sprintf($GLOBALS['LANG']->sL('LLL:EXT:tt_news/mod1/locallang.xml:rangeIndicator'), $this->firstElementNumber + 1, $lastElementNumber, $this->totalItems)
 				. '</span>';
 
-			$content .= '<div id="typo3-dblist-pagination">'
+			$content .= '<div class="ttnewsadmin-pagination">'
 				. $first . $previous
-				. '<span class="bar">&nbsp;</span>'
-				. $rangeIndicator . '<span class="bar">&nbsp;</span>'
-				. $pageIndicator . '<span class="bar">&nbsp;</span>'
-				. $next . $last . '<span class="bar">&nbsp;</span>'
-				. $reload
+				. '&nbsp;'
+				. $rangeIndicator . '&nbsp;('
+				. $pageIndicator . ')&nbsp;'
+				. $next . $last
 				. '</div>';
 		} // end of if pages > 1
 
@@ -610,7 +607,7 @@ class tx_ttnews_recordlist extends tx_cms_layout {
 		}
 
 			// Set LIMIT:
-		$limit = $this->iLimit ? ($this->firstElementNumber ? $this->firstElementNumber.',' : '').($this->iLimit+1) : '';
+		$limit = $this->iLimit ? ($this->firstElementNumber ? $this->firstElementNumber.',' : '').($this->iLimit) : '';
 
 			// Adding search constraints:
 		$search = $this->makeSearchString($table);
