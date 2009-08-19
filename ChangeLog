@@ -1,3 +1,5 @@
+2009-08-19  Rupert Germann <rupi@gmx.li>
+	* fix: displayCurrentRecord is now working again
 
 2009-07-28  Rupert Germann <rupi@gmx.li>
 	* fix: the pagebrowser in the newsadmin module didn't work correctly under TYPO3 4.2.x. Moved all locallang labels, icons and 

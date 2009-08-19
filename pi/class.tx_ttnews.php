@@ -32,7 +32,7 @@
  * $Id$
  *
  * TypoScript setup:
- * @See ext/tt_news/static/ts_new/setup.txt
+ * @See ext/tt_news/pi/static/ts_new/setup.txt
  * @See tt_news Manual: 	http://typo3.org/documentation/document-library/extension-manuals/tt_news/current/
  * @See TSref: 			http://typo3.org/documentation/document-library/references/doc_core_tsref/current/
  *
@@ -272,8 +272,10 @@ class tx_ttnews extends tslib_pibase {
 
 		$this->local_cObj = t3lib_div::makeInstance('tslib_cObj'); // Local cObj.
 		$this->enableFields = $this->getEnableFields('tt_news');
-		$this->tt_news_uid = intval($this->piVars['tt_news']); // Get the submitted uid of a news (if any)
 
+		if ($this->tt_news_uid === 0) { // no tt_news_uid set by displayCurrentRecord
+			 $this->tt_news_uid = intval($this->piVars['tt_news']); // Get the submitted uid of a news (if any)
+		}
 
 		if (! isset($this->conf['compatVersion']) || ! preg_match('/^\d+\.\d+\.\d+$/', $this->conf['compatVersion'])) {
 			$this->conf['compatVersion'] = $this->hObj->getCurrentVersion();
