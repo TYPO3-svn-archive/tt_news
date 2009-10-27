@@ -13,6 +13,7 @@
 		<el>
 		<what_to_display>
 			<TCEforms>
+				<onChange>reload</onChange>
 				<label>LLL:EXT:tt_news/locallang_tca.xml:tt_news.pi_flexform.what_to_display</label>
 				<config>
 					<type>select</type>

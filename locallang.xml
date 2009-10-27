@@ -58,10 +58,14 @@
 			<label index="updater.question_searchMovedListLimit">Should the updater fix this settings?</label>
 			<label index="updater.questionInfo_searchMovedListLimit">(If you click "DO IT" the entry will be moved to the new flexform sheet)</label>		
 				
+				
 			<label index="updater.warningHeader">Important! Please Read!</label>
 			<label index="updater.nothingtodo">Nothing to do</label>
+			<label index="updater.actions">Actions:</label>
+			<label index="updater.updateresults">Update results:</label>
+			
 			<label index="updater.warningMsg">The updater manipulates your database and due to the huge amount of configuration variants it is 
-				possible that it &lt;br&gt;might not produce the expexted results.&lt;br&gt;
+				possible that it &lt;br&gt;might not produce the expected results.&lt;br&gt;
 				So backup your database (at least the tables sys_template and tt_content) or do a t3d export of your site 
 				&lt;strong&gt;BEFORE&lt;/strong&gt; &lt;br&gt;
 				you click on any of the "DO_IT" Buttons.</label>
@@ -107,6 +111,8 @@
 			<label index="extmng.updatermsg">tt_news 3.0.0 comes with a new updater-script which can fix some of the most common problems when you're updating an existing tt_news 2.x installation.</label>
 			<label index="extmng.updatermsgHeader">Important!</label>
 			<label index="extmng.updatermsgLink">[Click here to open the updater]</label>
+			<label index="extmng.updatermsgOption">Updater</label>
+			
 			
 			<label index="tsce.templateFile">Template File: HTML-template which is used to display news (e.g.: "fileadmin/templates/my_news_tmpl.html").</label>
 			<label index="tsce.pid_list">Starting Point (pid_list): The PID of the page (or comma separated list pf PIDs) where your news articles are stored. Note that getting the pidList can be very performance intensive if you use a high recursion level (plugin.tt_news.recursive) in a big pagetree. If this is a problem for your site, consider to completely disable the use of pidList in database queries (TS-Setup: plugin.tt_news.dontUsePidList).</label>

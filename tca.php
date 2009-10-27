@@ -267,7 +267,12 @@ $TCA['tt_news'] = Array (
 				'autoSizeMax' => 10,
 				'maxitems' => '200',
 				'minitems' => '0',
-				'show_thumbs' => '1'
+				'show_thumbs' => '1',
+				'wizards' => array(
+					'suggest' => array(
+						'type' => 'suggest'
+					)
+				)
 			)
 		),
 		'keywords' => Array (

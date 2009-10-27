@@ -276,5 +276,4 @@ $GLOBALS['TBE_STYLES']['htmlTemplates']['mod_ttnews_admin.html'] = t3lib_extMgm:
 
 
 
-
 ?>

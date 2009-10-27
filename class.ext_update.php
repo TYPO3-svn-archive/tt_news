@@ -45,8 +45,24 @@ class ext_update {
 	var $flexObj;
 	var $ll = 'LLL:EXT:tt_news/locallang.xml:updater.';
 
-	var $checkMovedFields = array('pages' => array('old' => 'sDEF', 'new' => 's_misc'), 'recursive' => array('old' => 'sDEF', 'new' => 's_misc'),
-			'listLimit' => array('old' => 's_misc', 'new' => 's_template'), 'noPageBrowser' => array('old' => 's_misc', 'new' => 's_template'));
+	var $checkMovedFields = array(
+			'pages' => array(
+				'old' => 'sDEF',
+				'new' => 's_misc'
+			),
+			'recursive' => array(
+				'old' => 'sDEF',
+				'new' => 's_misc'
+			),
+			'listLimit' => array(
+				'old' => 's_misc',
+				'new' => 's_template'
+			),
+			'noPageBrowser' => array(
+				'old' => 's_misc',
+				'new' => 's_template'
+			)
+		);
 
 
 	/**
@@ -68,16 +84,29 @@ class ext_update {
 
 			$func = trim(t3lib_div::_GP('func'));
 			if (method_exists($this, $func)) {
-				$out .= '<div style="background:white;padding:10px;border:1px solid #aaa; margin:10px 15px 0 0;" >
-					<h2>Updater results:</h2>' . $this->$func() . '</div>';
+				$out .= '
+				<div style="padding:15px 15px 20px 0;">
+				<div class="typo3-message message-ok">
+   				<div class="message-header">' . $GLOBALS['LANG']->sL('LLL:EXT:tt_news/locallang.xml:updater.updateresults') . '</div>
+  				<div class="message-body">
+				' . $this->$func() . '
+				</div>
+				</div></div>';
 			} else {
-				$out .= 'ERROR: ' . $func . '() not found';
+				$out .= '
+				<div style="padding:15px 15px 20px 0;">
+				<div class="typo3-message message-error">
+   					<div class="message-body">ERROR: ' . $func . '() not found</div>
+   				</div>
+   				</div>';
 			}
 		} else {
 			$out .= '<a href="' . t3lib_div::linkThisScript(array('do_update' => '', 'func' => '')) . '">' . $GLOBALS['LANG']->sL($this->ll . 'reload') . '
 			<img style="vertical-align:bottom;" ' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/refresh_n.gif', 'width="18" height="16"') . '></a><br>';
 
 			$out .= $this->displayWarning();
+
+			$out .= '<h3>' . $GLOBALS['LANG']->sL($this->ll . 'actions') . '</h3>';
 
 			// outdated static TS templates
 			$out .= $this->displayUpdateOption('searchOutdatedTempl', count($this->tstemplates),'updateStaticTemplateFiles');
@@ -97,6 +126,15 @@ class ext_update {
 			// moved listlimit
 			$out .= $this->displayUpdateOption('searchMovedListLimit', count($this->movedFields['listLimit']),'fixfield_movedListLimit');
 		}
+
+
+		if (t3lib_div::int_from_ver(TYPO3_version) < 4003000) {
+				// add flashmessages styles
+			$cssPath = $GLOBALS['BACK_PATH'] . t3lib_extMgm::extRelPath('tt_news');
+			$out = '<link rel="stylesheet" type="text/css" href="' . $cssPath . 'res/flashmessages.css" media="screen" />' . $out;
+		}
+
+
 		return $out;
 	}
 
@@ -130,15 +168,15 @@ class ext_update {
 
 
 	function displayWarning() {
-		$out = '<table class="warningbox" border="0" cellpadding="0" cellspacing="0">
-					<tr><td>
-						<img ' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/icon_warning2.gif', 'width="18" height="16"') . '>
-						<span class="warningboxheader">' . $GLOBALS['LANG']->sL('LLL:EXT:tt_news/locallang.xml:updater.warningHeader') . '</span>
-						<p style="font-weight:normal;">' . $GLOBALS['LANG']->sL('LLL:EXT:tt_news/locallang.xml:updater.warningMsg') . '</p>
-						</td>
-					</tr>
-				</table>
-				<br>';
+		$out = '
+		<div style="padding:15px 15px 20px 0;">
+			<div class="typo3-message message-warning">
+   				<div class="message-header">' . $GLOBALS['LANG']->sL('LLL:EXT:tt_news/locallang.xml:updater.warningHeader') . '</div>
+  				<div class="message-body">
+					' . $GLOBALS['LANG']->sL('LLL:EXT:tt_news/locallang.xml:updater.warningMsg') . '
+				</div>
+			</div>
+		</div>';
 
 		return $out;
 	}

@@ -1,3 +1,15 @@
+
+2009-10-27  Rupert Germann <rupi@gmx.li>
+	* changed styling of messages in the extensionmanager and in the updater to the flashmessage style from TYPO3 4.3. 
+	  Added a new css file (res/flashmessages.css) which is loaded in older TYPO3 versions where the flashmessages
+	  styles are not present in the general backend stylesheet.  
+	* added some more locallang labels for the updater
+	* added a "suggest" wizard to the field "related news" (works only in TYPO3 4.3)
+	* added "onchange=reload" to the "codes" (what to display) field in the plugin's flexform
+	* changed the PHP and TYPO3 requirements: as of now tt_news requires at least PHP 5.0 and TYPO3 version 4.1 
+	* changed the way how the update message in EM is rendered. Added a new field for this message because in TYPO3 4.1
+	  there is no type=user in TS ()before this change the updater message was bundles to the field "useStoragePid").  
+	
 2009-08-19  Rupert Germann <rupi@gmx.li>
 	* fix: displayCurrentRecord is now working again (thanks Krystian Szymukowicz)
 

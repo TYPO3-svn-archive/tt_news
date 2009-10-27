@@ -44,27 +44,26 @@ class tx_ttnews_tsparserext {
 	 */
 	function displayMessage(&$params, &$tsObj) {
 
-		$raname = substr(md5('useStoragePid'), 0, 10);
-		$aname = '\'' . $raname . '\'';
+		$out = '';
 
-		$c = '';
-		if ($params['fieldValue'] == 1) {
-			$c = ' checked="checked"';
+		if (t3lib_div::int_from_ver(TYPO3_version) < 4003000) {
+				// 4.3.0 comes with flashmessages styles. For older versions we include the needed styles here
+			$cssPath = $GLOBALS['BACK_PATH'] . t3lib_extMgm::extRelPath('tt_news');
+			$out .= '<link rel="stylesheet" type="text/css" href="' . $cssPath . 'res/flashmessages.css" media="screen" />';
 		}
 
-		$out = '
-		<input name="data[useStoragePid]" value="0" type="hidden">
-		<input id="data[useStoragePid]" name="data[useStoragePid]" value="1"' . $c . ' onclick="uFormUrl(' . $aname . ')" type="checkbox">';
-
 		$out .= '
-		<div style="border:2px solid #090;position:absolute;top:10px;right:10px; width:220px;background:white;padding:10px;">
-  			<h3><img src="../../../gfx/icon_warning.gif" style="margin-bottom:-3px;"> ' . $GLOBALS['LANG']->sL('LLL:EXT:tt_news/locallang.xml:extmng.updatermsgHeader') . '
-  			</h3>
-  			<p>' . $GLOBALS['LANG']->sL('LLL:EXT:tt_news/locallang.xml:extmng.updatermsg') . '<br>
-  			<a style="text-decoration:underline;" href="index.php?&amp;id=0&amp;CMD[showExt]=tt_news&amp;SET[singleDetails]=updateModule">
-  				' . $GLOBALS['LANG']->sL('LLL:EXT:tt_news/locallang.xml:extmng.updatermsgLink') . '</a>
-  			</p>
-  		</div>';
+		<div style="position:absolute;top:10px;right:10px; width:300px;">
+			<div class="typo3-message message-information">
+   				<div class="message-header">' . $GLOBALS['LANG']->sL('LLL:EXT:tt_news/locallang.xml:extmng.updatermsgHeader') . '</div>
+  				<div class="message-body">
+  					' . $GLOBALS['LANG']->sL('LLL:EXT:tt_news/locallang.xml:extmng.updatermsg') . '<br />
+  					<a style="text-decoration:underline;" href="index.php?&amp;id=0&amp;CMD[showExt]=tt_news&amp;SET[singleDetails]=updateModule">
+  					' . $GLOBALS['LANG']->sL('LLL:EXT:tt_news/locallang.xml:extmng.updatermsgLink') . '</a>
+  				</div>
+  			</div>
+  		</div>
+  		';
 
 		return $out;
 	}
