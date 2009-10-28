@@ -1,6 +1,10 @@
 
+
+2009-10-28  Rupert Germann <rupi@gmx.li>
+	* clean-up: moved flashmessages.css from res/ to compat/ folder and changed references to this file accordingly
+	  
 2009-10-27  Rupert Germann <rupi@gmx.li>
-	* changed styling of messages in the extensionmanager and in the updater to the flashmessage style from TYPO3 4.3. 
+	* changed styling of messages in the extensionmanager and in the updater to the flashmessages style from TYPO3 4.3. 
 	  Added a new css file (res/flashmessages.css) which is loaded in older TYPO3 versions where the flashmessages
 	  styles are not present in the general backend stylesheet.  
 	* added some more locallang labels for the updater
