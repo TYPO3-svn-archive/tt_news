@@ -1,30 +1,30 @@
 /***************************************************************
-*
-*  javascript functions regarding the page & folder tree
-*  relies on the javascript library "prototype"
-*
-*
-*  Copyright notice
-*
-*  (c) 2006-2008	Benjamin Mack <www.xnos.org>
-*  All rights reserved
-*
-*  This script is part of the TYPO3 t3lib/ library provided by
-*  Kasper Skaarhoj <kasper@typo3.com> together with TYPO3
-*
-*  Released under GNU/GPL (see license file in tslib/)
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-*
-*  This copyright notice MUST APPEAR in all copies of this script
-*
-***************************************************************/
+ *
+ *  javascript functions for the tt_news category tree in tceforms
+ *  relies on the javascript library "prototype"
+ *
+ *
+ *  Copyright notice
+ *
+ *  (c) 2006-2009	Benjamin Mack <www.xnos.org>
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 t3lib/ library provided by
+ *  Kasper Skaarhoj <kasper@typo3.com> together with TYPO3
+ *
+ *  Released under GNU/GPL (see license file in tslib/)
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *
+ *  This copyright notice MUST APPEAR in all copies of this script
+ *
+ ***************************************************************/
 
 /**
- *
  * @author	Benjamin Mack
+ * @author	Rupert Germann
  * 
  * modified for the tt_news category menu by Rupert Germann <rupi@gmx.li>
  *
@@ -38,7 +38,6 @@ var tceFormsCategoryTree = {
 	frameSetModule: null,
 	activateDragDrop: true,
 	highlightClass: 'active',
-//	recID: 0,
 
 	// reloads a part of the page tree (useful when "expand" / "collapse")
 	load: function(params, isExpand, obj, tceFormsTable, recID, storagePid) {

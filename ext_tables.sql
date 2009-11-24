@@ -128,7 +128,9 @@ CREATE TABLE be_users (
 );
 
 
-
+#
+# Table structure for table 'tt_news_cache'
+#
 CREATE TABLE tt_news_cache (
     identifier varchar(32) DEFAULT '' NOT NULL,
     content text NOT NULL,

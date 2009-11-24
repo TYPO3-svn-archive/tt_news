@@ -2,7 +2,7 @@
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2005-2008 Rupert Germann <rupi@gmx.li>
+ *  (c) 2005-2009 Rupert Germann <rupi@gmx.li>
  *  All rights reserved
  *
  *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -29,7 +29,7 @@
  * script which receives ajax calls from tt_news
  *
  * @author Rupert Germann <rg@rgdata.de>
- * Copyright (c) 2008
+ * Copyright (c) 2009
  *
  * @version $Id$
  */
@@ -92,6 +92,16 @@ require_once(t3lib_extMgm::extPath('tt_news').'lib/class.tx_ttnews_typo3ajax.php
 
 // finding the script path from the variable
 $ajaxID = (string) t3lib_div::_GP('ajaxID');
+
+
+
+/**
+ * TODO: 24.11.2009
+ *
+ *
+ * use t3lib_div::makeInstance
+ */
+
 
 // instantiating the AJAX object
 //$ajaxClassName = t3lib_div::makeInstanceClassName('tx_ttnews_typo3ajax');

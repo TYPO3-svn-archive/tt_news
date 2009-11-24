@@ -29,6 +29,7 @@
  * class to hold all the information about an AJAX call and send
  * the right headers for the request type
  *
+ * @author  Rupert Germann <rupi@gmx.li>
  * @author	Benjamin Mack <mack@xnos.org>
  * @package	TYPO3
  * @subpackage	core

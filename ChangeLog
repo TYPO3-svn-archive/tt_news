@@ -1,4 +1,7 @@
 
+2009-11-24  Rupert Germann <rupi@gmx.li>
+	* clean-up: updated copyrights and class comments
+	* fix: changed instantiation of the BE ajax object to prevent use of deprecated functions in TYPO3 4.3
 
 2009-10-28  Rupert Germann <rupi@gmx.li>
 	* clean-up: moved flashmessages.css from res/ to compat/ folder and changed references to this file accordingly

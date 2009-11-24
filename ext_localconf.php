@@ -1,4 +1,9 @@
 <?php
+
+/**
+ * $Id$
+ */
+
 if (!defined ("TYPO3_MODE")) 	die ("Access denied.");
 
 /**
@@ -46,6 +51,8 @@ $GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['tt_news_ca
 if ($confArr['cachingMode']=='normal') {
 	$GLOBALS ['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['clearAllCache_additionalTables']['tt_news_cache'] = 'tt_news_cache';
 }
+
+
 
 
 ?>

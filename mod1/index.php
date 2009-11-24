@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2008 Rupert Germann <rg@rgdata.de>
+*  (c) 2009 Rupert Germann <rg@rgdata.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is

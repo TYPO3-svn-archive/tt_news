@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2004-2008 Rupert Germann <rupi@gmx.li>
+*  (c) 2004-2009 Rupert Germann <rupi@gmx.li>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -21,28 +21,6 @@
 *
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
-/**
- * [CLASS/FUNCTION INDEX of SCRIPT]
- *
- *
- *
- *   56: class tx_ttnewscatmanager_cm1
- *   60:     function main(&$backRef,$menuItems,$tableID,$srcId)
- *  131:     function DB_edit($table,$uid)
- *  151:     function DB_new($table,$rec,$newsub=false)
- *  186:     function DB_hideUnhide($table,$rec,$hideField)
- *  201:     function DB_changeFlag($table, $rec, $flagField, $title, $name)
- *  225:     function DB_delete($table,$uid,$elInfo)
- *  254:     function dragDrop_moveCategory($srcUid,$dstUid)
- *  274:     function dragDrop_copyCategory($srcUid,$dstUid)
- *  292:     function includeLocalLang()
- *
- * TOTAL FUNCTIONS: 9
- * (This index is automatically created/updated by the extension "extdeveval")
- *
- */
-
-
 
 /**
  * Additional items for the clickmenu.
@@ -71,6 +49,8 @@ class tx_ttnewscatmanager_cm1 {
 
 
 		/**
+		 * TODO
+		 *
 		 * FIXME
 		 * backpath will not work in global installations
 		 */
