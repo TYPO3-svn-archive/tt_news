@@ -26,6 +26,8 @@
 ***************************************************************/
 /**
  * AJAX dispatcher
+ *
+ * @author  Rupert Germann <rupi@gmx.li>
  * @author	Benjamin Mack <mack@xnos.org>
  * @package	TYPO3
  *
@@ -50,9 +52,14 @@ $ajaxScript = $TYPO3_CONF_VARS['BE']['AJAX'][$ajaxID];
 
 
 	// instantiating the AJAX object
-$ajaxClassName = t3lib_div::makeInstanceClassName('TYPO3AJAX');
-$ajaxObj       = new $ajaxClassName($ajaxID);
-$ajaxParams    = array();
+if (t3lib_div::int_from_ver(TYPO3_version) >= 4003000) {
+	$ajaxObj = t3lib_div::makeInstance('TYPO3AJAX', $ajaxID);
+} else {
+	$ajaxClassName = t3lib_div::makeInstanceClassName('TYPO3AJAX');
+	$ajaxObj = new $ajaxClassName($ajaxID);
+}
+
+$ajaxParams = array();
 //print_r(array($ajaxID, $ajaxScript, $ajaxParams));
 
 
