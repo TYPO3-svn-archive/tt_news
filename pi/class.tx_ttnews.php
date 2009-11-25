@@ -401,7 +401,7 @@ class tx_ttnews extends tslib_pibase {
 		$altLayouts = trim($this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'altLayoutsOptionSplit', 's_template'));
 		$this->config['altLayoutsOptionSplit'] = $altLayouts ? $altLayouts : trim($this->conf['altLayoutsOptionSplit']);
 
-		// Get cropping lenght
+		// Get cropping length
 
 
 		$croppingLenghtOptionSplit = trim($this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'croppingLenghtOptionSplit', 's_template'));
@@ -581,7 +581,7 @@ class tx_ttnews extends tslib_pibase {
 			$this->hObj->getParsetime(__METHOD__);
 		}
 
-		$noPeriod = 0; // used to call getSelectConf without a period lenght (pL) at the first archive page
+		$noPeriod = 0; // used to call getSelectConf without a period length (pL) at the first archive page
 
 
 		if (! $this->conf['emptyArchListAtStart']) {
@@ -598,7 +598,7 @@ class tx_ttnews extends tslib_pibase {
 			}
 		}
 		if ($this->piVars['pS'] && ! $this->piVars['pL']) {
-			$noPeriod = 1; // override the period lenght checking in getSelectConf
+			$noPeriod = 1; // override the period length checking in getSelectConf
 		}
 
 		if (1) {
@@ -2977,7 +2977,7 @@ class tx_ttnews extends tslib_pibase {
 	 * build the selectconf (array of query-parameters) to get the news items from the db
 	 *
 	 * @param	string		$where : where-part of the query
-	 * @param	integer		$noPeriod : if this value exists the listing starts with the given 'period start' (pS). If not the value period start needs also a value for 'period lenght' (pL) to display something.
+	 * @param	integer		$noPeriod : if this value exists the listing starts with the given 'period start' (pS). If not the value period start needs also a value for 'period length' (pL) to display something.
 	 * @return	array		the selectconf for the display of a news item
 	 */
 	function getSelectConf($addwhere, $noPeriod = 0) {

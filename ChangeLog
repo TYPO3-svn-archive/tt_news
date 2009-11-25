@@ -4,6 +4,7 @@
 	* fix: ajax error in news-admin module when clicking the "show thumbs" checkbox in a list which shows news from a certain category
 	* fixed bug #12750: added a new icon for the content element wizard (Thanks to Georg Ringer)
 	* fixed bug #4488: update script not DBAL ready 
+	* fixed some wrong wording in code comments
 
 2009-11-24  Rupert Germann <rupi@gmx.li>
 	* clean-up: updated copyrights and class comments

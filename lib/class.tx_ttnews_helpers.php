@@ -231,7 +231,7 @@ class tx_ttnews_helpers {
 	 * inserts pagebreaks after a certain amount of words
 	 *
 	 * @param	string		text which can contain manully inserted 'pageBreakTokens'
-	 * @param	integer		amount of words in the subheader (short). The lenght of the first page will be reduced by that amount of words added to the value of $this->conf['cropWordsFromFirstPage'].
+	 * @param	integer		amount of words in the subheader (short). The length of the first page will be reduced by that amount of words added to the value of $this->conf['cropWordsFromFirstPage'].
 	 * @return	string		the processed text
 	 */
 	function insertPagebreaks($text, $firstPageWordCrop) {
