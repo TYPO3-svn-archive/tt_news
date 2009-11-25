@@ -1,4 +1,8 @@
 
+
+2009-11-24  Rupert Germann <rupi@gmx.li>
+	* fix: ajax error in news-admin module when clicking the "show thumbs" checkbox in a list which shows news from a certain category
+
 2009-11-24  Rupert Germann <rupi@gmx.li>
 	* clean-up: updated copyrights and class comments
 	* fix: changed instantiation of the BE ajax object to prevent use of deprecated functions in TYPO3 4.3

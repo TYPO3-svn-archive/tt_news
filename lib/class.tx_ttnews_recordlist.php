@@ -194,7 +194,7 @@ class tx_ttnews_recordlist extends tx_cms_layout {
 
 			// Show page selector if not all records fit into one page
 		if ($totalPages > 1) {
-			$first = $previous = $next = $last = $reload = '';
+			$first = $previous = $next = $last = '';
 			$listURL = $this->listURL('', $this->table);
 
 				// 1 = first page

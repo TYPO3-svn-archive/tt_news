@@ -60,7 +60,7 @@ if (t3lib_div::int_from_ver(TYPO3_version) >= 4003000) {
 }
 
 $ajaxParams = array();
-//print_r(array($ajaxID, $ajaxScript, $ajaxParams));
+//print_r(array($_GET, $_POST, $ajaxID, $ajaxScript, $ajaxParams));
 
 
 

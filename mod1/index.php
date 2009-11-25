@@ -873,6 +873,7 @@ class tx_ttnews_module1 extends t3lib_SCbase {
 		if ($this->mayUserEditCategories) {
 			$allowedCbNames[] = 'showEditIcons';
 		}
+
 		$params = $this->getLinkParams();
 		$out = array();
 		foreach ($allowedCbNames as $n) {
@@ -907,7 +908,8 @@ class tx_ttnews_module1 extends t3lib_SCbase {
 		$out = array();
 		foreach ($allowedCbNames as $n) {
 			if ((bool)$show['cb_'.$n]) {
-				$out[] = '<span class="list-cb">'.t3lib_BEfunc::getFuncCheck($params,'SET['.$n.']',$this->MOD_SETTINGS[$n],'','','id="cb-'.$n.'"').
+				$out[] = '<span class="list-cb">' .
+						t3lib_BEfunc::getFuncCheck($params, 'SET['.$n.']', $this->MOD_SETTINGS[$n], 'index.php', '', 'id="cb-' . $n . '"') .
 					' <label for="cb-'.$n.'">'.$GLOBALS['LANG']->getLL($n,1).'</label></span>';
 			}
 		}
