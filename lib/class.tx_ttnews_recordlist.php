@@ -615,7 +615,7 @@ class tx_ttnews_recordlist extends tx_cms_layout {
 
 		if ($this->selectedCategories) {
 			$mmTable = 'tt_news_cat_mm';
-			$fieldList = 'DISTINCT('.$table.'.uid), '.$fieldList;
+			$fieldList = 'DISTINCT '.$table.'.uid, '.$fieldList;
 			$leftjoin = ' LEFT JOIN '.$mmTable.' AS mm1 ON '.$table.'.uid=mm1.uid_local';
 		}
 

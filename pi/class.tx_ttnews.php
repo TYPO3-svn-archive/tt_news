@@ -641,7 +641,7 @@ class tx_ttnews extends tslib_pibase {
 //			} else {
 
 				if ($selectConf['leftjoin']) {
-					$selectConf['selectFields'] = 'COUNT(DISTINCT(tt_news.uid))';
+					$selectConf['selectFields'] = 'COUNT(DISTINCT tt_news.uid)';
 				} else {
 					$selectConf['selectFields'] = 'COUNT(tt_news.uid)';
 				}
@@ -680,7 +680,7 @@ class tx_ttnews extends tslib_pibase {
 
 				// build query for display:
 				if ($selectConf['leftjoin']) {
-					$selectConf['selectFields'] = 'DISTINCT(tt_news.uid),tt_news.*';
+					$selectConf['selectFields'] = 'DISTINCT tt_news.uid, tt_news.*';
 				} else {
 					$selectConf['selectFields'] = 'tt_news.*';
 				}
@@ -1249,7 +1249,7 @@ class tx_ttnews extends tslib_pibase {
 					$periodInfo['HRstop'] = date('d-m-Y', $periodInfo['stop']);
 					$periodInfo['quarter'] = floor(date('m', $v) / 3) + 1;
 
-					$select_fields = 'COUNT(DISTINCT(tt_news.uid))';
+					$select_fields = 'COUNT(DISTINCT tt_news.uid)';
 					$from_table = 'tt_news';
 					$join = ($selectConf['leftjoin'] ? ' LEFT JOIN ' . $selectConf['leftjoin'] : '');
 					$where_clause = $tmpWhere . ' AND tt_news.datetime>=' . $periodInfo['start'] . ' AND tt_news.datetime<' . $periodInfo['stop'];

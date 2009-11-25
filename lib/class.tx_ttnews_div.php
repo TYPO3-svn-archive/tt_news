@@ -138,7 +138,7 @@ class tx_ttnews_div {
 	function getNewsCountForSubcategory(&$result, $cat, $news_clause, $catclause) {
 		// count news in current category
 
-		$select_fields = 'COUNT(DISTINCT(tt_news.uid))';
+		$select_fields = 'COUNT(DISTINCT tt_news.uid)';
 		$from_table = '	tt_news_cat, tt_news_cat_mm, tt_news ';
 
 		$where_clause = '
