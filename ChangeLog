@@ -9,6 +9,7 @@
 	* fixed bug #12453: Invalid use of DISTINCT keyword leads ot invalid query when using DBAL (thanks to Xavier Perseguers)
 	* fixed bug #12756: Queries for internal caching are not DBAL compatible
 	* fixed bug #8307: Missing titles in the list module in the Backend (Thanks to Georg Ringer)
+	* fixed bug #6300: tt_news - save & preview - not working with new records (Thanks to Martin Holtz)
 
 2009-11-24  Rupert Germann <rupi@gmx.li>
 	* clean-up: updated copyrights and class comments

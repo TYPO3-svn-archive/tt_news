@@ -134,19 +134,6 @@ class tx_ttnews_tcemain {
 				$rec = t3lib_BEfunc::getRecord($table,$fieldArray['l18n_parent'],'type'); // get "type" from parent record
 				$fieldArray['type'] = $rec['type']; // set type of current record
 			}
-				// direct preview
-			if (isset($GLOBALS['_POST']['_savedokview_x']) && !$fieldArray['type'] && !$GLOBALS['BE_USER']->workspace)	{
-					// if "savedokview" has been pressed and current article has "type" 0 (= normal news article) and the beUser works in the LIVE workspace open current record in single view
-				$pagesTSC = t3lib_BEfunc::getPagesTSconfig($GLOBALS['_POST']['popViewId']); // get page TSconfig
-				if ($pagesTSC['tx_ttnews.']['singlePid']) {
-					$GLOBALS['_POST']['popViewId_addParams'] = ($fieldArray['sys_language_uid']>0?'&L='.$fieldArray['sys_language_uid']:'').'&no_cache=1&tx_ttnews[tt_news]='.$id;
-					$GLOBALS['_POST']['popViewId'] = $pagesTSC['tx_ttnews.']['singlePid'];
-				}
-
-			}
-// 			debug(t3lib_div::_GP('popViewId_addParams'),__FUNCTION__);
-
-//			$divObj = t3lib_div::makeInstance('tx_ttnews_div');
 
 			// check permissions of assigned categories
 			if (is_int($id) && !$GLOBALS['BE_USER']->isAdmin()) {
@@ -180,6 +167,25 @@ class tx_ttnews_tcemain {
 					$fieldArray = array();
 				}
 
+			}
+		}
+	}
+
+	function processDatamap_afterDatabaseOperations($status, $table, $id, $fieldArray, $pObj) {
+		if ($table == 'tt_news') {
+				// direct preview
+			if (!is_numeric($id)) {
+				$id = $pObj->substNEWwithIDs[$id];
+			}
+			if (isset($GLOBALS['_POST']['_savedokview_x']) && !$fieldArray['type'] && !$GLOBALS['BE_USER']->workspace) {
+					// if "savedokview" has been pressed and current article has "type" 0 (= normal news article)
+					// and the beUser works in the LIVE workspace open current record in single view
+				$pagesTSC = t3lib_BEfunc::getPagesTSconfig($GLOBALS['_POST']['popViewId']); // get page TSconfig
+				if ($pagesTSC['tx_ttnews.']['singlePid']) {
+					$GLOBALS['_POST']['popViewId_addParams'] = ($fieldArray['sys_language_uid'] > 0 ?
+						'&L=' . $fieldArray['sys_language_uid'] : '') . '&no_cache=1&tx_ttnews[tt_news]=' . $id;
+					$GLOBALS['_POST']['popViewId'] = $pagesTSC['tx_ttnews.']['singlePid'];
+				}
 			}
 		}
 	}
