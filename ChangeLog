@@ -3,11 +3,11 @@
 2009-11-25  Rupert Germann <rupi@gmx.li>
 	* fix: ajax error in news-admin module when clicking the "show thumbs" checkbox in a list which shows news from a certain category
 	* fixed bug #12750: added a new icon for the content element wizard (Thanks to Georg Ringer)
-	* fixed bug #4488: update script not DBAL ready 
+	* fixed bug #4488: update script not DBAL ready
 	* fixed some wrong wording in code comments
 	* fixed broken date in xml feeds (wrong "$this->$this" in class tx_ttnews)
 	* fixed bug #12453: Invalid use of DISTINCT keyword leads ot invalid query when using DBAL (thanks to Xavier Perseguers)
-	* fixed bug #12756: Queries for internal caching are not DBAL compatible 
+	* fixed bug #12756: Queries for internal caching are not DBAL compatible
 
 2009-11-24  Rupert Germann <rupi@gmx.li>
 	* clean-up: updated copyrights and class comments
@@ -15,23 +15,23 @@
 
 2009-10-28  Rupert Germann <rupi@gmx.li>
 	* clean-up: moved flashmessages.css from res/ to compat/ folder and changed references to this file accordingly
-	  
+
 2009-10-27  Rupert Germann <rupi@gmx.li>
-	* changed styling of messages in the extensionmanager and in the updater to the flashmessages style from TYPO3 4.3. 
+	* changed styling of messages in the extensionmanager and in the updater to the flashmessages style from TYPO3 4.3.
 	  Added a new css file (res/flashmessages.css) which is loaded in older TYPO3 versions where the flashmessages
-	  styles are not present in the general backend stylesheet.  
+	  styles are not present in the general backend stylesheet.
 	* added some more locallang labels for the updater
 	* added a "suggest" wizard to the field "related news" (works only in TYPO3 4.3)
 	* added "onchange=reload" to the "codes" (what to display) field in the plugin's flexform
-	* changed the PHP and TYPO3 requirements: as of now tt_news requires at least PHP 5.0 and TYPO3 version 4.1 
+	* changed the PHP and TYPO3 requirements: as of now tt_news requires at least PHP 5.0 and TYPO3 version 4.1
 	* changed the way how the update message in EM is rendered. Added a new field for this message because in TYPO3 4.1
-	  there is no type=user in TS ()before this change the updater message was bundles to the field "useStoragePid").  
-	
+	  there is no type=user in TS ()before this change the updater message was bundles to the field "useStoragePid").
+
 2009-08-19  Rupert Germann <rupi@gmx.li>
 	* fix: displayCurrentRecord is now working again (thanks Krystian Szymukowicz)
 
 2009-07-28  Rupert Germann <rupi@gmx.li>
-	* fix: the pagebrowser in the newsadmin module didn't work correctly under TYPO3 4.2.x. Moved all locallang labels, icons and 
+	* fix: the pagebrowser in the newsadmin module didn't work correctly under TYPO3 4.2.x. Moved all locallang labels, icons and
 	  css styles to tt_news.
 
 2009-06-14  Rupert Germann <rupi@gmx.li>
@@ -39,21 +39,21 @@
 	* added a new label to each updater function which displays information about what the updater is going to do.
 
 2009-06-04  Rupert Germann <rupi@gmx.li>
-	* new feature: added the new pagebrowser from the listview to the tt_news admin listview (class tx_ttnews_recordlist::renderListNavigation()) 
+	* new feature: added the new pagebrowser from the listview to the tt_news admin listview (class tx_ttnews_recordlist::renderListNavigation())
 	* fix: the categorycount cache was always written no matter of a cached value was found or not.
 	* fix: added missing () around the lifetime part of the getfromcache query for the internal caching.
 	* changed the db-engine of the tt_news_cache table to innodb.
-	
+
 2009-06-02  Rupert Germann <rupi@gmx.li>
 *** DB table changes ***
- 	* connected the internal caching from tt_news to the TYPO3 caching framework (requires at least TYPO3 4.3). By default it's configured to 
+ 	* connected the internal caching from tt_news to the TYPO3 caching framework (requires at least TYPO3 4.3). By default it's configured to
  	  use the DB backend but of course it will work with all other available caching backEnds too (tested with memcached, APC, filecache and DB)
- 	* Added a switch to the extmanager config where one can choose the "caching Engine" (options: internal, cachingFramework). If the caching 
- 	  framework is not available (TYPO3 < v4.3) tt_news automatically falls back to the internal caching. 
+ 	* Added a switch to the extmanager config where one can choose the "caching Engine" (options: internal, cachingFramework). If the caching
+ 	  framework is not available (TYPO3 < v4.3) tt_news automatically falls back to the internal caching.
  	* Moved the caching related functions to their own classfile: lib/class.tx_ttnews_cache.php
  	* changed the "lifetime" handling of cache entries to use the same system as the caching framework.
  	* changed the fieldnames of table tt_news_cache to make it work with the caching framework and the internal caching.
-	* fixed bug #11236:  Wrong param passed to getSubCategoriesForMenu 
+	* fixed bug #11236:  Wrong param passed to getSubCategoriesForMenu
 	* fix: moved the call to function initCategories() inside the $codes loop because initCategories() requires $this->theCode to be set.
 
 2009-05-25  Rupert Germann <rupi@gmx.li>
@@ -61,100 +61,100 @@
 *** DB table changes ***
 	* performance improvement: internal caching of processing intensive values.
 	  - archive periods: getting the newscount for every archive period is a quite "expnsive" operation as there can be
-	    a lot of these periods. These counts are now cached internally which reduces the rendering time of the archive menu drastically. 
+	    a lot of these periods. These counts are now cached internally which reduces the rendering time of the archive menu drastically.
 	  - categories: the categories (and also subcategories) for a news article are now stored in the internal cache, too.
 	    This reduces the amount of queries which has to be made to display a listview.
 	  - internal caching for newscounts in category menus with 2 stages: getting the newscounts for categories is also a very expensive
 	    operation especially when the categorymenu is a USER_INT object (which is required for the ajax expand/collapse to work)
-	    Now the newscounts are cached seperately for each category and also in an array containing the complete counts for a category menu in a 
+	    Now the newscounts are cached seperately for each category and also in an array containing the complete counts for a category menu in a
 	    certain state.
-	* SQL query improvements: 
-	  - the "Distinct" subselect for the listquery is now only added if it is actually needed (in case when news are selected 
+	* SQL query improvements:
+	  - the "Distinct" subselect for the listquery is now only added if it is actually needed (in case when news are selected
 	    by category)
 	  - removed the "orderby" part from the count query for lists
 	* added indices for tt_news.datetime and tt_news_cat.parent_category
-	
-	* new extmanager options: 
-	  useInternalCaching (as the name says, enabled by default), 
-	  cachingMode: this determines the cache entries lifetime and if the internal cache from tt_news will be cleared by TYPO3. 
-				"normal": (default) the cache entries will get the same lifetime as normal pages. The tt_news cache will be cleared 
-				  when the "clear all caches" button is pressed. 
-				"lifetime": will set the livetime of cache entries to the given amount of seconds in field "cacheLifetime". 
-				  The cache table is not cleared when "clear all caches" is clicked. 
-				"static": the lifetime of cache entries is set to zero (= unlimited). TYPO3 does not clear the tt_news cache 
+
+	* new extmanager options:
+	  useInternalCaching (as the name says, enabled by default),
+	  cachingMode: this determines the cache entries lifetime and if the internal cache from tt_news will be cleared by TYPO3.
+				"normal": (default) the cache entries will get the same lifetime as normal pages. The tt_news cache will be cleared
+				  when the "clear all caches" button is pressed.
+				"lifetime": will set the livetime of cache entries to the given amount of seconds in field "cacheLifetime".
+				  The cache table is not cleared when "clear all caches" is clicked.
+				"static": the lifetime of cache entries is set to zero (= unlimited). TYPO3 does not clear the tt_news cache
 				  (useful if you clear the cache with an external script or for debugging).
 	  cacheLifetime: lifetime in seconds of the internal cache entries (used only when cachingMode is "lifetime").
 	  writeCachingInfoToDevlog: Which information about internal caching should be written to devlog (extension "devlog" required).
-	    "disabled": don't write any information about caching to devlog. 
-	    "cache misses": log only cache misses. 
+	    "disabled": don't write any information about caching to devlog.
+	    "cache misses": log only cache misses.
 	    "all": log cache misses and cache hits to devlog.
-	  parsetimeThreshold: Execution time in seconds after which a single function is logged to devlog. Default is 0.1 sec = 100ms. 
-	    any function in tt_news which needs more time to be executed will be logged. The execution time indicates the severity of the log entry: 
+	  parsetimeThreshold: Execution time in seconds after which a single function is logged to devlog. Default is 0.1 sec = 100ms.
+	    any function in tt_news which needs more time to be executed will be logged. The execution time indicates the severity of the log entry:
 	    0-0.2 sec = 0 (info), 0.2-0.5 sec = 1 (notice), 0.5-1 sec = 2 (warning) and everything above 1 second get severerity 3 = error.
-	
+
 	* added a lot of TS default variables to setup.txt (These options are not new but before they were only mentioned in the manual and were
 	  not visible by default in TypoScriptObjectBrowser)
-	* changed the default TS for date formatting for all "codes" to a consistent format (%d.%m.%Y) and removed the non localized "of" in 
-	  displaySingle.date_stdWrap.strftime 
+	* changed the default TS for date formatting for all "codes" to a consistent format (%d.%m.%Y) and removed the non localized "of" in
+	  displaySingle.date_stdWrap.strftime
 
-	* "related news by category" do now have their own TS namespace. Before this the settings for relNewsByCat had to be configured in "displayList." 
-	  which made it quite unhandy to configure. Now "related news by category" use relNewsByCategory{} which is a copy of the whole plugin.tt_news{} 
+	* "related news by category" do now have their own TS namespace. Before this the settings for relNewsByCat had to be configured in "displayList."
+	  which made it quite unhandy to configure. Now "related news by category" use relNewsByCategory{} which is a copy of the whole plugin.tt_news{}
 	  array. This makes it possible to deliver an "out-of-the-box" working default configuration and it gives you more possibilties to adapt the
-	  output to your needs. 
+	  output to your needs.
 	* added a TS condition to disable the icons in related news by a TS constants switch.
-	* added a TS condition to directly switch the archiveMode and change the rendering of archiveTitleCObject accordingly by a TS constants switch.  
+	* added a TS condition to directly switch the archiveMode and change the rendering of archiveTitleCObject accordingly by a TS constants switch.
 	* changed initialisation of "multipageSingleView". Now useMultiPageSingleView is not activated automatically anymore when maxWordsInSingleView
-	  has a non zero value. 
+	  has a non zero value.
 	* singleView pagebrowser now uses the same pagebrowser as a normal list view (with own config array: plugin.tt_news.singleViewPageBrowser)
-	  
+
 	* moved the pagebrowser initialisation/call to a new function: getPagebrowserContent()
 	* the archivemenu is now able to display dates in the future
 	* fix for xmlIcon path: now "EXT:" is resolved correctly in the image path
 	* cleanup: moved all record icons to the new folder res/gfx/
-	
-	
+
+
 
 2009-05-05  Rupert Germann <rupi@gmx.li>
 	* new feature: generic markers (thanks to Georg Ringer for his ttnewsgenericmarkers extension). Generic markers allows you to define new
-	  HTML template Markers and render any field from the tt_news record to them without writing a single line of PHP. 
+	  HTML template Markers and render any field from the tt_news record to them without writing a single line of PHP.
 	* new feature: it's now possible to enable the "Crop"-Mode for news images directly in the Constant Editor (listImageMode, latestImageMode)
-	* performance fix: moved a call to getSelectConf() from function getNewsCountForCategory() to the init function of the catmenu class because 
+	* performance fix: moved a call to getSelectConf() from function getNewsCountForCategory() to the init function of the catmenu class because
 	  it was called multiple there.
 	* cleanup: changed all calls to the different getSubCategories() methods to tx_ttnews_div::getSubCategories(). removed the unneeded methods
 	  from class.tx_ttnews_helpers and class_tx_ttnews_tcemain
 	* fix: added alot of missing calls to $GLOBALS['TYPO3_DB']->sql_free_result($res)
-	* performance fix: changed the initialization of $this->pageArray in class tx_ttnews. This array was initialized with all pages in the 
-	  pid_list which was quite expensive when there was a huge pid_list. $this->pageArray is used to output some data of the news sysfolder 
-	  to the tt_news $markerArray. 
+	* performance fix: changed the initialization of $this->pageArray in class tx_ttnews. This array was initialized with all pages in the
+	  pid_list which was quite expensive when there was a huge pid_list. $this->pageArray is used to output some data of the news sysfolder
+	  to the tt_news $markerArray.
 	  Now $this->pageArray is used as cache for already fetched pagerecords which will only be fetched (by the new method getRelatedNewsByCategory())
 	  if they are actually needed and if there is a marker for them.
-	* cleanup: moved the code for getting newsfiles, related news by category and for the xml markers to own functions: 
+	* cleanup: moved the code for getting newsfiles, related news by category and for the xml markers to own functions:
 	  getXmlMarkers(), getFileLinks(), getRelatedNewsByCategory()
 	* fixed bug #10708: added 2 missing references to function getSIngleViewLink() to make it possible to alter the singlePid
 	  by a hook.
-	
+
 
 2009-04-17  Rupert Germann <rupi@gmx.li>
 	* fixed bug #10921: added exclude=1 to tca config of field author_email
 
 2009-04-09  Rupert Germann <rupi@gmx.li>
-	* updater: new feature: added some more options to the updater script: it is now able to ckeck for values in the moved Flexform fields: 
+	* updater: new feature: added some more options to the updater script: it is now able to ckeck for values in the moved Flexform fields:
 	  pages (startingpoint), recursive, listLimit and noPageBrowser. These values will be moved to the field in the correct sheet.
 	* updater: enhanced the "check for not existing html template" function: this function checks now if the found template entry
 	  actually exists in the filesystem and offers to unset the value if the template file doesn't exist anymore.
 	* moved all text from the constants.txt files to tt_news/locallang.xml
 	* reformattd code in class.tx_ttnews.php
-	* fix: added an empty (Set by TS) option to the "what to display" (code) selector in FF. fix: added an empty (Set by TS) option to the 
+	* fix: added an empty (Set by TS) option to the "what to display" (code) selector in FF. fix: added an empty (Set by TS) option to the
 	  "what to display" (code) selector in FF. Without this it was not possible anymore to leave CODE empty and override it from TS.
-	  
+
 	* refactored the updater script. Added language labels and moved all text to tt_news/locallang.xml
 	* moved all text from ext_conf_template.txt to tt_news/locallang.xml (those labels require a colon : to divide the header from the helptext)
 	* because the description field from TSConstantEditor could not be localized, I converted the field useStoragePid to "user" and re-added
 	  the now localized updater-message to ext_conf_template.txt. (new file: lib/class.tx_ttnews_tsparserext.php)
-	  
-	  Note: "user" fields in constants editor require at least TYPO3 4.2. In older Versions the checkbox for this option is shown as simple 
+
+	  Note: "user" fields in constants editor require at least TYPO3 4.2. In older Versions the checkbox for this option is shown as simple
 	  input field but no error occurs. This affects only the new info-message for the updater, the updater itself should work in all TYPO3
-	  versions. 
+	  versions.
 	* added missing XCLASS statements
 	* moved some more functions from pi/class.tx_ttnews.php to lib/class.tx_ttnews_helpers.php
 	* changed some mysql definitions for better dbal compatibility: converted all tinytext fields to varchar(255), removed NOT NULL statements
@@ -162,31 +162,31 @@
 
 
 2009-04-07  Rupert Germann <rupi@gmx.li>
-	* replaced the outdated updater script (class.ext_update.php) with a new one that fixes the 2 most common problems when updating an 
-	  existing tt_news installation	from 2.5.x to 3.0.0.	  
+	* replaced the outdated updater script (class.ext_update.php) with a new one that fixes the 2 most common problems when updating an
+	  existing tt_news installation	from 2.5.x to 3.0.0.
 	  1. since I moved the static/ folder to the pi/ directory all references to the static tt_news ts templates are broken after updating.
 	     the updater script fixes this by searching the affected templates and updating them with an updated field "include_static_file"
 	     where the wrong paths have been corrected.
 	  2. In case the old default template (EXT:tt_news/pi/tt_news_v2_template.html) was used in flexform configuration this will fail because
 	     I renamed this template. The updater script can fix this by setting the template path to an empty value in all tt_news flexforms
-	     where it was used. Then tt_news will render the news with the default template which is configured by TS. Flexforms with other 
+	     where it was used. Then tt_news will render the news with the default template which is configured by TS. Flexforms with other
 	     templates than tt_news/pi/tt_news_v2_template.html will not be changed.
 	* added a message to ext_conf_template.txt which informs the user about the new updater.
 
 
 2009-04-04  Rupert Germann <rupi@gmx.li>
-	* new feature: now the category menu can show the number of news in each category. 
+	* new feature: now the category menu can show the number of news in each category.
 	  This can be enabled/disabled by TS: displayCatMenu.showNewsCountForCategories (default=0)
 
 	* performance enhancement: replaced the "renderFields" feature with "renderMarkers" by Dan Osipov - thanx Dan!
 	  although renderMarkers does basically the same as renderFields it is the smarter concept, because it doesn't need any configuration.
-	  The existence of a certain marker in the html template let's tt_news execute the code that is needed for this marker. Means: every code line 
+	  The existence of a certain marker in the html template let's tt_news execute the code that is needed for this marker. Means: every code line
 	  that fills a certain marker is now wrapped with a condition which checks the existence of this marker before the code is executed.
-	  
-	  
+
+
 
 2009-04-04  Rupert Germann <rupi@gmx.li>
-	* fix: removed call to t3lib_div::makeInstanceClassName() from fe_index.php which generated mysql error messages in FE during ajax calls from 
+	* fix: removed call to t3lib_div::makeInstanceClassName() from fe_index.php which generated mysql error messages in FE during ajax calls from
 	  category menu. (only occured in TYPO3 4.3dev, probably caused by the deprecation log).
 
 	* new feature: "useSPidFromCategoryRecusive". If activated tt_news searches through the parent categories for a singlePid.
@@ -195,7 +195,7 @@
 
 	* fix: removed the default entry for the tt_news html template in both flexform files.
 	* new feature: by setting "showTitleAsPrevNextLink" the previous/next links in tt_news single view can now show labels for "previous" and "next"
-	  instead of the news title. The title is still added to the title-attribute of the link. 
+	  instead of the news title. The title is still added to the title-attribute of the link.
 	* new option: reversePrevNextOrder. As the name says: reverses the order of the "next" and the "previous" links. The "next" marker will be linked
 	  to the previous news article (useful if you use different fields for ordering news on your website).
 	* added a TS option to inlude the prototype library or not in FE (needed for the ajax cat menu)
@@ -204,7 +204,7 @@
 	* reverted the splitted init() functions change. reason: most of the initialisation is needed by almost all renderfunctions, so the benitfit
 	  of splittin these functions would not be very high.
 	* fix: added a check in the generated link to prevent double adding of the siteUrl
-	  
+
 
 
 
@@ -215,40 +215,40 @@
 	* Fix: pi_alwaysPrev was used in makePageBrowser() but was not initialized
 
 2008-04-20	Rupert Germann <rupi@gmx.li>
-	* enhancement: grouped the constants in 3 sections: "basic" (templatefile, pid_list, singlePid, backPid, archivelink), "xml-feeds" 
-	  (feed-related settings) and "advanced" (all the rest). In most cases it should be sufficient to fill out the pids in the basic section to 
+	* enhancement: grouped the constants in 3 sections: "basic" (templatefile, pid_list, singlePid, backPid, archivelink), "xml-feeds"
+	  (feed-related settings) and "advanced" (all the rest). In most cases it should be sufficient to fill out the pids in the basic section to
 	  get an output from the news plugin.
 	* fix: the fe listview did show not-published versions when dontUsePidList was enabled.
 	* updated function indexes
 
 2008-04-20	Rupert Germann <rupi@gmx.li>
-	* fix !IMPORTANT! requires DB update (related to bugs 3531,3907): "news records loose categories when published/swapped into WS". 
-	  Solution: removed all "unsigned" attributes from the mm tables in ext_tables.sql. Now publishing of news with categories or related 
+	* fix !IMPORTANT! requires DB update (related to bugs 3531,3907): "news records loose categories when published/swapped into WS".
+	  Solution: removed all "unsigned" attributes from the mm tables in ext_tables.sql. Now publishing of news with categories or related
 	  news works correctly in TYPO3 version >= 4.1.7
 
-	* new feature: with the new TS parameters "amenuStart" and "amenuEnd" it's now possible to configure an AMENU content element to display 
+	* new feature: with the new TS parameters "amenuStart" and "amenuEnd" it's now possible to configure an AMENU content element to display
 	  news only from a certain period.
-	* new feature: "displayCatMenu.catPidList" and "displayCatMenu.recursive" give users the possibility to set a pidList for the categorymenu 
+	* new feature: "displayCatMenu.catPidList" and "displayCatMenu.recursive" give users the possibility to set a pidList for the categorymenu
 	  content element. (overrides GRSP if given)
-	* new feature - stolen from timtab ;-): the singleview can now display two links that point to the previous and next article 
-	  (template markers: ###PREV_ARTICLE###, ###NEXT_ARTICLE###). The field which is taken to select the previous/next article is configurable: 
+	* new feature - stolen from timtab ;-): the singleview can now display two links that point to the previous and next article
+	  (template markers: ###PREV_ARTICLE###, ###NEXT_ARTICLE###). The field which is taken to select the previous/next article is configurable:
 	   plugin.tt_news.displaySingle.nextPrevRecSortingField (default: datetime)
-	* new feature: the catmenu can now be configured to add/not add the archive parameters to its links. plugin.tt_news.catmenuWithArchiveParams 
+	* new feature: the catmenu can now be configured to add/not add the archive parameters to its links. plugin.tt_news.catmenuWithArchiveParams
 	  (default = 1)
 	* improved tree display in BE:
 		- if useStoragePid is enabled each tree shows the GRSP folder and its id as rootIcon
 		- in be_users/groups the categories are now grouped by sysfolder.
-	* new feature: added a searchbox to the news-admin module (same as in web->list). if the search shows or not is configurable in TSConfig: 
+	* new feature: added a searchbox to the news-admin module (same as in web->list). if the search shows or not is configurable in TSConfig:
 	  mod.web_txttnewsM1.list.show.search (default = 1)
-	* new feature: with "mod.web_txttnewsM1.list.clickTitleMode" it's possible to configures the behavior of the record-title link in lists in 
+	* new feature: with "mod.web_txttnewsM1.list.clickTitleMode" it's possible to configures the behavior of the record-title link in lists in
 	  the news-admin module. Possible values are: "edit" link editform, "view" link FE singleView, (any other value: no link, default=edit)
 	* changed the "open-preview" link in lists to the same js-window as all other preview links
 	* fix: now the list in the news-admin module excludes unpublished versions
 	* fix: adapted the news-admin list to styles to TYPO3 4.2RC2
 	* fix: the title of the fe-catmenu is now localized
 	* fix: related news links do work with realurl now
-	* code cleanup: started to re-arrange the init() order in class.tx_ttnews. One goal is to find out "what to display" (theCode) first, 
-	  and afterwards initialize the needed vars and not vice versa like it was before. Current state: the init() order is changed and all 
+	* code cleanup: started to re-arrange the init() order in class.tx_ttnews. One goal is to find out "what to display" (theCode) first,
+	  and afterwards initialize the needed vars and not vice versa like it was before. Current state: the init() order is changed and all
 	  "display..."() methods have their own init function wrapper -> TODO: fill the selective init functions.
 
 
