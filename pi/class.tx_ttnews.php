@@ -1765,7 +1765,7 @@ class tx_ttnews extends tslib_pibase {
 		if ($this->conf['displayXML.']['xmlFormat'] == 'rss2' || $this->conf['displayXML.']['xmlFormat'] == 'rss091') {
 			$markerArray['###NEWS_DATE###'] = date('D, d M Y H:i:s O', $row['datetime']);
 		} elseif ($this->conf['displayXML.']['xmlFormat'] == 'atom03' || $this->conf['displayXML.']['xmlFormat'] == 'atom1') {
-			$markerArray['###NEWS_DATE###'] = $this->$this->hObj->getW3cDate($row['datetime']);
+			$markerArray['###NEWS_DATE###'] = $this->hObj->getW3cDate($row['datetime']);
 		}
 		//dates for atom03
 		$markerArray['###NEWS_CREATED###'] = $this->hObj->getW3cDate($row['crdate']);
