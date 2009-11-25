@@ -7,6 +7,7 @@
 	* fixed some wrong wording in code comments
 	* fixed broken date in xml feeds (wrong "$this->$this" in class tx_ttnews)
 	* fixed bug #12453: Invalid use of DISTINCT keyword leads ot invalid query when using DBAL (thanks to Xavier Perseguers)
+	* fixed bug #12756: Queries for internal caching are not DBAL compatible 
 
 2009-11-24  Rupert Germann <rupi@gmx.li>
 	* clean-up: updated copyrights and class comments

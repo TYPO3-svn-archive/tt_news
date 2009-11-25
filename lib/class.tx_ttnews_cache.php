@@ -105,9 +105,10 @@ class tx_ttnews_cache {
 			$this->tt_news_cache->set($hash, $content, false, $this->lifetime);
 
 		} else {
+			$table = 'tt_news_cache';
 			$fields_values = array('identifier' => $hash, 'content' => $content, 'crdate' => $GLOBALS['EXEC_TIME'], 'tags' => $ident, 'lifetime' => $this->lifetime);
-			$GLOBALS['TYPO3_DB']->exec_DELETEquery('tt_news_cache', 'identifier="' . $hash . '"');
-			$GLOBALS['TYPO3_DB']->exec_INSERTquery('tt_news_cache', $fields_values);
+			$GLOBALS['TYPO3_DB']->exec_DELETEquery($table, 'identifier=' . $GLOBALS['TYPO3_DB']->fullQuoteStr($hash, $table));
+			$GLOBALS['TYPO3_DB']->exec_INSERTquery($table, $fields_values);
 		}
 
 	}
@@ -120,7 +121,7 @@ class tx_ttnews_cache {
 		} else {
 			$select_fields = 'content';
 			$from_table = 'tt_news_cache';
-			$where_clause = 'identifier="' . $hash . '"';
+			$where_clause = 'identifier=' . $GLOBALS['TYPO3_DB']->fullQuoteStr($hash, $from_table);
 
 //			if ($period > 0) {
 				$where_clause .= ' AND (crdate+lifetime>' . $this->ACCESS_TIME.' OR lifetime=0)';
