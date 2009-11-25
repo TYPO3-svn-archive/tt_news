@@ -291,7 +291,7 @@ class ext_update {
 	function getTsTemplates() {
 		$select_fields = '*';
 		$from_table = 'sys_template';
-		$where_clause = 'deleted=0 AND include_static_file LIKE \'%EXT:tt_news/static/%\'';
+		$where_clause = 'deleted=0 AND include_static_file LIKE ' . $GLOBALS['TYPO3_DB']->fullQuoteStr('%EXT:tt_news/static/%', $from_table);
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery($select_fields, $from_table, $where_clause);
 
 		$resultRows = array();
@@ -306,7 +306,8 @@ class ext_update {
 	function getContentElements() {
 		$select_fields = '*';
 		$from_table = 'tt_content';
-		$where_clause = 'CType="list" AND list_type="9" AND deleted=0';
+		$where_clause = 'CType=' . $GLOBALS['TYPO3_DB']->fullQuoteStr('list', $from_table) . '
+					AND list_type=' . $GLOBALS['TYPO3_DB']->fullQuoteStr('9', $from_table) . ' AND deleted=0';
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery($select_fields, $from_table, $where_clause);
 
 		if ($res) {
