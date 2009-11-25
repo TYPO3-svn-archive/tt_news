@@ -766,6 +766,10 @@ class tx_ttnews extends tslib_pibase {
 				$markerArray['###LINK_PREV###'] = '';
 				$markerArray['###LINK_NEXT###'] = '';
 				$markerArray['###BROWSE_LINKS###'] = '';
+
+				// get generic markers
+				$this->getGenericMarkers($markerArray, null);
+
 				// render a pagebrowser if needed
 				if ($newsCount > $this->config['limit'] && ! $this->config['noPageBrowser']) {
 

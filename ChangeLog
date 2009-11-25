@@ -12,6 +12,8 @@
 	* fixed bug #6300: tt_news - save & preview - not working with new records (Thanks to Martin Holtz)
 	* fixed bug #12760: export button in news-admin module has wrong link
 	* added feature #12118: integrate field with typoscript into flexform of tt_news (Thanks to Krystian Szymukowicz)
+	* added feature #12401: Extend the use of generic markers in tt_news 3.0. genericMarkers can now be used in the
+	  complete tt_news template (not only inside the NEWS subpart). (Thanks to Chris Mueller)
 
 2009-11-24  Rupert Germann <rupi@gmx.li>
 	* clean-up: updated copyrights and class comments
