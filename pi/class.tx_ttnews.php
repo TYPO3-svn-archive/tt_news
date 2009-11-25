@@ -229,6 +229,17 @@ class tx_ttnews extends tslib_pibase {
 
 		$this->pi_initPIflexForm(); // Init FlexForm configuration for plugin
 
+		$flexformTyposcript = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'myTS','s_TS_View');
+		if ($flexformTyposcript) {
+			require_once(PATH_t3lib.'class.t3lib_tsparser.php');
+			$tsparser = t3lib_div::makeInstance('t3lib_tsparser');
+			// Copy conf into existing setup
+			$tsparser->setup = $this->conf;
+			// Parse the new Typoscript
+			$tsparser->parse($flexformTyposcript);
+			// Copy the resulting setup back into conf
+			$this->conf = $tsparser->setup;
+		}
 
 		// "CODE" decides what is rendered: codes can be set by TS or FF with priority on FF
 		$code = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'what_to_display', 'sDEF');

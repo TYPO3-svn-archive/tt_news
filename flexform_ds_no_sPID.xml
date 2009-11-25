@@ -632,5 +632,26 @@
 		</el>
 	</ROOT>
 	</s_misc>
+	<s_TS_View>
+	<ROOT>
+		<TCEforms>
+			<sheetTitle>LLL:EXT:tt_news/locallang_tca.xml:tt_news.pi_flexform.sheetTSView</sheetTitle>
+		</TCEforms>
+		<type>array</type>
+		<el>
+			<myTS>
+				<TCEforms>
+					<exclude>1</exclude>
+					<label>LLL:EXT:tt_news/locallang_tca.xml:tt_news.pi_flexform.tsconfig</label>
+					<config>
+						<type>text</type>
+						<cols>80</cols>
+						<rows>10</rows>
+					</config>
+				</TCEforms>
+			</myTS>
+		</el>
+	</ROOT>
+	</s_TS_View>
 </sheets>
 </T3DataStructure>
