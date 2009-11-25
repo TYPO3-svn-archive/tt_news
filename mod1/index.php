@@ -1002,9 +1002,10 @@ class tx_ttnews_module1 extends t3lib_SCbase {
 //			if ($this->table) {
 					// Export
 				if (t3lib_extMgm::isLoaded('impexp')) {
-					$params = 'mod.php?M=xMOD_tximpexp&tx_impexp[action]=export&tx_impexp[list][]='
-								.rawurlencode('tt_news:' . $this->id).'&tx_impexp[list][]='
-								.rawurlencode('tt_news_cat:' . $this->id);
+					$modUrl = t3lib_extMgm::extRelPath('impexp') . 'app/index.php';
+					$params = $modUrl . '?tx_impexp[action]=export&tx_impexp[list][]=';
+					$params .= rawurlencode('tt_news:' . $this->id).'&tx_impexp[list][]=';
+					$params .= rawurlencode('tt_news_cat:' . $this->id);
 					$buttons['export'] = '<a href="' . htmlspecialchars($backPath.$params).'">' .
 									'<img' . t3lib_iconWorks::skinImg($backPath, t3lib_extMgm::extRelPath('impexp') . 'export.gif') . ' title="' . $LANG->sL('LLL:EXT:lang/locallang_core.php:rm.export', 1) . '" alt="" />' .
 									'</a>';
