@@ -140,6 +140,13 @@ class tx_ttnews extends tslib_pibase {
 
 		$this->conf = $conf; //store configuration
 
+		// leave early if USER_INT
+		$this->convertToUserIntObject = $this->conf['convertToUserIntObject'] ? 1 : 0;
+		if (t3lib_div::int_from_ver(TYPO3_version) >= 4003000 && $this->convertToUserIntObject
+				&& $this->cObj->getUserObjectType() == tslib_cObj::OBJECTTYPE_USER) {
+			$this->cObj->convertToUserIntObject();
+			return;
+		}
 
 		$this->preInit();
 
@@ -424,13 +431,6 @@ class tx_ttnews extends tslib_pibase {
 		// Configure caching
 		$this->allowCaching = $this->conf['allowCaching'] ? 1 : 0;
 		if (! $this->allowCaching) {
-
-			/**
-			 * TODO: 25.05.2009
-			 *
-			 * in TYPO3 4.3 this seems not to be needed anymore -> cobj->convertToUserIntObject()
-			 */
-
 			$GLOBALS['TSFE']->set_no_cache();
 		}
 

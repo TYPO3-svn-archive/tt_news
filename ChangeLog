@@ -6,6 +6,8 @@
 	* follow-up to feature #12118: removed tab "Typoscript" from flexform and moved the new "typoscript" field to the "other settings" tab
 	* follow-up to feature #12118: added a condtion to the flexform field "typoscript" which hides this field from non-admin users
 	* updated doc "changes in tt_news 3.0"
+	* added feature #12763: integate possibility to convert tt_news to USER_INT using $this->cObj->convertToUserIntObject() 
+	  (requires TYPO3 4.3 to work) (Thanks to Krystian Szymukowicz)
 
 2009-11-25  Rupert Germann <rupi@gmx.li>
 	* fix: ajax error in news-admin module when clicking the "show thumbs" checkbox in a list which shows news from a certain category
