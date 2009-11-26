@@ -1,4 +1,6 @@
-
+2009-11-26  Rupert Germann <rupi@gmx.li>
+	* added flashmessages icons for older TYPO3 versions to folder compat/gfx
+	* changed "disallowed categories" message in tceforms to use flashmessages 
 
 2009-11-25  Rupert Germann <rupi@gmx.li>
 	* fix: ajax error in news-admin module when clicking the "show thumbs" checkbox in a list which shows news from a certain category

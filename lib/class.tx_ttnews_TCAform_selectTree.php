@@ -410,13 +410,44 @@ class tx_ttnews_TCAform_selectTree {
 	 * @return	[type]		...
 	 */
 	function printError($NACats,$row=array()) {
-		$msg = '<table class="warningbox" border="0" cellpadding="3" cellspacing="3">
-					<tr><td><div style="padding:10px;"><img src="gfx/icon_fatalerror.gif" class="absmiddle" alt="" height="16" width="18">
-					SAVING DISABLED!! <br />'.($row['l18n_parent']&&$row['sys_language_uid']?'The translation original of this':'This')
-					.' record has the following categories assigned that are not defined in your BE usergroup: '.urldecode(implode($NACats,chr(10))).'
-					</div></td></tr>
-				</table>';
 
+		$msgHeader = 'SAVING DISABLED!!';
+		$msgBody = ($row['l18n_parent'] && $row['sys_language_uid'] ? 'The translation original of this' : 'This') .
+					' record has the following categories assigned that are not defined in your BE usergroup: ' .
+					urldecode(implode($NACats, chr(10)));
+
+		if (t3lib_div::int_from_ver(TYPO3_version) < 4003000) {
+			$msg = '
+				<div style="padding:15px 15px 20px 0;">
+					<div class="typo3-message message-warning">
+						<div class="message-header">' . $msgHeader . '</div>
+						<div class="message-body">' . $msgBody . '</div>
+					</div>
+				</div>';
+
+				// add flashmessages styles to older TYPO3 versions
+			$cssPath = $GLOBALS['BACK_PATH'] . t3lib_extMgm::extRelPath('tt_news');
+			$msg = '<link rel="stylesheet" type="text/css" href="' . $cssPath . 'compat/flashmessages.css" media="screen" />' . $msg;
+		} else {
+				// in TYPO3 4.3 or higher we use flashmessages to display the message
+			$flashMessage = t3lib_div::makeInstance(
+						't3lib_FlashMessage',
+						$msgBody,
+						$msgHeader,
+						t3lib_FlashMessage::WARNING
+				);
+			t3lib_FlashMessageQueue::addMessage($flashMessage);
+
+			$inlineFlashMessage = t3lib_div::makeInstance(
+						't3lib_FlashMessage',
+						$msgBody,
+						'',
+						t3lib_FlashMessage::WARNING
+				);
+
+			$msg = $inlineFlashMessage->render();
+
+		}
 		return $msg;
 	}
 
