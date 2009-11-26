@@ -420,29 +420,32 @@ $TCA['tt_news'] = Array (
 	),
 	'types' => Array (
 		'0' => Array('showitem' =>
-			'type;;;;1-1-1,title;;;;2-2-2,short,bodytext;;2;richtext:rte_transform[flag=rte_enabled|mode=ts];4-4-4,
-			--div--;LLL:EXT:tt_news/locallang_tca.xml:tt_news.tabs.special, datetime;;;;2-2-2,archivedate,author;;;;2-2-2,author_email,keywords;;;;2-2-2,sys_language_uid;;1;;3-3-3,
+			'hidden, type;;;;1-1-1,title;;;;2-2-2,short,bodytext;;2;richtext:rte_transform[flag=rte_enabled|mode=ts];4-4-4,
+			--div--;LLL:EXT:tt_news/locallang_tca.xml:tt_news.tabs.special, datetime;;;;2-2-2,archivedate,author;;3;; ;;;;2-2-2,
+				keywords;;;;2-2-2,sys_language_uid;;1;;3-3-3,
 			--div--;LLL:EXT:tt_news/locallang_tca.xml:tt_news.tabs.media, image;;;;1-1-1,imagecaption;;5;;,links;;;;2-2-2,news_files;;;;4-4-4,
 			--div--;LLL:EXT:tt_news/locallang_tca.xml:tt_news.tabs.catAndRels, category;;;;3-3-3,related;;;;3-3-3,
-			--div--;LLL:EXT:tt_news/locallang_tca.xml:tt_news.tabs.access, hidden,starttime,endtime,fe_group,editlock,
+			--div--;LLL:EXT:tt_news/locallang_tca.xml:tt_news.tabs.access, starttime,endtime,fe_group,editlock,
 			--div--;LLL:EXT:tt_news/locallang_tca.xml:tt_news.tabs.extended,
 			'),
 
 		'1' => Array('showitem' =>
-			'type;;;;1-1-1,title;;;;2-2-2,page,short,
-			--div--;LLL:EXT:tt_news/locallang_tca.xml:tt_news.tabs.special, datetime;;;;2-2-2,archivedate,author;;;;2-2-2,author_email,keywords;;;;2-2-2,sys_language_uid;;1;;3-3-3,
+			'hidden, type;;;;1-1-1,title;;;;2-2-2,page,short,
+			--div--;LLL:EXT:tt_news/locallang_tca.xml:tt_news.tabs.special, datetime;;;;2-2-2,archivedate,author;;3;; ;;;;2-2-2,
+				keywords;;;;2-2-2,sys_language_uid;;1;;3-3-3,
 			--div--;LLL:EXT:tt_news/locallang_tca.xml:tt_news.tabs.media, image;;;;1-1-1,imagecaption;;5;;,
 			--div--;LLL:EXT:tt_news/locallang_tca.xml:tt_news.tabs.categories, category;;;;3-3-3,
-			--div--;LLL:EXT:tt_news/locallang_tca.xml:tt_news.tabs.access, hidden,starttime,endtime,fe_group,editlock,
+			--div--;LLL:EXT:tt_news/locallang_tca.xml:tt_news.tabs.access, starttime,endtime,fe_group,editlock,
 			--div--;LLL:EXT:tt_news/locallang_tca.xml:tt_news.tabs.extended,
 			'),
 
 		'2' => Array('showitem' =>
-			'type;;;;1-1-1,title;;;;2-2-2,ext_url,short,
-			--div--;LLL:EXT:tt_news/locallang_tca.xml:tt_news.tabs.special, datetime;;;;2-2-2,archivedate,author;;;;2-2-2,author_email,keywords;;;;2-2-2,sys_language_uid;;1;;3-3-3,
+			'hidden, type;;;;1-1-1,title;;;;2-2-2,ext_url,short,
+			--div--;LLL:EXT:tt_news/locallang_tca.xml:tt_news.tabs.special, datetime;;;;2-2-2,archivedate,author;;3;; ;;;;2-2-2,
+				keywords;;;;2-2-2,sys_language_uid;;1;;3-3-3,
 			--div--;LLL:EXT:tt_news/locallang_tca.xml:tt_news.tabs.media, image;;;;1-1-1,imagecaption;;5;;,
 			--div--;LLL:EXT:tt_news/locallang_tca.xml:tt_news.tabs.categories, category;;;;3-3-3,
-			--div--;LLL:EXT:tt_news/locallang_tca.xml:tt_news.tabs.access, hidden,starttime,endtime,fe_group,editlock,
+			--div--;LLL:EXT:tt_news/locallang_tca.xml:tt_news.tabs.access, starttime,endtime,fe_group,editlock,
 			--div--;LLL:EXT:tt_news/locallang_tca.xml:tt_news.tabs.extended,
 			')
 	),
@@ -450,7 +453,7 @@ $TCA['tt_news'] = Array (
 		'1' => Array('showitem' => 't3ver_label,l18n_parent'),
 //		'10' => Array('showitem' => 'fe_group'),
 		'2' => Array('showitem' => 'no_auto_pb'),
-//		'3' => Array('showitem' => 'author_email'),
+		'3' => Array('showitem' => 'author_email'),
 //		'4' => Array('showitem' => 'keywords'),
 		'5' => Array('showitem' => 'imagealttext,imagetitletext'),
 
