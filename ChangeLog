@@ -8,6 +8,7 @@
 	* updated doc "changes in tt_news 3.0"
 	* added feature #12763: integate possibility to convert tt_news to USER_INT using $this->cObj->convertToUserIntObject() 
 	  (requires TYPO3 4.3 to work) (Thanks to Krystian Szymukowicz)
+	* Started to update the tt_news manual
 
 2009-11-25  Rupert Germann <rupi@gmx.li>
 	* fix: ajax error in news-admin module when clicking the "show thumbs" checkbox in a list which shows news from a certain category
