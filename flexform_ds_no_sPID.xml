@@ -629,18 +629,9 @@
 				</config>
 			</TCEforms>
 			</maxWordsInSingleView>
-		</el>
-	</ROOT>
-	</s_misc>
-	<s_TS_View>
-	<ROOT>
-		<TCEforms>
-			<sheetTitle>LLL:EXT:tt_news/locallang_tca.xml:tt_news.pi_flexform.sheetTSView</sheetTitle>
-		</TCEforms>
-		<type>array</type>
-		<el>
 			<myTS>
 				<TCEforms>
+					<displayCond>HIDE_FOR_NON_ADMINS</displayCond>
 					<exclude>1</exclude>
 					<label>LLL:EXT:tt_news/locallang_tca.xml:tt_news.pi_flexform.tsconfig</label>
 					<config>
@@ -649,9 +640,9 @@
 						<rows>10</rows>
 					</config>
 				</TCEforms>
-			</myTS>
+			</myTS>			
 		</el>
 	</ROOT>
-	</s_TS_View>
+	</s_misc>
 </sheets>
 </T3DataStructure>

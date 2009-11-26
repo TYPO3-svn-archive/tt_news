@@ -229,7 +229,7 @@ class tx_ttnews extends tslib_pibase {
 
 		$this->pi_initPIflexForm(); // Init FlexForm configuration for plugin
 
-		$flexformTyposcript = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'myTS','s_TS_View');
+		$flexformTyposcript = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'myTS','s_misc');
 		if ($flexformTyposcript) {
 			require_once(PATH_t3lib.'class.t3lib_tsparser.php');
 			$tsparser = t3lib_div::makeInstance('t3lib_tsparser');

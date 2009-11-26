@@ -1,7 +1,10 @@
+
 2009-11-26  Rupert Germann <rupi@gmx.li>
 	* added flashmessages icons for older TYPO3 versions to folder compat/gfx
 	* changed "disallowed categories" message in tceforms to use flashmessages 
 	* changed tt_news form: moved "hidden" field to the "General" tab and moved author-email to a palette (Thanks to Georg Ringer)
+	* follow-up to feature #12118: removed tab "Typoscript" from flexform and moved the new "typoscript" field to the "other settings" tab
+	* follow-up to feature #12118: added a condtion to the flexform field "typoscript" which hides this field from non-admin users
 
 2009-11-25  Rupert Germann <rupi@gmx.li>
 	* fix: ajax error in news-admin module when clicking the "show thumbs" checkbox in a list which shows news from a certain category

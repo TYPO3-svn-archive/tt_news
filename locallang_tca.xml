@@ -121,8 +121,7 @@
 			
 			<label index="tt_news.pi_flexform.maxWordsInSingleView">insert pagebreak in SINGLE after this number of words</label>
 			<label index="tt_news.pi_flexform.startingpoint">Page(s) with tt_news records</label>
-			<label index="tt_news.pi_flexform.sheetTSView">Typoscript</label>
-			<label index="tt_news.pi_flexform.tsconfig">plugin.tt_news.</label>
+			<label index="tt_news.pi_flexform.tsconfig">Typoscript for this content element (plugin.tt_news.[your TS])</label>
 			
 			<label index="tt_news.categorymounts">tt_news: allowed/visible categories</label>
 			
