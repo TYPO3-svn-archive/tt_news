@@ -1,4 +1,7 @@
 
+2009-11-27
+	* fixed bug #9215: tt_news 3.0 category ajaxtree looses language parameter on ajax expand/collapse 
+	
 2009-11-26  Rupert Germann <rupi@gmx.li>
 	* added flashmessages icons for older TYPO3 versions to folder compat/gfx
 	* changed "disallowed categories" message in tceforms to use flashmessages 

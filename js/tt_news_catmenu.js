@@ -41,10 +41,10 @@ var categoryTree = {
 //	recID: 0,
 
 	// reloads a part of the page tree (useful when "expand" / "collapse")
-	load: function(params, isExpand, obj, pid, cObjUid) {
+	load: function(params, isExpand, obj, pid, cObjUid, L) {
 			// fallback if AJAX is not possible (e.g. IE < 6)
 		if (typeof Ajax.getTransport() != 'object') {
-			window.location.href = this.thisScript + '?id=' + pid + '&PM=' + params;
+			window.location.href = this.thisScript + '?id=' + pid + '&PM=' + params + '&L=' + L;
 			return;
 		}
 
@@ -64,7 +64,7 @@ var categoryTree = {
 		}
 
 		new Ajax.Request(this.thisScript, {
-			parameters: 'ajaxID=' + this.ajaxID + '&PM=' + params + '&id=' + pid + '&cObjUid=' + cObjUid,
+			parameters: 'ajaxID=' + this.ajaxID + '&PM=' + params + '&id=' + pid + '&cObjUid=' + cObjUid + '&L=' + L,
 			onComplete: function(xhr) {
 				// the parent node needs to be overwritten, not the object
 				$(obj.parentNode).replace(xhr.responseText);

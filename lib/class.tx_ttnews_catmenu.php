@@ -158,7 +158,23 @@ class tx_ttnews_FEtreeview extends tx_ttnews_categorytree {
 			$catSelLinkParams = $GLOBALS['TSFE']->id;
 		}
 
+
 		if($v['uid']>0) {
+
+
+			/**
+			 * TODO: 27.11.2009
+			 *
+			 * this is a "hack" to prevent dropping the "L" parameter during ajax expand/collapse actions
+			 * --> find out why TSFE->linkVars is empty
+			 */
+
+
+			$L = intval(t3lib_div::_GP('L'));
+			if ($L > 0 && !$GLOBALS['TSFE']->linkVars) {
+				$GLOBALS['TSFE']->linkVars = '&L='.$L;
+			}
+
 			if ($GLOBALS['TSFE']->sys_language_content && $v['uid']) {
 				// get translations of category titles
 				$catTitleArr = t3lib_div::trimExplode('|', $v['title_lang_ol']);
@@ -175,8 +191,6 @@ class tx_ttnews_FEtreeview extends tx_ttnews_categorytree {
 				$title .= ' (' . $v['newsCount'] . ')';
 			}
 
-
-
 			if ($newsConf['useHRDates']) {
 				$link = $this->tt_news_obj->pi_linkTP_keepPIvars($title, array(
 					'cat' => $v['uid'],
@@ -191,6 +205,7 @@ class tx_ttnews_FEtreeview extends tx_ttnews_categorytree {
 				), $this->tt_news_obj->allowCaching, ($newsConf['dontUseBackPid']?1:0), $catSelLinkParams);
 			}
 			$GLOBALS['TSFE']->ATagParams = $pTmp;
+
 			return $link ;
 
 		} else { // catmenu Header
@@ -285,7 +300,8 @@ class tx_ttnews_FEtreeview extends tx_ttnews_categorytree {
 			}
 			if ($this->useAjax) {
 				// activate dynamic ajax-based tree
-				$js = htmlspecialchars('categoryTree.load(\''.$cmd.'\', '.intval($isExpand).', this, \''.rawurlencode($catSelLinkParams).'\','.$this->cObjUid.');');
+				$js = htmlspecialchars('categoryTree.load(\'' . $cmd . '\', ' . intval($isExpand) . ', this, \'' .
+					rawurlencode($catSelLinkParams) . '\', ' . $this->cObjUid . ', ' . intval(t3lib_div::_GP('L')) . ')');
 				return '<a class="pm" onclick="'.$js.'">'.$icon.'</a>';
 			} else {
 //

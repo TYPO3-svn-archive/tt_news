@@ -44,6 +44,11 @@ $TYPO3_AJAX = true;
 
 //print_r(array(TYPO3_REQUESTTYPE_AJAX,TYPO3_REQUESTTYPE,TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_AJAX));
 
+$L = intval(t3lib_div::_GP('L'));
+if ($L > 0) {
+	t3lib_div::_GETset(array('L' => $L));
+}
+
 
 $idAndTarget = rawurldecode(t3lib_div::_GP('id'));
 $idParts = t3lib_div::trimExplode(' ',$idAndTarget,1);
@@ -83,6 +88,11 @@ $TSFE->determineId();
 $TSFE->getCompressedTCarray();
 $TSFE->initTemplate();
 $TSFE->getConfigArray();
+
+if ($L > 0) {
+	$TSFE->settingLanguage();
+	$TSFE->settingLocale();
+}
 
 
 
