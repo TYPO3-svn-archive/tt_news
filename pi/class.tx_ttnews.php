@@ -3072,22 +3072,25 @@ class tx_ttnews extends tslib_pibase {
 				// select newsitems by their categories
 				if ($this->config['categoryMode'] == 1 || $this->config['categoryMode'] == 2) {
 					// show items with selected categories
-					$tmpCatExclusive = (($this->config['categoryMode'] == 2 && ! $this->conf['ignoreUseSubcategoriesForAndSelection']) ? $this->actuallySelectedCategories : $this->catExclusive);
+					$tmpCatExclusive = (($this->config['categoryMode'] == 2 && ! $this->conf['ignoreUseSubcategoriesForAndSelection']) ?
+						$this->actuallySelectedCategories : $this->catExclusive);
 					$selectConf['leftjoin'] = 'tt_news_cat_mm ON tt_news.uid = tt_news_cat_mm.uid_local';
-					$selectConf['where'] .= ' AND (IFNULL(tt_news_cat_mm.uid_foreign,0) IN (' . ($tmpCatExclusive ? $tmpCatExclusive : 0) . '))';
+					$selectConf['where'] .= ' AND (tt_news_cat_mm.uid_foreign IN (' . ($tmpCatExclusive ? $tmpCatExclusive : 0) . '))';
 				}
 
 				// de-select newsitems by their categories
 				if (($this->config['categoryMode'] == - 1 || $this->config['categoryMode'] == - 2)) {
 					// do not show items with selected categories
 					$selectConf['leftjoin'] = 'tt_news_cat_mm ON tt_news.uid = tt_news_cat_mm.uid_local';
-					$selectConf['where'] .= ' AND (IFNULL(tt_news_cat_mm.uid_foreign,0) NOT IN (' . ($this->catExclusive ? $this->catExclusive : 0) . '))';
-					$selectConf['where'] .= ' AND (tt_news_cat_mm.uid_foreign)'; // filter out not categoized records
+					$selectConf['where'] .= ' AND (tt_news_cat_mm.uid_foreign NOT IN (' . ($this->catExclusive ? $this->catExclusive : 0) . '))';
+					$selectConf['where'] .= ' AND (tt_news_cat_mm.uid_foreign)'; // filter out not categorized records
 				}
 			} elseif ($this->config['categoryMode']) {
-				// special case: if $this->catExclusive is not set but $this->config['categoryMode'] -> show only non-categized records
+				// special case: if $this->catExclusive is not set but $this->config['categoryMode'] -> show only non-categorized records
 				$selectConf['leftjoin'] = 'tt_news_cat_mm ON tt_news.uid = tt_news_cat_mm.uid_local';
-				$selectConf['where'] .= ' AND (IFNULL(tt_news_cat_mm.uid_foreign,' . $GLOBALS['TYPO3_DB']->fullQuoteStr('nocat', 'tt_news') . ') ' . ($this->config['categoryMode'] > 0 ? '' : '!') . '=' . $GLOBALS['TYPO3_DB']->fullQuoteStr('nocat', 'tt_news') . ')';
+				$selectConf['where'] .= ' AND tt_news_cat_mm.uid_foreign IS' .
+					($this->config['categoryMode'] > 0 ? '' : ' NOT') . ' NULL';
+
 			}
 
 			// if categoryMode is 'show items AND' it's required to check if the records in the result do actually have the same number of categories as in $this->catExclusive
