@@ -149,7 +149,6 @@ If you don't need this field for &quot;&amp;lt;meta&amp;gt; keywords&quot; you c
 If the current record is a translation (if it has a &quot;translation original&quot; and a non-default syslanguage) the categories are not editable, they will only be listed in the tt_news form.
 
 Categories can have parent categories. F.e the category &quot;FrontEnd plugins&quot; in the screenshot below does have category &quot;Extensions&quot; selected as &quot;parent category&quot;, so &quot;FrontEnd plugins&quot; is a subcategory of &quot;Extensions&quot;. That has the result, that the record in this example which has category &quot;FrontEnd plugins&quot; will also appear in a list that shows only category &quot;Extensions&quot;.
-With &quot;+&quot; icon next to the categoy tree it's possible to create categories directly from the news record.
 
 The titles of the assigned categories will substite the html-template marker ###NEWS_CATEGORY###, the category images will be written to the marker ###NEWS_CATEGORY_IMAGE###.
 

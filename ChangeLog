@@ -2,6 +2,7 @@
 2009-11-27
 	* fixed bug #9215: tt_news 3.0 category ajaxtree looses language parameter on ajax expand/collapse 
 	* fixed bug #12757: IFNULL statements in tt_news queries are not DBAL compatible 
+	* updated context sensitive help (CSH)
 	
 2009-11-26  Rupert Germann <rupi@gmx.li>
 	* added flashmessages icons for older TYPO3 versions to folder compat/gfx
