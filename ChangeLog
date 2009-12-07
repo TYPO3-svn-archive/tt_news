@@ -1,3 +1,6 @@
+2009-12-07 Rupert Germann <rupi@gmx.li>
+	* fixed bug #12944 (follow-up to #12848):  !!! Database change !!! unknown db field 'tags' in table tt_news_cache (thanks to Sven Juergens)
+
 2009-12-02 Rupert Germann <rupi@gmx.li>
 	* fixed bug #12848: !!! Database change !!! using caching framework for internal caching fails with exception. 
 	* fixed bug #12808: Duplicated '?>' in class.tx_ttnews_cache.php (thanks to Stephan Bauer)
