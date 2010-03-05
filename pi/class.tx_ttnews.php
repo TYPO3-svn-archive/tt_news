@@ -3672,6 +3672,29 @@ class tx_ttnews extends tslib_pibase {
 				$this->catlistWhere .= ' AND tt_news_cat.uid IN (' . implode(t3lib_div::intExplode(',', $lConf['includeList']), ',') . ')';
 			}
 		}
+		
+		if ($lConf['includeList'] || $lConf['excludeList'] || $this->catExclusive) {
+	
+	       // MOUNTS (in tree mode) must only contain the main/parent categories. Therefore it is required to filter out the subcategories from $this->catExclusive or $lConf['includeList']
+	        $categoryMounts = ($this->catExclusive?$this->catExclusive:$lConf['includeList']);
+	        $tmpres = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
+	               'uid,parent_category',
+	                'tt_news_cat',
+	                'tt_news_cat.uid IN ('.$categoryMounts.')'.$this->SPaddWhere.$this->enableCatFields,
+	                '',
+	                'tt_news_cat.'.$this->config['catOrderBy']);
+	
+	       $this->cleanedCategoryMounts = array();
+		
+	       if ($tmpres) {
+                while (($tmprow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($tmpres))) {
+	                if (!t3lib_div::inList($categoryMounts,$tmprow['parent_category'])) {
+	                    $this->dontStartFromRootRecord = true;
+	                    $this->cleanedCategoryMounts[] = $tmprow['uid'];
+	                }
+                }
+	        }
+		}
 	}
 
 

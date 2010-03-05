@@ -1,3 +1,8 @@
+
+2009-12-07 Rupert Germann <rupi@gmx.li>
+	* fixed bug #13753: Category menu in mode "nested wraps" is broken. Thanks to Jochen Weiland for discovering 
+	this issue and to Ingo Renner for sponsorimg this bug at the T3Board10 bug auction.
+	
 2009-12-07 Rupert Germann <rupi@gmx.li>
 	* fixed bug #12944 (follow-up to #12848):  !!! Database change !!! unknown db field 'tags' in table tt_news_cache (thanks to Sven Juergens)
 
