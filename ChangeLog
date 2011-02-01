@@ -1,4 +1,11 @@
 
+2011-02-01 Rupert Germann <rupi@gmx.li>
+	* new feature: it's now possible to render related news with an html template.
+	* new feature: by setting "restrictListToThisTypes" it's possible to render a list view from news which
+	  shows only news having the selected type.
+	* raised compatibility version to TYPO3 4.5
+
+
 2009-12-07 Rupert Germann <rupi@gmx.li>
 	* fixed bug #13753: Category menu in mode "nested wraps" is broken. Thanks to Jochen Weiland for discovering 
 	this issue and to Ingo Renner for sponsorimg this bug at the T3Board10 bug auction.
