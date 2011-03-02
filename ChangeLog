@@ -1,4 +1,8 @@
 
+
+2011-03-02 Rupert Germann <rupi@gmx.li>
+	* fixed bug #14001: User can't edit news with deleted categories
+
 2011-02-01 Rupert Germann <rupi@gmx.li>
 	* new feature: it's now possible to render related news with an html template.
 	* new feature: by setting "restrictListToThisTypes" it's possible to render a list view from news which
