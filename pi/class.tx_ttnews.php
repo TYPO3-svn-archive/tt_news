@@ -1854,7 +1854,7 @@ class tx_ttnews extends tslib_pibase {
 		$confSave = $this->conf;
 		$configSave = $this->config;
 
-		$this->conf = t3lib_div::array_merge_recursive_overrule($this->conf, $this->conf['relNewsByCategory.']);
+		$this->conf = t3lib_div::array_merge_recursive_overrule($this->conf, $this->conf['relNewsByCategory.'] ? $this->conf['relNewsByCategory.'] : array());
 		$this->config = $this->conf;
 		$this->arcExclusive = $this->conf['archive'];
 		$this->LOCAL_LANG_loaded = FALSE;
@@ -3765,9 +3765,9 @@ class tx_ttnews extends tslib_pibase {
 				$this->catlistWhere .= ' AND tt_news_cat.uid IN (' . implode(t3lib_div::intExplode(',', $lConf['includeList']), ',') . ')';
 			}
 		}
-		
+
 		if ($lConf['includeList'] || $lConf['excludeList'] || $this->catExclusive) {
-	
+
 	       // MOUNTS (in tree mode) must only contain the main/parent categories. Therefore it is required to filter out the subcategories from $this->catExclusive or $lConf['includeList']
 	        $categoryMounts = ($this->catExclusive?$this->catExclusive:$lConf['includeList']);
 	        $tmpres = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
@@ -3776,9 +3776,9 @@ class tx_ttnews extends tslib_pibase {
 	                'tt_news_cat.uid IN ('.$categoryMounts.')'.$this->SPaddWhere.$this->enableCatFields,
 	                '',
 	                'tt_news_cat.'.$this->config['catOrderBy']);
-	
+
 	       $this->cleanedCategoryMounts = array();
-		
+
 	       if ($tmpres) {
                 while (($tmprow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($tmpres))) {
 	                if (!t3lib_div::inList($categoryMounts,$tmprow['parent_category'])) {

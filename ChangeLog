@@ -1,6 +1,8 @@
 
 2011-03-03 Rupert Germann <rupi@gmx.li>
 	* fixed bug #14001 (part 2): Deleted flag was not taken into account when checking categories for localized records
+	* fixed bug #13752: tt_news crash in single view (PHP Error: Argument 2 passed to t3lib_div::array_merge_recursive_overrule() 
+	  must be an array, null given) (Thanks to Geoffroy Cochard)
 
 2011-03-02 Rupert Germann <rupi@gmx.li>
 	* fixed bug #14001: User can't edit news with deleted categories
