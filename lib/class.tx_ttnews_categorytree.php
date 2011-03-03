@@ -122,7 +122,9 @@ class tx_ttnews_categorytree extends t3lib_treeview {
 
 			if ($uid) {
 				$rootRec = $this->getRecord($uid);
-				$firstHtml .= $this->getIcon($rootRec);
+				if (is_array($rootRec)) {
+					$firstHtml .= $this->getIcon($rootRec);
+				}
 			} else {
 
 				if ($this->storagePid > 0 && $this->useStoragePid) {
