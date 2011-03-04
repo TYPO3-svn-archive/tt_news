@@ -665,9 +665,6 @@ class tx_ttnews extends tslib_pibase {
 				$countSelConf = $selectConf;
 				unset($countSelConf['orderBy']);
 
-//							debug($countSelConf, $this->theCode . ' COUNT $selectConf (' . __CLASS__ . '::' . __FUNCTION__ . ')', __LINE__, __FILE__, 3);
-
-
 				if (($res = $this->exec_getQuery('tt_news', $countSelConf))) {
 					list($newsCount) = $GLOBALS['TYPO3_DB']->sql_fetch_row($res);
 					$GLOBALS['TYPO3_DB']->sql_free_result($res);
@@ -1859,6 +1856,7 @@ class tx_ttnews extends tslib_pibase {
 
 		$confSave = $this->conf;
 		$configSave = $this->config;
+		$local_cObjSave = clone $this->local_cObj;
 
 		$this->conf = t3lib_div::array_merge_recursive_overrule($this->conf, $this->conf['relNewsByCategory.'] ? $this->conf['relNewsByCategory.'] : array());
 		$this->config = $this->conf;
@@ -1893,8 +1891,9 @@ class tx_ttnews extends tslib_pibase {
 		$this->piVars['pointer'] = $tmpBrowsePage;
 		$this->piVars['pS'] = $tmpPS;
 		$this->piVars['pL'] = $tmpPL;
+		$this->local_cObj = $local_cObjSave;
 
-		unset($confSave, $configSave);
+		unset($confSave, $configSave, $local_cObjSave);
 	}
 
 
