@@ -1,4 +1,7 @@
 
+2011-03-04 Rupert Germann <rupi@gmx.li>
+	* fixed bug 15322: remove folder icon code which is deprecated since TYPO3 v4.4 (thanks to Simon Schick)
+
 2011-03-03 Rupert Germann <rupi@gmx.li>
 	* fixed bug #16876: Plugin-CE not editable / t3lib_error_Exception / t3lib_iconWorks::getSpriteIconForRecord() (thanks to Thomas Oliver Moll)
 	* fixed bug #14001 (part 2): Deleted flag was not taken into account when checking categories for localized records

@@ -234,7 +234,6 @@ t3lib_extMgm::addTCAcolumns('be_users',$tempColumns,1);
 t3lib_extMgm::addToAllTCAtypes('be_users','tt_news_categorymounts;;;;1-1-1');
 
 
-
 if (TYPO3_MODE == 'BE')	{
 	if (t3lib_div::int_from_ver(TYPO3_version) >= 4000000) {
 		if (t3lib_div::int_from_ver(TYPO3_version) >= 4002000) {
@@ -264,8 +263,13 @@ if (TYPO3_MODE == 'BE')	{
 	}
 		// Adds a tt_news wizard icon to the content element wizard.
 	$TBE_MODULES_EXT['xMOD_db_new_content_el']['addElClasses']['tx_ttnews_wizicon'] = t3lib_extMgm::extPath($_EXTKEY).'pi/class.tx_ttnews_wizicon.php';
+
 		// add folder icon
-	$ICON_TYPES['news'] = array('icon' => t3lib_extMgm::extRelPath($_EXTKEY).'res/gfx/ext_icon_ttnews_folder.gif');
+	if (t3lib_div::int_from_ver(TYPO3_version) < 4004000) {
+		$ICON_TYPES['news'] = array('icon' => t3lib_extMgm::extRelPath($_EXTKEY) . 'res/gfx/ext_icon_ttnews_folder.gif');
+	} else {
+		t3lib_SpriteManager::addTcaTypeIcon('pages', 'contains-news', t3lib_extMgm::extRelPath($_EXTKEY) . 'res/gfx/ext_icon_ttnews_folder.gif');
+	}
 
 }
 
