@@ -1048,15 +1048,21 @@ class tx_ttnews extends tslib_pibase {
 
 			// XML
 			if ($this->theCode == 'XML') {
-				if ($row['type'] == 1 || $row['type'] == 2) {
-					if ($row['type'] == 2) {
-						$exturl = trim(strpos($row['ext_url'], 'http://') !== FALSE ? $row['ext_url'] : 'http://' . $row['ext_url']);
-						$exturl = (strpos($exturl, ' ') ? substr($exturl, 0, strpos($exturl, ' ')) : $exturl);
+				if ($row['type'] == 2) {
+						// external URL
+					$exturl = trim(strpos($row['ext_url'], 'http://') !== FALSE ? $row['ext_url'] : 'http://' . $row['ext_url']);
+					$exturl = (strpos($exturl, ' ') ? substr($exturl, 0, strpos($exturl, ' ')) : $exturl);
+					$rssUrl = $exturl;
+				} elseif ($row['type'] == 1) {
+						// internal URL
+					$rssUrl = $this->pi_getPageLink($row['page'], '');
+					if (strpos($rssUrl, '://') === FALSE) {
+						$rssUrl = $this->config['siteUrl'] . $rssUrl;
 					}
-					$rssUrl = ($row['type'] == 1 ? $this->config['siteUrl'] . $this->pi_getPageLink($row['page'], '') : $exturl);
 				} else {
+						// News detail link
 					$link = $this->getSingleViewLink($singlePid, $row, $piVarsArray, true);
-					$rssUrl = trim(strpos($link, 'http://') === FALSE ? $this->config['siteUrl'] : '') . $link;
+					$rssUrl = trim(strpos($link, '://') === FALSE ? $this->config['siteUrl'] : '') . $link;
 
 				}
 				// replace square brackets [] in links with their URLcodes and replace the &-sign with its ASCII code
