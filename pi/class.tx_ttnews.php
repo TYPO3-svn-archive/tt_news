@@ -434,14 +434,6 @@ class tx_ttnews extends tslib_pibase {
 			$GLOBALS['TSFE']->set_no_cache();
 		}
 
-		// init renderFields
-		//		if (is_array($this->conf['renderFields.'])) {
-		//			foreach ($this->conf['renderFields.'] as $c => $fList) {
-		//				$this->renderFields[$c] = $fList;
-		//			}
-		//		}
-
-
 		// get siteUrl for links in rss feeds. the 'dontInsert' option seems to be needed in some configurations depending on the baseUrl setting
 		if (! $this->conf['displayXML.']['dontInsertSiteUrl']) {
 			$this->config['siteUrl'] = t3lib_div::getIndpEnv('TYPO3_SITE_URL');
@@ -638,41 +630,21 @@ class tx_ttnews extends tslib_pibase {
 			$selectConf = $this->getSelectConf($where, $noPeriod);
 
 			// performing query to count all news (we need to know it for browsing):
+			if ($selectConf['leftjoin'] || ($this->theCode == 'RELATED' && $this->relNewsUid)) {
+				$selectConf['selectFields'] = 'COUNT(DISTINCT tt_news.uid)';
+			} else {
+				$selectConf['selectFields'] = 'COUNT(tt_news.uid)';
+			}
 
+			$newsCount = 0;
+			$countSelConf = $selectConf;
+			unset($countSelConf['orderBy']);
 
-			/**
-			 * TODO: 19.05.2009
-			 *
-			 * if the pagebrowser is disabled the count query should not be needed
-			 * in LATEST this is almost always the case
-			 *
-			 * FIXME
-			 * this will not work reliably!
-			 */
-
-//			if ($this->config['noPageBrowser']) {
-//				$newsCount = 1;
-//			} else {
-
-
-				if ($selectConf['leftjoin'] || ($this->theCode == 'RELATED' && $this->relNewsUid)) {
-					$selectConf['selectFields'] = 'COUNT(DISTINCT tt_news.uid)';
-				} else {
-					$selectConf['selectFields'] = 'COUNT(tt_news.uid)';
-				}
-
-				$newsCount = 0;
-				$countSelConf = $selectConf;
-				unset($countSelConf['orderBy']);
-
-				if (($res = $this->exec_getQuery('tt_news', $countSelConf))) {
-					list($newsCount) = $GLOBALS['TYPO3_DB']->sql_fetch_row($res);
-					$GLOBALS['TYPO3_DB']->sql_free_result($res);
-				}
-				$this->newsCount = $newsCount;
-//			}
-
-
+			if (($res = $this->exec_getQuery('tt_news', $countSelConf))) {
+				list($newsCount) = $GLOBALS['TYPO3_DB']->sql_fetch_row($res);
+				$GLOBALS['TYPO3_DB']->sql_free_result($res);
+			}
+			$this->newsCount = $newsCount;
 
 
 			// Only do something if the query result is not empty
@@ -688,9 +660,6 @@ class tx_ttnews extends tslib_pibase {
 				$renderMarkers = $this->getMarkers($t['total']);
 				$this->renderMarkers = array_unique($renderMarkers);
 
-				//debug($this->renderMarkers, ' ('.__CLASS__.'::'.__FUNCTION__.')', __LINE__, __FILE__, 3);
-
-
 				// build query for display:
 				if ($selectConf['leftjoin'] || ($this->theCode == 'RELATED' && $this->relNewsUid)) {
 					$selectConf['selectFields'] = 'DISTINCT tt_news.uid, tt_news.*';
@@ -698,7 +667,6 @@ class tx_ttnews extends tslib_pibase {
 					$selectConf['selectFields'] = 'tt_news.*';
 				}
 
-//
 
 				// exclude the LATEST template from changing its content with the pagebrowser. This can be overridden by setting the conf var latestWithPagebrowser
 				if ($this->theCode != 'LATEST' || $this->conf['latestWithPagebrowser']) {
@@ -3429,23 +3397,6 @@ class tx_ttnews extends tslib_pibase {
 
 
 	/**
-	 * The following functions are copied from class tslib_content to get a query without 'pidInList'
-	 *
-	 * Executes a SELECT query for records from $table and with conditions based on the configuration in the $conf array
-	 * This function is preferred over ->getQuery() if you just need to create and then execute a query.
-	 *
-	 * @param	string		The table name
-	 * @param	array		The TypoScript configuration properties
-	 * @return	mixed		A SQL result pointer
-	 * @see getQuery()
-	 */
-	//	function exec_getQuery($table, $conf) {
-	//		$queryParts = $this->getQuery($table, $conf, TRUE);
-	//		return $GLOBALS['TYPO3_DB']->exec_SELECT_queryArray($queryParts);
-	//	}
-
-
-	/**
 	 * [Describe function...]
 	 *
 	 * @param	[type]		$table: ...
@@ -3462,13 +3413,11 @@ class tx_ttnews extends tslib_pibase {
 
 
 	/**
-	 * Creates and returns a SELECT query for records from $table and with conditions based on the configuration in the $conf array
+	 * Creates and executes a SELECT query for records from $table and with conditions based on the configuration in the $conf array
 	 * Implements the "select" function in TypoScript
 	 *
 	 * @param	string		See ->exec_getQuery()
 	 * @param	array		See ->exec_getQuery()
-	 * @param	boolean		If set, the function will return the query not as a string but array with the various parts. RECOMMENDED!
-	 * @return	mixed		A SELECT query if $returnQueryArray is false, otherwise the SELECT query in an array as parts.
 	 * @access private
 	 * @see CONTENT(), numRows()
 	 */
@@ -3516,8 +3465,6 @@ class tx_ttnews extends tslib_pibase {
 
 			// Compile and return query:
 			$queryParts['FROM'] = trim(($this->addFromTable?$this->addFromTable.',':'') . $table . ' ' . $joinPart);
-			//			$query = $GLOBALS['TYPO3_DB']->SELECTquery($queryParts['SELECT'], $queryParts['FROM'], $queryParts['WHERE'], $queryParts['GROUPBY'], $queryParts['ORDERBY'], $queryParts['LIMIT']);
-			//			$queryParts = $returnQueryArray ? $queryParts : $query;
 
 			return $GLOBALS['TYPO3_DB']->exec_SELECT_queryArray($queryParts);
 		}
