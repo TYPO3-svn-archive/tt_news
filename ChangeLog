@@ -1,3 +1,5 @@
+2011-03-04 Rupert Germann <rupi@gmx.li>
+	* bugfix: "relatedNewsByCategory" and "renderRelatedNewsAsList" didn't work together
 
 2011-03-04 Rupert Germann <rupi@gmx.li>
 	* fixed bug #15322: remove folder icon code which is deprecated since TYPO3 v4.4 (thanks to Simon Schick)

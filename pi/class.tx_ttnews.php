@@ -940,7 +940,7 @@ class tx_ttnews extends tslib_pibase {
 		$lConf = $this->conf[$prefix_display . '.'];
 		$res = $this->exec_getQuery('tt_news', $selectConf); //get query for list contents
 
-		//		debug($selectConf, $this->theCode.' final $selectConf (' . __CLASS__ . '::' . __FUNCTION__ . ')', __LINE__, __FILE__, 3);
+//				debug($selectConf, $this->theCode.' final $selectConf (' . __CLASS__ . '::' . __FUNCTION__ . ')', __LINE__, __FILE__, 3);
 
 
 		// make some final config manipulations
@@ -1559,7 +1559,6 @@ class tx_ttnews extends tslib_pibase {
 	 */
 	function getItemMarkerArray($row, $lConf, $textRenderObj = 'displaySingle') {
 
-
 		if ($this->debugTimes) {
 			$this->hObj->getParsetime(__METHOD__);
 		}
@@ -1651,13 +1650,9 @@ class tx_ttnews extends tslib_pibase {
 		}
 		if ($this->isRenderMarker('###NEWS_CONTENT###')) {
 			if ($textRenderObj == 'displaySingle' && ! $row['no_auto_pb'] && $this->config['maxWordsInSingleView'] > 1 && $this->config['useMultiPageSingleView']) {
-
 				$row['bodytext'] = $this->hObj->insertPagebreaks($row['bodytext'], count(t3lib_div::trimExplode(' ', $row['short'], 1)));
-
-			//				debug($row['bodytext'], ' ('.__CLASS__.'::'.__FUNCTION__.')', __LINE__, __FILE__, 3);
-
-
 			}
+
 			if (strpos($row['bodytext'], $this->config['pageBreakToken'])) {
 				if ($this->config['useMultiPageSingleView'] && $textRenderObj == 'displaySingle') {
 					$tmp = $this->hObj->makeMultiPageSView($row['bodytext'], $lConf);
@@ -1706,6 +1701,7 @@ class tx_ttnews extends tslib_pibase {
 			}
 		}
 
+
 		// Links
 		$links = trim($row['links']);
 		if ($links && ($this->isRenderMarker('###TEXT_LINKS###') || $this->isRenderMarker('###NEWS_LINKS###'))) {
@@ -1720,9 +1716,12 @@ class tx_ttnews extends tslib_pibase {
 		}
 
 		// show news with the same categories in SINGLE view
-		if ($textRenderObj == 'displaySingle' && $this->conf['showRelatedNewsByCategory'] && count($this->categories[$row['uid']]) && ($this->isRenderMarker('###NEWS_RELATEDBYCATEGORY###') || $this->isRenderMarker('###TEXT_RELATEDBYCATEGORY###'))) {
+		if ($textRenderObj == 'displaySingle' && $this->conf['showRelatedNewsByCategory'] && count($this->categories[$row['uid']])
+				&& ($this->isRenderMarker('###NEWS_RELATEDBYCATEGORY###') || $this->isRenderMarker('###TEXT_RELATEDBYCATEGORY###'))) {
 			$this->getRelatedNewsByCategory($markerArray, $row, $lConf);
+
 		}
+
 
 		// the markers: ###ADDINFO_WRAP_B### and ###ADDINFO_WRAP_E### are only inserted, if there are any files, related news or links
 		if ($relatedNews || $newsLinks || $markerArray['###FILE_LINK###'] || $markerArray['###NEWS_RELATEDBYCATEGORY###']) {
@@ -1856,6 +1855,7 @@ class tx_ttnews extends tslib_pibase {
 
 		$confSave = $this->conf;
 		$configSave = $this->config;
+		$tmp_renderMarkers = $this->renderMarkers;
 		$local_cObjSave = clone $this->local_cObj;
 
 		$this->conf = t3lib_div::array_merge_recursive_overrule($this->conf, $this->conf['relNewsByCategory.'] ? $this->conf['relNewsByCategory.'] : array());
@@ -1892,6 +1892,7 @@ class tx_ttnews extends tslib_pibase {
 		$this->piVars['pS'] = $tmpPS;
 		$this->piVars['pL'] = $tmpPL;
 		$this->local_cObj = $local_cObjSave;
+		$this->renderMarkers = $tmp_renderMarkers;
 
 		unset($confSave, $configSave, $local_cObjSave);
 	}
@@ -2625,6 +2626,7 @@ class tx_ttnews extends tslib_pibase {
 				// save some variables which are used to build the backLink to the list view
 		$tmpcatExclusive = $this->catExclusive;
 		$tmparcExclusive = $this->arcExclusive;
+		$tmpCategories = $this->categories;
 		$tmpcode = $this->theCode;
 		$tmpBrowsePage = intval($this->piVars['pointer']);
 		unset($this->piVars['pointer']);
@@ -2635,6 +2637,9 @@ class tx_ttnews extends tslib_pibase {
 
 		$confSave = $this->conf;
 		$configSave = $this->config;
+		$tmplocal_cObj = clone $this->local_cObj;
+		$tmp_renderMarkers = $this->renderMarkers;
+
 
 		if (!is_array($this->conf['displayRelated.'])) {
 			$this->conf['displayRelated.'] = array();
@@ -2659,11 +2664,14 @@ class tx_ttnews extends tslib_pibase {
 		$this->theCode = $tmpcode;
 		$this->catExclusive = $tmpcatExclusive;
 		$this->arcExclusive = $tmparcExclusive;
+		$this->categories = $tmpCategories;
 		$this->piVars['pointer'] = $tmpBrowsePage;
 		$this->piVars['pS'] = $tmpPS;
 		$this->piVars['pL'] = $tmpPL;
+		$this->local_cObj = $tmplocal_cObj;
+		$this->renderMarkers = $tmp_renderMarkers;
 
-		unset($confSave, $configSave);
+		unset($confSave, $configSave, $tmpCategories, $this->addFromTable, $tmplocal_cObj);
 
 		return $relatedNews;
 	}
@@ -3510,7 +3518,6 @@ class tx_ttnews extends tslib_pibase {
 			$queryParts['FROM'] = trim(($this->addFromTable?$this->addFromTable.',':'') . $table . ' ' . $joinPart);
 			//			$query = $GLOBALS['TYPO3_DB']->SELECTquery($queryParts['SELECT'], $queryParts['FROM'], $queryParts['WHERE'], $queryParts['GROUPBY'], $queryParts['ORDERBY'], $queryParts['LIMIT']);
 			//			$queryParts = $returnQueryArray ? $queryParts : $query;
-
 
 			return $GLOBALS['TYPO3_DB']->exec_SELECT_queryArray($queryParts);
 		}
