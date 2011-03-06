@@ -271,6 +271,19 @@ if (TYPO3_MODE == 'BE')	{
 		t3lib_SpriteManager::addTcaTypeIcon('pages', 'contains-news', t3lib_extMgm::extRelPath($_EXTKEY) . 'res/gfx/ext_icon_ttnews_folder.gif');
 	}
 
+	if (TYPO3_UseCachingFramework) {
+		// register the cache in BE so it will be cleared with "clear all caches"
+		try {
+			$GLOBALS['typo3CacheFactory']->create(
+				'tt_news_cache',
+				$GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['tt_news_cache']['frontend'],
+				$GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['tt_news_cache']['backend'],
+				$GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['tt_news_cache']['options']);
+		} catch (t3lib_cache_exception_DuplicateIdentifier $e) {
+			// do nothing, a tt_news_cache cache already exists
+		}
+	}
+
 }
 
 	// register HTML template for the tt_news BackEnd Module

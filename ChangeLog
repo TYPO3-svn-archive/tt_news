@@ -1,5 +1,7 @@
 2011-03-04 Rupert Germann <rupi@gmx.li>
 	* bugfix: "relatedNewsByCategory" and "renderRelatedNewsAsList" didn't work together
+	* fixed bug #17870: Table tt_news_cache_tags is not flushed (thanks to Daniel Minder)
+	* fixed bug #16715: Caching framework configuration from localconf.php was overwritten by ext_localconf (thanks to Ralf Strobel)
 
 2011-03-04 Rupert Germann <rupi@gmx.li>
 	* fixed bug #15322: remove folder icon code which is deprecated since TYPO3 v4.4 (thanks to Simon Schick)
