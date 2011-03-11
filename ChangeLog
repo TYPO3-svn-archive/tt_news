@@ -1,3 +1,6 @@
+2011-03-11 Rupert Germann <rupi@gmx.li>
+	* bugfix: the direct link in EM that points to to the updater script didn't work in TYPO3 4.5
+
 2011-03-04 Rupert Germann <rupi@gmx.li>
 	* bugfix: "relatedNewsByCategory" and "renderRelatedNewsAsList" didn't work together
 	* fixed bug #17870: Table tt_news_cache_tags is not flushed (thanks to Daniel Minder)
