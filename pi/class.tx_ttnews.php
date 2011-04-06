@@ -59,7 +59,7 @@ class tx_ttnews extends tslib_pibase {
 	var $prefixId = 'tx_ttnews'; // Same as class name
 	var $scriptRelPath = 'pi/class.tx_ttnews.php'; // Path to this script relative to the extension dir.
 	var $extKey = 'tt_news'; // The extension key.
-
+	var $pi_checkCHash = true;
 
 	var $hObj; // class with helper functions
 	var $tt_news_uid = 0; // the uid of the current news record in SINGLE view
