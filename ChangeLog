@@ -1,6 +1,7 @@
 2011-04-06 Rupert Germann <rupi@gmx.li>
 	* bugfix: catOrderBy was overwritten in a wrong way when displaying related news by category causing an SQL error
 	* fixed bug #13330: error: Invalid database result resource detected (Thanks to Philipp Gampe)
+	* fixed bug #13232: check for category access does not work, if no restriction is applied (Thanks to Andreas Kiessling)
 
 2011-03-11 Rupert Germann <rupi@gmx.li>
 	* bugfix: the direct link in EM that points to to the updater script didn't work in TYPO3 4.5

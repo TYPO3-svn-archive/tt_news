@@ -240,7 +240,8 @@ class tx_ttnews_div {
 		if ($catmounts) {
 			$includeList = $catmounts;
 		}
-		return t3lib_div::intExplode(',',$includeList);
+
+		return t3lib_div::intExplode(',',$includeList, 1);
 	}
 
 
