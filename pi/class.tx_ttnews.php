@@ -1828,6 +1828,8 @@ class tx_ttnews extends tslib_pibase {
 
 		$this->conf = t3lib_div::array_merge_recursive_overrule($this->conf, $this->conf['relNewsByCategory.'] ? $this->conf['relNewsByCategory.'] : array());
 		$this->config = $this->conf;
+		$this->config['catOrderBy'] = $configSave['catOrderBy'];
+
 		$this->arcExclusive = $this->conf['archive'];
 		$this->LOCAL_LANG_loaded = FALSE;
 		$this->pi_loadLL(); // Loading language-labels
@@ -2399,7 +2401,7 @@ class tx_ttnews extends tslib_pibase {
 				$rows = array($row);
 				if ($this->conf['displaySubCategories'] && $this->config['useSubCategories']) {
 					$subCategories = array();
-					$subcats = implode(',', array_unique(explode(',', tx_ttnews_div::getSubCategories($row[0]['uid'], $addWhere))));
+					$subcats = implode(',', array_unique(explode(',', tx_ttnews_div::getSubCategories($rows[0]['uid'], $addWhere))));
 
 					$subres = $GLOBALS['TYPO3_DB']->exec_SELECTquery('tt_news_cat.*', 'tt_news_cat', 'tt_news_cat.uid IN (' . ($subcats ? $subcats : 0) . ')' . $addWhere, '', 'tt_news_cat.' . $this->config['catOrderBy']);
 

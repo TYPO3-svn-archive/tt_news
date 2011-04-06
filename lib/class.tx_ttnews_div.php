@@ -108,7 +108,6 @@ class tx_ttnews_div {
 
 		if (!$catlist) {
 			t3lib_div::devLog('EMPTY $catlist ('.__CLASS__.'::'.__FUNCTION__.')', 'tt_news', 3, array());
-
 		}
 
 
