@@ -1,3 +1,7 @@
+2011-10-16 Rupert Germann <rupi@gmx.li>
+	* fixed bug #18268: No news records since TYPO3 4.6beta2
+
+
 2011-04-06 Rupert Germann <rupi@gmx.li>
 	* bugfix: catOrderBy was overwritten in a wrong way when displaying related news by category causing an SQL error
 	* fixed bug #13330: error: Invalid database result resource detected (Thanks to Philipp Gampe)

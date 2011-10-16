@@ -9,6 +9,13 @@
 # Includes the newsLib:
 includeLibs.ts_news = EXT:tt_news/pi/class.tx_ttnews.php
 
+# Fix for TYPO3 4.6:
+tt_content.list.20.9 = CASE
+tt_content.list.20.9 {
+    key.field = layout
+    0 = < plugin.tt_news
+}
+
 
 plugin.tt_news = USER
 plugin.tt_news {

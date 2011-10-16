@@ -54,6 +54,7 @@ if (!is_array($GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations
 		)
 	);
 }
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['tt_news_cache']['frontend'] = 't3lib_cache_frontend_VariableFrontend';
 
 // register news cache table for "clear all caches"
 if ($confArr['cachingMode']=='normal') {
