@@ -1,6 +1,8 @@
+2011-11-06 Oliver Hader <oliver.hader@typo3.org>
+	* Fixed bug #18341: LocalLang labels are not correctly overridden in TYPO3 4.6
+
 2011-10-16 Rupert Germann <rupi@gmx.li>
 	* fixed bug #18268: No news records since TYPO3 4.6beta2
-
 
 2011-04-06 Rupert Germann <rupi@gmx.li>
 	* bugfix: catOrderBy was overwritten in a wrong way when displaying related news by category causing an SQL error

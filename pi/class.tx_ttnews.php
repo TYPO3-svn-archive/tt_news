@@ -750,7 +750,7 @@ class tx_ttnews extends tslib_pibase {
 					$this->internal['maxPages'] = $pbConf['maxPages'];
 
 					if (! $pbConf['showPBrowserText']) {
-						$this->LOCAL_LANG[$this->LLkey]['pi_list_browseresults_page'] = '';
+						$this->overrideLL('pi_list_browseresults_page', '');
 					}
 					if ($this->conf['userPageBrowserFunc']) {
 						$markerArray = $this->userProcess('userPageBrowserFunc', $markerArray);
@@ -840,9 +840,12 @@ class tx_ttnews extends tslib_pibase {
 			}
 		}
 
-		if ($wrapArr['showResultsNumbersWrap'] && strpos($this->LOCAL_LANG[$this->LLkey]['pi_list_browseresults_displays'], '%s')) {
+		if ($wrapArr['showResultsNumbersWrap'] && strpos($this->pi_getLL('pi_list_browseresults_displays'), '%s') !== FALSE) {
 			// if the advanced pagebrowser is enabled and the "pi_list_browseresults_displays" label contains %s it will be replaced with the content of the label "pi_list_browseresults_displays_advanced"
-			$this->LOCAL_LANG[$this->LLkey]['pi_list_browseresults_displays'] = $this->LOCAL_LANG[$this->LLkey]['pi_list_browseresults_displays_advanced'];
+			$this->overrideLL(
+				'pi_list_browseresults_displays',
+				$this->pi_getLL('pi_list_browseresults_displays_advanced')
+			);
 		}
 
 		if ($this->conf['useHRDates']) {
@@ -4106,6 +4109,20 @@ class tx_ttnews extends tslib_pibase {
 		}
 	}
 
+	/**
+	 * Overrides a LocalLang value and takes care of the XLIFF structure.
+	 *
+	 * @param string $key Key of the label
+	 * @param string $value Value of the label
+	 * @return void
+	 */
+	protected function overrideLL($key, $value) {
+		if (isset($this->LOCAL_LANG[$this->LLkey][$key][0]['target'])) {
+			$this->LOCAL_LANG[$this->LLkey][$key][0]['target'] = $value;
+		} else {
+			$this->LOCAL_LANG[$this->LLkey][$key] = $value;
+		}
+	}
 }
 
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_news/pi/class.tx_ttnews.php']) {
