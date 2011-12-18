@@ -1,3 +1,6 @@
+2011-12-18 Oliver Hader <oliver.hader@typo3.org>
+	* Fixed bug #18369: t3lib_htmlmail removed in TYPO3 4.7, tt_news crashes
+
 2011-11-06 Oliver Hader <oliver.hader@typo3.org>
 	* Fixed bug #18341: LocalLang labels are not correctly overridden in TYPO3 4.6
 

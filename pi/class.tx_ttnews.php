@@ -41,7 +41,6 @@
  */
 
 require_once (PATH_tslib . 'class.tslib_pibase.php');
-require_once (PATH_t3lib . 'class.t3lib_htmlmail.php');
 
 require_once (t3lib_extMgm::extPath('tt_news') . 'lib/class.tx_ttnews_catmenu.php');
 require_once (t3lib_extMgm::extPath('tt_news') . 'lib/class.tx_ttnews_helpers.php');
@@ -1799,7 +1798,7 @@ class tx_ttnews extends tslib_pibase {
 				if (@is_file($theFile)) {
 					$fileURL = $this->config['siteUrl'] . $theFile;
 					$fileSize = filesize($theFile);
-					$fileMimeType = t3lib_htmlmail::getMimeType($fileURL);
+					$fileMimeType = $this->getMimeTypeByHttpRequest($fileURL);
 
 					$rss2Enclousres .= '<enclosure url="' . $fileURL . '" ';
 					$rss2Enclousres .= 'length ="' . $fileSize . '" ';
@@ -4122,6 +4121,25 @@ class tx_ttnews extends tslib_pibase {
 		} else {
 			$this->LOCAL_LANG[$this->LLkey][$key] = $value;
 		}
+	}
+
+	/**
+	 * This function returns the mime type of the file specified by the url
+	 * (copied from t3lib_htmlmail of TYPO3 4.6 which got removed in TYPO3 4.7)
+	 *
+	 * @param	string		$url: the url
+	 * @return	string		$mimeType: the mime type found in the header
+	 */
+	protected function getMimeTypeByHttpRequest($url) {
+		$mimeType = '';
+		$headers = trim(t3lib_div::getUrl($url, 2));
+		if ($headers) {
+			$matches = array();
+			if (preg_match('/(Content-Type:[\s]*)([a-zA-Z_0-9\/\-\.\+]*)([\s]|$)/', $headers, $matches)) {
+				$mimeType = trim($matches[2]);
+			}
+		}
+		return $mimeType;
 	}
 }
 
