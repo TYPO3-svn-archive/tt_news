@@ -149,7 +149,7 @@ class tx_ttnews_module1 extends t3lib_SCbase {
 
 		$tceTSC = array();
 		if ($this->confArr['useStoragePid']) {
-			$tceTSC = t3lib_BEfunc::getTCEFORM_TSconfig('tt_mews_cat',array('pid'=>$this->id));
+			$tceTSC = t3lib_BEfunc::getTCEFORM_TSconfig('tt_news_cat',array('pid'=>$this->id));
 		}
 		$this->storagePid = $tceTSC['_STORAGE_PID']?$tceTSC['_STORAGE_PID']:$this->id;
 

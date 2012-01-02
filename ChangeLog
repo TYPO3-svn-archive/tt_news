@@ -1,3 +1,6 @@
+2011-12-30 Rupert Germann <rupi@gmx.li>
+	* fixed bug #18392: Typo in mod1/index.php (thanks to Andrey Aksenov)
+
 2011-12-18 Oliver Hader <oliver.hader@typo3.org>
 	* Fixed bug #18369: t3lib_htmlmail removed in TYPO3 4.7, tt_news crashes
 
