@@ -1,4 +1,5 @@
 2012-02-15 Oliver Hader <oliver.hader@typo3.org>
+	* Raise required TYPO3 version to 4.3.0
 	* Fixed bug #9234: Parant localization record cannot be modified (thanks to Robert Heel)
 
 2011-12-30 Rupert Germann <rupi@gmx.li>
