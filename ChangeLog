@@ -1,6 +1,7 @@
 2012-02-15 Oliver Hader <oliver.hader@typo3.org>
 	* Raise required TYPO3 version to 4.3.0
 	* Fixed bug #9234: Parant localization record cannot be modified (thanks to Robert Heel)
+	* Fixed bug #14187: Translated news not shown if news in parent record of type internal/external link (thanks to Robert Heel)
 
 2011-12-30 Rupert Germann <rupi@gmx.li>
 	* fixed bug #18392: Typo in mod1/index.php (thanks to Andrey Aksenov)

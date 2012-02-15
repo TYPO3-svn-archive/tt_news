@@ -112,7 +112,10 @@ class tx_ttnews extends tslib_pibase {
 	var $cache_categoryCount = FALSE;
 	var $cache_categories = FALSE;
 
-
+	/**
+	 * @var tslib_cObj
+	 */
+	var $local_cObj;
 
 	/**
 	 * Main news function: calls the init_news() function and decides by the given CODEs which of the
@@ -1072,7 +1075,7 @@ class tx_ttnews extends tslib_pibase {
 		$selectConf['selectFields'] = '*';
 		$selectConf['fromTable'] = 'tt_news';
 		$selectConf['where'] = 'tt_news.uid=' . $this->tt_news_uid;
-		$selectConf['where'] .= ' AND tt_news.type NOT IN(1,2)' . $this->enableFields; // only real news -> type=0
+		$selectConf['where'] .= $this->enableFields;
 
 
 		// function Hook for processing the selectConf array
@@ -1102,7 +1105,13 @@ class tx_ttnews extends tslib_pibase {
 		$GLOBALS['TSFE']->displayedNews[] = $row['uid'];
 
 		if (is_array($row) && ($row['pid'] > 0 || $this->vPrev)) { // never display versions of a news record (having pid=-1) for normal website users
-
+			// If type is 1 or 2 (internal/external link), redirect to accordant page:
+			if (is_array($row) && t3lib_div::inList('1,2', $row['type'])) {
+				$redirectUrl = $this->local_cObj->getTypoLink_URL(
+					$row['type'] == 1 ? $row['page'] : $row['ext_url']
+				);
+				t3lib_utility_Http::redirect($redirectUrl);
+			}
 
 			// Get the subpart code
 			if ($this->conf['displayCurrentRecord']) {
