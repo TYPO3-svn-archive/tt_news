@@ -367,7 +367,7 @@ $TCA['tt_news'] = Array (
 					Array('', 0),
 				),
 				'foreign_table' => 'tt_news',
-				'foreign_table_where' => 'AND tt_news.uid=###REC_FIELD_l18n_parent### AND tt_news.sys_language_uid IN (-1,0)',
+				'foreign_table_where' => 'AND tt_news.pid=###CURRENT_PID### AND tt_news.sys_language_uid IN (-1,0)',
 			)
 		),
 		'l18n_diffsource' => Array(

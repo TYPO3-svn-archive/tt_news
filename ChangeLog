@@ -1,3 +1,6 @@
+2012-02-15 Oliver Hader <oliver.hader@typo3.org>
+	* Fixed bug #9234: Parant localization record cannot be modified (thanks to Robert Heel)
+
 2011-12-30 Rupert Germann <rupi@gmx.li>
 	* fixed bug #18392: Typo in mod1/index.php (thanks to Andrey Aksenov)
 
