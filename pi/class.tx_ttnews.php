@@ -954,7 +954,6 @@ class tx_ttnews extends tslib_pibase {
 
 		// Getting elements
 		while (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))) {
-
 			// gets the option splitted config for this record
 			if ($this->conf['enableOptionSplit'] && ! empty($this->splitLConf[$cc])) {
 				$lConf = $this->splitLConf[$cc];
@@ -965,6 +964,11 @@ class tx_ttnews extends tslib_pibase {
 			$wrappedSubpartArray = array();
 			$titleField = $lConf['linkTitleField'] ? $lConf['linkTitleField'] : '';
 
+				// First get workspace/version overlay:
+			if ($this->versioningEnabled) {
+				$GLOBALS['TSFE']->sys_page->versionOL('tt_news', $row);
+			}
+				// Then get localization of record:
 			if ($GLOBALS['TSFE']->sys_language_content) {
 				// prevent link targets from being changed in localized records
 				$tmpPage = $row['page'];
@@ -973,11 +977,7 @@ class tx_ttnews extends tslib_pibase {
 				$row['page'] = $tmpPage;
 				$row['ext_url'] = $tmpExtURL;
 			}
-
-			if ($this->versioningEnabled) {
-				// get workspaces Overlay
-				$GLOBALS['TSFE']->sys_page->versionOL('tt_news', $row);
-			}
+				// Register displayed news item globally:
 			$GLOBALS['TSFE']->displayedNews[] = $row['uid'];
 
 			$GLOBALS['TSFE']->ATagParams = $pTmp . ' title="' . $this->local_cObj->stdWrap(trim(htmlspecialchars($row[$titleField])), $lConf['linkTitleField.']) . '"';
@@ -1091,17 +1091,18 @@ class tx_ttnews extends tslib_pibase {
 		$row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
 		$GLOBALS['TYPO3_DB']->sql_free_result($res);
 
-		// get the translated record if the content language is not the default language
+			// First get workspace/version overlay and fix workspace pid:
+		if ($this->versioningEnabled) {
+			$GLOBALS['TSFE']->sys_page->versionOL('tt_news', $row);
+			$GLOBALS['TSFE']->sys_page->fixVersioningPid('tt_news', $row);
+		}
+			// Then get localization of record:
+			// (if the content language is not the default language)
 		if ($GLOBALS['TSFE']->sys_language_content) {
 			$OLmode = ($this->sys_language_mode == 'strict' ? 'hideNonTranslated' : '');
 			$row = $GLOBALS['TSFE']->sys_page->getRecordOverlay('tt_news', $row, $GLOBALS['TSFE']->sys_language_content, $OLmode);
 		}
-		if ($this->versioningEnabled) {
-			// get workspaces Overlay
-			$GLOBALS['TSFE']->sys_page->versionOL('tt_news', $row);
-			// fix pid for record from workspace
-			$GLOBALS['TSFE']->sys_page->fixVersioningPid('tt_news', $row);
-		}
+			// Register displayed news item globally:
 		$GLOBALS['TSFE']->displayedNews[] = $row['uid'];
 
 		if (is_array($row) && ($row['pid'] > 0 || $this->vPrev)) { // never display versions of a news record (having pid=-1) for normal website users

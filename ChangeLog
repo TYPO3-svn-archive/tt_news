@@ -1,3 +1,6 @@
+2012-02-17 Oliver Hader <oliver.hader@typo3.org>
+	* !!! Fixed bug #12626: No workspace preview for translated news (order changed to version overlay, localization overlay)
+
 2012-02-15 Oliver Hader <oliver.hader@typo3.org>
 	* Raise required TYPO3 version to 4.3.0
 	* Fixed bug #9234: Parant localization record cannot be modified (thanks to Robert Heel)
