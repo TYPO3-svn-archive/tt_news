@@ -1,3 +1,7 @@
+2012-04-18  Rupert Germann <rupi@gmx.li>
+	* release of tt_news 3.2.1 in TER
+	* fixed bug 18507: using "cacheTable" is deprecated and broken in core master
+
 2012-03-15  Rupert Germann <rupi@gmx.li>
 	* release of tt_news 3.2 in TER
 	
