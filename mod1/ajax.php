@@ -52,7 +52,7 @@ $ajaxScript = $TYPO3_CONF_VARS['BE']['AJAX'][$ajaxID];
 
 
 	// instantiating the AJAX object
-if (t3lib_div::int_from_ver(TYPO3_version) >= 4003000) {
+if (tx_ttnews_compatibility::getInstance()->int_from_ver(TYPO3_version) >= 4003000) {
 	$ajaxObj = t3lib_div::makeInstance('TYPO3AJAX', $ajaxID);
 } else {
 	$ajaxClassName = t3lib_div::makeInstanceClassName('TYPO3AJAX');

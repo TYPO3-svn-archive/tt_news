@@ -128,7 +128,7 @@ class ext_update {
 		}
 
 
-		if (t3lib_div::int_from_ver(TYPO3_version) < 4003000) {
+		if ($this->compatibility()->int_from_ver(TYPO3_version) < 4003000) {
 				// add flashmessages styles
 			$cssPath = $GLOBALS['BACK_PATH'] . t3lib_extMgm::extRelPath('tt_news');
 			$out = '<link rel="stylesheet" type="text/css" href="' . $cssPath . 'compat/flashmessages.css" media="screen" />' . $out;
@@ -376,7 +376,7 @@ class ext_update {
 
 		$tempArr = $sheetArray;
 		foreach ($fieldNameArr as $k => $v) {
-			if (t3lib_div::testInt($v)) {
+			if ($this->compatibility()->testInt($v)) {
 				if (is_array($tempArr)) {
 					$c = 0;
 					foreach ($tempArr as $values) {
@@ -427,6 +427,12 @@ class ext_update {
 		return TRUE;
 	}
 
+	/**
+	 * @return tx_ttnews_compatibility
+	 */
+	protected function compatibility() {
+		return tx_ttnews_compatibility::getInstance();
+	}
 }
 
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tt_news/class.ext_update.php']) {
